@@ -202,7 +202,8 @@ def test_confirm_at_a_conclusion_then_upgrade_after_a_test_purchase(engine, tmp_
     with make_session_factory(engine)() as s:
         acts = {a.action for a in s.scalars(sa.select(m.AuditEvent).where(m.AuditEvent.object_id == uuid.UUID(fid)))}
         assert {"finding.confirmed", "finding.conclusion_updated"} <= acts
-        labels = [lb.label for lb in s.scalars(sa.select(m.AnalystLabel).where(m.AnalystLabel.finding_id == uuid.UUID(fid)))]
+        labels = [lb.label for lb in s.scalars(sa.select(m.AnalystLabel).where(m.AnalystLabel.finding_id == uuid.UUID(fid))
+                                             .order_by(m.AnalystLabel.at))]
         assert labels == ["suspicious_retailer", "confirmed_counterfeit"]
 
 

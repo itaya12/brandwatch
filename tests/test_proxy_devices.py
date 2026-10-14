@@ -147,7 +147,7 @@ def test_the_proxy_visit_is_made_as_the_chosen_devices_and_says_which_network(en
     assert any("through a mobile-network IP" in x and "as a desktop browser and as a phone" in x for x in said), said
     # phone only: no desktop visit through the proxy; residential choice: named so
     assert "residential" not in mob["shopnova-viaproxy.com"]["probes"] and "residential-mobile" in mob["shopnova-viaproxy.com"]["probes"]
-    assert list(desk["shopnova-viaproxy.com"]["probes"]) == ["bot", "param", "referer", "residential"]
+    assert sorted(desk["shopnova-viaproxy.com"]["probes"]) == ["bot", "param", "referer", "residential"]  # JSONB keeps no key order
 
 
 def test_a_proxy_set_in_settings_is_what_the_probe_looks_for(engine):
