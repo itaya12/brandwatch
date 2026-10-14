@@ -160,6 +160,7 @@ def _create_immutability_triggers() -> None:
                 "FOR EACH ROW EXECUTE FUNCTION brandwatch_reject_mutation()"
             )
             cols = ", ".join(f"'{c}'" for c in mutable)
+            names = ", ".join(mutable)  # inside the message's own quotes: no quotes of its own
             op.execute(
                 f"""
                 CREATE OR REPLACE FUNCTION brandwatch_{table}_guard() RETURNS trigger
@@ -167,7 +168,7 @@ def _create_immutability_triggers() -> None:
                 BEGIN
                   IF (to_jsonb(OLD) - ARRAY[{cols}]::text[])
                      IS DISTINCT FROM (to_jsonb(NEW) - ARRAY[{cols}]::text[]) THEN
-                    RAISE EXCEPTION '{table} is append-only: only {cols} may change'
+                    RAISE EXCEPTION '{table} is append-only: only {names} may change'
                       USING ERRCODE = 'P0001';
                   END IF;
                   RETURN NEW;

@@ -50,7 +50,7 @@ def upgrade() -> None:
             "subject",
             "source",
             "relation",
-            name="uq_intel_lookups_workspace_id_subject_type_subject_source_relation",
+            name="uq_intel_lookups_subject",  # one row per lookup; Postgres caps names at 63 characters
         ),  # fmt: skip
     )
     op.create_index(
