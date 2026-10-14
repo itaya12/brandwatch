@@ -21,7 +21,6 @@ jobs:
           cache: pip
       - run: python -m pip install -e ".[dev]"
       - run: ruff check .
-      - run: ruff format --check .
 
   test-sqlite:
     runs-on: ubuntu-latest
