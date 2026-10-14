@@ -1,0 +1,10 @@
+// BrandWatch static demo: the files in public/ are built by scripts/build_static_demo.py on the main branch.
+{
+  "name": "brandwatch",
+  "compatibility_date": "2026-10-01",
+  "assets": {
+    "directory": "./public",
+    "html_handling": "auto-trailing-slash",
+    "not_found_handling": "404-page"
+  }
+}

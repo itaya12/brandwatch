@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="en">
+<head><script>window.__BW_GITHUB="https://github.com/itaya12/brandwatch"</script><script src="/_demo/map.js"></script><script src="/_demo/shim.js"></script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Phishing kit · 2 sites · operation report</title>
+<style>
+  :root{--ink:#16202e;--muted:#5d6b7e;--line:#dfe5ec;--soft:#f4f7fa;--paper:#ffffff;--accent:#0b6fbd;--crit:#c62828;--high:#e07b00;--med:#b88a00;--low:#2e7d32;--c:#2e7d32}
+  *{box-sizing:border-box}
+  body{margin:0;background:#e9eef3;color:var(--ink);font:14px/1.55 "Segoe UI",system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif}
+  .page{max-width:1020px;margin:24px auto;background:var(--paper);border-radius:14px;box-shadow:0 10px 40px rgba(20,35,55,.15);overflow:hidden}
+  header{background:linear-gradient(135deg,#0d1b2e,#14304f);color:#fff;padding:28px 36px 24px;border-bottom:5px solid var(--c)}
+  header .eyebrow{font-size:11.5px;letter-spacing:.18em;text-transform:uppercase;color:#9fc4e6}
+  header h1{margin:6px 0 4px;font-size:26px;line-height:1.25;word-break:break-word}
+  header .sub{color:#c5d7ea;font-size:13.5px}
+  .toolbar{float:right;margin:-6px 0 0 12px}
+  .toolbar button{background:rgba(255,255,255,.14);color:#fff;border:1px solid rgba(255,255,255,.35);border-radius:8px;padding:6px 14px;cursor:pointer;font-size:12.5px}
+  .toolbar button:hover{background:rgba(255,255,255,.24)}
+  main{padding:8px 36px 32px}
+  .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:22px 0 6px}
+  .kpi{border:1px solid var(--line);border-radius:10px;padding:12px 14px;background:var(--soft)}
+  .kpi .v{font-size:22px;font-weight:700;color:var(--c);line-height:1.2;word-break:break-word}
+  .kpi .l{font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:2px}
+  .meter{height:7px;border-radius:5px;background:#dde5ee;overflow:hidden;margin-top:7px}.meter i{display:block;height:100%;background:var(--c)}
+  h2{font-size:17px;margin:30px 0 8px;padding-bottom:6px;border-bottom:2px solid var(--line);display:flex;align-items:baseline;gap:10px}
+  h2 .n{font-size:12px;font-weight:600;color:var(--muted)}
+  h3{font-size:13.5px;margin:18px 0 6px}
+  p{margin:6px 0}
+  .because{margin:16px 0 0;font-size:13px}
+  .lead{font-size:15.5px;margin:18px 0 6px}
+  .why li{margin:2px 0}
+  table{width:100%;border-collapse:collapse;font-size:12.8px;margin:6px 0 10px}
+  th{background:var(--soft);text-align:left;font-weight:600;color:var(--muted);font-size:11.5px;letter-spacing:.05em;text-transform:uppercase}
+  th,td{padding:7px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+  tr:nth-child(even) td{background:#fbfcfd}
+  .mono{font-family:Consolas,"SFMono-Regular",Menlo,monospace;font-size:12px;word-break:break-all}
+  .sev{display:inline-block;padding:1px 9px;border-radius:999px;font-size:11px;font-weight:700;text-transform:uppercase;color:#fff}
+  .sev.critical{background:var(--crit)}.sev.high{background:var(--high)}.sev.medium{background:var(--med)}.sev.low{background:var(--low)}
+  .chip{display:inline-block;border:1px solid var(--line);background:var(--soft);border-radius:999px;padding:1px 9px;font-size:11.5px;margin:1px 3px 1px 0}
+  .chip.hint{border-style:dashed}
+  .chip{white-space:nowrap}
+  .because .chip,.cluster .chip{white-space:normal;word-break:break-word}
+  td.host{word-break:normal;white-space:nowrap}
+  .chip b{font-weight:600}
+  .pct{color:var(--muted);font-size:11.5px}
+  .cluster{border:1px solid var(--line);border-left:4px solid var(--c);border-radius:8px;padding:9px 12px;margin:8px 0;background:#fff;page-break-inside:avoid}
+  .cluster .sites{margin-bottom:5px}
+  .step{display:flex;gap:12px;margin:10px 0;page-break-inside:avoid}
+  .step .no{flex:none;width:28px;height:28px;border-radius:50%;background:var(--c);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700}
+  .step .t{font-weight:700}
+  .step .targets{margin-top:3px}
+  .gridwrap{overflow:auto}
+  table.grid{width:auto;border-collapse:separate;border-spacing:2px;font-size:10.5px}
+  table.grid th{background:transparent;text-transform:none;letter-spacing:0;padding:2px 4px;border:0}
+  table.grid th.v{height:104px;vertical-align:bottom}
+  table.grid th.v div{writing-mode:vertical-rl;transform:rotate(180deg);font-family:Consolas,monospace;font-weight:500;white-space:nowrap;color:var(--ink)}
+  table.grid th.h{text-align:right;font-family:Consolas,monospace;font-weight:500;white-space:nowrap;color:var(--ink)}
+  table.grid td{width:28px;height:28px;padding:0;text-align:center;vertical-align:middle;border:0;border-radius:4px;background:color-mix(in srgb,var(--c) calc(var(--a) * 100%),#eef2f6);color:#fff;font-weight:700}
+  table.grid td.low{color:var(--ink)}
+  table.grid td.self{background:transparent}
+  .tl{position:relative;height:34px;background:var(--soft);border:1px solid var(--line);border-radius:8px;margin:8px 0 2px}
+  .tl span{position:absolute;top:50%;width:12px;height:12px;margin:-6px 0 0 -6px;border-radius:50%;background:var(--c);border:2px solid #fff;box-shadow:0 0 0 1px var(--c)}
+  .tl span.wave{box-shadow:0 0 0 4px color-mix(in srgb,var(--c) 30%,transparent)}
+  .tlax{display:flex;justify-content:space-between;font-size:11.5px;color:var(--muted)}
+  .note{background:var(--soft);border:1px solid var(--line);border-radius:8px;padding:9px 13px;font-size:12.8px;color:var(--muted)}
+  footer{padding:16px 36px 22px;color:var(--muted);font-size:12px;border-top:1px solid var(--line);background:var(--soft)}
+  @media(max-width:700px){main,header,footer{padding-left:16px;padding-right:16px}.page{margin:0;border-radius:0}h1{font-size:21px}}
+  @media print{body{background:#fff}.page{box-shadow:none;margin:0;border-radius:0}.toolbar{display:none}header{-webkit-print-color-adjust:exact;print-color-adjust:exact}table,.sev,.kpi,.meter i,.tl span,table.grid td,.step .no{-webkit-print-color-adjust:exact;print-color-adjust:exact}h2{page-break-after:avoid}}
+</style>
+</head>
+<body>
+<div class="page">
+<header>
+  <div class="toolbar"><button type="button" onclick="window.print()">Print / save as PDF</button></div>
+  <div class="eyebrow">BrandWatch · operation report · ShopNova</div>
+  <h1>Phishing kit · 2 sites</h1>
+  <div class="sub">Phishing kit · 2 sites · certain (97%) · generated 2026-10-14 14:44 UTC</div>
+</header>
+<main>
+  <div class="kpis">
+    <div class="kpi"><div class="v">2</div><div class="l">confirmed sites</div></div>
+    <div class="kpi"><div class="v">97%</div><div class="l">confidence · certain</div><div class="meter"><i style="width:97%"></i></div></div>
+    <div class="kpi"><div class="v">Phishing kit</div><div class="l">what it does</div></div>
+    <div class="kpi"><div class="v" style="font-size:16px">2026-09-22 → 2026-09-30</div><div class="l">domains registered</div></div>
+    <div class="kpi"><div class="v">2</div><div class="l">ways to stop it</div></div>
+  </div>
+
+  <p class="because"><b>Because</b> <span class="chip "><b>the same TLS certificate</b> <span class="mono">bbbbbbbbbbbbbbbbbbbbbbbbbbb...</span> <span class="pct">80%</span></span><span class="chip "><b>the same server</b> <span class="mono">198.51.100.77</span> <span class="pct">80%</span></span><span class="chip hint"><b>a page that looks the same</b> <span class="mono">screenshot be37c1cd4c</span> <span class="pct">30%</span></span></p>
+  <p class="lead">Each of the 2 domains collects passwords or card details. Registered over 8 days (2026-09-22 → 2026-09-30). 2/2 credential form.</p>
+  <ul class="why"><li>2/2 credential form</li></ul>
+
+  <h2>How to stop it <span class="n">· the shortest way, first</span></h2>
+  <div class="step"><div class="no">1</div><div><div class="t">One bulk abuse report to Mock Registrar LLC</div><div>2 domains are registered there. List them all in one report, with the screenshots from the evidence packages.</div>
+    <div class="targets mono">shopnowa.com, shoqnova.com</div></div></div><div class="step"><div class="no">2</div><div><div class="t">Report the hosting provider Fast VPS LLC</div><div>The provider can disable the servers that host these pages.</div>
+    <div class="targets mono">shopnowa.com, shoqnova.com</div></div></div>
+
+  <h2>The sites <span class="n">· 2</span></h2>
+  <table><tr><th>Site</th><th>Severity</th><th>Registered</th><th>Registrar</th><th>Server(s)</th><th>Hosting</th><th>Name servers</th><th>Ends on</th></tr>
+    <tr><td class="mono host"><b>shopnowa.com</b></td>
+      <td><span class="sev critical">critical</span></td><td>2026-09-22</td><td>Mock Registrar LLC</td>
+      <td class="mono">198.51.100.77</td><td>Fast VPS LLC (hoster)</td><td class="mono">ns1.mock-dns.example, ns2.mock-dns.example</td><td class="mono">shopnowa.com</td></tr><tr><td class="mono host"><b>shoqnova.com</b></td>
+      <td><span class="sev critical">critical</span></td><td>2026-09-30</td><td>Mock Registrar LLC</td>
+      <td class="mono">198.51.100.77</td><td>Fast VPS LLC (hoster)</td><td class="mono">ns1.mock-dns.example, ns2.mock-dns.example</td><td class="mono">shoqnova.com</td></tr></table>
+
+  <h2>Who is with whom <span class="n">· 1 cluster</span></h2>
+  <p class="note">2 of the 2 sites are on one server. Sites that share exactly the same things are shown together, so a long list of links reads as one line.</p>
+  <div class="cluster"><div class="sites"><span class="chip mono"><b>shopnowa.com</b></span><span class="chip mono"><b>shoqnova.com</b></span></div>
+    <div><b>2 sites</b> share
+      <span class="chip "><b>certificate</b> <span class="mono">bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb</span> <span class="pct">80%</span></span><span class="chip "><b>server</b> <span class="mono">198.51.100.77</span> <span class="pct">80%</span></span><span class="chip hint"><b>page look</b> <span class="mono">screenshot be37c1cd4c</span> <span class="pct">30%</span></span></div></div>
+
+  <h3>Who against whom</h3>
+  <p class="pct" style="margin-top:0">How sure we are that two sites are one operation (the darker the cell, the surer). The number is shown from 75%, where two sites count as one operation.</p>
+  <div class="gridwrap"><table class="grid"><tr><th></th><th class="v"><div>shopnowa.com</div></th><th class="v"><div>shoqnova.com</div></th></tr>
+    <tr><th class="h">shopnowa.com</th><td class="self"></td><td style="--a:0.97" class="" title="shopnowa.com ↔ shoqnova.com · 97% · certificate, ip, kit_look">97</td></tr><tr><th class="h">shoqnova.com</th><td style="--a:0.97" class="" title="shoqnova.com ↔ shopnowa.com · 97% · certificate, ip, kit_look">97</td><td class="self"></td></tr></table></div>
+
+  <h2>Who shares what <span class="n">· every shared server, certificate, registrant and more</span></h2>
+  <h3>Same server (address) <span class="pct">· 1</span></h3>
+    <table><tr><th style="width:34%">Value</th><th style="width:12%">Strength</th><th>Shared by</th></tr>
+    <tr><td class="mono">198.51.100.77<div class="pct" style="font-family:inherit">Fast VPS LLC · hoster</div></td>
+      <td>80%<div class="pct">proof</div></td>
+      <td><b>2 sites</b><div class="mono">shopnowa.com, shoqnova.com</div></td></tr></table><h3>TLS certificates <span class="pct">· 1</span></h3>
+    <table><tr><th style="width:34%">Value</th><th style="width:12%">Strength</th><th>Shared by</th></tr>
+    <tr><td class="mono">bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb</td>
+      <td>80%<div class="pct">proof</div></td>
+      <td><b>2 sites</b><div class="mono">shopnowa.com, shoqnova.com</div></td></tr></table><h3>Name servers <span class="pct">· 2</span></h3>
+    <table><tr><th style="width:34%">Value</th><th style="width:12%">Strength</th><th>Shared by</th></tr>
+    <tr><td class="mono">ns1.mock-dns.example</td>
+      <td>10%<div class="pct">common</div></td>
+      <td><b>2 sites</b><div class="mono">shopnowa.com, shoqnova.com</div></td></tr><tr><td class="mono">ns2.mock-dns.example</td>
+      <td>10%<div class="pct">common</div></td>
+      <td><b>2 sites</b><div class="mono">shopnowa.com, shoqnova.com</div></td></tr></table><h3>Registrars <span class="pct">· 1</span></h3>
+    <table><tr><th style="width:34%">Value</th><th style="width:12%">Strength</th><th>Shared by</th></tr>
+    <tr><td class="mono">Mock Registrar LLC</td>
+      <td>10%<div class="pct">common</div></td>
+      <td><b>2 sites</b><div class="mono">shopnowa.com, shoqnova.com</div></td></tr></table><h3>Pages that look the same <span class="pct">· 1</span></h3>
+    <table><tr><th style="width:34%">Value</th><th style="width:12%">Strength</th><th>Shared by</th></tr>
+    <tr><td class="mono">screenshot be37c1cd4c</td>
+      <td>30%<div class="pct">a hint</div></td>
+      <td><b>2 sites</b><div class="mono">shopnowa.com, shoqnova.com</div></td></tr></table><h3>Favicons <span class="pct">· 1</span></h3>
+    <table><tr><th style="width:34%">Value</th><th style="width:12%">Strength</th><th>Shared by</th></tr>
+    <tr><td class="mono">-2029202433</td>
+      <td>10%<div class="pct">common</div></td>
+      <td><b>2 sites</b><div class="mono">shopnowa.com, shoqnova.com</div></td></tr></table>
+
+  <h2>Toolkit <span class="n">· what the attacker uses</span></h2>
+  <table><tr><th style="width:22%">Kind</th><th>What</th></tr>
+    <tr><td>Registrars</td><td><span class="chip"><b>Mock Registrar LLC</b> ×2</span></td></tr>
+    <tr><td>Hosting</td><td><span class="chip"><b>Fast VPS LLC (hoster)</b> ×2</span></td></tr>
+    <tr><td>Redirect hosts</td><td>–</td></tr>
+    <tr><td>Name servers</td><td><span class="chip mono">ns1.mock-dns.example ×2</span><span class="chip mono">ns2.mock-dns.example ×2</span></td></tr>
+    <tr><td>Certificate issuers</td><td><span class="chip">C=US O=Mock Trust Services CN=MT1 ×2</span></td></tr></table>
+
+  <h2>When the domains were registered <span class="n">· a ring = several bought within days of each other</span></h2>
+  <div class="tl"><span class="" style="left:3.0%" title="shopnowa.com · 2026-09-22"></span><span class="" style="left:97.0%" title="shoqnova.com · 2026-09-30"></span></div>
+  <div class="tlax"><span>2026-09-22</span><span>2026-09-30</span></div>
+  <table><tr><th>Registered</th><th>Site</th></tr><tr><td>2026-09-22</td><td class="mono">shopnowa.com</td></tr><tr><td>2026-09-30</td><td class="mono">shoqnova.com</td></tr></table>
+
+  <h2>Evidence per site <span class="n">· which site has which tie</span></h2>
+  <div class="gridwrap"><table><tr><th>Site</th><th>certificate</th><th>ip</th><th>kit look</th></tr>
+    <tr><td class="mono">shopnowa.com</td><td class="mono">bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb</td><td class="mono">198.51.100.77</td><td class="mono">screenshot be37c1cd4c</td></tr><tr><td class="mono">shoqnova.com</td><td class="mono">bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb</td><td class="mono">198.51.100.77</td><td class="mono">screenshot be37c1cd4c</td></tr></table></div>
+  <h3>Also in common, but weak <span class="pct">· they never group sites</span></h3>
+    <table><tr><th>Kind</th><th>Value</th><th>Sites</th></tr><tr><td>the same favicon</td><td class="mono">-2029202433</td><td>2</td></tr><tr><td>the same registrar</td><td class="mono">Mock Registrar LLC</td><td>2</td></tr><tr><td>the same name server</td><td class="mono">ns1.mock-dns.example</td><td>2</td></tr><tr><td>the same name server</td><td class="mono">ns2.mock-dns.example</td><td>2</td></tr></table>
+
+  <p class="note" style="margin-top:22px">Confidence is the weakest tie that holds the group together. Every tie has a weight: how likely it is that two sites sharing it are one operation. A server on a CDN is no evidence; a registrar or a name server never ties two sites on its own. This report was generated from the evidence BrandWatch holds today; searching for more sites of this operation is a separate step the analyst starts.</p>
+</main>
+<footer>BrandWatch · ShopNova · 26 confirmed sites in the workspace, 4 operations · generated 2026-10-14 14:44 UTC</footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,1412 @@
+<!doctype html>
+<html lang="en">
+<head><script>window.__BW_GITHUB="https://github.com/itaya12/brandwatch"</script><script src="/_demo/map.js"></script><script src="/_demo/shim.js"></script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How it works · BrandWatch</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=JetBrains+Mono:wght@400;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#080B14;--panel:#0E1420;--panel2:#121A2B;--border:#1E2A3D;--accent:#35C7F2;--accent2:#5FE3FF;
+--crit:#FF4D4D;--high:#FF9F1C;--med:#F5C518;--low:#2ECC71;--violet:#5b9bb5;--magenta:#c9d3df;--text:#E6EDF5;--muted:#8A97A8;
+--mono:"JetBrains Mono",ui-monospace,Consolas,monospace;--sans:Inter,system-ui,Segoe UI,Roboto,sans-serif;--display:Rajdhani,var(--mono)}
+@property --p{syntax:'<number>';inherits:false;initial-value:0}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14px;line-height:1.45;min-height:100vh}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:repeating-linear-gradient(0deg,rgba(53,199,242,.022) 0 1px,transparent 1px 3px),
+             radial-gradient(ellipse at 50% -10%,rgba(53,199,242,.10),transparent 55%)}
+body::after{content:"";position:fixed;left:0;right:0;top:-40%;height:40%;pointer-events:none;z-index:0;
+  background:linear-gradient(180deg,transparent,rgba(53,199,242,.035),transparent);animation:sweep 9s linear infinite}
+@keyframes sweep{to{transform:translateY(350%)}}
+a{color:var(--accent);text-decoration:none;transition:color .2s}a:hover{color:var(--accent2)}
+header{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:24px;padding:10px 20px;border-bottom:1px solid var(--border);
+  background:rgba(14,20,32,.86);backdrop-filter:blur(8px)}
+header .logo{font-family:var(--mono);font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);display:flex;align-items:center;gap:8px}
+header .logo::before{content:"";width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 10px var(--accent);animation:beat 2.2s ease-in-out infinite}
+@keyframes beat{0%,100%{opacity:.45;transform:scale(.85)}50%{opacity:1;transform:scale(1.1)}}
+header nav a{position:relative;font-family:var(--mono);font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-right:16px;padding:4px 0}
+header nav a::after{content:"";position:absolute;left:0;right:0;bottom:-2px;height:2px;background:var(--accent);transform:scaleX(0);transform-origin:left;transition:transform .3s}
+header nav a.active,header nav a:hover{color:var(--text)}header nav a.active::after,header nav a:hover::after{transform:scaleX(1)}
+header nav a.active::after{box-shadow:0 0 8px var(--accent)}
+header .who{margin-left:auto;color:var(--muted);font-size:12px}
+main{position:relative;z-index:1;padding:20px;max-width:1440px;margin:0 auto}
+h1{font-family:var(--display);font-size:26px;letter-spacing:.04em;margin:0 0 14px;font-weight:700;
+  background:linear-gradient(90deg,#E6EDF5 0%,#E6EDF5 55%,var(--accent2) 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+h1 .muted,h1 .small{-webkit-text-fill-color:var(--muted);font-family:var(--sans);font-size:13px;letter-spacing:0;font-weight:400}
+h2{font-size:12px;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);font-family:var(--mono);margin:22px 0 10px;line-height:1.5}
+h2::before{content:"";width:6px;height:6px;background:var(--accent);display:inline-block;margin-right:8px;vertical-align:2px}
+h2 .muted{text-transform:none;letter-spacing:.02em;font-family:var(--sans);font-size:12px;opacity:.85}
+.panel{position:relative;background:linear-gradient(180deg,rgba(18,26,43,.92),rgba(14,20,32,.92));border:1px solid var(--border);border-radius:10px;padding:14px 16px;
+  transition:border-color .3s,box-shadow .3s,transform .3s;animation:fadeUp .6s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(var(--i,0)*70ms)}
+.panel:hover{border-color:rgba(53,199,242,.35);box-shadow:0 0 0 1px rgba(53,199,242,.08),0 8px 30px rgba(0,0,0,.35)}
+.panel > h2:first-child{margin-top:0}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+@keyframes rowIn{from{opacity:0;transform:translateX(-6px)}to{opacity:1;transform:none}}
+.grid{display:grid;gap:14px}.grid.two{grid-template-columns:1fr 1fr}.grid.three{grid-template-columns:repeat(3,1fr)}.grid.four{grid-template-columns:repeat(4,1fr)}
+table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:8px 8px;border-bottom:1px solid var(--border);vertical-align:middle}
+th{font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:500}
+tbody tr,table tr{animation:rowIn .45s ease both;animation-delay:calc(var(--r,0)*28ms)}
+tr:hover td{background:rgba(53,199,242,.05)}
+.mono{font-family:var(--mono)}.muted{color:var(--muted)}.small{font-size:12px}.right{text-align:right}
+.badge{display:inline-block;padding:2px 8px;border-radius:999px;font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.06em;font-weight:600;white-space:nowrap}
+.sev-critical{background:rgba(255,77,77,.15);color:var(--crit);border:1px solid var(--crit)}
+.sev-high{background:rgba(255,159,28,.15);color:var(--high);border:1px solid var(--high)}
+.sev-medium{background:rgba(245,197,24,.15);color:var(--med);border:1px solid var(--med)}
+.sev-low{background:rgba(46,204,113,.15);color:var(--low);border:1px solid var(--low)}
+.state{background:var(--panel2);color:var(--muted);border:1px solid var(--border)}
+.st-open,.st-new{color:var(--text)}.st-confirmed,.st-flagged{color:var(--crit);border-color:rgba(255,77,77,.5)}
+.st-dismissed{color:#5a6678}.st-watching{color:var(--accent);border-color:rgba(53,199,242,.4)}.st-long_watch{color:var(--muted)}
+.pill{background:var(--panel2);border:1px solid var(--border);border-radius:6px;padding:1px 6px;font-family:var(--mono);font-size:11px;color:var(--text);white-space:nowrap}
+/* signal pills: one neutral style for every group (the group is in the tooltip and the Explain table) */
+.pill[class*="g-"]{border-color:var(--border);color:#c9d3df}
+button,.btn{background:var(--panel2);color:var(--text);border:1px solid var(--border);border-radius:6px;padding:7px 12px;font:inherit;cursor:pointer;transition:all .2s}
+button:hover,.btn:hover{border-color:var(--accent);box-shadow:0 0 12px rgba(53,199,242,.2)}button.primary{background:rgba(53,199,242,.15);border-color:var(--accent);color:var(--accent2)}
+button.danger{border-color:var(--crit);color:var(--crit)}button.ok{border-color:var(--low);color:var(--low)}
+input,select,textarea{background:#0b1220;color:var(--text);border:1px solid var(--border);border-radius:6px;padding:7px 9px;font:inherit;width:100%;transition:border-color .2s,box-shadow .2s}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(53,199,242,.15)}
+label{display:block;font-size:12px;color:var(--muted);margin:8px 0 4px;font-family:var(--mono);text-transform:uppercase;letter-spacing:.06em}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.kpi{position:relative;overflow:hidden;background:linear-gradient(180deg,rgba(18,26,43,.95),rgba(14,20,32,.95));border:1px solid var(--border);border-radius:10px;padding:12px 14px;
+  animation:fadeUp .55s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(var(--i,0)*55ms);transition:transform .25s,border-color .25s,box-shadow .25s}
+.kpi::after{content:"";position:absolute;right:-28px;top:-28px;width:86px;height:86px;border-radius:50%;background:radial-gradient(circle,rgba(53,199,242,.07),transparent 70%)}
+.kpi:hover{transform:translateY(-2px);border-color:rgba(53,199,242,.4);box-shadow:0 6px 24px rgba(0,0,0,.35)}
+.kpi .v{font-family:var(--display);font-size:34px;line-height:1;font-weight:700;letter-spacing:.02em}
+.kpi .l{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-top:4px}
+/* number colors carry meaning: severity only (critical / high / medium); every other number is plain */
+.kpi.crit .v{color:var(--crit)}.kpi.hi .v{color:var(--high)}.kpi.med .v{color:var(--med)}
+.kpi.ok .v,.kpi.cy .v,.kpi.vi .v,.kpi.mg .v{color:var(--text)}
+a.kpi{color:inherit;display:block}a.kpi.on{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent) inset}
+.ring{--c:var(--accent);width:96px;height:96px;border-radius:50%;background:conic-gradient(var(--c) calc(var(--p)*1%),#1E2A3D 0);display:grid;place-items:center;transition:--p 1.4s cubic-bezier(.2,.8,.2,1)}
+.ring>div{width:76px;height:76px;border-radius:50%;background:var(--panel);display:grid;place-items:center;font-family:var(--display);font-size:28px;font-weight:700}
+.ring.sm{width:38px;height:38px}.ring.sm>div{width:28px;height:28px;font-size:11px;font-family:var(--mono)}
+.bar{height:8px;background:#1E2A3D;border-radius:4px;overflow:hidden}.bar>i{display:block;height:100%;background:var(--accent);transition:width 1.3s cubic-bezier(.2,.8,.2,1)}
+.bar>i[data-w]{width:0}
+.scorebar{height:6px;width:90px;background:#1E2A3D;border-radius:3px;overflow:hidden;display:inline-block;vertical-align:middle;margin-left:8px}
+.scorebar>i{display:block;height:100%;width:0;border-radius:3px;background:rgba(230,237,245,.55);transition:width 1.3s cubic-bezier(.2,.8,.2,1)}
+.stack{display:flex;height:10px;border-radius:5px;overflow:hidden;background:#1E2A3D}.stack>i{display:block;height:100%;width:0;transition:width 1.3s cubic-bezier(.2,.8,.2,1)}
+.hist{display:flex;align-items:flex-end;gap:5px;height:110px;padding-bottom:18px}
+.hist i{flex:1;position:relative;border-radius:4px 4px 0 0;min-height:2px;height:0;transition:height 1.2s cubic-bezier(.2,.8,.2,1);background:linear-gradient(180deg,var(--c,var(--accent2)),rgba(53,199,242,.15))}
+.hist i span{position:absolute;bottom:-17px;left:0;right:0;text-align:center;font-size:10px;color:var(--muted);font-family:var(--mono)}
+.hist i b{position:absolute;top:-16px;left:0;right:0;text-align:center;font-size:10px;color:var(--text);font-family:var(--mono);font-weight:400}
+svg.donut{width:150px;height:150px;flex:none}svg.spark{width:100%;height:64px;display:block}
+.donut-wrap{display:flex;gap:16px;align-items:center}.legend{display:grid;gap:5px;font-size:12px}
+.legend div{display:flex;align-items:center;gap:8px}.legend i{width:9px;height:9px;border-radius:2px;flex:none}.legend b{margin-left:auto;font-family:var(--mono);font-weight:400;color:var(--muted)}
+.pulse{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--crit);box-shadow:0 0 0 0 rgba(255,77,77,.7);animation:pulse 1.6s infinite;vertical-align:middle}
+.pulse.cy{background:var(--accent);animation-name:pulsecy}.pulse.ok{background:var(--low);animation-name:pulseok}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(255,77,77,.7)}70%{box-shadow:0 0 0 10px rgba(255,77,77,0)}100%{box-shadow:0 0 0 0 rgba(255,77,77,0)}}
+@keyframes pulsecy{0%{box-shadow:0 0 0 0 rgba(53,199,242,.7)}70%{box-shadow:0 0 0 10px rgba(53,199,242,0)}100%{box-shadow:0 0 0 0 rgba(53,199,242,0)}}
+@keyframes pulseok{0%{box-shadow:0 0 0 0 rgba(46,204,113,.7)}70%{box-shadow:0 0 0 10px rgba(46,204,113,0)}100%{box-shadow:0 0 0 0 rgba(46,204,113,0)}}
+.sevrow td:first-child{box-shadow:inset 3px 0 0 var(--sc,var(--border))}
+.sevrow.critical{--sc:var(--crit)}.sevrow.high{--sc:var(--high)}.sevrow.medium{--sc:var(--med)}.sevrow.low{--sc:var(--low)}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border:1px solid var(--border);border-radius:999px;font-family:var(--mono);font-size:11px;color:var(--muted);cursor:pointer;background:var(--panel2);transition:all .2s;user-select:none}
+.chip i{display:none}.chip.on{color:var(--text);border-color:var(--accent);box-shadow:0 0 10px rgba(53,199,242,.18)}
+.radar{width:14px;height:14px;border-radius:50%;border:1px solid var(--accent);position:relative;display:inline-block;vertical-align:middle;overflow:hidden}
+.radar::after{content:"";position:absolute;inset:0;background:conic-gradient(rgba(53,199,242,.8),transparent 40%);animation:spin 1.2s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.error{color:var(--crit);border:1px solid var(--crit);background:rgba(255,77,77,.08);padding:8px 10px;border-radius:6px;margin-bottom:12px}
+.console{font-family:var(--mono);font-size:12px;background:#060910;border:1px solid var(--border);border-radius:8px;padding:12px;height:420px;overflow:auto;white-space:pre-wrap}
+.console .running{color:var(--accent)}.console .done{color:var(--low)}.console .error{color:var(--crit);border:0;background:none;padding:0;margin:0}.console .warn{color:var(--high)}
+.console div{animation:rowIn .3s ease both}
+.timeline{list-style:none;padding:0;margin:0}.timeline li{padding:6px 0 6px 14px;border-left:2px solid var(--border);position:relative;animation:fadeUp .5s ease both;animation-delay:calc(var(--r,0)*40ms)}
+.timeline li::before{content:"";position:absolute;left:-6px;top:11px;width:10px;height:10px;border-radius:50%;background:var(--accent);box-shadow:0 0 8px var(--accent)}
+.timeline li.changed::before{background:var(--high);box-shadow:0 0 8px var(--high)}
+img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:#000;image-rendering:pixelated}
+.thumb{width:64px;height:40px;object-fit:cover;border:1px solid var(--border);border-radius:4px;background:#000;transition:transform .25s,box-shadow .25s,filter .25s;position:relative;filter:saturate(.2) brightness(.8)}
+.thumb:hover{transform:scale(2.6);z-index:5;box-shadow:0 10px 30px rgba(0,0,0,.7);border-color:var(--accent);filter:none}
+.actions{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.fade{animation:fadeUp .6s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(var(--i,0)*70ms)}
+/* ---- responsive layer: grid children may shrink, wide tables scroll inside their own box ---- */
+.grid>*,.cols>*{min-width:0}
+.tw{overflow-x:auto;-webkit-overflow-scrolling:touch;max-width:100%;overscroll-behavior-x:contain}
+.tw>table{min-width:100%}
+header nav{display:flex;align-items:center;min-width:0}
+@media (max-width:1100px){.grid.four{grid-template-columns:1fr 1fr}}
+@media (max-width:900px){
+  .grid,.grid.two,.grid.three,.grid.four,.cols{grid-template-columns:1fr!important}
+  header{flex-wrap:wrap;gap:6px 14px;padding:10px 12px 0}
+  header nav{order:3;flex:1 0 100%;overflow-x:auto;scrollbar-width:none;white-space:nowrap;padding:4px 0 8px;
+    -webkit-mask-image:linear-gradient(90deg,#000 88%,transparent);mask-image:linear-gradient(90deg,#000 88%,transparent)}
+  header nav::-webkit-scrollbar{display:none}
+  header nav a{margin-right:18px;padding:6px 0}
+  header .who .email{display:none}
+  main{padding:14px 12px 28px}
+  h1{font-size:22px;line-height:1.2}
+  h1 .muted,h1 .small{display:block;margin-top:4px;font-size:12px;line-height:1.4}
+  .kpis{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+  .kpi{padding:10px 12px}.kpi .v{font-size:28px}
+  .panel{padding:12px}
+  h2{line-height:1.45}
+  th,td{padding:7px 6px}
+  .thumb:hover{transform:none}
+  .console{height:320px}
+  .pill{white-space:normal;overflow-wrap:anywhere;display:inline-block;max-width:100%}
+}
+@media (max-width:520px){
+  svg.donut{width:118px;height:118px}.donut-wrap{gap:12px}
+  .actions>div,.actions>input,.actions>select{flex:1 1 140px}
+}
+.help{display:inline-grid;place-items:center;width:15px;height:15px;margin-left:4px;border-radius:50%;border:1px solid var(--border);color:var(--muted);font:600 10px/1 var(--mono);text-decoration:none;cursor:help;position:relative;vertical-align:1px;text-transform:none;letter-spacing:0}
+.help:hover,.help:focus-visible{color:var(--accent2);border-color:var(--accent);outline:none}
+.help::after{content:attr(data-tip);display:none;position:absolute;left:50%;bottom:calc(100% + 8px);transform:translateX(-50%);width:max-content;max-width:min(320px,80vw);padding:8px 10px;border-radius:8px;background:#0b1220;border:1px solid var(--accent);color:var(--text);font:400 12px/1.45 var(--sans);text-align:left;white-space:normal;box-shadow:0 10px 30px rgba(0,0,0,.5);opacity:0;pointer-events:none;transition:opacity .15s;z-index:50}
+.help:hover::after,.help:focus-visible::after{display:block;opacity:1}
+.help[data-href]{cursor:pointer}
+@media (max-width:600px){.help::after{left:auto;right:-8px;transform:none}}
+.pill.cap{font-size:10px;color:var(--muted);border-color:var(--border);text-decoration:none;font-family:var(--mono);letter-spacing:.02em;vertical-align:2px}
+.pill.cap:hover{color:var(--accent2);border-color:var(--accent)}
+.intro{margin:4px 0 14px;max-width:980px;color:var(--muted);font-size:13px;line-height:1.55}
+.crumbs{display:flex;flex-wrap:wrap;align-items:center;gap:4px;font-size:12px;color:var(--muted);margin:0 0 8px;font-family:var(--mono)}
+.crumbs a{color:var(--accent2);text-decoration:none}.crumbs a:hover{text-decoration:underline}.crumbs .sep{opacity:.55;margin:0 4px}.crumbs .cur{color:var(--text)}
+.crumbs .side{margin-left:auto;display:flex;flex-wrap:wrap;gap:4px 12px}.crumbs .side a::before{content:"→ ";opacity:.6}
+.kpi.lnk{text-decoration:none;color:inherit;display:block}.kpi.lnk:hover{border-color:var(--accent)}
+@media (max-width:700px){.crumbs .side{margin-left:0;width:100%}}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<header>
+  <a class="logo" href="/ui/dashboard/">BrandWatch</a>
+  
+  <nav>
+    <a href="/ui/dashboard/" class="">Dashboard</a>
+    <a href="/ui/how-it-works/" class="active">How it works</a>
+    <a href="/ui/brands/" class="">Brands &amp; Scans</a>
+    <a href="/ui/findings/" class="">Findings</a>
+    <a href="/ui/candidates/" class="">Watchlist</a>
+    <a href="/ui/campaigns/" class="">Attack infrastructure</a>
+    <a href="/ui/takedowns/" class="">Takedowns</a>
+    <a href="/ui/activity/" class="">Activity</a>
+    <a href="/ui/settings/" class="">Settings</a>
+    <a href="/docs" target="_blank">API</a>
+  </nav>
+  <span class="who"><span class="email">admin · </span>admin · <a href="/ui/logout">logout</a></span>
+  
+</header>
+<main>
+
+
+
+
+<style>
+  /* ------------------------------------------------------------------ shell */
+  .sx{--ink:#E6EDF5;--line:#1E2A3D;--card:rgba(18,26,43,.92)}
+  .sx.js .rv{opacity:0}
+  .sx.js .ch.live .rv,.sx.js .on-view.live .rv{animation:rvIn .6s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(var(--t,0)*1ms)}
+  @keyframes rvIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+  .sx svg .rv{transform-box:fill-box;transform-origin:center}
+  .sx.js .ch.live svg g.rv{animation-name:popIn}
+  @keyframes popIn{from{opacity:0;transform:scale(.4)}to{opacity:1;transform:none}}
+  .sx.js .ch.live svg line.rv{animation-name:draw;animation-duration:.7s}
+  @keyframes draw{from{opacity:1;stroke-dashoffset:1}to{opacity:1;stroke-dashoffset:0}}
+  .sx svg line.rv{stroke-dasharray:1;stroke-dashoffset:0}
+  @media (prefers-reduced-motion:reduce){.sx.js .rv{opacity:1;transform:none}}
+
+  /* ------------------------------------------------------------------ hero */
+  .sx-hero{position:relative;padding:34px 0 26px;display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:34px;align-items:center}
+  .sx-hero h1{font-size:13px;letter-spacing:.2em;margin:0 0 14px;font-family:var(--mono);-webkit-text-fill-color:var(--accent2)}
+  .sx-hero h1 span{-webkit-text-fill-color:var(--muted);letter-spacing:.06em}
+  .sx-head{font:700 clamp(30px,4.4vw,54px)/1.04 var(--display);letter-spacing:.01em;margin:0}
+  .sx-head em{font-style:normal;color:var(--accent2)}
+  .sx-social{display:flex;gap:12px;align-items:flex-start;margin:16px 0 0;padding:12px 14px;border:1px solid rgba(53,199,242,.45);border-radius:14px;background:linear-gradient(90deg,rgba(53,199,242,.10),rgba(53,199,242,.02))}
+  .sx-social .ic{flex:0 0 auto;display:flex;gap:4px}
+  .sx-social .ic span{width:26px;height:26px;border-radius:7px;display:grid;place-items:center;font:700 13px var(--sans);color:#fff}
+  .sx-social b.t{display:block;font-size:14.5px;color:var(--ink)}
+  .sx-social p b{color:var(--ink)}
+  .sx-social p{margin:2px 0 0;font-size:13px;line-height:1.5;color:#c3cdd9}
+  .sx-sub{font-size:16px;line-height:1.55;color:#c3cdd9;margin:16px 0 22px;max-width:620px}
+  .sx-cta{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+  .btn-play{display:inline-flex;align-items:center;gap:12px;padding:14px 22px;border-radius:999px;border:1px solid var(--accent);background:rgba(53,199,242,.12);
+    color:var(--accent2);font:700 15px var(--sans);letter-spacing:.02em;cursor:pointer;transition:transform .2s,background .2s}
+  .btn-play:hover{transform:translateY(-1px);background:rgba(53,199,242,.2)}
+  .btn-play .tri{width:30px;height:30px;border-radius:50%;background:var(--accent);display:grid;place-items:center;color:#06101c;font-size:13px;box-shadow:0 0 0 0 rgba(53,199,242,.55);animation:ping 2.2s infinite}
+  @keyframes ping{0%{box-shadow:0 0 0 0 rgba(53,199,242,.5)}70%{box-shadow:0 0 0 14px rgba(53,199,242,0)}100%{box-shadow:0 0 0 0 rgba(53,199,242,0)}}
+  .sx-cta .alt{font-size:13px;color:var(--muted)}
+  .illus{display:inline-block;font:600 10px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--high);border:1px solid rgba(255,159,28,.5);border-radius:999px;padding:2px 8px;margin-left:6px;vertical-align:middle}
+  /* hero map of the six chapters */
+  .sx-map{position:relative;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+  .sx-map a{position:relative;display:block;padding:14px 14px 12px;border:1px solid var(--line);border-radius:14px;background:var(--card);color:var(--ink);text-decoration:none;transition:border-color .2s,transform .2s}
+  .sx-map a:hover{border-color:var(--accent);transform:translateY(-2px)}
+  .sx-map .ic{font-size:22px;line-height:1;color:var(--accent2)}
+  .sx-map .k{display:block;font:600 10px var(--mono);letter-spacing:.14em;color:var(--muted);margin-top:10px}
+  .sx-map b{display:block;font:700 17px var(--display);letter-spacing:.03em;margin-top:2px}
+  .sx-map a::after{content:"";position:absolute;left:14px;right:14px;bottom:0;height:2px;border-radius:2px;background:var(--accent);transform:scaleX(0);transform-origin:left;animation:mapfill 6s calc(var(--n)*1s) infinite}
+  @keyframes mapfill{0%{transform:scaleX(0);opacity:1}14%{transform:scaleX(1);opacity:1}30%,100%{transform:scaleX(1);opacity:0}}
+
+  /* ------------------------------------------------------------------ chapter rail */
+  .sx-rail{position:sticky;top:64px;z-index:15;display:flex;align-items:center;gap:10px;margin:0 -20px;padding:9px 20px;border-bottom:1px solid var(--line);
+    background:rgba(8,11,20,.88);backdrop-filter:blur(8px)}
+  .sx-rail .segs{flex:1;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px;min-width:0}
+  .sx-rail .seg{position:relative;display:block;padding:0 0 7px;color:var(--muted);text-decoration:none;font:600 11px var(--mono);letter-spacing:.06em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .sx-rail .seg i{position:absolute;left:0;right:0;bottom:0;height:3px;border-radius:3px;background:var(--line);overflow:hidden}
+  .sx-rail .seg i::after{content:"";position:absolute;inset:0;background:var(--accent);transform:scaleX(var(--f,0));transform-origin:left;transition:transform .25s linear}
+  .sx-rail .seg.on{color:var(--ink)}
+  .sx-rail .ctl{display:flex;align-items:center;gap:8px;flex:0 0 auto}
+  .sx-rail button{padding:6px 12px;border-radius:999px;font:600 12px var(--sans)}
+  .sx-rail .left{font:600 11px var(--mono);color:var(--muted);min-width:64px;text-align:right}
+
+  /* ------------------------------------------------------------------ chapters */
+  .ch{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:40px;align-items:center;min-height:calc(100vh - 150px);padding:56px 0;border-bottom:1px solid rgba(30,42,61,.6);scroll-margin-top:110px}
+  .ch-text .eb{font:600 11px var(--mono);letter-spacing:.16em;color:var(--accent2)}
+  .ch-text .eb span{color:var(--muted)}
+  .ch-text h2{font:700 clamp(26px,3vw,38px)/1.08 var(--display);letter-spacing:.01em;text-transform:none;color:var(--ink);margin:10px 0 14px}
+  .ch-text h2::before{display:none}
+  .ch-text p{font-size:15.5px;line-height:1.62;color:#c3cdd9;margin:0 0 12px}
+  .ch-text .why{border-left:2px solid var(--accent);padding:2px 0 2px 12px;color:var(--ink);font-size:14.5px}
+  .ch-text .links{display:flex;flex-wrap:wrap;gap:14px;margin-top:16px;font-size:13px}
+  .stage{position:relative;border:1px solid var(--line);border-radius:18px;padding:42px 20px 20px;background:linear-gradient(180deg,rgba(18,26,43,.75),rgba(10,15,26,.75));min-height:380px}
+  .stage .replay{position:absolute;right:12px;top:10px;z-index:3;font:600 11px var(--mono);color:var(--muted);background:transparent;border:1px solid var(--line);border-radius:999px;padding:3px 9px;cursor:pointer}
+  .stage .replay:hover{color:var(--ink);border-color:var(--accent)}
+  .lbl{font:600 10px var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+  .stamp{display:inline-flex;gap:8px;align-items:center;margin-top:14px;padding:8px 14px;border-radius:10px;border:1px solid var(--accent);background:rgba(53,199,242,.08);font-size:13.5px}
+  .stamp.bad{border-color:rgba(255,77,77,.6);background:rgba(255,77,77,.08);color:#ffd2d2}
+
+  /* chapter 1 · learn */
+  /* the whole screen of the site, never a cropped strip: the frame takes the picture's own 16:10 shape */
+  .browser{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#05080f;max-width:560px;margin:0 auto}
+  .browser .bar{display:flex;align-items:center;gap:6px;padding:7px 10px;border-bottom:1px solid var(--line);background:#0b1220}
+  .browser .bar i{width:9px;height:9px;border-radius:50%;background:#2a3850}
+  .browser .bar .url{margin-left:10px;flex:1;font:12px var(--mono);color:#c3cdd9;background:#121a2b;border-radius:6px;padding:3px 10px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+  .browser .vp{position:relative;aspect-ratio:16/10;overflow:hidden}
+  .browser .vp img{width:100%;height:100%;object-fit:contain;display:block;filter:saturate(.85)}
+  .browser .vp .mock{position:absolute;inset:0;padding:18px;display:grid;gap:10px;align-content:start}
+  .browser .vp .mock span{display:block;height:12px;border-radius:4px;background:#1a2438}
+  .scan{position:absolute;left:0;right:0;top:-30%;height:30%;background:linear-gradient(180deg,transparent,rgba(53,199,242,.28),transparent);pointer-events:none;opacity:0}
+  .sx.js .ch.live .scan{animation:scanY 2.6s .3s ease-in-out both}
+  @keyframes scanY{0%{top:-30%;opacity:1}100%{top:100%;opacity:1}}
+  .fp{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:12px}
+  .fp .c{border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--panel)}
+  .fp .c .v{margin-top:6px;font-size:13px}
+  .fp .fav{width:22px;height:22px;border-radius:5px;vertical-align:middle;margin-right:8px;image-rendering:pixelated;background:#fff}
+  .sw{display:inline-block;width:22px;height:22px;border-radius:6px;margin-right:4px;vertical-align:middle;box-shadow:inset 0 0 0 1px rgba(255,255,255,.12)}
+  .chip{display:inline-block;font:12px var(--mono);border:1px solid var(--line);border-radius:999px;padding:2px 9px;margin:3px 4px 0 0;background:var(--panel2);color:var(--ink)}
+  .fp .wide{grid-column:1/-1}
+
+  /* chapter 2 · find */
+  .streams{display:flex;flex-wrap:wrap;gap:8px}
+  .stream{display:flex;align-items:center;gap:8px;padding:6px 12px;border:1px solid var(--line);border-radius:999px;background:var(--panel);font-size:12.5px}
+  .stream b{font:600 12px var(--mono);color:var(--accent2)}
+  .counter{display:flex;align-items:baseline;gap:12px;margin:16px 0 10px}
+  .counter b{font:700 48px/1 var(--display);color:var(--ink)}
+  .counter span{color:var(--muted);font-size:14px}
+  .found{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:minmax(0,1fr);gap:6px}  /* implicit auto columns grow to nowrap content */
+  .found li{display:flex;align-items:center;gap:10px;padding:8px 12px;border:1px solid var(--line);border-radius:10px;background:var(--panel)}
+  .found .h{font:13px var(--mono);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .found .src{font-size:11.5px;color:var(--muted);white-space:nowrap;min-width:0;overflow:hidden;text-overflow:ellipsis;flex-shrink:1}
+  .found .w{font:600 10px var(--mono);letter-spacing:.06em;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:2px 8px;white-space:nowrap}
+
+  /* chapter 3 · visit */
+  .site-h{display:flex;align-items:center;gap:10px;font:13px var(--mono);margin-bottom:12px}
+  .views{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+  .view{border:1px solid var(--line);border-radius:12px;background:var(--panel);padding:10px;min-width:0}
+  .view .who{display:flex;align-items:center;gap:8px;font-size:12.5px;font-weight:600}
+  .view .who .ico{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;background:var(--panel2);border:1px solid var(--line);font-size:13px}
+  .view .ip{font:11px var(--mono);color:var(--muted);margin:2px 0 8px 34px}
+  .loadbar{height:3px;border-radius:3px;background:var(--line);overflow:hidden;margin-bottom:8px}
+  .loadbar i{display:block;height:100%;width:0;background:var(--accent)}
+  .sx.js .ch.live .loadbar i{animation:load 1s ease-out both;animation-delay:calc(var(--t,0)*1ms)}
+  .sx:not(.js) .loadbar i{width:100%}
+  @keyframes load{to{width:100%}}
+  .view .shot{position:relative;aspect-ratio:16/10;border-radius:8px;overflow:hidden;background:#05080f;border:1px solid var(--line)}
+  .view .shot img{width:100%;height:100%;object-fit:contain;display:block}
+  .view .shot .blank{position:absolute;inset:0;display:grid;place-items:center;color:#5a6678;font-size:12px;text-align:center;padding:14px}
+  .view .saw{margin-top:8px;font-size:13px}
+  .view.victim{border-color:rgba(255,77,77,.5)}
+  .sim{display:flex;align-items:center;gap:14px;margin-top:12px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--panel)}
+  .sim img{width:120px;border-radius:6px;border:1px solid var(--line)}
+  .sim .meter{flex:1;height:8px;border-radius:8px;background:var(--line);overflow:hidden}
+  .sim .meter i{display:block;height:100%;width:0;background:var(--crit);transition:width 1.4s cubic-bezier(.2,.8,.2,1)}
+
+  /* chapter 4 · score */
+  .score{display:grid;grid-template-columns:auto minmax(0,1fr);gap:22px;align-items:start}
+  .bigring{--p:0;--c:var(--crit);width:150px;height:150px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(var(--c) calc(var(--p)*1%),#1E2A3D 0);position:relative}
+  .bigring::after{content:"";position:absolute;inset:12px;border-radius:50%;background:#0b1220}
+  .bigring div{position:relative;z-index:1;text-align:center}
+  .bigring b{display:block;font:700 46px/1 var(--display)}
+  .bigring span{font:600 10px var(--mono);letter-spacing:.12em;color:var(--muted)}
+  .sigs{display:grid;grid-template-columns:minmax(0,1fr);gap:6px}
+  .sig{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:10px;align-items:center;padding:7px 10px;border:1px solid var(--line);border-radius:9px;background:var(--panel)}
+  .sig .g{font:10px var(--mono);color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:1px 7px;white-space:nowrap}
+  .sig b{font:600 13px var(--mono);color:var(--accent2);min-width:34px;text-align:right}
+  .scale{position:relative;height:10px;border-radius:10px;margin:26px 0 6px;background:linear-gradient(90deg,#1E2A3D 0 var(--m),rgba(245,197,24,.45) var(--m) var(--h),rgba(255,159,28,.55) var(--h) var(--c2),rgba(255,77,77,.7) var(--c2) 100%)}
+  .scale .tick{position:absolute;top:14px;transform:translateX(-50%);font:10px var(--mono);color:var(--muted);white-space:nowrap}
+  .scale .needle{position:absolute;top:-8px;left:0;width:3px;height:26px;border-radius:3px;background:var(--ink);box-shadow:0 0 10px rgba(255,255,255,.5);transition:left 1.6s cubic-bezier(.2,.8,.2,1)}
+  .conf{display:flex;flex-wrap:wrap;gap:8px 18px;margin-top:22px;font-size:13px;color:#c3cdd9}
+  .conf b{color:var(--ink)}
+  .summary{margin:14px 0 0;font-size:14.5px;line-height:1.6;color:var(--ink);min-height:3.2em}
+
+  /* chapter 5 · map */
+  .decide{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--panel);margin-bottom:12px}
+  .decide .h{font:13px var(--mono);flex:1;min-width:0}
+  .cbtn{position:relative;display:inline-grid;font:600 13px var(--sans)}
+  .cbtn > span{grid-area:1/1;padding:8px 14px;border-radius:8px;white-space:nowrap}
+  .cbtn .a{border:1px solid var(--low);color:var(--low)}
+  .cbtn .b{border:1px solid var(--low);background:rgba(46,204,113,.15);color:var(--low)}
+  .sx.js .ch.live .cbtn .a{animation:fadeOut .3s both;animation-delay:calc(var(--t,0)*1ms)}
+  @keyframes fadeOut{to{opacity:0}}
+  .cursor{position:absolute;right:-6px;bottom:-14px;font-size:20px;filter:drop-shadow(0 2px 4px rgba(0,0,0,.6));opacity:0}
+  .sx.js .ch.live .cursor{animation:cur 1.4s both;animation-delay:calc(var(--t,0)*1ms)}
+  @keyframes cur{0%{opacity:0;transform:translate(60px,40px)}40%{opacity:1;transform:none}55%{transform:scale(.8)}70%{transform:none;opacity:1}100%{opacity:0}}
+  .graph{width:100%;height:auto;display:block}
+  .graph line{stroke:#2c3d57;stroke-width:1.4}
+  .graph line.x{stroke-dasharray:3 4;stroke:#3a475b}
+  .graph circle{fill:#0b1220;stroke:var(--accent);stroke-width:1.6}
+  .graph .t-domain circle{stroke:#c3cdd9}
+  .graph .crit circle{stroke:var(--crit);fill:rgba(255,77,77,.14)}
+  .graph .seed circle{stroke-width:3}
+  .graph .noise circle{stroke:#4a5568;stroke-dasharray:3 3;fill:transparent}
+  .graph text{font:9.5px var(--mono);fill:#c3cdd9;text-anchor:middle}
+  .graph .noise text{fill:#5a6678}
+  .graph .ty{font-size:8px;fill:#8A97A8;letter-spacing:.06em}
+  .graph .pulse{fill:none;stroke:var(--crit);opacity:0}
+  .sx.js .ch.live .graph .pulse{animation:gpulse 2.4s 1.8s infinite}
+  @keyframes gpulse{0%{opacity:.8;r:14}100%{opacity:0;r:34}}
+  .gstats{display:flex;flex-wrap:wrap;gap:8px 18px;font-size:13px;color:#c3cdd9;margin-top:6px}
+  .gstats b{color:var(--ink)}
+  .noise-note{margin-top:10px;font-size:12.5px;color:var(--muted)}
+  .noise-note b{color:#c3cdd9}
+
+  /* chapter 6 · take down */
+  .mail{border:1px solid var(--line);border-radius:12px;background:#0b1220;overflow:hidden}
+  .mail .mh{padding:10px 14px;border-bottom:1px solid var(--line);font-size:12.5px;display:grid;gap:3px}
+  .mail .mh span{color:var(--muted);display:inline-block;width:58px}
+  .mail .mb{padding:12px 14px;font:12.5px/1.6 var(--mono);color:#c3cdd9;min-height:118px;white-space:pre-wrap;word-break:break-word}
+  .chans{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:12px}
+  .chan{border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--panel);min-width:0}
+  .chan .lbl{display:block}
+  .chan b{display:block;font-size:13px;margin-top:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .chan .to{font:11px var(--mono);color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .portals{display:flex;flex-wrap:wrap;gap:5px;margin-top:12px}
+  .portals span{font-size:11px;border:1px solid var(--line);border-radius:6px;padding:2px 7px;color:var(--muted);background:var(--panel)}
+  .sx.js .ch.live .portals span{animation:lit .5s both;animation-delay:calc(var(--t,0)*1ms)}
+  @keyframes lit{0%{opacity:0}60%{opacity:1;border-color:var(--accent);color:var(--ink)}100%{opacity:1;border-color:rgba(53,199,242,.4);color:#c3cdd9}}
+  .human{display:flex;gap:12px;align-items:center;margin-top:14px;padding:12px 14px;border-radius:12px;border:1px solid rgba(46,204,113,.45);background:rgba(46,204,113,.06);font-size:13.5px}
+  .human .ico{font-size:22px}
+
+  /* ------------------------------------------------------------------ end, facts, deeper */
+  .sx-end{text-align:center;padding:64px 0 40px}
+  .sx-end .flow{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;font:700 clamp(18px,2.4vw,28px) var(--display);letter-spacing:.06em;margin:0 0 14px}
+  .sx-end .flow span{color:var(--muted)}
+  .sx-end .flow b{color:var(--ink)}
+  .sx-end p{color:#c3cdd9;font-size:15px;margin:0 auto 20px;max-width:640px;line-height:1.6}
+  .sx-end .sx-cta{justify-content:center}
+  .facts{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(170px,100%),1fr));gap:10px}
+  .deeper h2.big{font:700 26px var(--display);letter-spacing:.02em;text-transform:none;color:var(--ink);margin:46px 0 6px}
+  .deeper h2.big::before{display:none}
+  details.fold{border:1px solid var(--line);border-radius:14px;background:var(--card);margin-top:12px}
+  details.fold > summary{list-style:none;cursor:pointer;padding:16px 18px;display:flex;align-items:center;gap:14px}
+  details.fold > summary::-webkit-details-marker{display:none}
+  details.fold > summary::before{content:"+";width:26px;height:26px;flex:0 0 26px;border-radius:50%;border:1px solid var(--line);display:grid;place-items:center;font:600 15px var(--mono);color:var(--accent2);transition:transform .25s}
+  details.fold[open] > summary::before{content:"−"}
+  details.fold > summary b{font:700 18px var(--display);letter-spacing:.03em}
+  details.fold > summary span{color:var(--muted);font-size:13px}
+  details.fold > .in{padding:0 18px 18px}
+  .hiw-steps{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(230px,100%),1fr));gap:10px}
+  .hiw-step{border:1px solid var(--border);border-radius:12px;padding:12px 14px;background:linear-gradient(170deg,rgba(18,26,43,.96),rgba(10,15,26,.96));position:relative;scroll-margin-top:120px}
+  .hiw-step:target{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+  .hiw-step .n{font:600 11px var(--mono);letter-spacing:.12em;color:var(--accent2);text-transform:uppercase}
+  .hiw-step b{display:block;font-family:var(--display);font-size:19px;letter-spacing:.03em;margin:4px 0}
+  .hiw-step p{margin:0 0 8px;font-size:13px;line-height:1.5;color:var(--muted)}
+  .hiw-step a.see{font-size:12px}
+  .tour{counter-reset:stop;list-style:none;padding:0;margin:0;display:grid;gap:10px}
+  .tour li{counter-increment:stop;border:1px solid var(--border);border-radius:12px;padding:12px 14px 12px 54px;position:relative;background:var(--panel2)}
+  .tour li::before{content:counter(stop);position:absolute;left:14px;top:12px;width:28px;height:28px;border-radius:50%;border:2px solid var(--accent);color:var(--accent2);display:grid;place-items:center;font:600 13px var(--mono)}
+  .tour .where{font-weight:600}.tour .say{margin:6px 0 0;font-style:italic}.tour .q{margin:6px 0 0;font-size:12px;color:var(--muted)}
+  .uth{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(320px,100%),1fr));gap:10px}
+  .uth .card{border:1px solid var(--border);border-radius:12px;padding:12px 14px;background:var(--panel2);scroll-margin-top:120px}
+  .uth .card:target,.gl dt:target{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+  .uth h3{margin:0 0 6px;font:600 12px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--accent2)}
+  .uth p{margin:0 0 6px;font-size:13px;line-height:1.5}.uth .mod{font:11px var(--mono);color:var(--muted)}
+  .gl{display:grid;grid-template-columns:minmax(150px,220px) 1fr;gap:8px 16px;margin:0}
+  .gl dt{font-weight:600;scroll-margin-top:120px;border-radius:6px;padding:2px 4px}.gl dd{margin:0;color:var(--muted);font-size:13px;line-height:1.5}
+  /* "More info": hover (or tap) a card's button for the exact APIs, limits and code */
+  .hiw-foot{display:flex;align-items:center;justify-content:space-between;gap:8px}
+  .mi{position:relative;display:inline-block}
+  .mi-btn{font:600 11px var(--mono);letter-spacing:.06em;padding:3px 9px;border-radius:999px;color:var(--muted);background:transparent}
+  .mi:hover .mi-btn,.mi.open .mi-btn{color:var(--text);border-color:var(--accent)}
+  .deep{display:none;position:absolute;left:0;top:calc(100% + 8px);z-index:60;width:min(660px,calc(100vw - 32px));max-height:72vh;overflow:auto;
+    padding:14px 16px;border:1px solid var(--accent);border-radius:12px;background:#0b1220;box-shadow:0 18px 50px rgba(0,0,0,.6);text-align:left;cursor:auto}
+  .deep::before{content:"";position:absolute;left:0;right:0;top:-10px;height:10px}
+  .mi.r .deep{left:auto;right:0}
+  .mi:hover .deep,.mi.open .deep,.mi:focus-within .deep{display:block}
+  .deep h4{margin:0 0 2px;font:600 15px var(--sans)}.deep .sub{color:var(--muted);font-size:12px;margin-bottom:10px}
+  .deep h5{margin:12px 0 6px;font:600 10px var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+  .deep .api{border:1px solid var(--border);border-radius:8px;padding:8px 10px;margin:6px 0;background:var(--panel)}
+  .deep .api .nm{font-weight:600;font-size:13px}.deep .api .tg{font:10px var(--mono);color:var(--muted);border:1px solid var(--border);border-radius:999px;padding:1px 6px;margin-left:6px;white-space:nowrap}
+  .deep .api .ln{font-size:12px;color:var(--muted);margin-top:3px}.deep .api .ln code{font:11px var(--mono);color:#c9d3df;word-break:break-word}
+  .deep ul{margin:0;padding-left:16px}.deep li{font-size:12.5px;line-height:1.5;margin:2px 0}
+  .deep .two{display:grid;grid-template-columns:1fr 1fr;gap:4px 18px}
+  .deep .chain{font:11.5px var(--mono);color:#c9d3df;background:var(--panel);border:1px solid var(--border);border-radius:8px;padding:6px 9px;word-break:break-word}
+  .deep .mods span{display:inline-block;font:11px var(--mono);border:1px solid var(--border);border-radius:6px;padding:1px 6px;margin:2px 4px 2px 0;color:#c9d3df}
+
+  /* ------------------------------------------------------------------ phone */
+  @media (max-width:900px){
+    .sx-hero,.ch{grid-template-columns:minmax(0,1fr);gap:22px}
+    .ch{min-height:0;padding:40px 0}
+    .sx-map{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .sx-rail{margin:0 -12px;padding:8px 12px}
+    .sx-rail .segs{display:flex;overflow-x:auto;scrollbar-width:none;gap:10px}
+    .sx-rail .segs::-webkit-scrollbar{display:none}
+    .sx-rail .seg{flex:0 0 auto;overflow:visible}
+    .sx-rail .left{display:none}
+  }
+  @media (max-width:700px){
+    .stage{padding:40px 14px 14px;min-height:0}
+    .views,.chans,.fp{grid-template-columns:minmax(0,1fr)}
+    .score{grid-template-columns:minmax(0,1fr);justify-items:center}
+    .score .sigs,.score > div{width:100%}
+    .gl{grid-template-columns:1fr}.gl dd{margin-bottom:8px}
+    .deep{position:static;width:auto;max-width:100%;max-height:none;margin-top:8px;padding:12px}.deep .two{grid-template-columns:1fr}.deep::before{display:none}
+    .hiw-foot{flex-wrap:wrap}.mi.open{flex:1 0 100%;text-align:right}.mi:hover .deep{display:none}.mi.open .deep{display:block}
+    .deep .api .tg{white-space:normal;display:inline-block;margin:2px 4px 0 0}
+  }
+</style>
+
+
+
+
+
+
+<div class="sx" id="sx">
+
+
+<section class="sx-hero">
+  <div>
+    <h1>HOW IT WORKS <span>· the product in two minutes</span></h1>
+    <p class="sx-head">Someone copies ShopNova's website to steal passwords. <em>BrandWatch finds it, proves it and gets it taken down.</em></p>
+    <div class="sx-social" id="social">
+      <div class="ic" aria-hidden="true"><span style="background:#1877F2">f</span><span style="background:linear-gradient(45deg,#F58529,#DD2A7B,#8134AF)">◎</span></div>
+      <div><b class="t">Websites — and social media too.</b>
+        <p>It also searches <b>Facebook and Instagram</b> for impostors: pages and profiles that use the brand's name — an AI reads what they post and say — and ads that sell fakes of its products. Each fake account, ad and page gets a ready report to Meta.</p></div>
+    </div>
+    <p class="sx-sub">Six steps, shown on this workspace&#39;s real data: ShopNova, its look-alikes, a real cloaked kit and the attacker behind it. Press play and watch, or scroll at your own pace.</p>
+    <div class="sx-cta">
+      <button type="button" class="btn-play" id="play"><span class="tri">▶</span><span>Play the story <span class="muted" style="font-weight:500">· 1:22</span></span></button>
+      <a class="alt" href="#ch-learn" data-jump="0">or scroll ↓</a>
+      <a class="alt" href="#deeper">skip to the details</a>
+    </div>
+  </div>
+  <div class="sx-map" aria-label="The six steps">
+    <a href="#ch-learn" data-jump="0" style="--n:0"><span class="ic">◎</span><span class="k">STEP 1</span><b>Learn</b><span class="small muted">the real site</span></a><a href="#ch-find" data-jump="1" style="--n:1"><span class="ic">⌕</span><span class="k">STEP 2</span><b>Find</b><span class="small muted">the look-alikes</span></a><a href="#ch-visit" data-jump="2" style="--n:2"><span class="ic">⧉</span><span class="k">STEP 3</span><b>Visit</b><span class="small muted">like a victim</span></a><a href="#ch-score" data-jump="3" style="--n:3"><span class="ic">◔</span><span class="k">STEP 4</span><b>Score</b><span class="small muted">and explain</span></a><a href="#ch-map" data-jump="4" style="--n:4"><span class="ic">⟁</span><span class="k">STEP 5</span><b>Map</b><span class="small muted">the attacker</span></a><a href="#ch-takedown" data-jump="5" style="--n:5"><span class="ic">✉</span><span class="k">STEP 6</span><b>Take down</b><span class="small muted">the site</span></a>
+  </div>
+</section>
+
+
+<nav class="sx-rail" id="rail" aria-label="Chapters">
+  <div class="segs"><a class="seg" href="#ch-learn" data-jump="0">1 · Learn<i></i></a><a class="seg" href="#ch-find" data-jump="1">2 · Find<i></i></a><a class="seg" href="#ch-visit" data-jump="2">3 · Visit<i></i></a><a class="seg" href="#ch-score" data-jump="3">4 · Score<i></i></a><a class="seg" href="#ch-map" data-jump="4">5 · Map<i></i></a><a class="seg" href="#ch-takedown" data-jump="5">6 · Take down<i></i></a></div>
+  <div class="ctl"><span class="left" id="left"></span><button type="button" id="play2" aria-label="Play the story">▶ Play</button></div>
+</nav>
+
+
+<section class="ch" id="ch-learn" data-dur="12">
+  <div class="ch-text">
+    <div class="eb">STEP 1 <span>/ 6 · LEARN</span></div>
+    <h2>First, it learns what the real ShopNova looks like.</h2>
+    <p>BrandWatch opens <b>shopnova.com</b> once and keeps a fingerprint: the favicon's hash, a picture of the homepage, its colours, its login form and the words a phisher would copy.</p>
+    <p>An AI model reads the site and writes the Google searches an attacker would target.</p>
+    <p class="why">Every suspect is later compared against this fingerprint, not against a guess.</p>
+    <div class="links"><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/">see the brand page →</a><a href="#step-1" data-deep>how exactly? →</a></div>
+  </div>
+  <div class="stage">
+    <button type="button" class="replay">↻ replay</button>
+    <div class="browser rv">
+      <div class="bar"><i></i><i></i><i></i><span class="url">https://shopnova.com/</span></div>
+      <div class="vp">
+        <img src="/_r/4eee08c1c3ea76.png" alt="the real ShopNova homepage" loading="lazy">
+        
+        <div class="scan"></div>
+      </div>
+    </div>
+    <div class="fp">
+      <div class="c rv" style="--t:1300"><span class="lbl">Favicon fingerprint</span>
+        <div class="v"><img class="fav" src="/_r/898245abf65780.png" alt=""><span class="mono">mmh3 -2029202433</span></div></div>
+      <div class="c rv" style="--t:2000"><span class="lbl">Colours</span>
+        <div class="v"><span class="sw" style="background:#f5f4fb" title="#f5f4fb"></span><span class="sw" style="background:#412db1" title="#412db1"></span><span class="sw" style="background:#ffffff" title="#ffffff"></span><span class="sw" style="background:#a398c8" title="#a398c8"></span><span class="sw" style="background:#eae7f3" title="#eae7f3"></span><span class="sw" style="background:#fafafd" title="#fafafd"></span></div></div>
+      <div class="c rv" style="--t:2700"><span class="lbl">Login form</span>
+        <div class="v">email + password field</div></div>
+      <div class="c rv" style="--t:3400"><span class="lbl">Words a phisher copies</span>
+        <div class="v"><span class="chip">shopnova</span><span class="chip">shop</span><span class="chip">smarter</span><span class="chip">electronics</span><span class="chip">home</span><span class="chip">more</span></div></div>
+      <div class="c wide rv" style="--t:4200"><span class="lbl">AI · searches attackers target</span>
+        <div class="v"><span class="chip">“shopnova login”</span><span class="chip">“shopnova sign up”</span><span class="chip">“shopnova support”</span></div></div>
+    </div>
+    <div class="stamp rv" style="--t:5200">✓ Fingerprint v1 saved — the reference for every comparison</div>
+  </div>
+</section>
+
+
+<section class="ch" id="ch-find" data-dur="15">
+  <div class="ch-text">
+    <div class="eb">STEP 2 <span>/ 6 · FIND</span></div>
+    <h2>Then it hunts for look-alikes — before anyone reports them.</h2>
+    <p>Typos and look-alike letters on more than a thousand domain endings, checked in DNS. Brand-new HTTPS certificates the moment they are issued. Yesterday's newly registered domains. Google results.</p>
+    <p><b>And on social media:</b> Facebook pages and Instagram profiles under the brand's name — their history (new, renamed, run from abroad), their logo, their links and what they post, read by an AI — and the ads in each country you choose.</p>
+    <p>Nothing has to be on a blocklist first. The brand's own sites and big platforms are dropped before anything is fetched.</p>
+    <p class="why">Try it: type any domain in the box and see what the address alone gives away.</p>
+    <div class="links"><a href="/ui/candidates/">see the watchlist →</a><a href="/ui/jobs/9235913e-f1e4-420c-9f46-080472915c0e/">replay a real scan →</a><a href="#step-2" data-deep>how exactly? →</a></div>
+  </div>
+  <div class="stage">
+    <button type="button" class="replay">↻ replay</button>
+    <div class="streams">
+      
+      <span class="stream rv" style="--t:0">Certificate logs <b>58</b></span>
+      <span class="stream rv" style="--t:250">Analyst URL scan <b>38</b></span>
+      <span class="stream rv" style="--t:500">Look-alike names <b>29</b></span>
+      <span class="stream rv" style="--t:750">Facebook / Instagram ads <b>11</b></span>
+      <span class="stream rv" style="--t:1000">Google search <b>3</b></span>
+      <span class="stream rv" style="--t:1250">Facebook pages / Instagram profiles <b>3</b></span>
+    </div>
+    <div class="counter rv" style="--t:900"><b data-to="122" data-t="900">0</b><span>look-alike domains found for ShopNova</span></div>
+    <ul class="found">
+      
+      <li class="rv" style="--t:1500"><span class="h" title="shoqnova.com">shoqnova.com</span><span class="src">Google search</span>
+        <span class="badge sev-critical">critical</span></li>
+      <li class="rv" style="--t:1920"><span class="h" title="shopnowa.com">shopnowa.com</span><span class="src">Google search</span>
+        <span class="badge sev-critical">critical</span></li>
+      <li class="rv" style="--t:2340"><span class="h" title="shopn0va.com">shopn0va.com</span><span class="src">Google search</span>
+        <span class="badge sev-critical">critical</span></li>
+      <li class="rv" style="--t:2760"><span class="h" title="shopnova-verification.com">shopnova-verification.com</span><span class="src">Certificate logs</span>
+        <span class="badge sev-critical">critical</span></li>
+      <li class="rv" style="--t:3180"><span class="h" title="shopnova-refund.net">shopnova-refund.net</span><span class="src">Certificate logs</span>
+        <span class="badge sev-critical">critical</span></li>
+      <li class="rv" style="--t:3600"><span class="h" title="shospnova.com">shospnova.com</span><span class="src">Look-alike names</span>
+        <span class="w">watching</span></li>
+      <li class="rv" style="--t:4020"><span class="h" title="sholpnova.com">sholpnova.com</span><span class="src">Look-alike names</span>
+        <span class="w">watching</span></li>
+      <li class="rv" style="--t:4440"><span class="h" title="shapnova.com">shapnova.com</span><span class="src">Look-alike names</span>
+        <span class="w">watching</span></li>
+    </ul>
+  </div>
+</section>
+
+
+
+<section class="ch" id="ch-visit" data-dur="13">
+  <div class="ch-text">
+    <div class="eb">STEP 3 <span>/ 6 · VISIT</span></div>
+    <h2>It visits every site the way a victim would.</h2>
+    <p>Each suspect opens in a locked-down browser that can't be tricked into reaching internal systems. Everything it sees is kept as evidence that nobody can edit afterwards.</p>
+    <p>Many phishing kits <b>hide from security scanners</b>: they show a harmless page to datacenter IPs and the fake login only to real people. So BrandWatch also looks like a real person, from a home IP.</p>
+    <p class="why">The score uses what a victim sees, not what the kit chose to show a scanner.</p>
+    <div class="links"><a href="/ui/findings/1bcfbce5-b1c6-44d8-b534-f678beefe1d5/#looks">see this kit →</a><a href="#step-5" data-deep>how exactly? →</a></div>
+  </div>
+  <div class="stage">
+    <button type="button" class="replay">↻ replay</button>
+    <div class="site-h rv"><span class="badge sev-critical">suspect</span><span>shopnova-giftcard.com</span></div>
+    <div class="views">
+      <div class="view rv" style="--t:500">
+        <div class="who"><span class="ico">🤖</span>Security scanner</div><div class="ip">datacenter IP · bot user-agent</div>
+        <div class="loadbar"><i style="--t:700"></i></div>
+        <div class="shot"><img class="rv" style="--t:1700" src="/_r/1d6d77a6368d7a.png" alt="what a scanner sees" loading="lazy"></div>
+        <div class="saw rv" style="--t:2000">saw: <b>a harmless page</b></div>
+      </div>
+      <div class="view victim rv" style="--t:2400">
+        <div class="who"><span class="ico">👤</span>Real visitor</div><div class="ip">home IP · residential probe · normal browser</div>
+        <div class="loadbar"><i style="--t:2600"></i></div>
+        <div class="shot"><img class="rv" style="--t:3600" src="/_r/dacff850f9017d.png" alt="what a victim sees" loading="lazy"></div>
+        <div class="saw rv" style="--t:3900">saw: <b style="color:var(--crit)">a fake ShopNova login</b></div>
+      </div>
+    </div>
+    <div class="stamp bad rv" style="--t:4600">⚑ Cloaking caught: the page changes for scanners. That alone is evidence of bad intent.</div>
+    
+    <div class="sim rv" style="--t:5600"><img src="/_r/4eee08c1c3ea76.png" alt="the real ShopNova" loading="lazy">
+      <div style="flex:1"><div class="lbl">compared with the real ShopNova</div><div class="meter"><i data-w="100" data-t="5800"></i></div><div class="small" style="margin-top:4px"><b>100%</b> the same picture</div></div></div>
+    
+  </div>
+</section>
+
+
+
+
+
+
+<section class="ch" id="ch-score" data-dur="14">
+  <div class="ch-text">
+    <div class="eb">STEP 4 <span>/ 6 · SCORE</span></div>
+    <h2>It scores the site — and shows its work.</h2>
+    <p>50 signals in 7 groups, each worth fixed points: does the address use the brand, does the page look the same, does it ask for a password, how new is it, is it hiding.</p>
+    <p>Each group has a cap, so one trick can't dominate. The same evidence always gives the same score. AI gives a second opinion but never changes the number.</p>
+    <p class="why">No black box: every point traces back to a piece of evidence.</p>
+    <div class="links"><a href="/ui/findings/1bcfbce5-b1c6-44d8-b534-f678beefe1d5/#why">see every signal →</a><a href="#step-7" data-deep>how exactly? →</a></div>
+  </div>
+  <div class="stage">
+    <button type="button" class="replay">↻ replay</button>
+    <div class="score">
+      <div class="bigring rv" id="ring" style="--c:var(--crit)" data-score="87" data-t="400">
+        <div><b data-to="87" data-t="400" data-dur="4240">0</b><span>RISK / 100</span></div></div>
+      <div class="sigs">
+        <div class="sig rv" style="--t:500"><span>hides from datacenter IPs</span><span class="g">Evasion</span><b>+25</b></div><div class="sig rv" style="--t:1020"><span>identical favicon</span><span class="g">Visual</span><b>+22</b></div><div class="sig rv" style="--t:1540"><span>looks like the real site</span><span class="g">Visual</span><b>+18</b></div><div class="sig rv" style="--t:2060"><span>asks for a password</span><span class="g">Behaviour</span><b>+14</b></div><div class="sig rv" style="--t:2580"><span>brand name in the domain</span><span class="g">Identity</span><b>+12</b></div><div class="sig rv" style="--t:3100"><span>cloned login form</span><span class="g">Visual</span><b>+12</b></div><div class="sig rv" style="--t:3620"><span>registered &lt; 7 days ago</span><span class="g">Freshness</span><b>+10</b></div>
+        <div class="small muted rv" style="--t:4140">+ 6 more signal(s), capped per group</div>
+      </div>
+    </div>
+    
+    <div class="scale rv" style="--t:4440;--m:25%;--h:50%;--c2:75%">
+      <span class="needle" data-to-left="87" data-t="4740"></span>
+      <span class="tick" style="left:25%">medium 25</span><span class="tick" style="left:50%">high 50</span><span class="tick" style="left:75%">critical 75</span>
+    </div>
+    <div class="conf rv" style="--t:5340"><span>severity <b style="color:var(--crit)">CRITICAL</b></span><span>confidence <b>100%</b></span><span><b>5</b> independent groups agree</span></div>
+    <p class="summary" data-type data-t="5840">Registered 4 days ago. Puts the ShopNova name in its address, copies ShopNova&#39;s favicon, homepage and login form and asks for a password. It hides from security scanners: the real page only appears to a normal visitor (home IP / browser).</p>
+  </div>
+</section>
+
+
+<section class="ch" id="ch-map" data-dur="15">
+  <div class="ch-text">
+    <div class="eb">STEP 5 <span>/ 6 · DECIDE &amp; MAP</span></div>
+    <h2>A person decides. Then it maps the attacker.</h2>
+    <p>Nothing is confirmed automatically: an analyst reads the evidence and presses <b>Confirm</b>. The reason goes to an audit log nobody can edit.</p>
+    <p>From that one confirmed site, BrandWatch follows what the attacker reused — the same server, certificate, favicon, tracking code or owner — to the rest of the operation. Neighbours that only share a cheap server are dropped as noise, with the reason written down.</p>
+    <p class="why">One fake site leads to the whole operation, and every indicator exports to a SIEM as STIX 2.1.</p>
+    <div class="links"><a href="/ui/campaigns/88288233-1dad-4751-955d-c8fbc835dc10/">open the full map →</a><a href="#step-12" data-deep>how exactly? →</a></div>
+  </div>
+  <div class="stage">
+    <button type="button" class="replay">↻ replay</button>
+    
+    <div class="decide rv"><span class="badge sev-critical">critical</span><span class="h">xn--shopnov-8fg.com</span>
+      <span class="cbtn"><span class="a" style="--t:1300">Confirm phishing</span><span class="b rv" style="--t:1500">✓ Confirmed by an analyst</span><span class="cursor" style="--t:200">➤</span></span></div>
+    <svg class="graph" viewBox="0 0 520 340" role="img" aria-label="attack infrastructure graph">
+      
+      <line class="rv " pathLength="1" x1="260.0" y1="170.0" x2="260.0" y2="314.0" style="--t:2050"><title>shared server (passive DNS)</title></line>
+      
+      <g class="rv t-domain crit seed" style="--t:1900">
+        <title>xn--shopnov-8fg.com</title>
+        <circle class="pulse" cx="260.0" cy="170.0" r="14"></circle>
+        <circle cx="260.0" cy="170.0" r="11"></circle>
+        
+        
+        
+        <text x="260.0" y="194.0">xn--shopnov-8fg.com</text>
+        
+      </g>
+      <g class="rv t-ip" style="--t:2200">
+        <title>203.0.113.134</title>
+        
+        <circle cx="260.0" cy="314.0" r="7"></circle>
+        
+        
+        
+        <text x="260.0" y="334.0">203.0.113.134</text>
+        <text class="ty" x="260.0" y="302.0">SERVER</text>
+      </g>
+    </svg>
+    
+    <div class="gstats rv" style="--t:2500"><span><b>2</b> pieces of the attacker's setup</span><span><b>1</b> phishing sites linked</span><span><b>0</b> dropped as noise</span></div>
+    
+  </div>
+</section>
+
+
+
+<section class="ch" id="ch-takedown" data-dur="13">
+  <div class="ch-text">
+    <div class="eb">STEP 6 <span>/ 6 · TAKE DOWN</span></div>
+    <h2>Finally, it drafts the takedown.</h2>
+    <p>A request backed by the evidence, addressed to the people who can pull the site: the <b>registrar</b>, the <b>hosting provider</b> and the <b>CDN</b> — contacts found automatically from WHOIS and the server's owner.</p>
+    <p>Plus 26 browser, anti-virus and blocklist portals, each a direct link to its report form, so the site gets blocked for everyone while the takedown is pending.</p>
+    <p>When the impostor advertises on social media, every <b>Facebook / Instagram ad</b> and <b>page</b> behind it gets a link to Meta's report flow and a ready-to-paste report.</p>
+    <p class="why">BrandWatch never sends anything by itself: a person reviews and sends, and every step lands in the audit log.</p>
+    <div class="links"><a href="/ui/takedowns/71c2d1cb-03bb-40bb-9283-04feaa1f3a15/">open this takedown →</a><a href="/ui/takedowns/">all takedowns →</a><a href="#step-13" data-deep>how exactly? →</a></div>
+  </div>
+  <div class="stage">
+    <button type="button" class="replay">↻ replay</button>
+    <div class="mail rv">
+      <div class="mh"><div><span>To</span><b class="mono">abuse@mock-registrar.example</b></div>
+        <div><span>Subject</span>Phishing site impersonating ShopNova — takedown request BW-570AE512: shopn0va.com</div>
+        <div><span>Ref</span><span class="mono" style="width:auto;color:var(--ink)">BW-570AE512</span></div></div>
+      <div class="mb" data-type data-t="600">Hello Mock Registrar LLC abuse team,
+We are reporting a website that impersonates ShopNova and appears designed to harvest user credentials.
+Impersonating URL : https://shopn0va.com/
+Hostname          : shopn0va.com
+First observed    : 2026-10-12T06:41:46.604012</div>
+    </div>
+    <div class="chans">
+      
+      <div class="chan rv" style="--t:3300"><span class="lbl">Registrar</span><b title="Mock Registrar LLC">Mock Registrar LLC</b><div class="to">abuse@mock-registrar.example</div></div>
+      <div class="chan rv" style="--t:3650"><span class="lbl">Hosting</span><b title="BulletproofHost BV">BulletproofHost BV</b><div class="to">abuse@bulletproofhost.example</div></div>
+      <div class="chan rv" style="--t:4000"><span class="lbl">CDN</span><b title="CDN / DNS provider">CDN / DNS provider</b><div class="to">none found for this site</div></div>
+    </div>
+    <div class="portals" aria-label="report portals"><span style="--t:4500" title="browsers">Google Safe Browsing</span><span style="--t:4570" title="browsers">Microsoft SmartScreen</span><span style="--t:4640" title="antivirus">Kaspersky OpenTIP</span><span style="--t:4710" title="antivirus">ESET</span><span style="--t:4780" title="antivirus">Bitdefender</span><span style="--t:4850" title="antivirus">Trend Micro Site Safety</span><span style="--t:4920" title="antivirus">Avast / AVG</span><span style="--t:4990" title="antivirus">Sophos</span><span style="--t:5060" title="antivirus">Avira</span><span style="--t:5130" title="antivirus">Dr.Web</span><span style="--t:5200" title="filters">FortiGuard (Fortinet)</span><span style="--t:5270" title="filters">Symantec / Broadcom Site Review</span><span style="--t:5340" title="filters">Trellix / McAfee TrustedSource</span><span style="--t:5410" title="filters">Zscaler Site Review</span><span style="--t:5480" title="filters">Palo Alto Networks Test A Site</span><span style="--t:5550" title="filters">OpenText BrightCloud (Webroot)</span><span style="--t:5620" title="filters">Cisco Talos</span><span style="--t:5690" title="feeds">Netcraft</span><span style="--t:5760" title="feeds">APWG (Anti-Phishing Working Group)</span><span style="--t:5830" title="feeds">Spamhaus</span><span style="--t:5900" title="feeds">PhishTank</span><span style="--t:5970" title="feeds">URLhaus (abuse.ch)</span><span style="--t:6040" title="authorities">FBI IC3 (US)</span><span style="--t:6110" title="authorities">NCSC Report a suspicious website (UK)</span><span style="--t:6180" title="authorities">Scamwatch (Australia)</span><span style="--t:6250" title="authorities">Canadian Anti-Fraud Centre</span></div>
+    <div class="human rv" style="--t:6520"><span class="ico">👤</span><span>A person reviews and sends it. Draft → approved → sent → taken down, every step in the append-only audit log.</span></div>
+  </div>
+</section>
+
+
+<section class="sx-end on-view" id="the-end">
+  <div class="flow rv"><b>Find</b><span>→</span><b>Prove</b><span>→</span><b>Decide</b><span>→</span><b>Map</b><span>→</span><b>Take down</b></div>
+  <p class="rv" style="--t:300">That's BrandWatch. Every step is explainable, every piece of evidence is tamper-proof, and a person decides everything that matters.</p>
+  <div class="sx-cta rv" style="--t:600">
+    <a class="btn primary big" href="/ui/dashboard/">Open the dashboard →</a>
+    <a class="btn big" href="/ui/findings/1bcfbce5-b1c6-44d8-b534-f678beefe1d5/">Open the cloaked kit</a>
+    <button type="button" class="btn big ghost" id="again">↻ Watch again</button>
+  </div>
+</section>
+
+
+<div class="panel on-view" style="margin-top:14px" id="about">
+  <h2 style="margin-top:0">About this project <span class="muted">· numbers read from the code, not typed by hand</span></h2>
+  <div class="facts">
+    <div class="kpi cy rv"><div class="v" data-to="50">0</div><div class="l">signals in 7 groups</div></div>
+    <div class="kpi rv" style="--t:80"><div class="v" data-to="16">0</div><div class="l">combination rules · 5 FP penalties</div></div>
+    <div class="kpi vi rv" style="--t:160"><div class="v" data-to="26">0</div><div class="l">providers in 14 fallback chains</div></div>
+    <div class="kpi ok rv" style="--t:240"><div class="v" data-to="65">0</div><div class="l">recorded golden scenarios</div></div>
+    <div class="kpi rv" style="--t:320"><div class="v" data-to="10">0</div><div class="l">DB-enforced immutable tables</div></div>
+    <div class="kpi mg rv" style="--t:400"><div class="v" data-to="586">0</div><div class="l">automated tests in 61 files</div></div>
+    <div class="kpi rv" style="--t:480"><div class="v" data-to="89">0</div><div class="l">REST API operations (<a href="/docs" target="_blank">OpenAPI</a>)</div></div>
+    <div class="kpi rv" style="--t:560"><div class="v" data-to="13">0</div><div class="l">Alembic migrations · SQLite &amp; PostgreSQL</div></div>
+  </div>
+  <p class="small muted" style="margin-top:8px">Stack: FastAPI · SQLAlchemy 2 · Alembic · Jinja2 · Playwright (Chromium) · httpx · dnspython · cryptography. Scoring version <span class="mono">v7-f1ba3ebf</span>. CI: lint · test-sqlite · test-postgres.</p>
+</div>
+
+
+<section class="deeper" id="deeper">
+  <h2 class="big">Go deeper</h2>
+  <p class="muted" style="margin:0">For the questions after the demo: every step with its exact APIs and limits, the presenter's script, the engineering, and the glossary every “?” on the site links to.</p>
+
+  <details class="fold" id="all-steps">
+    <summary><b>All 13 steps</b><span>· the pipeline in order — “see it” opens a real example, “More info” shows the exact APIs, limits and code</span></summary>
+    <div class="in">
+      <div class="hiw-steps">
+        
+        
+        
+        <div class="hiw-step" id="step-1"><div class="n">1 · favicon, screenshot, login form, keywords</div><b>Learn the real site</b><p>Fingerprint the brand&#39;s real site: favicon hash, screenshot hash, colours, the login and sign-up pages, keywords — and an AI-written list of the Google searches a phisher would target.</p>
+          <div class="hiw-foot"><a class="see" href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/">see it →</a>
+<span class="mi"><button type="button" class="mi-btn" aria-expanded="false" aria-label="More info about Learn the real site">More info</button>
+  <div class="deep" role="note">
+    <h4>Learn the real site</h4><div class="sub">Under the hood · the exact calls, limits and code behind this step</div>
+    <h5>External calls</h5>
+    <div class="api"><div class="nm">Headless Chromium (Playwright, local)<span class="tg">no key</span><span class="tg">free · local</span></div>
+      <div class="ln"><code>the brand&#39;s primary domain + up to 3 linked login / sign-up pages</code></div><div class="ln">call · <code>page.goto (DOMContentLoaded), viewport screenshot, favicon in a second routed tab</code></div><div class="ln">returns · rendered DOM, PNG screenshot, favicon bytes, title, bot-challenge flag</div></div><div class="api"><div class="nm">OpenAI<span class="tg">OPENAI_API_KEY</span><span class="tg">paid per token · $0.15 / M in, $0.60 / M out</span></div>
+      <div class="ln"><code>api.openai.com</code></div><div class="ln">call · <code>POST /v1/chat/completions · gpt-4o-mini (OPENAI_MODEL) · temperature 0 · strict JSON schema brand_profile</code></div><div class="ln">returns · brand keywords, lure phrases, 8–15 Google queries an impersonator would target, vertical</div></div>
+    <h5>Fallback chain</h5><div class="chain">browser: playwright → httpx_datacenter (HTML + favicon, no screenshot) · llm: openai → built-in default queries</div>
+    <div class="two"><div><h5>Computed locally</h5><ul><li>favicon MurmurHash3 over the base64 bytes (the Shodan / Censys convention) + 64-bit pHash (numpy DCT)</li><li>screenshot pHash + dHash; 6-colour palette by PIL median-cut on a 64×40 thumbnail</li><li>login-form DOM signature: the token list of forms, inputs and buttons</li><li>keywords = brand token + &lt;title&gt; / &lt;h1&gt; / &lt;h2&gt; words + the validated AI keywords</li><li>official app-store listings and login / sign-up links found on the homepage</li></ul></div>
+      <div><h5>Stored</h5><ul><li>brand_fingerprints row, versioned (+1 per rebuild): hashes, screenshots, keywords, palette, AI profile</li><li>favicon and screenshots as content-addressed artifacts (SHA-256 file names) in the evidence store</li></ul></div></div>
+    <h5>Limits</h5><ul><li>≤ 3 auth pages followed · ≤ 20 keywords · ≤ 20 app links</li><li>AI input truncated to 4,000 chars; output validated: ≤ 20 keywords, ≤ 15 search queries</li><li>browser: navigation 15 s, settle 3 s, whole operation ≤ 45 s, viewport 1280×800</li><li>reused on the next scan unless &#39;include fingerprinting&#39; is ticked</li></ul>
+    <h5>Demo vs live</h5><div style="font-size:12.5px;line-height:1.5">Demo: recorded pages and synthetic screenshots; a heuristic AI stand-in writes keywords and queries. Live: real Chromium, plus OpenAI when a key is set.</div>
+    <h5>Code</h5><div class="mods"><span>detection/baseline.py</span><span>detection/images.py</span><span>detection/dom.py</span><span>detection/html.py</span><span>detection/ai.py</span><span>providers/impl/playwright_fetcher.py</span></div>
+  </div></span></div></div>
+        
+        <div class="hiw-step" id="step-2"><div class="n">2 · typos, new certificates, new domains, Google, Facebook / Instagram ads</div><b>Find look-alikes</b><p>Five streams look for look-alikes: typo and homoglyph permutations on 1,000+ TLDs (DNS-checked), new TLS certificates, yesterday&#39;s newly registered domains, Google results, and the urlscan archive.</p>
+          <div class="hiw-foot"><a class="see" href="/ui/jobs/9235913e-f1e4-420c-9f46-080472915c0e/">see it →</a>
+<span class="mi"><button type="button" class="mi-btn" aria-expanded="false" aria-label="More info about Find look-alikes">More info</button>
+  <div class="deep" role="note">
+    <h4>Find look-alikes</h4><div class="sub">Under the hood · the exact calls, limits and code behind this step</div>
+    <h5>External calls</h5>
+    <div class="api"><div class="nm">DNS<span class="tg">no key</span><span class="tg">free</span></div>
+      <div class="ln"><code>13 root servers → TLD → authoritative, or 1.1.1.1 / 9.9.9.9 / 8.8.8.8</code></div><div class="ln">call · <code>dnspython NS / A query per generated name</code></div><div class="ln">returns · registered · does not exist · no answer</div></div><div class="api"><div class="nm">crt.sh<span class="tg">no key</span><span class="tg">free · 5xx retried 4×</span></div>
+      <div class="ln"><code>crt.sh</code></div><div class="ln">call · <code>GET /?q=%&lt;brand&gt;%&amp;output=json</code></div><div class="ln">returns · certificates: SAN names, issuer, not-before, crt.sh id</div></div><div class="api"><div class="nm">CertSpotter (SSLMate)<span class="tg">no key</span><span class="tg">free · rate-limited</span></div>
+      <div class="ln"><code>api.certspotter.com</code></div><div class="ln">call · <code>GET /v1/issuances?domain=&lt;official&gt;&amp;include_subdomains=true&amp;match_wildcards=true</code></div><div class="ln">returns · issuances with DNS names, issuer, certificate SHA-256</div></div><div class="api"><div class="nm">WhoisDS newly registered domains<span class="tg">no key · NRD_FEED_PATH=whoisds</span><span class="tg">free</span></div>
+      <div class="ln"><code>www.whoisds.com</code></div><div class="ln">call · <code>GET the zip of yesterday&#39;s list (falls back 2–3 days)</code></div><div class="ln">returns · ~70k domains registered that day</div></div><div class="api"><div class="nm">SerpApi (Google)<span class="tg">SERPAPI_API_KEY</span><span class="tg">paid · $0.01 / query</span></div>
+      <div class="ln"><code>serpapi.com</code></div><div class="ln">call · <code>GET /search.json engine=google, q, gl, hl, num=20</code></div><div class="ln">returns · organic results + ads: URL, title, position</div></div><div class="api"><div class="nm">ScraperAPI (Google, the fallback of SerpApi)<span class="tg">SCRAPERAPI_API_KEY</span><span class="tg">paid · about 25 credits (~$0.012) / query</span></div>
+      <div class="ln"><code>api.scraperapi.com</code></div><div class="ln">call · <code>GET /structured/google/search api_key, query, country_code, tld, hl</code></div><div class="ln">returns · organic results: URL, title, snippet, position</div></div><div class="api"><div class="nm">urlscan.io search<span class="tg">optional API-Key header</span><span class="tg">free tier</span></div>
+      <div class="ln"><code>urlscan.io</code></div><div class="ln">call · <code>GET /api/v1/search/?q=page.url:&#34;&lt;key&gt;&#34; OR page.domain:*&lt;key&gt;*&amp;size=50</code></div><div class="ln">returns · archived scans: URL, title, IP, ASN</div></div><div class="api"><div class="nm">SearchApi.io · Meta Ad Library<span class="tg">SEARCHAPI_API_KEY (Bearer)</span><span class="tg">100 free · then ~$0.004 / request — only for brands whose products other shops resell</span></div>
+      <div class="ln"><code>www.searchapi.io</code></div><div class="ln">call · <code>GET /api/v1/search engine=meta_ad_library, q=&lt;ad keyword&gt;, search_type=keyword_exact_phrase, country, platforms=facebook,instagram</code></div><div class="ln">returns · Facebook / Instagram ads: page, text, landing URL, start date, Ad Library id</div></div>
+    <h5>Fallback chain</h5><div class="chain">cert: crtsh → certspotter → censys (connector not built) · search: serpapi → scraperapi → serper (connector not built) · DNS: own root walk ↔ public resolvers</div>
+    <div class="two"><div><h5>Computed locally</h5><ul><li>dnstwist as a library: permutations interleaved by technique (dictionary, TLD swap, typos … homoglyphs last)</li><li>combosquats: 44 generic words + the brand&#39;s own keywords (3–12 letters), at most 60</li><li>certificate / new-domain relevance: brand key in the host, or Levenshtein distance ≤ 2</li><li>brand key shorter than 4 letters (on.com → “on”): the brand name is used instead (“oncloud”) when it starts with the label; otherwise the key must stand as its own word, typo permutations are skipped and the urlscan substring search is off</li><li>Google results triaged before any visit: official · known platform · app listing · free hosting · brand + login words</li><li>merge: shops advertised on Meta first, dnstwist last, so the cap keeps the rarer hits</li><li>Meta ads: Facebook redirect links unwrapped, utm / fbclid stripped, one candidate per shop host, every ad kept for reporting</li><li>Meta ads relevance: Meta matches words, not meaning (“on cloud” also finds cloud-storage ads), so an ad counts only when it names the brand or a product line, or says the brand&#39;s words within 60 characters of what the brand sells (shoes, sizes, נעליים …); unclear ads are read by the AI in one batch per query, or skipped without an AI</li><li>shop checks only for pages about the brand: a shop that sells something else is skipped, so it can never become a “suspicious shop” for this brand</li><li>fake social accounts: Facebook pages by name (SearchApi meta_ad_library_page_search, every country) + site:instagram.com / site:facebook.com Google results → only accounts about the brand, never the brand&#39;s own (brand profile + links on its website) → page info (created, renamed, admin countries, about), Instagram profile (bio, links, posts), profile picture pHash vs the brand&#39;s favicon → 10 signals, 2 penalties (verified, says unofficial) and the AI&#39;s reading (≤ 20 points; “unrelated” is never a finding) → a separate social score; bio links off the brand&#39;s domains go to the website checks</li><li>suspicious shops: page facts (language, policies, contact, company number, prices incl. &#39;2 for …&#39;, invented &#39;regular price&#39; discounts), the brand&#39;s product lines on the page, an ad page named after the brand, the company in its country&#39;s registry (Israel data.gov.il, UK Companies House, EU VIES, GLEIF), the shop on Google, reviews, an advisory AI opinion → a separate shop score (shop-v2: six capped groups — the seller, the offer, the brand, contact, reputation, freshness — so signals with one cause count once; a registered company with the shop&#39;s own name and an old domain take points off; a company number that belongs to another business is a warning, not a reassurance)</li><li>a conclusion, not just a score: BrandWatch reads “likely counterfeit seller” only from evidence about the goods (a price at half the official one or less, reviews that say fakes) and about the seller; otherwise “suspicious shop”; “confirmed counterfeit” only from an analyst, with the proof written down</li><li>price check: only prices of the brand&#39;s own items are compared (the product named next to the price, or a multi-buy deal on a page about the brand) — never the shop&#39;s other goods; a sale price keeps the product of the regular price before it (“ShopNova Runner ₪799 ₪349”)</li><li>AI Google queries follow the business: sale / outlet / discount for products, login / wallet / deposit only for crypto, banking and betting brands</li></ul></div>
+      <div><h5>Stored</h5><ul><li>scan_stages &#39;discovery&#39; row (hits, API calls) and one live event per stream</li><li>trace: every generated name with its DNS answer, every Google result with its verdict</li><li>the new-domain download, cached once a day</li></ul></div></div>
+    <h5>Limits</h5><ul><li>streams per track: Light dnstwist + CT · Standard + urlscan · Deep all five</li><li>TLD sets: 12 / 35 / 1,284 · names DNS-checked: 1,000 / 3,000 / 20,000 · ≤ 250 homoglyphs per domain</li><li>DNS: 40 concurrent, batches of 200; &gt; 80 % no answer in the first batch stops the stream with an alert</li><li>≤ 10 search queries × each country · SerpApi timeout 45 s</li><li>Meta ads: per brand — ads per search (30 / 60 / 100 / 200, ~30 a page, one request each), searches per scan (default 6, up to 20) and shops checked in full (default 15, up to 60), set in the brand profile with the cost shown</li><li>social accounts: ≤ 2 page searches + 2 Google searches per scan; full look (page info + Instagram profile + AI) for ≤ 8 accounts; profile pictures fetched only from Meta&#39;s image hosts</li><li>hits capped at min(track 150 / 500 / 1,500, workspace max sites per scan)</li></ul>
+    <h5>Demo vs live</h5><div style="font-size:12.5px;line-height:1.5">Demo: no DNS check (every permutation becomes a candidate) and CT, search and urlscan answer from recordings. Live: real DNS, crt.sh, CertSpotter, whoisds, SerpApi, urlscan.</div>
+    <h5>Code</h5><div class="mods"><span>detection/sources.py</span><span>detection/discovery.py</span><span>detection/dnslookup.py</span><span>detection/runner.py</span><span>providers/impl/clients.py</span><span>providers/impl/commerce.py</span><span>detection/merchant.py</span><span>detection/commerce_registry.py</span></div>
+  </div></span></div></div>
+        
+        <div class="hiw-step" id="step-3"><div class="n">3 · merge, drop official &amp; known platforms</div><b>Clean the list</b><p>One candidate per URL with every stream that found it; official domains, whitelisted partners and big platforms (YouTube, app stores) are dropped before anything is fetched.</p>
+          <div class="hiw-foot"><a class="see" href="/ui/jobs/9235913e-f1e4-420c-9f46-080472915c0e/">see it →</a>
+<span class="mi"><button type="button" class="mi-btn" aria-expanded="false" aria-label="More info about Clean the list">More info</button>
+  <div class="deep" role="note">
+    <h4>Clean the list</h4><div class="sub">Under the hood · the exact calls, limits and code behind this step</div>
+    <h5>External calls · none</h5>
+    
+    <h5>How it runs</h5><div class="chain">no network calls: pure normalisation plus one database upsert per URL</div>
+    <div class="two"><div><h5>Computed locally</h5><ul><li>normalise: https by default, IDNA → punycode, registrable domain via a bundled public-suffix snapshot</li><li>whitelist (fail-open): official + partner domains and their registrable roots; on shared hosting only the exact site</li><li>known platforms (YouTube, social networks, wikis …) skipped; one visit per host per scan except shared hosting and app stores</li><li>app listings compared by canonical listing URL (Google Play keeps ?id=); the brand&#39;s own listings are skipped</li><li>rows created before a domain was whitelisted are dismissed and their open findings closed (audited)</li></ul></div>
+      <div><h5>Stored</h5><ul><li>candidates, unique on (brand, canonical URL); a known one only gets last_seen bumped</li><li>candidate_sources: one row per stream that found it (SAVEPOINT guard against concurrent workers)</li></ul></div></div>
+    <h5>Limits</h5><ul><li>34 known platforms · 33 shared-hosting suffixes · 29 app stores and APK mirrors</li><li>visit cap = min(requested or track maximum, workspace max sites per scan); the rest waits for the next scan</li><li>dismissed candidates are not revisited</li></ul>
+    <h5>Demo vs live</h5><div style="font-size:12.5px;line-height:1.5">Same logic. In demo more names reach this step because dnstwist is not DNS-filtered.</div>
+    <h5>Code</h5><div class="mods"><span>detection/normalize.py</span><span>detection/protect.py</span><span>detection/runner.py</span><span>detection/sources.py</span></div>
+  </div></span></div></div>
+        
+        <div class="hiw-step" id="step-4"><div class="n">4 · DNS, WHOIS, screenshot, HTML</div><b>Visit in a sandbox</b><p>Each site is visited in a sandboxed browser behind an SSRF guard: DNS, WHOIS / RDAP, TLS, screenshot, HTML, favicon and reputation feeds — all stored as evidence.</p>
+          <div class="hiw-foot"><a class="see" href="/ui/findings/d3cddf21-a088-4189-9f17-2cf8dba61ab0/">see it →</a>
+<span class="mi"><button type="button" class="mi-btn" aria-expanded="false" aria-label="More info about Visit in a sandbox">More info</button>
+  <div class="deep" role="note">
+    <h4>Visit in a sandbox</h4><div class="sub">Under the hood · the exact calls, limits and code behind this step</div>
+    <h5>External calls</h5>
+    <div class="api"><div class="nm">DNS<span class="tg">no key</span><span class="tg">free</span></div>
+      <div class="ln"><code>own root walk, or 1.1.1.1 / 9.9.9.9 / 8.8.8.8</code></div><div class="ln">call · <code>A query; without an A record, an NS check &#39;is it registered?&#39;</code></div><div class="ln">returns · IPv4 list · parked · does not exist</div></div><div class="api"><div class="nm">Headless Chromium (Playwright)<span class="tg">no key</span><span class="tg">free · local</span></div>
+      <div class="ln"><code>the candidate URL</code></div><div class="ln">call · <code>fresh browser per fetch: goto, settle 3 s, screenshot, favicon</code></div><div class="ln">returns · DOM, PNG, favicon, status, final URL, TLS error, bot challenge, blocked requests</div></div><div class="api"><div class="nm">RDAP via rdap.org<span class="tg">no key</span><span class="tg">free</span></div>
+      <div class="ln"><code>rdap.org → the registry&#39;s RDAP server</code></div><div class="ln">call · <code>GET /domain/&lt;registrable&gt; (application/rdap+json)</code></div><div class="ln">returns · registration date → age, registrar, registrant, status</div></div><div class="api"><div class="nm">VirusTotal v3<span class="tg">VIRUSTOTAL_API_KEY</span><span class="tg">free public key · 4 req / min</span></div>
+      <div class="ln"><code>www.virustotal.com</code></div><div class="ln">call · <code>GET /api/v3/domains/&lt;host&gt; · x-apikey header</code></div><div class="ln">returns · engine verdicts (positives / total), categories</div></div><div class="api"><div class="nm">URLhaus (abuse.ch)<span class="tg">free Auth-Key</span><span class="tg">free</span></div>
+      <div class="ln"><code>urlhaus-api.abuse.ch</code></div><div class="ln">call · <code>POST /v1/host/ · Auth-Key header</code></div><div class="ln">returns · listed or not, URL count, blacklists</div></div><div class="api"><div class="nm">Google Safe Browsing v4<span class="tg">SAFEBROWSING_API_KEY</span><span class="tg">free · non-commercial</span></div>
+      <div class="ln"><code>safebrowsing.googleapis.com</code></div><div class="ln">call · <code>POST /v4/threatMatches:find · X-Goog-Api-Key header · http:// and https:// root URL</code></div><div class="ln">returns · matches by threat type (social engineering, malware …) or none</div></div><div class="api"><div class="nm">ip-api.com<span class="tg">no key</span><span class="tg">free · ~45 req / min</span></div>
+      <div class="ln"><code>ip-api.com</code></div><div class="ln">call · <code>GET /json/&lt;ip&gt;?fields=status,country,city,lat,lon,org,as</code></div><div class="ln">returns · country, city, network for the dashboard globe</div></div>
+    <h5>Fallback chain</h5><div class="chain">browser: playwright → httpx_datacenter · whois: rdap → port-43 WHOIS → WhoisXML ($0.002) · reputation: VirusTotal, URLhaus and Google Safe Browsing — every configured one is asked · geo: ip-api</div>
+    <div class="two"><div><h5>Computed locally</h5><ul><li>SSRF guard: http/https only, ports 80 / 443 / 8080 / 8443, no credentials; every resolved IP checked, fail-closed</li><li>every Chromium sub-request re-validated; media, fonts, websockets, service workers and downloads blocked</li><li>the HTTP fallback pins the validated IP (Host header + SNI) and re-validates each redirect hop</li><li>HTML features: password / card / seed-phrase forms, off-site form action, e-mail prefill, lure words, tracking IDs, parking</li><li>screenshot pHash / dHash + palette; favicon MurmurHash3 + pHash</li></ul></div>
+      <div><h5>Stored</h5><ul><li>immutable evidence rows (database triggers reject UPDATE / DELETE) with a parent chain dns → http → html / screenshot / favicon</li><li>child tables: DNS, HTTP, HTML, screenshot, WHOIS, TLS, one reputation row per provider</li><li>HTML and PNG artifacts named by their SHA-256; one observation row per visit</li></ul></div></div>
+    <h5>Limits</h5><ul><li>response ≤ 5 MB · ≤ 5 redirects · fetch timeout 15 s · connect 5 s (frozen in code)</li><li>24 blocked networks (RFC 1918, CGNAT, loopback, 169.254/16 metadata, ULA, NAT64 …) + the AWS IPv6 metadata address</li><li>browser operation ≤ 45 s · favicon ≤ 512 KB in 4 s</li><li>every provider call: 3 attempts, backoff from 0.5 s, circuit opens after 3 failures for 60 s, 1 h cache</li><li>no A record → no browser visit: registered goes to the watchlist as parked, otherwise dismissed</li></ul>
+    <h5>Demo vs live</h5><div style="font-size:12.5px;line-height:1.5">Demo: recorded scenarios answer DNS, HTTP, WHOIS and reputation, with synthetic screenshots. Live never uses recorded data.</div>
+    <h5>Code</h5><div class="mods"><span>detection/enrichment.py</span><span>security/fetcher_guard.py</span><span>security/limits.py</span><span>providers/impl/playwright_fetcher.py</span><span>providers/impl/clients.py</span><span>providers/base.py</span></div>
+  </div></span></div></div>
+        
+        <div class="hiw-step" id="step-5"><div class="n">5 · fetch as a bot, a victim and a home IP</div><b>Catch cloaking</b><p>Kits that hide from scanners are fetched again as a bot, as a victim link, from a Google referer and from a home IP; the score uses what a victim sees.</p>
+          <div class="hiw-foot"><a class="see" href="/ui/findings/d3cddf21-a088-4189-9f17-2cf8dba61ab0/">see it →</a>
+<span class="mi"><button type="button" class="mi-btn" aria-expanded="false" aria-label="More info about Catch cloaking">More info</button>
+  <div class="deep" role="note">
+    <h4>Catch cloaking</h4><div class="sub">Under the hood · the exact calls, limits and code behind this step</div>
+    <h5>External calls</h5>
+    <div class="api"><div class="nm">Headless Chromium (Playwright)<span class="tg">no key</span><span class="tg">free · local</span></div>
+      <div class="ln"><code>the candidate URL</code></div><div class="ln">call · <code>3 re-fetches: a crawler user-agent · a victim link (?email=victim@example.com) · Referer https://www.google.com/</code></div><div class="ln">returns · DOM + screenshot per profile, compared by SHA-256 and phishing features</div></div><div class="api"><div class="nm">Residential proxy (Webshare or manual)<span class="tg">proxy password or Webshare token (encrypted)</span><span class="tg">paid · metered 0.002 GB per fetch</span></div>
+      <div class="ln"><code>p.webshare.io:80 by default</code></div><div class="ln">call · <code>Chromium through the proxy; Webshare username &lt;user&gt;-rotate-country-&lt;cc&gt;</code></div><div class="ln">returns · the page as a home IP in the brand&#39;s country sees it</div></div><div class="api"><div class="nm">Webshare API<span class="tg">Webshare API token</span><span class="tg">paid plan</span></div>
+      <div class="ln"><code>proxy.webshare.io</code></div><div class="ln">call · <code>GET /api/v2/proxy/config/ · Authorization: Token</code></div><div class="ln">returns · the rotating proxy&#39;s username and password</div></div>
+    <h5>Fallback chain</h5><div class="chain">browser: playwright → httpx_datacenter (no residential egress)</div>
+    <div class="two"><div><h5>Computed locally</h5><ul><li>runs when the host looks like the brand, the page has a credential / card / seed form, or the first score is ≥ Medium</li><li>signals: cloaking_ua_based · bot_blocking (CAPTCHA) · parameter_gating · referer_gating · cloaking_ip_based (home IP)</li><li>suspected = a probe revealed a form, any probe diverged, or a thin brand-less page on a look-alike host</li><li>the revealing probe&#39;s capture is adopted, so the score uses what a victim sees; the decoy is kept as evidence</li><li>the home-IP probe runs only if still suspected; navigator.webdriver is hidden</li></ul></div>
+      <div><h5>Stored</h5><ul><li>one HTTP evidence row per probe (diverged, challenge, credential form)</li><li>the revealed page as new HTML / screenshot / favicon evidence; a &#39;residential&#39; observation</li><li>an api_usage row per home-IP fetch</li></ul></div></div>
+    <h5>Limits</h5><ul><li>probes on in every track; home-IP probe gated on Light / Standard, always on Deep</li><li>home-IP probe needs a proxy and a daily GB budget (default 0 → skipped)</li><li>suspected but skipped → &#39;residential&#39; marked unavailable (confidence −8)</li><li>proxy country: the brand&#39;s override, else its search country, else its language, else US</li></ul>
+    <h5>Demo vs live</h5><div style="font-size:12.5px;line-height:1.5">Demo: scenarios define the cloaking mode (IP, user-agent, link parameter, referer) and the home-IP probe is free. Live: real re-fetches; the home-IP probe needs a proxy and a GB budget.</div>
+    <h5>Code</h5><div class="mods"><span>detection/cloaking.py</span><span>providers/impl/playwright_fetcher.py</span><span>proxy.py</span><span>tenancy.py</span><span>detection/html.py</span></div>
+  </div></span></div></div>
+        
+        <div class="hiw-step" id="step-6"><div class="n">6 · 42 signals in 7 groups</div><b>Compare with the brand</b><p>42 signals in 7 groups compare the site with the brand: identity tricks, visual copy, what the page asks for, shared infrastructure, reputation, freshness, evasion.</p>
+          <div class="hiw-foot"><a class="see" href="/ui/findings/d3cddf21-a088-4189-9f17-2cf8dba61ab0/">see it →</a>
+<span class="mi"><button type="button" class="mi-btn" aria-expanded="false" aria-label="More info about Compare with the brand">More info</button>
+  <div class="deep" role="note">
+    <h4>Compare with the brand</h4><div class="sub">Under the hood · the exact calls, limits and code behind this step</div>
+    <h5>External calls · none</h5>
+    
+    <h5>How it runs</h5><div class="chain">no network calls: a pure function over the collected evidence and the brand fingerprint</div>
+    <div class="two"><div><h5>Computed locally</h5><ul><li>Identity: brand in the name, combosquat, Levenshtein ≤ 2, IDN homoglyph, TLD swap, title claims the brand, brand in subdomain / path</li><li>Visual: favicon exact or pHash ≤ 6 bits; screenshot ≥ 0.90 similar to the home or login page; palette ≥ 0.67; login DOM ≥ 0.80</li><li>Behaviour: password / card / seed fields, off-site form action, e-mail prefill, 17 lure phrases, /login-style path</li><li>Infrastructure: shares an IP, certificate or tracking ID with a confirmed or critical finding, or a mapped attacker node</li><li>Reputation fires only on a positive verdict (unknown is never clean) · Freshness: &lt; 7 / &lt; 30 days, woke up · Evasion: cloaking</li></ul></div>
+      <div><h5>Stored</h5><ul><li>candidates.last_analysis: signals, unavailable evidence, score — for every scored site, used to train the classifier</li><li>one trace line per site with every fired signal and its plain-language reason</li></ul></div></div>
+    <h5>Limits</h5><ul><li>42 signals in 7 groups (config/brand_config.py)</li><li>favicon near-match ≤ 6 bits · screenshot ≥ 0.90 · palette ≥ 0.67 · login DOM ≥ 0.80</li><li>colours count as close at L1 distance ≤ 54 · DOM signature ≤ 400 tokens</li></ul>
+    <h5>Demo vs live</h5><div style="font-size:12.5px;line-height:1.5">Same code. Demo inputs are synthetic screenshots built to match or differ, so visual signals are deterministic; live inputs are real captures.</div>
+    <h5>Code</h5><div class="mods"><span>detection/analysis.py</span><span>detection/dom.py</span><span>detection/images.py</span><span>detection/html.py</span></div>
+  </div></span></div></div>
+        
+        <div class="hiw-step" id="step-7"><div class="n">7 · risk 0–100 + confidence</div><b>Score &amp; explain</b><p>Deterministic and versioned: points per signal, a cap per group, combination rules for known kit shapes, false-positive penalties — plus a separate confidence axis. AI and a classifier give advisory opinions only.</p>
+          <div class="hiw-foot"><a class="see" href="/ui/findings/d3cddf21-a088-4189-9f17-2cf8dba61ab0/">see it →</a>
+<span class="mi"><button type="button" class="mi-btn" aria-expanded="false" aria-label="More info about Score &amp; explain">More info</button>
+  <div class="deep" role="note">
+    <h4>Score &amp; explain</h4><div class="sub">Under the hood · the exact calls, limits and code behind this step</div>
+    <h5>External calls</h5>
+    <div class="api"><div class="nm">OpenAI (advisory only)<span class="tg">OPENAI_API_KEY</span><span class="tg">paid per token</span></div>
+      <div class="ln"><code>api.openai.com</code></div><div class="ln">call · <code>POST /v1/chat/completions · strict JSON schema phishing_triage · temperature 0 · page text framed as untrusted</code></div><div class="ln">returns · is_phishing, impersonated brand, confidence 0–1, rationale ≤ 400 chars</div></div>
+    <h5>Fallback chain</h5><div class="chain">llm: openai → none (no AI opinion; the score is unaffected)</div>
+    <div class="two"><div><h5>Computed locally</h5><ul><li>raw = Σ min(group points, group cap) + cluster bonus − false-positive penalties, clamped 0..150 → score = raw / 150 × 100</li><li>group caps: identity 20 · visual 30 · behaviour 30 · infrastructure 20 · reputation 15 · freshness 10 · evasion 25</li><li>5 decisive clusters (+15, capped at 15); 8 combination rules set a minimum severity</li><li>confidence: breadth 0–70 + hard confirmers (≤ 30) + completeness (≤ 15) + agreement − 8 per unavailable source</li><li>classifier: L2 logistic regression in numpy on 47 binary features, 5-fold cross-validation; shown, never scored</li></ul></div>
+      <div><h5>Stored</h5><ul><li>risk_scores: append-only history (only is_current flips) with signals, group breakdown and the scoring version</li><li>trained models as rule_versions rows (weights, metrics, top features)</li><li>the AI and classifier opinions inside the breakdown, labelled advisory</li></ul></div></div>
+    <h5>Limits</h5><ul><li>bands: Medium ≥ 25 · High ≥ 50 · Critical ≥ 75 (per brand, must stay in order)</li><li>false-positive penalties: redirects to the official site −60 · domain older than 2 years −15</li><li>AI opinion only for Medium+ when enabled (off on Light) · page text ≤ 4,000 chars</li><li>the classifier needs ≥ 8 labelled sites of both classes</li></ul>
+    <h5>Demo vs live</h5><div style="font-size:12.5px;line-height:1.5">Demo: a heuristic AI stand-in and a classifier bootstrapped from the golden labels. Live: OpenAI and a classifier trained on analyst verdicts. The deterministic score is identical.</div>
+    <h5>Code</h5><div class="mods"><span>detection/scoring.py</span><span>config/brand_config.py</span><span>detection/ai.py</span><span>detection/ml.py</span><span>detection/runner.py</span></div>
+  </div></span></div></div>
+        
+        <div class="hiw-step" id="step-8"><div class="n">8 · Medium and above go to an analyst</div><b>Raise a finding</b><p>Medium and above become a finding for an analyst; the rest stays on the watchlist and is re-checked on a schedule (a parked domain that grows a login form jumps to the front).</p>
+          <div class="hiw-foot"><a class="see" href="/ui/findings/">see it →</a>
+<span class="mi"><button type="button" class="mi-btn" aria-expanded="false" aria-label="More info about Raise a finding">More info</button>
+  <div class="deep" role="note">
+    <h4>Raise a finding</h4><div class="sub">Under the hood · the exact calls, limits and code behind this step</div>
+    <h5>External calls</h5>
+    <div class="api"><div class="nm">Slack incoming webhook<span class="tg">webhook URL</span><span class="tg">free</span></div>
+      <div class="ln"><code>SLACK_WEBHOOK_URL</code></div><div class="ln">call · <code>POST {text} per new or updated finding</code></div><div class="ln">returns · HTTP status</div></div><div class="api"><div class="nm">Telegram Bot API<span class="tg">bot token + chat id</span><span class="tg">free</span></div>
+      <div class="ln"><code>api.telegram.org</code></div><div class="ln">call · <code>POST /bot&lt;token&gt;/sendMessage</code></div><div class="ln">returns · HTTP status</div></div><div class="api"><div class="nm">SMTP e-mail<span class="tg">SMTP user / password</span><span class="tg">free</span></div>
+      <div class="ln"><code>SMTP_HOST:587</code></div><div class="ln">call · <code>the finding alert and the daily digest</code></div><div class="ln">returns · delivery</div></div>
+    <h5>Fallback chain</h5><div class="chain">notification channels (default: log only) — every configured channel is used</div>
+    <div class="two"><div><h5>Computed locally</h5><ul><li>score ≥ Medium → create or update the site&#39;s finding (one finding per site, even after a confirm)</li><li>below the threshold → watching, re-checked on the track&#39;s cadence</li><li>triggers vs the last visit: a login form appeared +10 priority · woke up +6 · favicon changed +4 · page changed +2</li><li>scheduler tick: expire stale domains, re-queue due ones by priority, start the automatic scans that are due (only brands switched on; chosen frequency, local hour and tasks)</li></ul></div>
+      <div><h5>Stored</h5><ul><li>findings + a risk_scores row + evidence links with a role (primary, supporting, context, contradicting)</li><li>candidate state (flagged, watching, long watch, dismissed) and an audit event for every transition</li></ul></div></div>
+    <h5>Limits</h5><ul><li>re-check every 24 / 12 / 6 h for 7 / 14 / 30 days (Light / Standard / Deep)</li><li>past the window → long watch at 3× the cadence; past 3× the window → dismissed</li><li>scheduler tick every 60 s · ≤ 200 re-checks per tick · automatic scans are off per brand until switched on (brand page → Automatic scans); one scan at a time per brand; the watchlist re-check is one of the tasks</li><li>alerts at ≥ High by default</li></ul>
+    <h5>Demo vs live</h5><div style="font-size:12.5px;line-height:1.5">Same logic. Demo re-checks replay recordings; live re-fetches the real site, so a parked domain that grows a login form jumps the queue.</div>
+    <h5>Code</h5><div class="mods"><span>detection/finding.py</span><span>detection/triggers.py</span><span>detection/scheduler.py</span><span>notifications.py</span></div>
+  </div></span></div></div>
+        
+        <div class="hiw-step" id="step-9"><div class="n">9 · what this scan did, step by step</div><b>Report</b><p>The live console narrates every step while it happens and ends with a plain-language report; an engineering trace records every provider call, AI prompt and the scoring maths.</p>
+          <div class="hiw-foot"><a class="see" href="/ui/jobs/9235913e-f1e4-420c-9f46-080472915c0e/">see it →</a>
+<span class="mi"><button type="button" class="mi-btn" aria-expanded="false" aria-label="More info about Report">More info</button>
+  <div class="deep" role="note">
+    <h4>Report</h4><div class="sub">Under the hood · the exact calls, limits and code behind this step</div>
+    <h5>External calls · none</h5>
+    
+    <h5>How it runs</h5><div class="chain">no network calls: database rows, a live event stream and a trace file</div>
+    <div class="two"><div><h5>Computed locally</h5><ul><li>plain-language report: one line per stage (fingerprint, each stream, visit cap, visits, cloaking, scoring, provider issues)</li><li>event emitter: monotonic sequence per job, secrets redacted, committed per event so the console updates live</li><li>provider failures classified (quota, rate limit, bad key, outage, circuit open, not configured) → one alert with a fix</li><li>engineering trace: every provider call in and out, the full AI prompt and answer, every DNS answer, the scoring maths</li></ul></div>
+      <div><h5>Stored</h5><ul><li>scan_events (unique job + sequence), scan_stages (hits, API calls, cost, time), api_usage per provider call</li><li>trace file per scan, served at GET /api/jobs/{id}/trace?host=</li><li>the job&#39;s cost and a final summary event</li></ul></div></div>
+    <h5>Limits</h5><ul><li>SSE stream resumes from Last-Event-ID; polls every 0.5 s; keep-alive when idle; an &#39;end&#39; event</li><li>polling fallback: GET /api/jobs/{id}/events?from_seq=N (≤ 5,000 per page)</li><li>trace values cut at 1,200 chars (AI 12,000) · secrets redacted</li></ul>
+    <h5>Demo vs live</h5><div style="font-size:12.5px;line-height:1.5">Same machinery. DEMO_FLAKY_PROVIDER fakes one outage to show the alert panel; live shows real call counts and cost.</div>
+    <h5>Code</h5><div class="mods"><span>detection/runner.py</span><span>events/emitter.py</span><span>api/scans.py</span><span>trace.py</span><span>providers/base.py</span></div>
+  </div></span></div></div>
+        
+        <div class="hiw-step" id="step-10"><div class="n">10 · verdict</div><b>Confirm or dismiss</b><p>The finding page explains itself in two sentences and shows every signal, its points and the evidence. A human decides; the reason goes to the audit log and the training set.</p><div class="hiw-foot"><a class="see" href="/ui/findings/2e59c045-14b0-4c09-baac-28046be16ff5/">see it →</a>
+<span class="mi"><button type="button" class="mi-btn" aria-expanded="false" aria-label="More info about Confirm or dismiss">More info</button>
+  <div class="deep" role="note">
+    <h4>Confirm or dismiss</h4><div class="sub">Under the hood · the exact calls, limits and code behind this step</div>
+    <h5>External calls · none</h5>
+    
+    <h5>How it runs</h5><div class="chain">an analyst action; confirming can start the infrastructure map (card 12)</div>
+    <div class="two"><div><h5>Computed locally</h5><ul><li>admin / analyst only, and only from &#39;awaiting verdict&#39; (409 otherwise)</li><li>confirm → phishing; dismiss → legitimate, suspicious or unknown (never phishing)</li><li>confirming queues the infrastructure map automatically (one already running is reused)</li><li>confirmed sites feed later scans: shares a server / certificate / tracking ID with phishing</li><li>verdicts train the classifier (phishing 1, legitimate 0)</li></ul></div>
+      <div><h5>Stored</h5><ul><li>finding state + verdict; analyst_labels (label, reason, analyst)</li><li>audit_events (who, old → new, reason) — the database rejects edits and deletes</li></ul></div></div>
+    <h5>Limits</h5><ul><li>reason ≤ 2,000 chars</li><li>10 immutable tables: audit_events, observations, evidence + 7 evidence child tables</li></ul>
+    <h5>Demo vs live</h5><div style="font-size:12.5px;line-height:1.5">Identical; in demo the automatic infrastructure map runs on recorded data.</div>
+    <h5>Code</h5><div class="mods"><span>detection/finding.py</span><span>api/findings.py</span><span>api/campaigns.py</span><span>detection/ml.py</span></div>
+  </div></span></div></div>
+        <div class="hiw-step" id="step-11"><div class="n">11 · investigate</div><b>Site &amp; network investigation</b><p>VirusTotal-style lookup on the finding page itself: detections, DNS, certificate, RDAP and abuse contact, WHOIS history (every past owner, and details hidden later), passive DNS, every other site on the server, urlscan similar pages.</p><div class="hiw-foot"><a class="see" href="/ui/findings/d3cddf21-a088-4189-9f17-2cf8dba61ab0/#reputation">see it →</a>
+<span class="mi"><button type="button" class="mi-btn" aria-expanded="false" aria-label="More info about Site &amp; network investigation">More info</button>
+  <div class="deep" role="note">
+    <h4>Site &amp; network investigation</h4><div class="sub">Under the hood · the exact calls, limits and code behind this step</div>
+    <h5>External calls</h5>
+    <div class="api"><div class="nm">VirusTotal v3<span class="tg">x-apikey</span><span class="tg">free public · 4 req / min; premium-only relations are marked as such</span></div>
+      <div class="ln"><code>www.virustotal.com/api/v3</code></div><div class="ln">call · <code>GET /domains/{d}, /ip_addresses/{ip}, /{kind}/{v}/{relationship}?limit=40&amp;cursor=</code></div><div class="ln">returns · detections, DNS, certificate, WHOIS, JARM; resolutions, WHOIS / SSL history, files, subdomains</div></div><div class="api"><div class="nm">RDAP via rdap.org<span class="tg">no key</span><span class="tg">free</span></div>
+      <div class="ln"><code>rdap.org</code></div><div class="ln">call · <code>GET /domain/{registrable}</code></div><div class="ln">returns · events, registrar, registrant, abuse contact, nameservers</div></div><div class="api"><div class="nm">crt.sh → CertSpotter<span class="tg">no key</span><span class="tg">free</span></div>
+      <div class="ln"><code>crt.sh · api.certspotter.com</code></div><div class="ln">call · <code>CT search for the registrable domain</code></div><div class="ln">returns · certificate history (names, issuer, dates)</div></div><div class="api"><div class="nm">urlscan.io<span class="tg">needed to submit; search works without</span><span class="tg">free tier</span></div>
+      <div class="ln"><code>urlscan.io/api/v1</code></div><div class="ln">call · <code>POST /scan/ (unlisted) · GET /result/{uuid}/ · GET /search/?q=hash:|page.ip:|page.domain:</code></div><div class="ln">returns · verdict, IPs, domains, page hash, screenshot; similar pages</div></div><div class="api"><div class="nm">WhoisXML WHOIS History<span class="tg">WHOISXML_API_KEY + the WHOIS History product</span><span class="tg">paid · WhoisXML credits</span></div>
+      <div class="ln"><code>whois-history.whoisxmlapi.com/api/v1</code></div><div class="ln">call · <code>GET ?domainName=&lt;registrable&gt;&amp;mode=purchase&amp;outputFormat=JSON</code></div><div class="ln">returns · every WHOIS snapshot on record: created / expires, registrar, registrant contact, nameservers, raw text</div></div><div class="api"><div class="nm">ip-api.com<span class="tg">no key</span><span class="tg">free</span></div>
+      <div class="ln"><code>ip-api.com</code></div><div class="ln">call · <code>GET /json/{ip}</code></div><div class="ln">returns · country, city, coordinates, network</div></div><div class="api"><div class="nm">AbuseIPDB v2<span class="tg">ABUSEIPDB_API_KEY</span><span class="tg">free daily quota</span></div>
+      <div class="ln"><code>api.abuseipdb.com</code></div><div class="ln">call · <code>GET /api/v2/check?ipAddress={ip}&amp;maxAgeInDays=90 · Key header</code></div><div class="ln">returns · abuse confidence 0–100, reports, reporters, last report, usage type, ISP, Tor</div></div><div class="api"><div class="nm">Live DNS + TLS handshake<span class="tg">no key</span><span class="tg">free</span></div>
+      <div class="ln"><code>public resolvers · the site&#39;s validated IP:443</code></div><div class="ln">call · <code>A / AAAA / CNAME / NS / MX / TXT / SOA; one handshake with SNI</code></div><div class="ln">returns · records; the leaf certificate (subject, names, issuer, SHA-256)</div></div>
+    <h5>Fallback chain</h5><div class="chain">VirusTotal from the reputation chain (missing → free sources only) · RDAP from the WHOIS chain · cert: crtsh → certspotter · urlscan · geo: ip-api</div>
+    <div class="two"><div><h5>Computed locally</h5><ul><li>a sliding-window pacer keeps VirusTotal at ≤ 4 calls per 60 s; extra pages pace themselves</li><li>live DNS and the live certificate only when VirusTotal has none</li><li>IPs = VirusTotal A records + live A records + the finding&#39;s evidence, de-duplicated, first 4</li><li>urlscan: submit and poll up to 16 × every 5 s, else the latest public scan of the domain</li><li>WHOIS history → timeline: registration, re-registration after expiry, transfers, owner changes, privacy on / off</li><li>owner details public before privacy was switched on, cross-referenced with every other domain in the workspace</li></ul></div>
+      <div><h5>Stored</h5><ul><li>intel_lookups keyed by (workspace, subject, source, relation): payload, status, expiry</li><li>events and a trace for the intel job; plan-gated relations stored as &#39;not available on this plan&#39;</li></ul></div></div>
+    <h5>Limits</h5><ul><li>cache 24 h (errors 10 min) · Refresh forces new lookups</li><li>≤ 4 IPs, ≤ 48 calls, ≤ 300 s per job; the daily spend cap still applies</li><li>VirusTotal resolutions: 2 pages for a domain, 3 for an IP (40 per page)</li><li>IP intel only for public IPs (the SSRF block list applies)</li></ul>
+    <h5>Demo vs live</h5><div style="font-size:12.5px;line-height:1.5">Demo: recorded VirusTotal, RDAP, urlscan and geo answers. Live: detections and relations need a VirusTotal key; without one, RDAP + DNS + the live certificate + CT still work.</div>
+    <h5>Code</h5><div class="mods"><span>detection/intel.py</span><span>detection/whois_history.py</span><span>api/intel.py</span><span>providers/impl/clients.py</span><span>security/tls_probe.py</span></div>
+  </div></span></div></div>
+        <div class="hiw-step" id="step-12"><div class="n">12 · map the attacker</div><b>Attack infrastructure</b><p>From one confirmed site, a budgeted pivot over shared servers, certificates, favicons and tracking IDs; co-hosted noise is triaged out. Indicators export as STIX 2.1.</p><div class="hiw-foot"><a class="see" href="/ui/campaigns/88288233-1dad-4751-955d-c8fbc835dc10/">see it →</a>
+<span class="mi"><button type="button" class="mi-btn" aria-expanded="false" aria-label="More info about Attack infrastructure">More info</button>
+  <div class="deep" role="note">
+    <h4>Attack infrastructure</h4><div class="sub">Under the hood · the exact calls, limits and code behind this step</div>
+    <h5>External calls</h5>
+    <div class="api"><div class="nm">VirusTotal resolutions<span class="tg">VIRUSTOTAL_API_KEY</span><span class="tg">free public · 4 req / min</span></div>
+      <div class="ln"><code>www.virustotal.com</code></div><div class="ln">call · <code>GET /ip_addresses/{ip}/resolutions or /domains/{d}/resolutions?limit=40</code></div><div class="ln">returns · every hostname seen on a server, or every server a domain used</div></div><div class="api"><div class="nm">Shodan<span class="tg">SHODAN_API_KEY</span><span class="tg">paid membership for search</span></div>
+      <div class="ln"><code>api.shodan.io</code></div><div class="ln">call · <code>GET /shodan/host/{ip} · /shodan/host/search?query=http.favicon.hash:&lt;mmh3&gt;</code></div><div class="ln">returns · organisation, ASN, open ports; other servers serving the same favicon</div></div><div class="api"><div class="nm">crt.sh<span class="tg">no key</span><span class="tg">free</span></div>
+      <div class="ln"><code>crt.sh</code></div><div class="ln">call · <code>GET /?q=&lt;certificate SHA-256&gt;&amp;output=json</code></div><div class="ln">returns · certificates sharing the fingerprint → their names</div></div><div class="api"><div class="nm">OpenAI + Chromium (AI triage)<span class="tg">OPENAI_API_KEY</span><span class="tg">paid per token</span></div>
+      <div class="ln"><code>api.openai.com · the neighbour site</code></div><div class="ln">call · <code>fetch the neighbour, then the phishing_triage schema</code></div><div class="ln">returns · is it phishing, for which brand, with what confidence</div></div>
+    <h5>Fallback chain</h5><div class="chain">passive DNS: virustotal → securitytrails (connector not built) · host: shodan → censys (connector not built) · cert: crtsh → certspotter · llm: openai</div>
+    <div class="two"><div><h5>Computed locally</h5><ul><li>breadth-first search from the finding&#39;s evidence: IPs, certificate SHA-256, favicon hash, tracking IDs, registrant e-mail</li><li>tracking-ID and registrant pivots query this brand&#39;s own evidence (no API call)</li><li>triage: own sites out; existing findings in; brand pattern in; shared certificate / favicon / tracking ID in; bare reverse-IP neighbour out</li><li>AI triage of ≤ 8 noise neighbours: in only if phishing for this brand at ≥ 0.75; other brands → actor intel</li><li>indicators exported as STIX 2.1 (identity, campaign, indicators, &#39;indicates&#39; relationships), CSV or JSON</li></ul></div>
+      <div><h5>Stored</h5><ul><li>campaigns, campaign_nodes (included, triage reason, AI verdict), campaign_edges (typed, linked to evidence)</li><li>iocs, unique per (workspace, type, value): domain, hostname, URL, IP, certificate, favicon hash, tracking ID, e-mail</li><li>pivoted domains become new watchlist candidates (priority 20, source &#39;pivot&#39;)</li></ul></div></div>
+    <h5>Limits</h5><ul><li>budget: depth 2, 100 nodes, 300 edges (frozen in code) · 60 API calls · 120 s · the workspace&#39;s investigation cost cap</li><li>a server with &gt; 25 names is shared hosting → no further pivot from it</li><li>≤ 8 AI-triaged neighbours per map · IOC export ≤ 20,000 rows</li></ul>
+    <h5>Demo vs live</h5><div style="font-size:12.5px;line-height:1.5">Demo: recordings supply certificate fingerprints and realistic reverse-IP noise. Live: needs VirusTotal (passive DNS) and Shodan keys.</div>
+    <h5>Code</h5><div class="mods"><span>detection/investigation.py</span><span>api/campaigns.py</span><span>security/limits.py</span><span>detection/ai.py</span><span>detection/protect.py</span></div>
+  </div></span></div></div>
+        <div class="hiw-step" id="step-13"><div class="n">13 · take it down</div><b>Takedown</b><p>An evidence-backed request with an audited lifecycle; contacts for the registrar, the hosting provider and the CDN; 26 blocklists, anti-virus and abuse-report portals. BrandWatch never sends anything itself.</p><div class="hiw-foot"><a class="see" href="/ui/takedowns/71c2d1cb-03bb-40bb-9283-04feaa1f3a15/">see it →</a>
+<span class="mi"><button type="button" class="mi-btn" aria-expanded="false" aria-label="More info about Takedown">More info</button>
+  <div class="deep" role="note">
+    <h4>Takedown</h4><div class="sub">Under the hood · the exact calls, limits and code behind this step</div>
+    <h5>External calls · none</h5>
+    
+    <h5>How it runs</h5><div class="chain">no new calls: contacts come from stored WHOIS evidence and the 24 h intel cache (RDAP, VirusTotal, ip-api), then 24 known abuse desks</div>
+    <div class="two"><div><h5>Computed locally</h5><ul><li>registrar: WHOIS abuse e-mail → RDAP abuse contact → VirusTotal WHOIS text → known desk</li><li>hosting, per IP (≤ 4): the network owner&#39;s abuse e-mail, or the known desk for its organisation</li><li>CDN when the IP owner or nameservers are Cloudflare, Akamai or Fastly</li><li>templated request: signals, domain age, screenshot similarity, case id BW-&lt;8 hex&gt;; addressed per channel</li><li>mailto links capped at 1,900 characters (Outlook&#39;s limit)</li></ul></div>
+      <div><h5>Stored</h5><ul><li>takedown_drafts: state, contacts, reference, body, sent / response / resolved times, channels and portals reported</li><li>an audit event for every draft, edit, transition, channel sent and portal reported</li><li>evidence package: HTML (screenshots inline, SHA-256 per row) + JSON</li></ul></div></div>
+    <h5>Limits</h5><ul><li>only for confirmed findings · editable in draft, review or reopened</li><li>draft → review → approved → sent → acknowledged → in progress → taken down (+ rejected, reopened)</li><li>&#39;sent&#39; needs an abuse contact and is recorded by the analyst after mailing it</li><li>26 report portals in 5 groups (browsers, anti-virus, corporate web filters, phishing feeds, national reporting), each linked as close to the form as the vendor allows</li><li>suspicious shops: a letter worded to the conclusion — a request for review for a suspicious shop, “likely selling counterfeit” for a likely one, “selling counterfeit … confirmed by a test purchase” only when confirmed — plus Report to Meta — every ad (Ad Library link → Report ad) and every advertiser page that sends buyers to the shop, and Meta&#39;s trademark / counterfeit forms for the brand owner; each marked reported with an audit event</li></ul>
+    <h5>Demo vs live</h5><div style="font-size:12.5px;line-height:1.5">Same code. Demo contacts come from recorded WHOIS / RDAP / VirusTotal data, live from real lookups. Nothing is ever sent automatically.</div>
+    <h5>Code</h5><div class="mods"><span>detection/takedown_channels.py</span><span>detection/reports.py</span><span>api/reports.py</span><span>db/enums.py</span></div>
+  </div></span></div></div>
+      </div>
+    </div>
+  </details>
+
+  <details class="fold" id="demo">
+    <summary><b>Demo walkthrough · 8 stops</b><span>· the presenter's ten-minute script, with the questions people ask</span></summary>
+    <div class="in">
+      <ol class="tour">
+        <li><div class="where"><a href="/ui/dashboard/">Dashboard</a> — the mission line and the five-step strip</div>
+          <p class="say">“BrandWatch finds sites impersonating a brand — on the web and in Facebook / Instagram ads — proves it with tamper-proof evidence, maps the attacker's servers and drafts the takedown. A human decides every step.”</p>
+          <p class="q">Likely question: what's real here? → In demo mode every external service is a recorded scenario; the same code calls VirusTotal, crt.sh, Google and Chromium in live mode.</p></li>
+        <li><div class="where"><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/">The brand page</a> — tick “include fingerprinting”, press START SCAN</div>
+          <p class="say">“First it learns what the real site looks like, then it hunts for copies on five streams.”</p>
+          <p class="q">Likely question: how do you find domains that don't exist in any list yet? → Permutations checked in DNS, new certificates in CT logs, yesterday's registrations.</p>
+          <p class="q">Likely question: what about social media? → Facebook pages by name (Meta's page search, every country) and Instagram / Facebook profiles Google knows; each one's page history, logo, links and posts are checked and an AI reads the content. Fakes become findings with a Report-to-Meta box, a link in their bio goes to the website checks, and the brand's own accounts are never flagged. Ads about the brand are searched too, per country.</p></li>
+        <li><div class="where">The live scan console — then “▶ replay highlights”</div>
+          <p class="say">“Every step is narrated as it happens; the report at the bottom says what the scan did in plain words.”</p>
+          <p class="q">Likely question: what if VirusTotal is down? → Retries with backoff, a circuit breaker, then the next provider in the chain; the alert panel says what happened and how to fix it.</p></li>
+        <li><div class="where"><a href="/ui/findings/d3cddf21-a088-4189-9f17-2cf8dba61ab0/">A cloaked kit</a> — read the two-sentence summary, then the three screenshots</div>
+          <p class="say">“This kit shows a blank page to scanners and the login page to real visitors. We fetch it like a victim would.”</p>
+          <p class="q">Likely question: why is VirusTotal at 0? → It's days old; blocklists lag. Unknown is never treated as clean.</p></li>
+        <li><div class="where">Explain Finding — signals, group caps, the score line, “open the arithmetic”</div>
+          <p class="say">“Deterministic, explainable scoring: every point traces back to evidence. Risk and confidence are separate axes. The AI is advisory.”</p>
+          <p class="q">Likely question: false positives? → Penalties (old domain, redirects to the brand), a whitelist, and a golden-dataset regression gate (precision / recall ≥ 0.90).</p></li>
+        <li><div class="where">Press <b>Confirm phishing</b>, then <b>Investigate site &amp; network</b></div>
+          <p class="say">“Confirming maps the attacker's infrastructure automatically. The investigation tabs on the finding page replace twenty minutes of VirusTotal, urlscan and RDAP tabs.”</p></li>
+        <li><div class="where"><a href="/ui/campaigns/88288233-1dad-4751-955d-c8fbc835dc10/">The attack infrastructure map</a> — drag the graph, read two triage reasons</div>
+          <p class="say">“One site led to the whole operation. Noise is triaged out with a reason; the indicators go to a SIEM as STIX.”</p></li>
+        <li><div class="where"><a href="/ui/takedowns/71c2d1cb-03bb-40bb-9283-04feaa1f3a15/">The takedown</a> → <a href="/ui/activity/">Activity</a></div>
+          <p class="say">“Three channels — registrar, host, CDN — plus the blocklists. Every step is in an append-only audit log the database won't let anyone edit.”</p></li>
+      </ol>
+    </div>
+  </details>
+
+  <details class="fold" id="under-the-hood">
+    <summary><b>Under the hood</b><span>· the engineering an interviewer asks about</span></summary>
+    <div class="in">
+      <div class="uth">
+        <div class="card" id="ssrf"><h3>SSRF guard &amp; sandbox</h3>
+          <p>Every fetch: validate the URL → resolve A/AAAA → fail closed on 24 blocked networks (private, loopback, cloud metadata) → connect pinned to the validated IP with Host + SNI → re-validate every redirect hop (≤ 5) → size ≤ 5.0 MB, timeout 15.0 s.</p>
+          <p>The same policy gates every Chromium sub-request. Limits are frozen in code — no brand, workspace or env var can change them.</p>
+          <div class="mod">security/fetcher_guard.py · security/limits.py · <a href="/ui/settings/#limits">see it in Settings</a></div></div>
+        <div class="card" id="evidence"><h3>Immutable evidence</h3>
+          <p>10 append-only tables: database triggers reject UPDATE and DELETE — even for an admin, on SQLite and PostgreSQL. Artifacts are content-addressed: the SHA-256 is the file name.</p>
+          <p>Each finding links its evidence with a role (primary, supporting, contradicting, context): a chain of custody for a takedown or a court.</p>
+          <div class="mod">db/models · migrations/001 · evidence/store.py · <a href="/ui/findings/d3cddf21-a088-4189-9f17-2cf8dba61ab0/">see it on a finding</a></div></div>
+        <div class="card" id="resilience"><h3>Provider resilience</h3>
+          <p>Every external call goes through one wrapper: TTL cache → budget check → circuit breaker → token bucket → retry with backoff (honouring Retry-After) → the next provider in the fallback chain.</p>
+          <p>A bad key disables the provider for the job instead of failing 500 calls; "unknown" is never treated as clean.</p>
+          <div class="mod">providers/base.py · providers/registry.py · <a href="/ui/jobs/9235913e-f1e4-420c-9f46-080472915c0e/">see the alerts panel</a></div></div>
+        <div class="card" id="ledger"><h3>Cost ledger &amp; budgets</h3>
+          <p>Every paid call is recorded with its cost; daily call and spend caps are checked over the trailing 24 h <em>before</em> the call, so a scan stops spending instead of overspending.</p>
+          <div class="mod">providers/ledger.py · <a href="/ui/dashboard/#under-the-hood">budget meter</a></div></div>
+        <div class="card" id="golden"><h3>Golden dataset gate</h3>
+          <p>65 recorded scenarios (16 phishing incl. cloaked kits, 17 legitimate, 15 brand-related legitimate, 10 suspicious-but-not-phishing) run through the real pipeline in CI.</p>
+          <p>The build fails below precision 0.9 / recall 0.9 / FP rate 0.05; last measured 1.00 / 1.00 / 0.00. The same corpus drives the $0 demo.</p>
+          <div class="mod">demo/golden/*.jsonl · tests/test_golden.py · <a href="/ui/settings/#quality">quality card</a></div></div>
+        <div class="card" id="events"><h3>Durable live events</h3>
+          <p>Each scan writes an ordered event stream (sequence-numbered, secrets redacted) before publishing it over SSE; a refresh resumes from the last event. Cancellation is cooperative at safe checkpoints.</p>
+          <div class="mod">events/emitter.py · api/scans.py · trace.py</div></div>
+        <div class="card" id="keys"><h3>Secrets, tenants &amp; roles</h3>
+          <p>API keys are envelope-encrypted (random 32-byte key per record, AES-256-GCM, bound to workspace:provider). Passwords: Argon2id. Personal API tokens are stored as SHA-256 only; a read-scoped token caps even an admin at viewer.</p>
+          <p>Every query is workspace-scoped; RBAC (admin / analyst / viewer) is identical in the UI and the API.</p>
+          <div class="mod">keys.py · config/secrets.py · tenancy.py · api/auth.py</div></div>
+        <div class="card" id="tests"><h3>Tests &amp; CI</h3>
+          <p>586 test functions in 61 files: schema and trigger enforcement, SSRF cases, provider resilience, every UI page, the golden gate. CI runs lint, test-sqlite, test-postgres, including migrations up and down on PostgreSQL 16.</p>
+          <div class="mod">tests/ · .github/workflows/ci.yml</div></div>
+      </div>
+      <h2>Trust &amp; safety</h2>
+      <ul class="small" style="line-height:1.7;margin:0;padding-left:18px">
+        <li>A human decides every verdict and every takedown; nothing is ever sent automatically.</li>
+        <li>Residential IPs are used to <em>look</em> like a victim, never to interact; probes never submit forms.</li>
+        <li>The AI only gives advisory opinions under a strict JSON schema, with the page text framed as untrusted.</li>
+        <li>Only brands you are authorised to protect; every action is in the append-only audit log.</li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="fold" id="glossary">
+    <summary><b>Glossary</b><span>· every “?” on the site links here</span></summary>
+    <div class="in">
+      <dl class="gl">
+        <dt id="g-baseline">Baseline</dt><dd>The fingerprint of the brand&#39;s real site — favicon hash, screenshot hash, colours, login pages, keywords. Every suspect is compared against it.</dd><dt id="g-candidate">Candidate / watched domain</dt><dd>Any domain discovered for a brand. It lives on the Watchlist until it scores high enough to become a finding, expires, or is dismissed.</dd><dt id="g-finding">Finding</dt><dd>A candidate that scored Medium or higher. An analyst confirms it as phishing or dismisses it; nothing happens automatically.</dd><dt id="g-signal">Signal</dt><dd>One piece of evidence (e.g. &#39;identical favicon&#39;). 42 signals in 7 groups; each adds points.</dd><dt id="g-group-cap">Group cap</dt><dd>Each group can add at most its cap, so ten weak visual hints never outweigh one strong behaviour signal.</dd><dt id="g-risk">Risk score</dt><dd>How dangerous the site is, 0–100. Medium ≥ 25, High ≥ 50, Critical ≥ 75. Combination rules can raise the severity.</dd><dt id="g-confidence">Confidence</dt><dd>How complete and consistent the evidence is (breadth, completeness, provider agreement) — separate from risk.</dd><dt id="g-cloaking">Cloaking</dt><dd>A kit that shows a harmless decoy to scanners and the phishing page to victims. BrandWatch fetches as a bot, as a victim link, from a search referer and from a home IP.</dd><dt id="g-tracks">Detection track</dt><dd>Light, Standard or Deep: which discovery streams run, how many sites are visited, how often the watchlist is re-checked.</dd><dt id="g-attack-infrastructure">Attack infrastructure</dt><dd>The map built from one confirmed site: every server, certificate and sister domain it shares, triaged so reverse-IP noise is excluded. The pivot is budgeted (at most 2 hops, 100 nodes, a fixed number of API calls) and those limits are frozen in code.</dd><dt id="g-advisory">Advisory opinions</dt><dd>An AI model and a trained classifier each give a second opinion on Medium+ findings. The page text is passed as untrusted input and the answer must match a strict JSON schema. Shown for context only: the deterministic score never depends on them.</dd><dt id="g-ioc">IOC</dt><dd>Indicator of compromise: a domain, IP, certificate hash or tracking ID a firewall / SIEM can block. Exported as CSV, JSON or STIX 2.1.</dd><dt id="g-takedown">Takedown</dt><dd>The request to remove a site. Draft → review → approved → sent → taken down; sent to the registrar, the hosting provider and the CDN, and reported to blocklists.</dd><dt id="g-evidence">Evidence</dt><dd>Every screenshot, HTML page, DNS / WHOIS answer and reputation lookup, stored append-only with its SHA-256 — the database rejects edits and deletes.</dd><dt id="g-demo">Demo mode</dt><dd>Recorded scenarios replace every external service: the full pipeline runs deterministically, offline, at $0.</dd>
+      </dl>
+    </div>
+  </details>
+</section>
+
+</div>
+
+<script>
+(function(){
+  const sx = document.getElementById('sx');
+  const reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  sx.classList.add('js');
+  const $ = id => document.getElementById(id);
+  const chapters = [...document.querySelectorAll('.ch')];
+  const segs = [...document.querySelectorAll('#rail .seg')];
+  const header = document.querySelector('header');
+  const rail = $('rail');
+  const fitRail = () => { rail.style.top = (header ? header.offsetHeight : 0) + 'px'; };
+  fitRail(); addEventListener('resize', fitRail);
+  const offset = () => (header ? header.offsetHeight : 0) + rail.offsetHeight + 8;
+
+  // ---------------------------------------------------------------- chapter animations
+  const timers = new WeakMap();
+  function later(ch, ms, fn){ const t = setTimeout(fn, reduce ? 0 : ms); (timers.get(ch) || timers.set(ch, []).get(ch)).push(t); }
+  function countUp(el){
+    const to = parseFloat(el.dataset.to) || 0, dur = reduce ? 0 : parseInt(el.dataset.dur || 1200, 10);
+    const t0 = performance.now(), fmt = v => Math.round(v).toLocaleString('en-US');
+    const ring = el.closest('.bigring');
+    const step = t => { const k = dur ? Math.min(1, (t - t0) / dur) : 1, e = 1 - Math.pow(1 - k, 3);
+      el.textContent = fmt(to * e); if (ring) ring.style.setProperty('--p', to * e);
+      if (k < 1) requestAnimationFrame(step); };
+    requestAnimationFrame(step);
+    setTimeout(() => { el.textContent = fmt(to); if (ring) ring.style.setProperty('--p', to); }, dur + 300);
+  }
+  function typeOut(el){
+    const full = el.dataset.full; el.textContent = '';
+    if (reduce) { el.textContent = full; return; }
+    const per = Math.max(6, Math.min(22, 2600 / Math.max(1, full.length)));
+    let i = 0; const tick = () => { i = Math.min(full.length, i + 2); el.textContent = full.slice(0, i); if (i < full.length) setTimeout(tick, per * 2); };
+    tick();
+  }
+  document.querySelectorAll('[data-type]').forEach(el => { el.dataset.full = el.textContent; });
+  function run(ch){
+    (timers.get(ch) || []).forEach(clearTimeout); timers.set(ch, []);
+    ch.classList.remove('live'); void ch.offsetWidth; ch.classList.add('live');
+    ch.querySelectorAll('[data-to]').forEach(el => { el.textContent = '0'; later(ch, parseInt(el.dataset.t || 0, 10), () => countUp(el)); });
+    ch.querySelectorAll('[data-type]').forEach(el => { el.textContent = ''; later(ch, parseInt(el.dataset.t || 0, 10), () => typeOut(el)); });
+    ch.querySelectorAll('[data-w]').forEach(el => { el.style.width = '0'; later(ch, parseInt(el.dataset.t || 0, 10), () => { el.style.width = el.dataset.w + '%'; }); });
+    ch.querySelectorAll('[data-to-left]').forEach(el => { el.style.left = '0'; later(ch, parseInt(el.dataset.t || 0, 10), () => { el.style.left = 'calc(' + el.dataset.toLeft + '% - 1px)'; }); });
+    const ring = ch.querySelector('.bigring'); if (ring) ring.style.setProperty('--p', 0);
+  }
+  const seen = new WeakSet();
+  const trigger = el => el.classList.contains('stage') ? el.closest('.ch') : el;
+  const io2 = new IntersectionObserver(entries => entries.forEach(en => {
+    const ch = trigger(en.target);
+    if (en.isIntersecting && !seen.has(ch)) { seen.add(ch); run(ch); }
+  }), {threshold: 0.3});
+  chapters.forEach(ch => io2.observe(ch.querySelector('.stage')));
+  document.querySelectorAll('.on-view').forEach(el => io2.observe(el));
+  document.querySelectorAll('.replay').forEach(b => b.addEventListener('click', () => run(b.closest('.ch'))));
+
+  // ---------------------------------------------------------------- rail: which chapter, how far
+  let playing = false, idx = 0, chStart = 0, chTimer = null, rafId = null;
+  // on a phone the headline is read first, then the stage plays below it: 3.4 s more per chapter
+  const durs = chapters.map(ch => parseFloat(ch.dataset.dur) * 1000 + (innerWidth < 900 ? 3400 : 0));
+  const total = durs.reduce((a, b) => a + b, 0);
+  const mmss = ms => { const s = Math.max(0, Math.round(ms / 1000)); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); };
+  function paint(active, frac){
+    segs.forEach((sg, i) => { sg.classList.toggle('on', i === active);
+      sg.querySelector('i').style.setProperty('--f', i < active ? 1 : (i === active ? frac : 0)); });
+    if (active >= 0 && segs[active] && segs[active].scrollIntoView && innerWidth < 900) segs[active].scrollIntoView({block: 'nearest', inline: 'center'});
+  }
+  function onScroll(){
+    if (playing) return;
+    const mid = innerHeight * 0.5;
+    let active = -1, frac = 0;
+    chapters.forEach((ch, i) => { const r = ch.getBoundingClientRect(); if (r.top <= mid) { active = i; frac = Math.min(1, Math.max(0, (mid - r.top) / r.height)); } });
+    paint(active, frac);
+  }
+  addEventListener('scroll', onScroll, {passive: true}); onScroll();
+
+  // ---------------------------------------------------------------- play mode
+  const btns = [$('play'), $('play2')];
+  function label(){
+    $('play2').textContent = playing ? '❚❚ Pause' : '▶ Play';
+    $('play').querySelector('span:last-child').firstChild.textContent = playing ? 'Pause the story ' : 'Play the story ';
+  }
+  function goTo(i, smooth){
+    const top = chapters[i].getBoundingClientRect().top + scrollY - offset();
+    scrollTo({top, behavior: smooth && !reduce ? 'smooth' : 'auto'});
+  }
+  function tickLeft(){
+    if (!playing) return;
+    const done = durs.slice(0, idx).reduce((a, b) => a + b, 0) + (performance.now() - chStart);
+    $('left').textContent = mmss(total - done) + ' left';
+    paint(idx, Math.min(1, (performance.now() - chStart) / durs[idx]));
+    rafId = requestAnimationFrame(tickLeft);
+  }
+  function playFrom(i){
+    clearTimeout(chTimer); cancelAnimationFrame(rafId);
+    if (i >= chapters.length) { stop(); const end = $('the-end'); scrollTo({top: end.getBoundingClientRect().top + scrollY - offset(), behavior: reduce ? 'auto' : 'smooth'}); return; }
+    idx = i; playing = true; label();
+    goTo(i, true);
+    const narrow = innerWidth < 900, lead = narrow ? 3800 : 450;
+    if (narrow) setTimeout(() => { if (playing && idx === i) { const st = chapters[i].querySelector('.stage');
+      scrollTo({top: st.getBoundingClientRect().top + scrollY - offset(), behavior: reduce ? 'auto' : 'smooth'}); } }, lead - 400);
+    setTimeout(() => { if (playing && idx === i) run(chapters[i]); }, lead);
+    chStart = performance.now(); tickLeft();
+    chTimer = setTimeout(() => playFrom(i + 1), durs[i]);
+  }
+  function stop(){ playing = false; clearTimeout(chTimer); cancelAnimationFrame(rafId); $('left').textContent = ''; label(); onScroll(); }
+  function current(){ const mid = innerHeight * 0.5; let a = 0; chapters.forEach((ch, i) => { if (ch.getBoundingClientRect().top <= mid) a = i; }); return a; }
+  btns.forEach(b => b.addEventListener('click', () => playing ? stop() : playFrom(current() && scrollY > chapters[0].offsetTop - 200 ? current() : 0)));
+  $('again').addEventListener('click', () => playFrom(0));
+  // the reader takes over: wheel, touch or keys pause the story
+  ['wheel', 'touchstart'].forEach(ev => addEventListener(ev, e => { if (playing && !(e.target.closest && e.target.closest('button,a,input'))) stop(); }, {passive: true}));
+  addEventListener('keydown', e => { if (playing && ['ArrowDown', 'ArrowUp', 'PageDown', 'PageUp', 'Home', 'End', ' '].includes(e.key) && !e.target.closest('input,textarea')) stop(); });
+  document.querySelectorAll('[data-jump]').forEach(a => a.addEventListener('click', e => {
+    e.preventDefault(); const i = parseInt(a.dataset.jump, 10);
+    if (playing) playFrom(i); else { goTo(i, true); }
+  }));
+
+  // ---------------------------------------------------------------- "how exactly?" + glossary links open the folded section
+  function openTarget(id, smooth){
+    const el = id && document.getElementById(id); if (!el) return;
+    const d = el.closest('details'); if (d) d.open = true;
+    const top = el.getBoundingClientRect().top + scrollY - offset();
+    scrollTo({top, behavior: smooth && !reduce ? 'smooth' : 'auto'});
+  }
+  document.querySelectorAll('[data-deep]').forEach(a => a.addEventListener('click', e => {
+    e.preventDefault(); if (playing) stop(); const id = a.getAttribute('href').slice(1); history.replaceState(null, '', '#' + id); openTarget(id, true);
+  }));
+  addEventListener('hashchange', () => openTarget(location.hash.slice(1), true));
+  if (location.hash.length > 1) setTimeout(() => openTarget(location.hash.slice(1), false), 60);
+
+  // ---------------------------------------------------------------- "More info" panels
+  const all = [...document.querySelectorAll('.mi')];
+  const place = mi => { mi.classList.remove('r'); if (mi.getBoundingClientRect().left + 680 > innerWidth) mi.classList.add('r'); };
+  all.forEach(mi => {
+    mi.addEventListener('mouseenter', () => place(mi));
+    mi.querySelector('.mi-btn').addEventListener('click', e => { e.stopPropagation(); place(mi);
+      const open = !mi.classList.contains('open'); all.forEach(o => { o.classList.remove('open'); o.querySelector('.mi-btn').setAttribute('aria-expanded', 'false'); });
+      if (open) { mi.classList.add('open'); e.currentTarget.setAttribute('aria-expanded', 'true'); } });
+  });
+  document.addEventListener('click', e => { if (!e.target.closest('.mi')) all.forEach(o => o.classList.remove('open')); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') { all.forEach(o => o.classList.remove('open')); if (document.activeElement && document.activeElement.closest('.mi')) document.activeElement.blur(); } });
+})();
+</script>
+
+</main>
+<script>
+/* BrandWatch motion layer: count-ups, staggered entrances, animated bars / rings / histograms,
+   and auto-drawn donut + sparkline charts from data-* attributes. */
+(function(){
+  const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // wide tables scroll inside their own box instead of stretching the page
+  document.querySelectorAll('main table').forEach(t => { if (t.parentElement.classList.contains('tw')) return;
+    const w = document.createElement('div'); w.className = 'tw'; t.parentNode.insertBefore(w, t); w.appendChild(t); });
+  // keep the active tab visible in the scrollable mobile nav
+  const act = document.querySelector('header nav a.active'); if (act && act.scrollIntoView) act.scrollIntoView({block: 'nearest', inline: 'center'});
+  // stagger entrances
+  document.querySelectorAll('.kpis').forEach(g => [...g.children].forEach((el, i) => el.style.setProperty('--i', i)));
+  document.querySelectorAll('main .panel').forEach((el, i) => el.style.setProperty('--i', Math.min(i, 12)));
+  document.querySelectorAll('table').forEach(t => [...t.querySelectorAll('tr')].forEach((tr, i) => tr.style.setProperty('--r', Math.min(i, 30))));
+  document.querySelectorAll('.timeline').forEach(t => [...t.children].forEach((li, i) => li.style.setProperty('--r', Math.min(i, 30))));
+  // count-up numbers
+  const fmt = v => Number.isInteger(v) ? v.toLocaleString('en-US') : v.toFixed(1);
+  document.querySelectorAll('[data-count]').forEach(el => {
+    const target = parseFloat(el.dataset.count) || 0, suffix = el.dataset.suffix || '';
+    if (reduce) { el.textContent = fmt(target) + suffix; return; }
+    const t0 = performance.now(), dur = 1100 + Math.min(900, target * 4);
+    const tick = t => { const k = Math.min(1, (t - t0) / dur), e = 1 - Math.pow(1 - k, 3);
+      el.textContent = fmt(Number.isInteger(target) ? Math.round(target * e) : target * e) + suffix; if (k < 1) requestAnimationFrame(tick); };
+    requestAnimationFrame(tick);
+    setTimeout(() => { el.textContent = fmt(target) + suffix; }, dur + 400);  // final value even if rAF is paused
+  });
+  // grow bars, histograms, rings after first paint
+  const later = fn => { let ran = false; const go = () => { if (!ran) { ran = true; fn(); } };
+    requestAnimationFrame(() => requestAnimationFrame(go)); setTimeout(go, 350); };
+  const grow = () => {
+    document.querySelectorAll('[data-w]').forEach(el => el.style.width = Math.max(0, Math.min(100, +el.dataset.w)) + '%');
+    document.querySelectorAll('[data-h]').forEach(el => el.style.height = Math.max(2, Math.min(100, +el.dataset.h)) + '%');
+    document.querySelectorAll('[data-p]').forEach(el => el.style.setProperty('--p', +el.dataset.p));
+  };
+  later(grow);  // rAF is paused in hidden tabs: later() also has a timer fallback
+  // donuts: <svg class="donut" data-donut='[{"label","value","color"}]' data-center="label">
+  const NS = 'http://www.w3.org/2000/svg';
+  document.querySelectorAll('svg.donut[data-donut]').forEach(svg => {
+    const segs = JSON.parse(svg.dataset.donut || '[]'), total = segs.reduce((a, s) => a + s.value, 0);
+    svg.setAttribute('viewBox', '0 0 120 120');
+    const r = 46, C = 2 * Math.PI * r; let off = 0;
+    const bg = document.createElementNS(NS, 'circle'); bg.setAttribute('cx', 60); bg.setAttribute('cy', 60); bg.setAttribute('r', r);
+    bg.setAttribute('fill', 'none'); bg.setAttribute('stroke', '#1E2A3D'); bg.setAttribute('stroke-width', 13); svg.appendChild(bg);
+    segs.forEach((s, i) => {
+      const len = total ? s.value / total * C : 0, c = document.createElementNS(NS, 'circle');
+      c.setAttribute('cx', 60); c.setAttribute('cy', 60); c.setAttribute('r', r); c.setAttribute('fill', 'none');
+      c.setAttribute('stroke', s.color); c.setAttribute('stroke-width', 13); c.setAttribute('stroke-linecap', 'butt');
+      c.setAttribute('transform', 'rotate(-90 60 60)'); c.setAttribute('stroke-dasharray', `0 ${C}`); c.setAttribute('stroke-dashoffset', -off);
+      c.style.transition = `stroke-dasharray 1.1s cubic-bezier(.2,.8,.2,1) ${i * 120}ms`; c.style.filter = `drop-shadow(0 0 4px ${s.color}66)`;
+      const title = document.createElementNS(NS, 'title'); title.textContent = `${s.label}: ${s.value}`; c.appendChild(title);
+      svg.appendChild(c); off += len;
+      later(() => c.setAttribute('stroke-dasharray', `${Math.max(0, len - 1.5)} ${C}`));
+    });
+    const t1 = document.createElementNS(NS, 'text'); t1.setAttribute('x', 60); t1.setAttribute('y', 62); t1.setAttribute('text-anchor', 'middle');
+    t1.setAttribute('fill', '#E6EDF5'); t1.setAttribute('font-family', 'Rajdhani, monospace'); t1.setAttribute('font-size', 26); t1.setAttribute('font-weight', 700); t1.textContent = total;
+    const t2 = document.createElementNS(NS, 'text'); t2.setAttribute('x', 60); t2.setAttribute('y', 78); t2.setAttribute('text-anchor', 'middle');
+    t2.setAttribute('fill', '#8A97A8'); t2.setAttribute('font-family', 'JetBrains Mono, monospace'); t2.setAttribute('font-size', 7.5); t2.textContent = (svg.dataset.center || 'total').toUpperCase();
+    svg.appendChild(t1); svg.appendChild(t2);
+  });
+  // sparklines: <svg class="spark" data-spark='{"series":[{"values":[...],"color":"#..."}]}'>
+  document.querySelectorAll('svg.spark[data-spark]').forEach(svg => {
+    const spec = JSON.parse(svg.dataset.spark || '{}'), series = spec.series || [];
+    const W = 300, H = 64, mx = Math.max(1, ...series.flatMap(s => s.values));
+    svg.setAttribute('viewBox', `0 0 ${W} ${H}`); svg.setAttribute('preserveAspectRatio', 'none');
+    series.forEach((s, si) => {
+      const n = s.values.length, pts = s.values.map((v, i) => [n > 1 ? i / (n - 1) * W : 0, H - 4 - v / mx * (H - 10)]);
+      const d = pts.map((p, i) => (i ? 'L' : 'M') + p[0].toFixed(1) + ',' + p[1].toFixed(1)).join(' ');
+      const id = 'g' + Math.random().toString(36).slice(2);
+      const defs = document.createElementNS(NS, 'defs'); defs.innerHTML = `<linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${s.color}" stop-opacity=".35"/><stop offset="1" stop-color="${s.color}" stop-opacity="0"/></linearGradient>`;
+      svg.appendChild(defs);
+      if (si === 0) { const area = document.createElementNS(NS, 'path'); area.setAttribute('d', d + ` L${W},${H} L0,${H} Z`); area.setAttribute('fill', `url(#${id})`); area.style.opacity = 0; area.style.transition = 'opacity 1.2s ease .6s'; svg.appendChild(area); later(() => area.style.opacity = 1); }
+      const line = document.createElementNS(NS, 'path'); line.setAttribute('d', d); line.setAttribute('fill', 'none'); line.setAttribute('stroke', s.color);
+      line.setAttribute('stroke-width', 2); line.setAttribute('vector-effect', 'non-scaling-stroke'); line.style.filter = `drop-shadow(0 0 3px ${s.color})`;
+      svg.appendChild(line);
+      const L = line.getTotalLength ? line.getTotalLength() : 600; line.style.strokeDasharray = L; line.style.strokeDashoffset = L;
+      line.style.transition = `stroke-dashoffset 1.6s cubic-bezier(.2,.8,.2,1) ${si * 200}ms`;
+      later(() => line.style.strokeDashoffset = 0);
+      const last = pts[pts.length - 1]; if (last) { const dot = document.createElementNS(NS, 'circle'); dot.setAttribute('cx', last[0]); dot.setAttribute('cy', last[1]); dot.setAttribute('r', 3); dot.setAttribute('fill', s.color); svg.appendChild(dot); }
+    });
+  });
+  // '?' help tips open their glossary entry (a <span>, so it can sit inside a link or a card)
+  const openHelp = e => { const h = e.target.closest && e.target.closest('.help[data-href]'); if (!h) return;
+    if (e.type === 'keydown' && e.key !== 'Enter') return; e.preventDefault(); e.stopPropagation(); location.href = h.dataset.href; };
+  document.addEventListener('click', openHelp, true); document.addEventListener('keydown', openHelp, true);
+  // relative times: <span data-rel="iso">
+  // server timestamps are UTC; one without a zone (SQLite returns naive datetimes) would otherwise
+  // be read as the viewer's local time and be off by their UTC offset
+  const utc = iso => /T\d\d:\d\d/.test(iso) && !/(Z|[+-]\d\d:?\d\d)$/.test(iso) ? iso + 'Z' : iso;
+  const rel = iso => { const d = (new Date(utc(iso)) - Date.now()) / 1000, a = Math.abs(d), f = d > 0;
+    if (!isFinite(d)) return '';
+    const u = a < 60 ? [a, 's'] : a < 3600 ? [a / 60, 'm'] : a < 86400 ? [a / 3600, 'h'] : [a / 86400, 'd'];
+    return f ? `in ${Math.round(u[0])}${u[1]}` : `${Math.round(u[0])}${u[1]} ago`; };
+  // data-due: a scheduled time already past reads "due now", not "7h ago"
+  const tickRel = () => document.querySelectorAll('[data-rel]').forEach(el => {
+    if (el.dataset.due && new Date(utc(el.dataset.rel)) <= Date.now()) { el.textContent = 'due now'; return; }
+    const r = rel(el.dataset.rel); if (r) el.textContent = r; });
+  tickRel(); setInterval(tickRel, 15000);
+})();
+</script>
+<div id="bw-modal" hidden>
+  <div class="bw-dlg" role="dialog" aria-modal="true" aria-labelledby="bw-dlg-t">
+    <div class="bw-dlg-icon">!</div>
+    <div class="bw-dlg-body">
+      <h3 id="bw-dlg-t"></h3>
+      <div class="bw-dlg-m"></div>
+      <input class="bw-dlg-in" type="text" autocomplete="off" hidden>
+      <div class="bw-dlg-err small" hidden></div>
+    </div>
+    <div class="bw-dlg-btns"><button type="button" class="bw-cancel">Cancel</button><button type="button" class="bw-ok primary">OK</button></div>
+  </div>
+</div>
+<style>
+  #bw-modal{position:fixed;inset:0;z-index:1000;background:rgba(3,6,10,.72);backdrop-filter:blur(3px);display:flex;align-items:center;justify-content:center;padding:16px;animation:bwfade .15s ease-out}
+  #bw-modal[hidden]{display:none}
+  @keyframes bwfade{from{opacity:0}to{opacity:1}}
+  @keyframes bwpop{from{transform:translateY(8px) scale(.98);opacity:0}to{transform:none;opacity:1}}
+  .bw-dlg{width:min(480px,100%);background:linear-gradient(180deg,#121c2b,#0c131e);border:1px solid var(--border);border-top:3px solid var(--accent);border-radius:14px;box-shadow:0 20px 60px rgba(0,0,0,.6);padding:20px 22px 16px;display:grid;grid-template-columns:auto 1fr;gap:4px 14px;animation:bwpop .18s ease-out}
+  .bw-dlg.danger{border-top-color:var(--crit)}
+  .bw-dlg-icon{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;background:rgba(53,199,242,.15);color:var(--accent)}
+  .bw-dlg.danger .bw-dlg-icon{background:rgba(255,77,77,.15);color:var(--crit)}
+  .bw-dlg h3{margin:4px 0 6px;font-size:16px;letter-spacing:0;text-transform:none}
+  .bw-dlg-m{font-size:13.5px;line-height:1.55;color:var(--text);white-space:pre-line;word-break:break-word}
+  .bw-dlg-in{margin-top:10px;width:100%}
+  .bw-dlg-err{color:var(--crit);margin-top:6px}
+  .bw-dlg-btns{grid-column:1 / -1;display:flex;justify-content:flex-end;gap:8px;margin-top:16px}
+  .bw-dlg.danger .bw-ok{background:rgba(255,77,77,.15);border-color:var(--crit);color:var(--crit)}
+</style>
+<script>
+/* The interface's own dialog, instead of the browser's confirm() / prompt() boxes.
+   bwConfirm(message, {title, ok, cancel, danger})            -> Promise<boolean>
+   bwDialog({title, message, ok, cancel, danger, expect})     -> Promise<boolean>; with expect the analyst must type that text
+   Declarative: data-confirm="message" on a <form> (asked on submit) or on a submit button (asked when that button submits);
+   data-confirm-title, data-confirm-ok, data-confirm-danger, data-confirm-expect (type-to-confirm). "{n}" in the message is replaced by
+   the number of elements matching data-confirm-count (e.g. ".sel:checked"). */
+(function(){
+  const modal = document.getElementById('bw-modal'); if (!modal) return;
+  const dlg = modal.querySelector('.bw-dlg'), t = modal.querySelector('h3'), m = modal.querySelector('.bw-dlg-m'), inp = modal.querySelector('.bw-dlg-in'),
+        err = modal.querySelector('.bw-dlg-err'), ok = modal.querySelector('.bw-ok'), cancel = modal.querySelector('.bw-cancel');
+  let done = null, last = null;
+  function close(v){ modal.hidden = true; const d = done; done = null; if (last && last.focus) last.focus(); if (d) d(v); }
+  window.bwDialog = function(o){
+    o = o || {};
+    if (done) close(false);
+    last = document.activeElement;
+    t.textContent = o.title || (o.danger ? 'Are you sure?' : 'Please confirm');
+    m.textContent = o.message || '';
+    ok.textContent = o.ok || 'OK'; cancel.textContent = o.cancel || 'Cancel';
+    cancel.hidden = o.cancel === false;
+    dlg.classList.toggle('danger', !!o.danger);
+    inp.hidden = !o.expect; inp.value = ''; inp.placeholder = o.expect ? 'type: ' + o.expect : ''; err.hidden = true;
+    modal.hidden = false;
+    setTimeout(() => (o.expect ? inp : ok).focus(), 0);
+    return new Promise(res => { done = v => res(v); modal._expect = o.expect || null; });
+  };
+  window.bwConfirm = (message, o) => window.bwDialog({...(o || {}), message});
+  window.bwAlert = (message, o) => window.bwDialog({...(o || {}), message, cancel: false, ok: (o && o.ok) || 'OK'});
+  ok.addEventListener('click', () => {
+    if (modal._expect && inp.value.trim() !== modal._expect) { err.textContent = 'That is not it: type “' + modal._expect + '” exactly.'; err.hidden = false; inp.focus(); return; }
+    close(true);
+  });
+  cancel.addEventListener('click', () => close(false));
+  modal.addEventListener('click', ev => { if (ev.target === modal) close(false); });
+  document.addEventListener('keydown', ev => {
+    if (modal.hidden) return;
+    if (ev.key === 'Escape') { ev.preventDefault(); close(false); }
+    else if (ev.key === 'Enter' && document.activeElement !== cancel) { ev.preventDefault(); ok.click(); }
+  });
+  // forms and buttons that ask first
+  document.addEventListener('submit', ev => {
+    const form = ev.target, btn = ev.submitter;
+    const src = (btn && btn.dataset && btn.dataset.confirm !== undefined) ? btn : (form.dataset && form.dataset.confirm !== undefined ? form : null);
+    if (!src || form._bwOk) { form._bwOk = false; return; }
+    ev.preventDefault();
+    let msg = src.dataset.confirm || '';
+    if (src.dataset.confirmCount) msg = msg.replace('{n}', document.querySelectorAll(src.dataset.confirmCount).length);
+    window.bwDialog({message: msg, title: src.dataset.confirmTitle, ok: src.dataset.confirmOk, danger: src.dataset.confirmDanger !== undefined,
+                     expect: src.dataset.confirmExpect}).then(yes => {
+      if (!yes) return;
+      form._bwOk = true;
+      if (form.requestSubmit) form.requestSubmit(btn || undefined); else form.submit();
+    });
+  }, true);
+})();
+</script>
+</body>
+</html>
