@@ -121,8 +121,8 @@ def test_an_async_handler_takes_the_write_lock_before_it_writes(engine):
     from brandwatch.db.base import make_session_factory, take_write_lock
 
     path = engine.url.database
-    if not path or str(path) == ":memory:":
-        pytest.skip("needs a file database")
+    if engine.dialect.name != "sqlite" or not path or str(path) == ":memory:":
+        pytest.skip("needs a SQLite file database (the write lock is SQLite's)")
     with make_session_factory(engine)() as session:
         session.execute(__import__("sqlalchemy").text("select 1"))  # what the user lookup does: begins a read transaction
         take_write_lock(session)

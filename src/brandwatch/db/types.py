@@ -27,11 +27,30 @@ from brandwatch.db.enums import ENUM_TYPE_NAMES
 
 GUID = sa.Uuid(as_uuid=True)
 CIText = sa.String(collation="NOCASE").with_variant(postgresql.CITEXT(), "postgresql")
-INET = sa.String(45).with_variant(postgresql.INET(), "postgresql")
 JSONB = sa.JSON().with_variant(postgresql.JSONB(), "postgresql")
 TZDateTime = sa.DateTime(timezone=True)
 Money = sa.Numeric(10, 4)
 Percent = sa.Numeric(5, 2)
+
+
+class _Inet(sa.types.TypeDecorator):
+    """inet on PostgreSQL, VARCHAR(45) on SQLite — and a plain ``str`` in Python on both (psycopg would hand
+    back an ``IPv4Address``, and the code compares, lowercases and joins addresses as text)."""
+
+    impl = sa.String(45)
+    cache_ok = True
+
+    def load_dialect_impl(self, dialect: sa.Dialect) -> sa.types.TypeEngine[Any]:
+        return dialect.type_descriptor(postgresql.INET() if dialect.name == "postgresql" else sa.String(45))
+
+    def process_bind_param(self, value: Any, dialect: sa.Dialect) -> str | None:
+        return None if value is None else str(value)
+
+    def process_result_value(self, value: Any, dialect: sa.Dialect) -> str | None:
+        return None if value is None else str(value)
+
+
+INET = _Inet()
 
 
 def utcnow() -> datetime:
