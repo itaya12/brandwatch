@@ -11,7 +11,10 @@
 ![Tests](https://img.shields.io/badge/tests-678%20passing-brightgreen)
 ![Demo](https://img.shields.io/badge/demo-%240%2C%20no%20API%20keys-35C7F2)
 
-<img src="docs/images/dashboard.png" alt="BrandWatch dashboard: the five-step pipeline and a live map of where the phishing kits are hosted" width="100%">
+### [▶ Open the live demo](https://brandwatch.itaya12.workers.dev/ui/dashboard/)
+<sub>A read-only copy of the app with fictional brands: click through every page, the attacker map and the findings. Nothing is sent anywhere.</sub>
+
+<a href="https://brandwatch.itaya12.workers.dev/ui/dashboard/"><img src="docs/images/dashboard.png" alt="BrandWatch dashboard: the five-step pipeline and a live map of where the phishing kits are hosted" width="100%"></a>
 
 </div>
 
