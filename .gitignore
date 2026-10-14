@@ -36,3 +36,6 @@ evidence_live/
 .claude/
 *.bak
 *.log
+
+# the static demo build (scripts/build_static_demo.py)
+site/
