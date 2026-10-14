@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block title %}Takedowns{% endblock %}
+{% block content %}
+<style>
+  .cta{display:inline-flex;align-items:center;gap:8px;padding:7px 12px;border-radius:9px;border:1px solid var(--crit);color:var(--crit);background:rgba(255,77,77,.08);font-weight:600;font-size:12px;cursor:pointer}
+  .cta:hover{background:rgba(255,77,77,.18)}
+</style>
+<h1>TAKEDOWNS <span class="muted">· every confirmed phishing site, and whether a takedown was requested · {{ total }} site(s)</span></h1>
+<p class="intro">{{ PAGE_INTROS.takedowns }}</p>
+{# three tones only: needs action (red) · on its way (accent) · taken down (green); the rest is neutral #}
+{% set colors = {'none':'#FF4D4D','sent':'#35C7F2','acknowledged':'#35C7F2','in_progress':'#35C7F2','resolved':'#2ECC71'} %}
+
+{% set groups = [
+  ('none', 'no takedown yet', 'confirmed phishing with no request — start here', ['none'], 'var(--crit)'),
+  ('unsent', 'request being prepared', 'draft, in review, approved or reopened — not sent yet', ['draft', 'review', 'approved', 'reopened'], 'var(--text)'),
+  ('inflight', 'sent, waiting for the host', 'sent, acknowledged or in progress', ['sent', 'acknowledged', 'in_progress'], 'var(--accent2)'),
+  ('resolved', 'taken down', 'the site is gone', ['resolved'], 'var(--low)'),
+] %}
+<div class="kpis">
+  {% for key, label, tip, members, col in groups %}{% set ns = namespace(n=0) %}{% for st in members %}{% set ns.n = ns.n + counts.get(st, 0) %}{% endfor %}{% set n = ns.n %}
+  <a class="kpi {{ 'on' if filters.state==key }}" href="/ui/takedowns?state={{ key }}{% if filters.brand_id %}&brand_id={{ filters.brand_id }}{% endif %}" title="{{ tip }}">
+    <div class="v" data-count="{{ n }}" style="color:{{ col if n else 'var(--text)' }}">0</div><div class="l">{{ label }}</div></a>
+  {% endfor %}
+  {% if counts.get('rejected') %}<a class="kpi {{ 'on' if filters.state=='rejected' }}" href="/ui/takedowns?state=rejected{% if filters.brand_id %}&brand_id={{ filters.brand_id }}{% endif %}"><div class="v" data-count="{{ counts.rejected }}">0</div><div class="l">rejected by the host</div></a>{% endif %}
+</div>
+
+<div class="panel" style="margin-top:14px">
+  {% if brand_chips|length > 1 %}<div class="bchips" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px">
+    <a class="btn" style="padding:4px 12px;font-size:12.5px;{{ 'border-color:var(--accent);color:var(--accent2)' if not filters.brand_id }}" href="/ui/takedowns?state={{ filters.state }}">All brands <b>{{ brand_total }}</b></a>
+    {% for b in brand_chips %}<a class="btn" style="padding:4px 12px;font-size:12.5px;{{ 'border-color:var(--accent);color:var(--accent2)' if filters.brand_id == b.id }}" href="/ui/takedowns?state={{ filters.state }}&brand_id={{ b.id }}">{{ b.name }} <b>{{ b.count }}</b></a>{% endfor %}
+  </div>{% endif %}
+  <form method="get" action="/ui/takedowns" class="actions" style="margin-bottom:8px">
+    <div><label>Brand</label><select name="brand_id" onchange="this.form.submit()"><option value="">all</option>{% for b in brands %}<option value="{{ b.id }}" {{ 'selected' if filters.brand_id==b.id }}>{{ b.name }}</option>{% endfor %}</select></div>
+    <div><label>Takedown state</label><select name="state" onchange="this.form.submit()"><option value="">all</option>{% for st in ['none'] + TakedownStates %}<option value="{{ st }}" {{ 'selected' if filters.state==st }}>{{ st|state_label }}</option>{% endfor %}</select></div>
+    <div><button type="submit">Apply</button></div>
+    {% if filters.state or filters.brand_id %}<div><a class="btn" href="/ui/takedowns">clear</a></div>{% endif %}
+  </form>
+  {% if sites %}
+  <table>
+    <tr><th>Phishing site</th><th>Brand</th><th>Severity</th><th>Confirmed</th><th>Takedown</th><th>Reference</th><th>Abuse contact</th><th>Sent</th><th>Reported</th><th>Infrastructure</th></tr>
+    {% for x in sites %}
+    <tr>
+      <td><a class="mono" href="/ui/findings/{{ x.id }}">{{ x.hostname }}</a></td>
+      <td class="small"><a href="/ui/brands/{{ x.brand_id }}">{{ x.brand_name or '—' }}</a></td>
+      <td><span class="badge sev-{{ x.severity }}">{{ x.severity }}</span></td>
+      <td class="mono small muted" data-rel="{{ x.confirmed_at }}">{{ (x.confirmed_at or '')[:16].replace('T',' ') }}</td>
+      <td>
+        {% if x.takedown %}<a href="/ui/takedowns/{{ x.takedown.id }}" class="badge state" style="border-color:{{ colors.get(x.takedown_state, '#8A97A8') }};color:{{ colors.get(x.takedown_state, '#8A97A8') }}">{{ x.takedown_state|state_label }} → open</a>
+        {% elif can_write %}<form method="post" action="/ui/findings/{{ x.id }}/takedown" style="display:inline"><button class="cta" type="submit">Draft takedown request →</button></form>
+        {% else %}<span class="badge state" style="border-color:var(--crit);color:var(--crit)">no takedown yet</span>{% endif %}
+      </td>
+      <td class="mono small">{{ x.takedown.reference if x.takedown else '—' }}</td>
+      <td class="mono small">{{ (x.takedown.abuse_contact if x.takedown else none) or '—' }}</td>
+      <td class="mono small muted">{{ ((x.takedown.sent_at if x.takedown else none) or '—')[:16].replace('T',' ') }}</td>
+      <td class="small">{% if x.takedown %}<a href="/ui/takedowns/{{ x.takedown.id }}#report" title="report the site to blocklists, security vendors and national services">{{ x.takedown.reported_count }} of {{ REPORT_PORTAL_COUNT }} portal(s)</a>{% if x.takedown.channels_sent %} · {{ x.takedown.channels_sent|length }} channel(s){% endif %}{% else %}—{% endif %}</td>
+      <td class="small">{% if x.map_status == 'mapped' %}<a href="/ui/campaigns/{{ x.campaign_id }}">mapped → open</a>{% elif x.map_status == 'mapping' %}<span class="radar"></span> <a href="/ui/jobs/{{ x.map_job.id }}">mapping…</a>{% else %}<span class="muted">not mapped</span>{% endif %}</td>
+    </tr>
+    {% endfor %}
+  </table>
+  {% else %}
+  <p class="muted">{% if filters.state or filters.brand_id %}Nothing matches these filters. <a href="/ui/takedowns">Clear them</a>.{% else %}No confirmed phishing sites yet. A takedown starts from a <b>confirmed</b> finding: <a href="/ui/findings?state=open">open findings →</a>{% endif %}</p>
+  {% endif %}
+  <p class="small muted">BrandWatch never sends a takedown itself: an analyst sends the approved text from their own mailbox and records <b>sent</b> on the request.</p>
+</div>
+{% endblock %}

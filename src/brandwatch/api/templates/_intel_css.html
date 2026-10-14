@@ -1,0 +1,52 @@
+{# Styles for the investigation blocks — included by finding_detail.html and intel.html. #}
+<style>
+  .flag{vertical-align:-3px;border-radius:2px;box-shadow:0 0 0 1px rgba(255,255,255,.12);margin-right:4px}
+  .flag-none{display:inline-block}
+  .links{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+  .links a{font-size:12px;padding:4px 9px;border:1px solid var(--border);border-radius:999px;background:var(--panel2);color:var(--text);text-decoration:none}
+  .links a:hover{border-color:var(--accent);color:var(--accent2)}
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+  .card{background:var(--panel2);border:1px solid var(--border);border-radius:12px;padding:14px;min-width:0}
+  .card h3{margin:0 0 8px;font:600 11px var(--mono);letter-spacing:.1em;color:var(--muted);text-transform:uppercase}
+  .kv{display:grid;grid-template-columns:minmax(110px,160px) minmax(0,1fr);gap:5px 12px;font-size:13px}
+  .kv dt{color:var(--muted)}.kv dd{margin:0;word-break:break-all}
+  .det{display:inline-flex;align-items:baseline;gap:3px;font-family:var(--mono);font-size:13px;padding:2px 8px;border-radius:7px;border:1px solid var(--border);background:var(--panel)}
+  .det b{font-size:14px}.det i{font-style:normal;color:var(--muted);font-size:11px}
+  .det.bad{color:var(--crit);border-color:rgba(255,77,77,.45)}.det.ok{color:var(--low)}
+  .det.none{color:var(--muted)}.det.big{font-size:18px;padding:6px 14px}.det.big b{font-size:26px}
+  .pill.warn{color:var(--high);border-color:rgba(255,159,28,.5)}.pill.err{color:var(--crit);border-color:rgba(255,77,77,.5)}
+  .ring.lg{--s:120px;width:var(--s);height:var(--s)}
+  .vbar{height:8px;border-radius:99px;background:var(--panel);border:1px solid var(--border);overflow:hidden;margin:6px 0}
+  .vbar i{display:block;height:100%;background:var(--accent)}
+  .mono-block{font:12px/1.5 var(--mono);white-space:pre-wrap;word-break:break-all;background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:12px;max-height:380px;overflow:auto}
+  details summary{cursor:pointer;color:var(--accent2);font-size:13px;margin:8px 0}
+  .ipcard{border:1px solid var(--border);border-radius:14px;padding:16px;background:var(--panel);margin-bottom:14px}
+  .ipcard .top{display:flex;flex-wrap:wrap;gap:14px;align-items:center}
+  .ipcard .top h2{margin:0;font-size:22px}
+  .ipcard .top .ring{--s:64px;width:64px;height:64px;font-size:16px}
+  .progress{display:flex;gap:12px;align-items:center;margin-top:12px;border-color:rgba(53,199,242,.5)}
+  .progress[hidden]{display:none}  /* the class sets display:flex, which would override the hidden attribute */
+  .progress .radar{width:22px;height:22px;flex:0 0 22px}
+  .progress .msg{flex:1;font-size:13px}.progress .msg small{display:block;color:var(--muted);margin-top:2px}
+  .btnrow{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-left:auto}
+  .btnrow button,.btnrow a.btn{padding:8px 14px}
+  .shot-us{max-width:100%;border:1px solid var(--border);border-radius:10px;background:#000}
+  .cols>*{min-width:0}  /* grid children must be allowed to shrink below their tables' width on a phone */
+  .sim-group{margin-bottom:16px}.sim-group h3 .q{font:11px var(--mono);color:var(--muted);letter-spacing:0;text-transform:none;margin-left:8px;word-break:break-all}
+  table.compact td,table.compact th{padding:6px 8px;font-size:13px}
+  .why{font-size:12px;color:var(--muted);margin:0 0 10px}
+  .subh{font:600 11px var(--mono);letter-spacing:.1em;color:var(--muted);text-transform:uppercase;margin:0 0 6px}
+  @media (max-width:700px){.kv{grid-template-columns:minmax(0,1fr)}.kv dt{margin-top:6px}.btnrow{margin-left:0;width:100%}}
+  /* WHOIS history */
+  .wh-sum{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin:12px 0}
+  .wh-sum .card .v{font-size:16px;font-weight:600;margin-top:2px}.wh-sum .card .d{font-size:12px;color:var(--muted);margin-top:2px}
+  .leak{border:1px solid var(--accent);border-radius:12px;padding:14px 16px;background:rgba(53,199,242,.05);margin:4px 0 14px}
+  .leak h3{margin:0 0 4px;font:600 13px var(--sans);color:var(--text)}.leak .why{margin:0 0 10px}
+  .wtl{list-style:none;margin:0;padding:0 0 0 4px}
+  .wtl li{position:relative;padding:4px 0 12px 22px;border-left:1px solid var(--border);margin-left:6px}
+  .wtl li::before{content:"";position:absolute;left:-5px;top:9px;width:9px;height:9px;border-radius:50%;background:var(--panel2);border:1px solid var(--muted)}
+  .wtl li.key::before{background:var(--accent);border-color:var(--accent)}
+  .wtl .t{font-weight:600;font-size:13px}.wtl .d{font-size:12px;color:var(--muted);margin-top:2px;word-break:break-word}
+  .wtl .when{font:11px var(--mono);color:var(--muted)}
+  td.chg{box-shadow:inset 2px 0 0 var(--accent)}
+</style>

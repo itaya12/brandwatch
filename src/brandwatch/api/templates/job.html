@@ -1,0 +1,416 @@
+{% extends "base.html" %}
+{% block title %}Scan {{ job.id[:8] }}{% endblock %}
+{% block content %}
+{% from "_cap.html" import cap %}
+<style>
+  .stepper{display:grid;grid-template-columns:repeat(var(--n),1fr);gap:0;position:relative;margin:4px 0 6px}
+  .step{position:relative;text-align:center;padding-top:6px}
+  .step::before{content:"";position:absolute;top:24px;left:-50%;right:50%;height:2px;background:#1E2A3D;z-index:0}
+  .step:first-child::before{display:none}
+  .step.done::before,.step.running::before{background:linear-gradient(90deg,var(--low),var(--accent));box-shadow:0 0 8px rgba(53,199,242,.5)}
+  .dot{position:relative;z-index:1;width:38px;height:38px;margin:0 auto;border-radius:50%;display:grid;place-items:center;background:#0b1220;border:2px solid #1E2A3D;
+    font-family:var(--mono);font-size:13px;color:var(--muted);transition:all .4s}
+  .step.running .dot{border-color:var(--accent);color:var(--accent2);box-shadow:0 0 18px rgba(53,199,242,.55);overflow:hidden}
+  .step.running .dot::after{content:"";position:absolute;inset:-2px;border-radius:50%;background:conic-gradient(rgba(53,199,242,.55),transparent 35%);animation:spin 1.1s linear infinite}
+  .step.done .dot{border-color:var(--low);color:#06101c;background:var(--low);box-shadow:0 0 14px rgba(46,204,113,.5)}
+  .step.warn .dot{border-color:var(--high);background:rgba(255,159,28,.2);color:var(--high)}
+  .step.error .dot{border-color:var(--crit);background:rgba(255,77,77,.2);color:var(--crit)}
+  .step .nm{margin-top:6px;font-family:var(--mono);font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+  .step.running .nm,.step.done .nm{color:var(--text)}
+  .step .ct{font-family:var(--mono);font-size:10px;color:var(--muted)}
+  .prog{height:6px;background:#1E2A3D;border-radius:3px;overflow:hidden;margin-top:10px}
+  .prog i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--accent2));box-shadow:0 0 10px var(--accent);transition:width .6s ease}
+  @media (max-width:900px){.stepper{grid-template-columns:repeat(var(--n),92px);overflow-x:auto;scrollbar-width:none;padding-bottom:6px;scroll-behavior:smooth}
+    .stepper::-webkit-scrollbar{display:none}.step .nm{font-size:9.5px;letter-spacing:.03em}}
+  .statebadge{font-family:var(--display);font-size:22px;letter-spacing:.06em;text-transform:uppercase}
+  .statebadge.running{color:var(--accent2)}.statebadge.done{color:var(--low)}.statebadge.failed{color:var(--crit)}
+
+  /* ---- NOW: what the scanner is doing right now ---- */
+  .now{position:relative;overflow:hidden;min-height:190px;border:1px solid rgba(53,199,242,.35);border-radius:12px;padding:18px 20px;
+    background:linear-gradient(135deg,rgba(53,199,242,.10),rgba(14,20,32,.95) 45%,rgba(167,139,250,.08));box-shadow:0 0 0 1px rgba(53,199,242,.08),0 10px 40px rgba(0,0,0,.4)}
+  .now::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent);box-shadow:0 0 18px var(--accent);animation:nowbar 2.4s ease-in-out infinite}
+  @keyframes nowbar{0%,100%{opacity:.5}50%{opacity:1}}
+  .now.finished{border-color:rgba(46,204,113,.45)}.now.finished::before{background:var(--low);box-shadow:0 0 18px var(--low);animation:none}
+  .now.failed{border-color:rgba(255,77,77,.5)}.now.failed::before{background:var(--crit);box-shadow:0 0 18px var(--crit);animation:none}
+  .now .lbl{display:flex;align-items:center;gap:10px;font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent2)}
+  .now .lbl .stg{padding:2px 8px;border:1px solid rgba(53,199,242,.4);border-radius:999px;color:var(--text);letter-spacing:.08em}
+  .now .nav{margin-left:auto;display:flex;gap:6px;align-items:center;letter-spacing:.04em}
+  .now .nav button{padding:3px 10px;font-size:13px;line-height:1}
+  .now .nav .pos{font-family:var(--mono);font-size:11px;color:var(--muted);min-width:70px;text-align:center}
+  .now .nav .live{border-color:var(--low);color:var(--low)}
+  .now.paused{border-color:rgba(245,197,24,.55)}.now.paused::before{background:var(--med);box-shadow:0 0 18px var(--med);animation:none}
+  .items .it .sw{width:12px;height:12px;border-radius:3px;border:1px solid rgba(255,255,255,.25);flex:none}
+  .alert.info{border-left-color:var(--accent)}.alert.info .t .k{color:var(--accent2)}
+  .now .ttl{font-family:var(--display);font-size:28px;font-weight:700;letter-spacing:.02em;margin:8px 0 4px;line-height:1.15;animation:fadeUp .45s cubic-bezier(.2,.8,.2,1) both}
+  .now .dtl{color:var(--muted);font-size:13px;max-width:70ch;animation:fadeUp .5s .05s cubic-bezier(.2,.8,.2,1) both}
+  .now .body{display:grid;grid-template-columns:1fr auto;gap:18px;align-items:start}
+  .now img.peek{width:240px;max-width:38vw;border:1px solid var(--border);border-radius:8px;background:#000;animation:fadeUp .5s both;box-shadow:0 8px 30px rgba(0,0,0,.5)}
+  .now img.peek.favicon{width:96px;height:96px;object-fit:contain;image-rendering:pixelated;background:#0b1220;padding:10px;box-shadow:0 0 0 1px var(--border),0 8px 24px rgba(0,0,0,.4)}
+  .items{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+  .items .it{display:inline-flex;align-items:center;gap:6px;max-width:100%;padding:4px 9px;border:1px solid var(--border);border-radius:8px;background:rgba(8,11,20,.6);
+    font-family:var(--mono);font-size:11.5px;color:var(--text);animation:fadeUp .4s both;animation-delay:calc(var(--i)*45ms)}
+  .items .it a{color:inherit;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:46ch}
+  .items .it .tag{font-size:10px;color:var(--accent2);letter-spacing:.06em}
+  .items .it.official{opacity:.55}.items .it.official .tag{color:var(--low)}
+  .items .it.signal .tag{color:var(--magenta)}
+  .items .more{font-family:var(--mono);font-size:11px;color:var(--muted);align-self:center}
+
+  /* ---- ALERTS: provider problems and how to fix them ---- */
+  .alerts{display:grid;gap:8px}
+  .alert{position:relative;border:1px solid var(--border);border-left:4px solid var(--high);border-radius:8px;padding:10px 12px;background:rgba(14,20,32,.9);animation:fadeUp .45s both}
+  .alert.error{border-left-color:var(--crit);box-shadow:0 0 18px rgba(255,77,77,.12)}
+  .alert .t{font-weight:600;font-size:13px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  .alert .t .k{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--high);border:1px solid currentColor;border-radius:999px;padding:1px 7px}
+  .alert.error .t .k{color:var(--crit)}
+  .alert .f{font-size:12px;color:var(--muted);margin-top:4px;line-height:1.45}
+  .alert .f a{font-family:var(--mono);font-size:11px}
+  .alert .e{font-family:var(--mono);font-size:10.5px;color:#5a6678;margin-top:4px;word-break:break-word}
+  .ok-line{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:12px}
+
+  /* ---- REPORT: what this scan did, step by step ---- */
+  .steps{list-style:none;padding:0;margin:0;display:grid;gap:12px}
+  .steps li{display:grid;grid-template-columns:34px 1fr;gap:12px;align-items:start;animation:fadeUp .45s both;animation-delay:calc(var(--i)*70ms)}
+  .steps .n{width:30px;height:30px;border-radius:50%;border:2px solid var(--accent);color:var(--accent2);display:grid;place-items:center;font-family:var(--mono);font-size:12px;box-shadow:0 0 10px rgba(53,199,242,.3)}
+  .steps .t{font-family:var(--display);font-size:19px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;line-height:1.2}
+  .steps .d{color:var(--muted);font-size:12.5px;margin-top:2px}
+  .steps .items{margin-top:6px}
+</style>
+{% set kind_label = {'brand_scan':'brand scan','url_scan':'URL scan','investigate':'infrastructure map','intel':'site intel','map_all':'map all sites'}.get(job.kind, job.kind.replace('_',' ')) %}
+{% set crumbs = [("Brands & Scans", "/ui/brands")] + ([(job.brand_name, "/ui/brands/" ~ job.brand_id)] if job.brand_id else []) + [(kind_label ~ " " ~ job.id[:8], none)] %}
+{% set crumb_links = ([("Findings", "/ui/findings?brand_id=" ~ job.brand_id), ("Watchlist", "/ui/candidates?brand_id=" ~ job.brand_id)] if job.brand_id else []) + ([("Attack infrastructure map", "/ui/campaigns/" ~ job.campaign_id)] if job.campaign_id else []) + ([("Finding", "/ui/findings/" ~ job.finding_id)] if job.finding_id else []) %}
+{% include "_crumbs.html" %}
+<div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:12px">
+  <h1 style="margin:0">LIVE SCAN CONSOLE <span class="muted">· {{ kind_label }} · {{ job.brand_name or '' }} · <span class="mono">{{ job.id[:8] }}</span></span></h1>
+  {% if can_write %}
+  <a class="btn" href="/api/jobs/{{ job.id }}/trace" target="_blank" rel="noopener" style="margin-left:auto;font-family:var(--mono);font-size:12px" title="Every provider call with its input and output (LLM prompts included), every generated name and DNS answer, each candidate's evidence, signals and scoring arithmetic">⌘ Detailed trace ↗<small style="display:block;font-size:9px;opacity:.7;letter-spacing:.04em">for engineers: every provider call, the AI prompt, the scoring maths</small></a>
+  <form method="post" action="/ui/jobs/{{ job.id }}/cancel" id="stopform" style="margin:0;{{ '' if job.state in ('queued','running') else 'display:none' }}"
+        data-confirm="Stop this scan? Everything collected so far is kept." data-confirm-title="Stop the scan" data-confirm-ok="Stop" data-confirm-danger>
+    <button class="danger" type="submit">■ Stop scan</button>
+  </form>
+  {% endif %}
+</div>
+<div class="kpis" id="kpis">
+  <div class="kpi cy"><div class="v statebadge {{ job.state }}" id="k-state">{% if job.state in ('queued','running') %}<span class="radar"></span> {% endif %}{{ job.state }}</div><div class="l">state</div></div>
+  <div class="kpi" title="raw discovery hits, before duplicates are merged and official / well-known sites are dropped — the pipeline below counts the sites actually visited"><div class="v" id="k-hits">{{ summary.hits if summary and summary.hits is not none else "—" }}</div><div class="l">discovered</div></div>
+  <div class="kpi hi"><div class="v" id="k-findings">{{ summary.findings if summary and summary.findings is not none else "—" }}</div><div class="l">findings</div></div>
+  <div class="kpi crit"><div class="v" id="k-crit">{{ summary.criticals if summary and summary.criticals is not none else "—" }}</div><div class="l">critical</div></div>
+  <div class="kpi vi"><div class="v" id="k-calls">{{ summary.api_calls if summary and summary.api_calls is not none else "—" }}</div><div class="l">API calls</div></div>
+  <div class="kpi ok"><div class="v" id="k-cost">{{ "%.4f"|format(summary.cost_usd) if summary and summary.cost_usd is not none else "—" }}</div><div class="l">cost (USD)</div></div>
+  <div class="kpi med"><div class="v" id="k-alerts">0</div><div class="l">provider alerts</div></div>
+</div>
+
+<div class="grid" style="grid-template-columns:minmax(0,1.7fr) minmax(300px,1fr);margin-top:14px;align-items:start">
+  <div>
+    <div class="now {{ 'failed' if job.state in ('failed','cancelled') else ('finished' if job.state == 'done' else '') }}" id="now">
+      <div class="lbl"><span class="pulse cy" id="now-dot"></span><span id="now-word">right now</span><span class="stg" id="now-stage">{{ job.state }}</span>
+        <span class="nav"><button type="button" id="now-prev" title="previous step">◀</button><span class="pos" id="now-pos">—</span><button type="button" id="now-next" title="next step">▶</button><button type="button" class="live" id="now-live" title="follow the scan live" style="display:none">● live</button><button type="button" id="now-hl" title="replay the key moments of this scan, 2.5 s each" style="display:none">▶ replay highlights</button><button type="button" id="now-end" title="jump to the final result" style="display:none">⏭ skip to end</button></span></div>
+      <div class="body">
+        <div style="min-width:0">
+          <div class="ttl" id="now-title">{% if job.state in ('failed','cancelled') %}Scan stopped{% elif job.state == 'done' %}Scan finished{% else %}Waiting for a worker …{% endif %}</div>
+          <div class="dtl" id="now-detail">{% if job.state in ('queued','running') %}The scan starts within a second; every step is described here as it happens.{% endif %}</div>
+          <div class="items" id="now-items"></div>
+        </div>
+        <img class="peek" id="now-img" alt="" style="display:none">
+      </div>
+    </div>
+
+    <div class="panel" style="margin-top:14px">
+      <h2>Pipeline <span class="muted" id="progress"></span></h2>
+      {% set steps = {'investigate': ['investigation','summary'], 'intel': ['intel','summary'], 'map_all': ['map_all','summary'],
+                      'url_scan': ['baseline','enrichment','cloaking','analysis','scoring','finding','summary']}.get(job.kind, ['baseline','discovery','deduplicate','enrichment','cloaking','analysis','scoring','finding','summary']) %}
+      <div class="stepper" style="--n:{{ steps|length }}">
+        {% for st in steps %}<div class="step" id="st-{{ st }}"><div class="dot">{{ loop.index }}</div><div class="nm">{{ st }}</div><div class="ct" id="ct-{{ st }}">&nbsp;</div></div>{% endfor %}
+      </div>
+      <div class="prog"><i id="pbar"></i></div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>Provider alerts <span class="muted">· limits, bad keys, outages — and what to do</span></h2>
+    <div class="alerts" id="alerts">
+      {% if job.error %}
+      <div class="alert error"><div class="t"><span class="k">{{ job.state }}</span>Scan stopped</div>
+        <div class="f">{{ job.error.splitlines()[0] }}{% if job.brand_id %} <a href="/ui/brands/{{ job.brand_id }}">Back to the brand to start again →</a>{% endif %}</div>
+        {% if job.error.splitlines()|length > 1 %}<details class="e"><summary>technical details</summary><pre style="white-space:pre-wrap">{{ job.error }}</pre></details>{% endif %}</div>
+      {% endif %}
+      <div class="ok-line" id="alerts-empty" {% if job.error %}style="display:none"{% endif %}><span class="pulse ok"></span> No provider problems so far.</div>
+      <details style="margin-top:10px" id="alerts-explainer"><summary class="small" style="cursor:pointer;color:var(--accent2)">what would appear here — and how BrandWatch copes</summary>
+        <p class="small muted" style="margin:6px 0">Every provider call goes through: TTL cache → budget check → circuit breaker → token bucket → retry with backoff (Retry-After honoured) → the next provider in the fallback chain. Each problem becomes one alert with a plain-language fix:</p>
+        <div class="alerts">
+          {% for kind, (title, fix) in issue_help.items() if kind != 'error' %}
+          <div class="alert {{ 'error' if kind in ('auth','quota') else 'warn' }}" style="opacity:.7"><div class="t"><span class="k">{{ kind.replace('_',' ') }}</span>{{ title.replace('{provider}', 'VirusTotal').replace('{kind}', 'reputation') }}</div>
+            <div class="f">{{ fix.replace('{provider}', 'VirusTotal').replace('{after}', ' (retry after 60 s)').replace('{candidates}', 'virustotal, urlhaus').replace('{kind}', 'reputation') }}</div></div>
+          {% endfor %}
+          <div class="alert info" style="opacity:.7"><div class="t"><span class="k">fallback</span>VirusTotal unavailable — URLhaus answered instead</div><div class="f">The chain recovered on its own: nothing to do. "Unknown" is never treated as clean.</div></div>
+        </div>
+      </details>
+    </div>
+  </div>
+</div>
+
+<div class="panel" id="report" style="margin-top:14px;{{ '' if summary and summary.steps else 'display:none' }}">
+  <h2>What this scan did <span class="muted">· step by step</span></h2>
+  <ol class="steps" id="report-steps">{% if summary and summary.steps %}{% for st in summary.steps %}<li style="--i:{{ loop.index0 }}"><span class="n">{{ loop.index }}</span><div><div class="t">{{ st.title }}</div>{% if st.detail %}<div class="d">{{ st.detail }}</div>{% endif %}{% if st['items'] %}<div class="items">{% for it in st['items'] %}<span class="it{{ ' official' if it.official or it.visit == false }}" style="--i:{{ loop.index0 }}" title="{{ (it.note ~ '\n' if it.note else '') ~ (it.url or '') }}">{% if it.url %}<a href="{{ it.url }}" target="_blank" rel="noreferrer noopener">{{ it.label or it.url }}</a>{% else %}<span>{{ it.label }}</span>{% endif %}{% if it.tag %}<span class="tag">{{ it.tag }}</span>{% endif %}</span>{% endfor %}{% if st.total and st.total > st['items']|length %}<span class="more">+{{ st.total - st['items']|length }} more</span>{% endif %}</div>{% endif %}</div></li>{% endfor %}{% endif %}</ol>
+  {% if job.stages %}
+  <details style="margin-top:10px"><summary class="small muted" style="cursor:pointer">stage timings · hits · API calls · cost</summary>
+    <table class="small" style="margin-top:6px"><tr><th>Stage</th><th class="right">Hits</th><th class="right">API calls</th><th class="right">Cost (USD)</th><th class="right">Elapsed</th></tr>
+      {% for st in job.stages %}<tr><td class="mono">{{ st.name.replace('_',' ') }}</td><td class="right mono">{{ st.hits or 0 }}</td><td class="right mono">{{ st.api_calls or 0 }}</td><td class="right mono">{{ '%.4f'|format(st.cost_usd or 0) }}</td><td class="right mono">{{ ((st.elapsed_ms or 0) / 1000)|round(1) }} s</td></tr>{% endfor %}
+    </table></details>
+  {% endif %}
+</div>
+
+<div class="panel" style="margin-top:14px">
+  <h2>Events <span class="muted">· every step, in order</span> {{ cap('events', 'durable SSE feed · resumable', 'events are written with a sequence number before they are published; a refresh resumes from the last one; secrets are redacted') }}</h2>
+  <div class="console" id="console"></div>
+  <p class="muted small">Durable, ordered feed (<span class="mono">scan_events.seq</span>); a refresh replays from the last sequence number.</p>
+  <div class="actions" style="margin-top:8px">
+    <a class="btn" id="campaign-link" href="{{ '/ui/campaigns/' ~ job.campaign_id if job.campaign_id else '#' }}" style="border-color:var(--magenta);color:var(--magenta);{{ '' if job.campaign_id else 'display:none' }}">Open attack infrastructure map →</a>
+    {% if job.brand_id %}<a class="btn" href="/ui/findings?brand_id={{ job.brand_id }}">Findings for this brand →</a>
+    <a class="btn" href="/ui/candidates?brand_id={{ job.brand_id }}">Watchlist →</a>
+    <a class="btn" href="/ui/brands/{{ job.brand_id }}">← Back to the brand</a>{% endif %}
+  </div>
+</div>
+<script>
+(function(){
+  const jobId = {{ job.id|tojson }};
+  const STEPS = {{ steps|tojson }};
+  const box = document.getElementById('console');
+  let seq = 0, done = false, alertCount = 0;
+  const counts = {};
+  const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  const alias = {trigger: 'analysis', ai: 'scoring', ml: 'scoring', notify: 'finding', pipeline: 'enrichment', merge: 'discovery', provider: null};
+  const $ = id => document.getElementById(id);
+  function countUp(el, target, dec){
+    const t0 = performance.now(), dur = 900;
+    const tick = t => { const k = Math.min(1, (t - t0) / dur), v = target * (1 - Math.pow(1 - k, 3)); el.textContent = dec ? v.toFixed(dec) : Math.round(v); if (k < 1) requestAnimationFrame(tick); };
+    requestAnimationFrame(tick);
+    setTimeout(() => { el.textContent = dec ? target.toFixed(dec) : Math.round(target); }, dur + 300);
+  }
+  function setState(st){
+    const el = $('k-state'); if (!el) return;
+    el.className = 'v statebadge ' + st; el.innerHTML = (st === 'running' || st === 'queued' ? '<span class="radar"></span> ' : '') + st;
+    const now = $('now');
+    if (st === 'done' || st === 'failed' || st === 'cancelled') {
+      const sf = $('stopform'); if (sf) sf.style.display = 'none';
+      STEPS.forEach(s => { const n = $('st-' + s); if (n && n.classList.contains('running')) { n.classList.remove('running'); n.classList.add(st === 'done' ? 'done' : 'error'); } });
+      now.classList.add(st === 'done' ? 'finished' : 'failed'); $('now-dot').className = 'pulse ' + (st === 'done' ? 'ok' : '');
+      $('now-stage').textContent = st;
+      if (st === 'cancelled' && !$('now-title').dataset.final) { $('now-title').textContent = 'Stopped by the analyst'; $('now-detail').textContent = 'The scan is closing at its next checkpoint; everything collected so far is kept.'; }
+      else if (st !== 'done' && !$('now-title').dataset.final) { $('now-title').textContent = 'Scan stopped'; $('now-detail').textContent = 'See the alert on the right.'; }
+    }
+  }
+  // ---- NOW card with history: ◀ ▶ step through everything the scanner showed --------------
+  const history = []; let viewIdx = -1;  // -1 = follow live
+  const FINISHED_AT_LOAD = {{ 'true' if job.state in ('done','failed','cancelled') else 'false' }};
+  const MIN_STEP_MS = 5000;  // a step with pictures / lists stays at least this long while the scan runs
+  const SHORT_STEP_MS = 2500;  // a plain sentence needs less
+  const HL_STEP_MS = 2500;  // highlight replay cadence
+  let finished = false, hlTimer = null, hlList = [], hlPos = -1;
+  const stepMs = h => (h && ((h.now.items || []).length || h.now.image)) ? MIN_STEP_MS : SHORT_STEP_MS;
+  let liveShownAt = -1e12, liveTimer = null, livePos = -1;  // first card shows at once
+  // Site intel and the infrastructure map send plain event lines, not "NOW" cards: without this the card said "Waiting for a
+  // worker …" for the whole job (5 minutes, most of it waiting for the VirusTotal quota). Each line becomes the card, at once.
+  const SYNTH_NOW = {{ 'true' if job.kind in ('intel', 'investigate', 'map_all') else 'false' }};
+  const STEP_TITLES = {domain: 'VirusTotal domain report', rdap: 'Registration data (RDAP)', whois_history: 'WHOIS history', dns: 'DNS records',
+    cert: 'HTTPS certificate', relations: 'VirusTotal relations', ct: 'Certificate transparency logs', ip: 'The server (IP address)',
+    abuse: 'AbuseIPDB reports', geo: 'Where the server is', urlscan: 'urlscan.io scan', similar: 'Similar sites', quota: 'Waiting for the VirusTotal quota', package: 'Evidence package', map_all: 'Mapping every confirmed site'};
+  function synthNow(e){
+    const title = e.stage === 'summary' ? 'Finished' : (STEP_TITLES[e.step] || String(e.step || e.stage).replace(/_/g, ' '));
+    const detail = e.step === 'quota' ? e.message + ' The free VirusTotal API allows only a few requests a minute, so the job pauses here and carries on by itself.' : e.message;
+    return {title, detail, items: [], total: 0};
+  }
+  function pushNow(now, e, direct){
+    history.push({now, e});
+    if (direct) {
+      if (viewIdx === -1 && !finished) { livePos = history.length - 1; liveShownAt = performance.now(); setNow(now, e); }
+    }
+    else if (viewIdx === -1 && !FINISHED_AT_LOAD && !finished) pumpLive();
+    else if (FINISHED_AT_LOAD && history.length === 1) { setNow(now, e); }
+    updateNav();
+  }
+  // ---- finished scan: show the result first, replay the key moments on demand ------------------
+  function isHighlight(h, critSeen){
+    const st = h.e.stage, ok = h.e.status === 'done';
+    if (h.now.highlight || st === 'summary') return true;
+    if (ok && ['baseline', 'discovery', 'deduplicate', 'cloaking', 'investigation', 'intel'].includes(st)) return true;
+    if (st === 'baseline' && h.now.image) return true;
+    if (st === 'finding' && h.e.level === 'warn' && critSeen.n < 3) { critSeen.n++; return true; }
+    return false;
+  }
+  function buildHighlights(){
+    const critSeen = {n: 0}, out = [];
+    history.forEach((h, i) => { if (isHighlight(h, critSeen)) out.push(i); });
+    if (out.length > 16) { const keep = new Set([out[0], out[out.length - 1]]); const stride = (out.length - 2) / 14;
+      for (let k = 1; k <= 14; k++) keep.add(out[Math.round(k * stride)]); return [...keep].sort((a, b) => a - b); }
+    return out;
+  }
+  function stopHighlights(){ if (hlTimer) { clearTimeout(hlTimer); hlTimer = null; } hlPos = -1; }
+  function finishMode(){
+    if (finished) return; finished = true;
+    if (liveTimer) { clearTimeout(liveTimer); liveTimer = null; }
+    if (!history.length) return;
+    hlList = buildHighlights();
+    viewIdx = history.length - 1; setNow(history[viewIdx].now, history[viewIdx].e);
+    $('now-hl').style.display = hlList.length ? '' : 'none';
+    $('now-end').style.display = 'none';
+    updateNav();
+  }
+  function playHighlights(){
+    stopHighlights(); if (!hlList.length) hlList = buildHighlights(); if (!hlList.length) return;
+    $('now-end').style.display = '';
+    const step = () => {
+      hlPos++;
+      if (hlPos >= hlList.length) { stopHighlights(); $('now-end').style.display = 'none'; updateNav(); return; }
+      viewIdx = hlList[hlPos]; setNow(history[viewIdx].now, history[viewIdx].e); updateNav();
+      hlTimer = setTimeout(step, HL_STEP_MS);
+    };
+    step();
+  }
+  $('now-hl').addEventListener('click', playHighlights);
+  $('now-end').addEventListener('click', () => { stopHighlights(); $('now-end').style.display = 'none'; viewIdx = history.length - 1; setNow(history[viewIdx].now, history[viewIdx].e); updateNav(); });
+  function pumpLive(){
+    if (viewIdx !== -1 || liveTimer) return;  // paused, or already waiting out a step
+    if (livePos >= history.length - 1) { livePos = history.length - 1; return; }
+    const wait = Math.max(0, stepMs(history[livePos]) - (performance.now() - liveShownAt));
+    const go = () => {
+      liveTimer = null;
+      if (viewIdx !== -1) return;
+      livePos = Math.min(livePos + 1, history.length - 1);
+      liveShownAt = performance.now();
+      setNow(history[livePos].now, history[livePos].e); updateNav();
+      if (livePos < history.length - 1) { liveTimer = setTimeout(go, stepMs(history[livePos])); }
+    };
+    if (wait === 0) go(); else liveTimer = setTimeout(go, wait);
+  }
+  function updateNav(){
+    const n = history.length, i = viewIdx === -1 ? Math.max(0, livePos) : viewIdx;
+    const behind = viewIdx === -1 && livePos < n - 1 ? ` (+${n - 1 - livePos})` : '';
+    $('now-pos').textContent = n ? `${i + 1} / ${n}${behind}` : '—';
+    $('now-prev').disabled = i <= 0; $('now-next').disabled = viewIdx === -1 ? livePos >= n - 1 : i >= n - 1;
+    const paused = viewIdx !== -1;
+    $('now-live').style.display = paused ? '' : 'none';
+    $('now').classList.toggle('paused', paused);
+    $('now-live').style.display = paused && !finished ? '' : 'none';
+    let word = paused ? `step ${i + 1} · ${(history[i] && history[i].e.ts || '').slice(11, 19)}` : 'right now';
+    if (finished && hlPos >= 0) word = `replay · highlight ${hlPos + 1} of ${hlList.length}`;
+    else if (finished && i === n - 1) word = 'finished · final result';
+    else if (finished) word = `replay · step ${i + 1} of ${n}`;
+    $('now-word').textContent = word;
+  }
+  function show(i){
+    i = Math.max(0, Math.min(history.length - 1, i));
+    viewIdx = i === history.length - 1 && !done ? -1 : i;
+    if (viewIdx === -1) { livePos = i; liveShownAt = performance.now(); pumpLive(); }
+    setNow(history[i].now, history[i].e); updateNav();
+  }
+  $('now-prev').addEventListener('click', () => { stopHighlights(); show((viewIdx === -1 ? livePos : viewIdx) - 1); });
+  $('now-next').addEventListener('click', () => { stopHighlights(); show((viewIdx === -1 ? livePos : viewIdx) + 1); });
+  $('now-live').addEventListener('click', () => { viewIdx = -1; livePos = history.length - 1; liveShownAt = 0; if (liveTimer) { clearTimeout(liveTimer); liveTimer = null; } if (history.length) setNow(history[livePos].now, history[livePos].e); updateNav(); });
+  document.addEventListener('keydown', ev => { if (ev.target.closest('input,textarea')) return;
+    if (ev.key === 'ArrowLeft') $('now-prev').click(); else if (ev.key === 'ArrowRight') $('now-next').click(); });
+  function setNow(now, e){
+    const ttl = $('now-title'), dtl = $('now-detail'), items = $('now-items'), img = $('now-img');
+    const nt = ttl.cloneNode(false); nt.textContent = now.title || ''; ttl.replaceWith(nt);  // re-trigger the entrance animation
+    const nd = dtl.cloneNode(false); nd.textContent = now.detail || ''; dtl.replaceWith(nd);
+    $('now-stage').textContent = e.stage;
+    items.innerHTML = '';
+    (now.items || []).forEach((it, i) => {
+      const d = document.createElement('span'); d.className = 'it' + (it.official ? ' official' : '') + (it.tag === 'signal' ? ' signal' : ''); d.style.setProperty('--i', i);
+      const label = esc(it.label || it.url || '');
+      d.title = it.note ? `${it.note}\n${it.url || ''}` : (it.url || '');
+      if (it.visit === false && !it.official) d.classList.add('official');  // skipped results look muted
+      d.innerHTML = (it.color ? `<span class="sw" style="background:${esc(it.color)}"></span>` : '') + (it.url ? `<a href="${esc(it.url)}" target="_blank" rel="noreferrer noopener">${label}</a>` : `<span>${label}</span>`) + (it.tag ? `<span class="tag">${esc(it.tag)}</span>` : '');
+      items.appendChild(d);
+    });
+    if (now.total > (now.items || []).length) { const m = document.createElement('span'); m.className = 'more'; m.textContent = `+${now.total - now.items.length} more`; items.appendChild(m); }
+    if (now.image) { img.src = now.image; img.style.display = ''; img.classList.toggle('favicon', now.image.startsWith('data:')); } else { img.style.display = 'none'; img.removeAttribute('src'); }
+    if (e.stage === 'summary') nt.dataset.final = '1';
+  }
+  // ---- ALERTS --------------------------------------------------------------------------------
+  function addAlert(a, level){
+    if (a.kind !== 'fallback' && a.kind !== 'site') { alertCount++; $('k-alerts').textContent = alertCount; }
+    $('alerts-empty').style.display = 'none';
+    const d = document.createElement('div'); d.className = 'alert ' + ((a.kind === 'fallback' || a.kind === 'site') ? 'info' : (level === 'error' ? 'error' : 'warn'));
+    const link = (a.kind === 'auth' || a.kind === 'quota' || a.kind === 'not_configured') ? ` <a href="${esc(a.settings_url || '/ui/settings')}">Open settings →</a>`
+      : (a.kind === 'approval' ? ` <a href="${esc(a.settings_url || '/ui/brands')}">Review the queries →</a>`
+      : (a.kind === 'profile' ? ` <a href="${esc(a.settings_url || '/ui/brands')}">Open the brand profile →</a>`
+      : (a.kind === 'baseline' ? ` <a href="${esc(a.settings_url || '/ui/brands')}">Fix it →</a>` : '')));
+    d.innerHTML = `<div class="t"><span class="k">${esc(String(a.kind).replace('_',' '))}</span>${esc(a.title)}</div><div class="f">${esc(a.fix)}${link}</div>` + (a.error ? `<div class="e">${esc(a.error)}</div>` : '');
+    $('alerts').appendChild(d);
+  }
+  // ---- REPORT ----------------------------------------------------------------------------------
+  function renderReport(steps){
+    const ol = $('report-steps'); ol.innerHTML = '';
+    steps.forEach((st, i) => {
+      const li = document.createElement('li'); li.style.setProperty('--i', i);
+      const items = (st.items || []).map((it, j) => `<span class="it${it.official || it.visit === false ? ' official' : ''}" style="--i:${j}" title="${esc((it.note ? it.note + '\n' : '') + (it.url || ''))}">${it.url ? `<a href="${esc(it.url)}" target="_blank" rel="noreferrer noopener">${esc(it.label || it.url)}</a>` : `<span>${esc(it.label || '')}</span>`}${it.tag ? `<span class="tag">${esc(it.tag)}</span>` : ''}</span>`).join('');
+      const more = st.total > (st.items || []).length ? `<span class="more">+${st.total - st.items.length} more</span>` : '';
+      li.innerHTML = `<span class="n">${i + 1}</span><div><div class="t">${esc(st.title)}</div>${st.detail ? `<div class="d">${esc(st.detail)}</div>` : ''}${items ? `<div class="items">${items}${more}</div>` : ''}</div>`;
+      ol.appendChild(li);
+    });
+    $('report').style.display = steps.length ? '' : 'none';
+  }
+  function markStage(stage, status, level){
+    if (alias[stage] === null) return;
+    stage = alias[stage] || stage;
+    const idx = STEPS.indexOf(stage); if (idx < 0) return;
+    STEPS.forEach((s, i) => { const n = $('st-' + s); if (!n) return;
+      if (i < idx && !n.classList.contains('error')) { n.classList.remove('running'); n.classList.add('done'); n.querySelector('.dot').textContent = '✓'; } });
+    const node = $('st-' + stage);
+    counts[stage] = (counts[stage] || 0) + 1;
+    $('ct-' + stage).textContent = counts[stage] + ' event' + (counts[stage] > 1 ? 's' : '');
+    if (status === 'error') { node.classList.add('error'); return; }
+    if (stage === 'summary') { node.classList.remove('running'); node.classList.add('done'); node.querySelector('.dot').textContent = '✓'; }
+    else if (!node.classList.contains('done')) node.classList.add('running');
+    if (level === 'warn') node.classList.add('warn');
+    const sp = node.parentElement; if (sp.scrollWidth > sp.clientWidth) sp.scrollLeft = node.offsetLeft - sp.clientWidth / 2 + node.offsetWidth / 2;
+  }
+  function render(e){
+    const line = document.createElement('div');
+    line.className = e.status === 'error' || e.level === 'error' ? 'error' : (e.level === 'warn' ? 'warn' : e.status);
+    const ts = (e.ts || '').slice(11,19);
+    line.innerHTML = `<span class="muted">${ts}</span> <span class="muted">${esc(e.stage)}/${esc(e.step)}</span> ${esc(e.message)}`;
+    box.appendChild(line);
+    markStage(e.stage, e.status, e.level);
+    if (e.data && e.data.now) pushNow(e.data.now, e);
+    else if (SYNTH_NOW && e.status !== 'skipped') pushNow(synthNow(e), e, true);
+    if (e.data && e.data.alert) addAlert(e.data.alert, e.level);
+    if (e.progress) {
+      $('progress').textContent = `· ${e.progress.current} / ${e.progress.total} candidates`;
+      $('pbar').style.width = (e.progress.current / e.progress.total * 100) + '%';
+    }
+    if (e.stage === 'summary' && e.data){
+      $('pbar').style.width = '100%';
+      if (e.data.steps) renderReport(e.data.steps);
+      countUp($('k-hits'), e.data.hits || 0);
+      countUp($('k-findings'), e.data.findings || 0);
+      countUp($('k-crit'), e.data.criticals || 0);
+      countUp($('k-calls'), e.data.api_calls || 0);
+      countUp($('k-cost'), e.data.cost_usd || 0, 4);
+      if (e.data.campaign_id) { const cl = $('campaign-link'); cl.href = '/ui/campaigns/' + e.data.campaign_id; cl.style.display = ''; }
+    }
+  }
+  async function poll(){
+    try {
+      const r = await fetch(`/api/jobs/${jobId}/events?from_seq=${seq}`, {credentials:'same-origin'});
+      if (r.status === 401) { window.location = '/ui/login?next=' + encodeURIComponent(location.pathname); return; }
+      const data = await r.json();
+      for (const e of data.events){ render(e); seq = e.seq; }
+      box.scrollTop = box.scrollHeight;
+      setState(data.state);
+      done = data.state === 'done' || data.state === 'failed' || data.state === 'cancelled';
+      if (done) finishMode();
+    } catch (err) { console.error(err); }
+    if (!done) setTimeout(poll, 1200);
+  }
+  function stream(){
+    if (!window.EventSource) { poll(); return; }
+    const es = new EventSource(`/api/jobs/${jobId}/events/stream?from_seq=${seq}`, {withCredentials: true});
+    es.addEventListener('scan', ev => { const e = JSON.parse(ev.data); render(e); seq = e.seq; box.scrollTop = box.scrollHeight; });
+    es.addEventListener('end', ev => { const d = JSON.parse(ev.data); setState(d.state); done = true; es.close(); finishMode(); });
+    es.onerror = () => { es.close(); if (!done) setTimeout(poll, 1000); };  // fall back to polling
+  }
+  stream();
+})();
+</script>
+{% endblock %}

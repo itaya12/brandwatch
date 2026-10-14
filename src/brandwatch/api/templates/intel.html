@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+{# The server (IP) page. A site's investigation lives on its finding page — this page is one server:
+   its detections, AbuseIPDB, every other site on it, communicating files and IP WHOIS. #}
+{% block title %}Server · {{ subject }}{% endblock %}
+{% block content %}
+{% include "_intel_css.html" %}
+<style>
+  .ihead{display:flex;gap:18px;align-items:flex-start;flex-wrap:wrap}
+  .ihead h1{margin:4px 0 2px;font-size:clamp(20px,3vw,30px);word-break:break-all}
+  .ihead .meta{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;color:var(--muted);font-size:13px}
+</style>
+
+{% set ip0 = v.ips[0] if v.ips else none %}
+{% set has_data = ip0 and ip0.fetched_at %}
+<div class="panel ihead">
+  <div style="flex:1;min-width:min(300px,100%)">
+    {% set crumbs = [("Findings", "/ui/findings"), ("Server " ~ subject, none)] %}
+    {% set crumb_links = [("← back", back_url)] %}
+    {% include "_crumbs.html" %}
+    <h1 class="mono">{% if v.country %}{{ flag_img(v.country, 28) }}{% endif %}{{ subject }}</h1>
+    <div class="meta">
+      <span>server investigation · detections, abuse reports, every other site hosted here</span>
+      {% if v.country %}<span>{{ v.country_name }}{% if ip0 and ip0.city %} · {{ ip0.city }}{% endif %}</span>{% endif %}
+    </div>
+  </div>
+  <div class="btnrow">
+    {% if has_data %}<span class="small muted" title="cached results are reused for 24 hours">fetched <span data-rel="{{ ip0.fetched_at.isoformat() }}"></span></span>{% endif %}
+    {% if can_write %}<button id="refresh" class="primary" type="button" {{ 'disabled' if job_running }}>{{ 'Running…' if job_running else ('Refresh' if has_data else 'Start investigation') }}</button>{% endif %}
+    {% if job %}<a class="btn" href="/ui/jobs/{{ job.id }}" title="the job's live console and detailed trace">job console</a>{% endif %}
+  </div>
+</div>
+
+<div id="progress" class="panel progress" {{ '' if job_running else 'hidden' }}>
+  <div class="radar"></div>
+  <div class="msg"><span id="prog-msg">{{ 'Investigation running — results appear as they arrive' if job_running else 'Starting the investigation…' }}</span><small>VirusTotal's free API allows 4 requests a minute, so a run takes about a minute.</small></div>
+</div>
+
+{% if v.missing and has_data %}
+<p class="small muted" style="margin:10px 0 0">Not available: {% for mm in v.missing %}<span class="pill" title="{{ v.status[mm].error if v.status and mm in v.status else '' }}">{{ mm }}</span> {% endfor %}
+  — VirusTotal relations marked <em>premium</em> need a paid plan; everything else retries on Refresh.</p>
+{% endif %}
+
+<div style="margin-top:14px">
+  {% for ip in v.ips %}{% include "_intel_server.html" %}
+  {% else %}<p class="muted">Nothing fetched for this server yet.</p>{% endfor %}
+</div>
+
+{% if v.links %}
+<div class="panel"><h2>Look it up elsewhere</h2>
+  <p class="why">Each link opens the external service's own page for this server — nothing is sent from here beyond the IP in the URL.</p>
+  <div class="links" style="margin-top:0">{% for name, href in v.links.items() %}<a href="{{ href }}" target="_blank" rel="noreferrer noopener" title="{{ href }}">{{ name }} ↗</a>{% endfor %}</div>
+</div>
+{% endif %}
+
+<script>
+(function(){
+  const $ = id => document.getElementById(id);
+  const startUrl = {{ start_url|tojson }}, dataUrl = {{ data_url|tojson }};
+  const canWrite = {{ 'true' if can_write else 'false' }};
+  let jobId = {{ (job.id if job else none)|tojson }}, running = {{ 'true' if job_running else 'false' }};
+  const hasData = {{ 'true' if has_data else 'false' }};
+  let done = false;
+  function reload(){ if (done) return; done = true; location.reload(); }
+  async function watch(id){
+    jobId = id; running = true; $('progress').hidden = false;
+    const btn = $('refresh'); if (btn) { btn.disabled = true; btn.textContent = 'Running…'; }
+    const es = window.EventSource ? new EventSource(`/api/jobs/${id}/events/stream?from_seq=0`, {withCredentials:true}) : null;
+    if (es) {
+      es.addEventListener('scan', ev => { const e = JSON.parse(ev.data); if (e.message) $('prog-msg').textContent = e.message; });
+      es.addEventListener('end', () => { es.close(); setTimeout(reload, 400); });
+      es.onerror = () => { es.close(); poll(); };
+    } else poll();
+    async function poll(){
+      if (done) return;
+      try { const r = await fetch(`/api/jobs/${id}`, {credentials:'same-origin'}); const j = await r.json();
+        if (['done','failed','cancelled'].includes(j.state)) { reload(); return; } } catch (e) {}
+      setTimeout(poll, 3000);
+    }
+  }
+  async function start(force){
+    if (!canWrite) return;
+    $('progress').hidden = false; $('prog-msg').textContent = force ? 'Re-fetching everything…' : 'Starting the investigation…';
+    try { const r = await fetch(startUrl + (force ? '?force=1' : ''), {method:'POST', credentials:'same-origin'});
+      if (r.status === 401) { location = '/ui/login?next=' + encodeURIComponent(location.pathname); return; }
+      const j = await r.json(); if (j.job_id) watch(j.job_id); else $('prog-msg').textContent = j.detail || 'could not start';
+    } catch (e) { $('prog-msg').textContent = 'could not start: ' + e; }
+  }
+  const btn = $('refresh'); if (btn) btn.addEventListener('click', () => start(hasData));
+  // opening a server page is the request to look it up (one IP, a handful of calls)
+  if (running && jobId) watch(jobId); else if (!hasData) start(false);
+})();
+</script>
+{% endblock %}

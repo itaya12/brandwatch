@@ -1,0 +1,42 @@
+{# How far the Facebook / Instagram ad hunt goes (detection/ad_settings.py): ads per search, searches per
+   scan, shops checked in full — with the cost per scan, updated as the numbers change. Used inside the
+   brand-profile form and the set-up form. Context: pf (brand.profile), can_write (optional). #}
+{% set rd = can_write is not defined or can_write %}
+<div class="reach" style="margin-top:12px;border:1px solid var(--border);border-radius:12px;padding:10px 12px;background:var(--panel2)">
+  <label style="margin:0 0 6px">How far to look <span class="muted small">· in the ads, and in the shops they lead to</span></label>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(190px,100%),1fr));gap:10px">
+    <div><label for="r-ads" style="font-size:11px">Ads per search <span class="muted">(keyword × country)</span></label>
+      <select id="r-ads" name="ads_per_search" {{ '' if rd else 'disabled' }}>
+        {% for n in [30, 60, 100, 200] %}<option value="{{ n }}" {{ 'selected' if (pf.ads_per_search or 30) == n }}>{{ n }} ads{{ ' (default)' if n == 30 }}</option>{% endfor %}
+      </select></div>
+    <div><label for="r-searches" style="font-size:11px">Searches per scan <span class="muted">(1–20)</span></label>
+      <input id="r-searches" name="ad_searches_max" type="number" min="1" max="20" value="{{ pf.ad_searches_max or 6 }}" {{ '' if rd else 'disabled' }}></div>
+    <div><label for="r-shops" style="font-size:11px">Shops checked in full <span class="muted">(0–60)</span></label>
+      <input id="r-shops" name="shops_checked_max" type="number" min="0" max="60" value="{{ pf.shops_checked_max if pf.shops_checked_max is not none else 15 }}" {{ '' if rd else 'disabled' }}></div>
+  </div>
+  <p class="small reach-cost" style="margin:8px 0 0;color:#c3cdd9">
+    <span class="r-line">—</span><br>
+    <span class="muted">Each page of the Ad Library is ~30 ads and one SearchApi request (~$0.004). A shop checked in full gets its
+      company-registry lookup, two Google searches and the AI's opinion (~$0.02); the others get the free page checks only.</span></p>
+</div>
+<script>
+(function(){
+  const box = document.currentScript.previousElementSibling, form = box.closest('form');
+  if (!form) return;
+  const line = box.querySelector('.r-line');
+  const num = (el, d) => { const v = parseInt(el && el.value, 10); return isNaN(v) ? d : v; };
+  function calc(){
+    const kw = (form.ad_keywords ? form.ad_keywords.value.split('\n').filter(s => s.trim()).length : 1) || 1;
+    const cc = (form.countries ? form.countries.value.split(/[,\s]+/).filter(Boolean).length : 1) || 1;
+    const per = num(box.querySelector('[name=ads_per_search]'), 30);
+    const smax = Math.min(20, Math.max(1, num(box.querySelector('[name=ad_searches_max]'), 6)));
+    const shops = Math.min(60, Math.max(0, num(box.querySelector('[name=shops_checked_max]'), 15)));
+    const searches = Math.min(kw * cc, smax), pages = Math.ceil(per / 30), req = searches * pages;
+    const adsUsd = req * 0.004, shopsUsd = shops * 0.021;
+    line.innerHTML = `<b>${searches}</b> search(es) (${kw} keyword(s) × ${cc} countr${cc === 1 ? 'y' : 'ies'}${kw * cc > smax ? `, capped at ${smax}` : ''}) × up to <b>${per}</b> ads = up to <b>${searches * per}</b> ads read`
+      + ` · ${req} request(s) ≈ $${adsUsd.toFixed(3)} · up to <b>${shops}</b> shops checked in full ≈ $${shopsUsd.toFixed(2)}`
+      + ` · <b>≈ $${(adsUsd + shopsUsd).toFixed(2)} a scan at most</b>`;
+  }
+  form.addEventListener('input', calc); form.addEventListener('change', calc); calc();
+})();
+</script>

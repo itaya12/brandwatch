@@ -1,0 +1,188 @@
+{# The force-directed graph of a campaign and of the map of all confirmed sites. Needs `graph_data` = {nodes, edges}.
+   Mouse: wheel = zoom, drag the background = move the map, drag a dot = move it, click a dot = details (when the page sets onSelect).
+   Optional, set by the page before this partial: window.BW_GRAPH = {clusters: true, names: {1: "Affiliate …"}, onSelect: fn}.
+   window.bwGraph.{setData, zoomBy, reset} for the buttons. #}
+<script>
+(function(){
+  const svg = document.getElementById('graph');
+  if (!svg) return;
+  const opts = window.BW_GRAPH || {};
+  const W = svg.clientWidth || 800, H = W < 600 ? 400 : (parseInt(svg.getAttribute('height')) || 520);
+  svg.setAttribute('height', H);
+  svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+  svg.style.touchAction = 'none';
+  const ns = 'http://www.w3.org/2000/svg';
+  const colors = {passive_dns:'#35C7F2', cert:'#F5C518', favicon:'#2ECC71', tracking_id:'#FF9F1C', reverse_whois:'#FF4D4D', reverse_ns:'#8A97A8'};
+  const typeColor = {domain:'#E6EDF5', ip:'#35C7F2', certificate:'#F5C518', tracking_id:'#FF9F1C', registrant:'#FF4D4D', hostname:'#E6EDF5'};
+  const sevColor = {critical:'#FF4D4D', high:'#FF9F1C', medium:'#F5C518', low:'#2ECC71'};
+  const palette = ['#35C7F2', '#F5C518', '#FF9F1C', '#2ECC71', '#B388FF', '#FF6FA8', '#4DD0C4', '#9AA5B1'];
+  const glyph = {ip:'S', past_ip:'S', shared_ip:'S', certificate:'C', tracking_id:'A', registrant:'@', affiliate_id:'$', redirector:'↪', cf_ns_pair:'CF', dns_token:'D',
+                 tds_campaign:'T', shared_tds:'T', data_sink:'⇩', batch:'B', kit:'K', kit_look:'K', favicon:'F', registrar:'R', nameserver:'N'};
+  const view = {k: 1, tx: 0, ty: 0};
+  let home = {k: 1, tx: 0, ty: 0};  // where "reset view" goes back to: the map fitted to the canvas
+  const root = document.createElementNS(ns, 'g'); svg.appendChild(root);
+  const hullLayer = document.createElementNS(ns, 'g'); root.appendChild(hullLayer);
+  const g = document.createElementNS(ns, 'g'); root.appendChild(g);
+  let nodes = [], edges = [], byId = {}, lines = [], circles = [], hulls = {}, centers = {}, adj = {}, picked = null;
+  const small = W < 600;
+  const gcolor = i => i ? palette[(i - 1) % palette.length] : '#9AA5B1';
+  const apply = () => root.setAttribute('transform', `translate(${view.tx},${view.ty}) scale(${view.k})`);
+  const toWorld = ev => { const r = svg.getBoundingClientRect(); const x = (ev.clientX - r.left) * W / r.width, y = (ev.clientY - r.top) * H / r.height; return [(x - view.tx) / view.k, (y - view.ty) / view.k]; };
+  const toScreen = ev => { const r = svg.getBoundingClientRect(); return [(ev.clientX - r.left) * W / r.width, (ev.clientY - r.top) * H / r.height]; };
+
+  function layoutCenters(){
+    // one home per group, on a ring, so every operation gathers in its own place; the dots in no group sit in the middle
+    centers = {};
+    const ids = [...new Set(nodes.filter(n => n.type === 'domain').map(n => (n.groups || [0])[0] || 0))].sort((a, b) => a - b);
+    const ring = ids.filter(i => i);
+    const R = Math.min(W, H) * (small ? 0.26 : 0.31);
+    ring.forEach((id, i) => { const a = -Math.PI / 2 + (2 * Math.PI * i) / Math.max(ring.length, 1); centers[id] = ring.length === 1 ? [W / 2, H / 2] : [W / 2 + Math.cos(a) * R * 1.35, H / 2 + Math.sin(a) * R]; });
+    centers[0] = ring.length ? [W / 2, H / 2 + R * 0.05] : [W / 2, H / 2];
+    if (ring.length && ids.includes(0)) centers[0] = [W / 2, H / 2];
+  }
+  function homeOf(n){
+    if (!opts.clusters) return [W / 2, H / 2];
+    const gs = (n.groups || [0]).filter(i => centers[i]);
+    if (!gs.length) return [W / 2, H / 2];
+    return [gs.reduce((s, i) => s + centers[i][0], 0) / gs.length, gs.reduce((s, i) => s + centers[i][1], 0) / gs.length];
+  }
+
+  function build(data){
+    if (typeof opts.filter === 'function') data = opts.filter(data);  // the page decides which dots and lines are on (a group, hints, common things)
+    g.innerHTML = ''; hullLayer.innerHTML = ''; hulls = {}; picked = null;
+    const many = data.nodes.length > 40;
+    nodes = data.nodes.map((n, i) => ({...n, x: W/2 + Math.cos(i * 2.399) * (60 + 9 * Math.sqrt(i) * 6) + (Math.random()-0.5)*30, y: H/2 + Math.sin(i * 2.399) * (60 + 9 * Math.sqrt(i) * 6) + (Math.random()-0.5)*30, vx:0, vy:0, fixed:false}));
+    byId = Object.fromEntries(nodes.map(n => [n.id, n]));
+    edges = data.edges.filter(e => byId[e.source] && byId[e.target]);
+    adj = {}; edges.forEach(e => { (adj[e.source] = adj[e.source] || new Set()).add(e.target); (adj[e.target] = adj[e.target] || new Set()).add(e.source); });
+    layoutCenters();
+    if (opts.clusters) nodes.forEach(n => { const [hx, hy] = homeOf(n); n.x = hx + (Math.random() - 0.5) * 120; n.y = hy + (Math.random() - 0.5) * 90; });
+    if (opts.clusters) {
+      const bySite = {};
+      nodes.filter(n => n.type === 'domain').forEach(n => { const k = (n.groups || [0])[0] || 0; if (k) (bySite[k] = bySite[k] || []).push(n); });
+      Object.keys(bySite).forEach(k => {
+        const p = document.createElementNS(ns, 'path'); const c = gcolor(Number(k));
+        p.setAttribute('fill', c); p.setAttribute('fill-opacity', '0.09'); p.setAttribute('stroke', c); p.setAttribute('stroke-opacity', '0.16'); p.setAttribute('stroke-width', small ? 34 : 54); p.setAttribute('stroke-linejoin', 'round');
+        const t = document.createElementNS(ns, 'text'); t.setAttribute('fill', c); t.setAttribute('font-size', small ? '10' : '12'); t.setAttribute('font-weight', '700'); t.setAttribute('text-anchor', 'middle'); t.setAttribute('font-family', 'JetBrains Mono, monospace');
+        t.setAttribute('paint-order', 'stroke'); t.setAttribute('stroke', '#060910'); t.setAttribute('stroke-width', '3'); t.style.pointerEvents = 'none';
+        const nm = (opts.names || {})[k]; t.textContent = `Group ${k}${nm ? ' · ' + (nm.length > 34 ? nm.slice(0, 32) + '…' : nm) : ''}`;
+        hullLayer.appendChild(p); hullLayer.appendChild(t); hulls[k] = {p, t, members: bySite[k]};
+      });
+    }
+    lines = edges.map(e => { const l = document.createElementNS(ns,'line'); const c = colors[e.type]||'#888';
+      const lvl = e.level || (byId[e.source].included && byId[e.target].included ? 'solid' : 'weak'); const wgt = e.weight == null ? 0.7 : e.weight;
+      l.setAttribute('stroke', c); l.setAttribute('stroke-width', opts.clusters ? (0.8 + wgt * 2.4).toFixed(2) : (many ? '1.2' : '1.8'));
+      if (lvl === 'solid') { l.setAttribute('class','flow'); l.setAttribute('stroke-opacity', '0.9'); }
+      else if (lvl === 'possible') { l.setAttribute('stroke-dasharray','5 4'); l.setAttribute('stroke-opacity','0.55'); }
+      else { l.setAttribute('stroke-dasharray','2 4'); l.setAttribute('stroke-opacity','0.3'); }
+      const t = document.createElementNS(ns,'title'); t.textContent = `${e.source_value}  —  ${e.target_value}` + (e.weight != null ? `  (${Math.round(e.weight * 100)}%)` : ''); l.appendChild(t); g.appendChild(l); return l; });
+    circles = nodes.map(n => {
+      const grp = document.createElementNS(ns,'g'); grp.style.cursor = 'pointer';
+      const site = n.type === 'domain';
+      const icon = opts.clusters && !site ? (glyph[n.kind] || '') : '';
+      const c = document.createElementNS(ns,'circle'); c.setAttribute('r', site ? (n.finding ? 12 : 9) : (icon ? 9 : 6));
+      c.setAttribute('fill', n.included ? (n.finding ? (sevColor[n.finding.severity] || '#FF4D4D') : '#0E1420') : '#0E1420');
+      c.setAttribute('stroke', typeColor[n.type]||'#aaa'); c.setAttribute('stroke-width', n.included ? '2' : '1'); if (!n.included) c.setAttribute('stroke-dasharray','3 3');
+      if (n.level === 'weak') c.setAttribute('opacity', '0.55');
+      const text = n.label || n.value;
+      const t = document.createElementNS(ns,'text'); const lim = small ? 18 : (site ? 34 : 30); t.textContent = text.length > lim ? text.slice(0, lim - 2) + '…' : text;
+      if ((small && !n.finding) || (opts.clusters && !site && n.level !== 'solid')) t.style.display = 'none';  // hints and common things are named when you point at them
+      t.setAttribute('fill', site ? '#FFFFFF' : (n.included ? '#B9C6D6' : '#6F7B8A')); t.setAttribute('font-size', site ? (small ? '11' : '12.5') : (small ? '9' : '10')); t.setAttribute('font-weight', site ? '600' : '400');
+      t.setAttribute('font-family','JetBrains Mono, monospace'); t.setAttribute('dx', site ? '16' : (icon ? '13' : '10')); t.setAttribute('dy','4');
+      t.setAttribute('paint-order','stroke'); t.setAttribute('stroke','#060910'); t.setAttribute('stroke-width','3'); t.style.pointerEvents = 'none';
+      const title = document.createElementNS(ns,'title'); title.textContent = `${n.type}: ${n.value}\n${n.included ? 'included' : 'excluded'} — ${n.triage_reason}`;
+      if (n.included && n.finding && n.finding.severity === 'critical') { const halo = document.createElementNS(ns,'circle'); halo.setAttribute('r', 12); halo.setAttribute('fill','none'); halo.setAttribute('stroke','#FF4D4D'); halo.setAttribute('class','halo'); grp.appendChild(halo); }
+      if (n.included) c.style.filter = `drop-shadow(0 0 5px ${typeColor[n.type]||'#aaa'})`;
+      grp.appendChild(c);
+      if (icon) { const gl = document.createElementNS(ns,'text'); gl.textContent = icon; gl.setAttribute('text-anchor','middle'); gl.setAttribute('dy','3.5'); gl.setAttribute('font-size', icon.length > 1 ? '7' : '10'); gl.setAttribute('font-weight','700'); gl.setAttribute('fill', typeColor[n.type]||'#aaa'); gl.style.pointerEvents = 'none'; grp.appendChild(gl); }
+      grp.appendChild(t); grp.appendChild(title); g.appendChild(grp);
+      grp.style.touchAction = 'none';
+      let down = null;
+      grp.addEventListener('pointerdown', ev => { ev.stopPropagation(); ev.preventDefault(); down = {x: ev.clientX, y: ev.clientY, moved: false}; n.drag = true; grp.setPointerCapture(ev.pointerId); grp.style.cursor = 'grabbing'; });
+      grp.addEventListener('pointermove', ev => { if (!n.drag) return; if (down && Math.hypot(ev.clientX - down.x, ev.clientY - down.y) > 3) { down.moved = true; n.fixed = true; } if (!down || down.moved) { const [x, y] = toWorld(ev); n.x = x; n.y = y; } });
+      grp.addEventListener('pointerup', () => { const wasClick = down && !down.moved; n.drag = false; down = null; grp.style.cursor = 'pointer'; if (wasClick) select(n); });
+      grp.addEventListener('dblclick', () => { n.fixed = false; });  // let go of a dot you pinned
+      grp.addEventListener('pointerenter', () => { if (!n.drag) focusOn(n); });
+      grp.addEventListener('pointerleave', () => { if (!n.drag) focusOn(picked); });
+      return grp;
+    });
+    view.k = 1; view.tx = 0; view.ty = 0; apply();
+    for (let i = 0; i < 160; i++) tick(false);  // settle quietly first, so the map does not fly around when it appears
+    if (opts.clusters) fit();
+  }
+
+  // point at a dot: it and what it touches stay bright, the rest of the map fades
+  function focusOn(n){
+    const near = n ? new Set([n.id, ...(adj[n.id] || [])]) : null;
+    nodes.forEach((m, i) => {
+      const on = !near || near.has(m.id);
+      circles[i].style.opacity = on ? 1 : 0.14;
+      const t = circles[i].querySelector('text:last-of-type');
+      if (opts.clusters && m.type !== 'domain' && m.level !== 'solid' && t) t.style.display = (n && on) ? '' : 'none';
+    });
+    edges.forEach((e, i) => { lines[i].style.opacity = !near || (e.source === n.id || e.target === n.id) ? 1 : 0.07; });
+  }
+  function select(n){
+    picked = (picked && picked.id === n.id) ? null : n;
+    focusOn(picked);
+    if (typeof opts.onSelect === 'function') opts.onSelect(picked, picked ? [...(adj[picked.id] || [])].map(id => byId[id]) : []);
+  }
+
+  function fit(){
+    // zoom and move so that the settled map fills the canvas (a small map in a big frame is hard to read)
+    if (!nodes.length) return;
+    const xs = nodes.map(n => n.x), ys = nodes.map(n => n.y), pad = small ? 60 : 110;
+    const bw = Math.max(Math.max(...xs) - Math.min(...xs), 1) + pad * 2, bh = Math.max(Math.max(...ys) - Math.min(...ys), 1) + pad * 1.4;
+    const k = Math.max(0.5, Math.min(2.2, Math.min(W / bw, H / bh)));
+    view.k = k; view.tx = W / 2 - k * (Math.max(...xs) + Math.min(...xs)) / 2; view.ty = H / 2 - k * (Math.max(...ys) + Math.min(...ys)) / 2;
+    apply(); home = {k: view.k, tx: view.tx, ty: view.ty};
+  }
+
+  function hullPath(pts){
+    if (pts.length === 1) return `M${pts[0][0]-0.1},${pts[0][1]} L${pts[0][0]+0.1},${pts[0][1]}`;
+    pts = pts.slice().sort((a, b) => a[0] - b[0] || a[1] - b[1]);
+    const cross = (o, a, b) => (a[0]-o[0])*(b[1]-o[1]) - (a[1]-o[1])*(b[0]-o[0]);
+    const lo = [], up = [];
+    for (const p of pts) { while (lo.length >= 2 && cross(lo[lo.length-2], lo[lo.length-1], p) <= 0) lo.pop(); lo.push(p); }
+    for (const p of pts.slice().reverse()) { while (up.length >= 2 && cross(up[up.length-2], up[up.length-1], p) <= 0) up.pop(); up.push(p); }
+    const h = lo.slice(0, -1).concat(up.slice(0, -1));
+    return 'M' + h.map(p => p.join(',')).join(' L') + ' Z';
+  }
+
+  function tick(draw){
+    const rep = (small ? 700 : (nodes.length > 40 ? 2600 : 2000)) * (opts.clusters ? 2.4 : 1), len = (small ? 60 : (nodes.length > 40 ? 90 : 120)) * (opts.clusters ? 1.3 : 1);
+    for (const a of nodes) for (const b of nodes) if (a !== b) { let dx=a.x-b.x, dy=a.y-b.y, d2=dx*dx+dy*dy+0.01, f=rep/d2; a.vx += dx*f/Math.sqrt(d2); a.vy += dy*f/Math.sqrt(d2); }
+    for (const e of edges) { const a=byId[e.source], b=byId[e.target]; const dx=b.x-a.x, dy=b.y-a.y, d=Math.sqrt(dx*dx+dy*dy)+0.01, k=(d-len)*0.02; a.vx += dx/d*k; a.vy += dy/d*k; b.vx -= dx/d*k; b.vy -= dy/d*k; }
+    const pull = opts.clusters ? 0.012 : 0.0025;
+    for (const n of nodes) { if (n.fixed) { n.vx = n.vy = 0; continue; } const [hx, hy] = homeOf(n); n.vx += (hx-n.x)*pull; n.vy += (hy-n.y)*pull; n.vx*=0.8; n.vy*=0.8; n.x += n.vx; n.y += n.vy; }
+    if (draw) {
+      edges.forEach((e,i) => { const a=byId[e.source], b=byId[e.target]; lines[i].setAttribute('x1',a.x); lines[i].setAttribute('y1',a.y); lines[i].setAttribute('x2',b.x); lines[i].setAttribute('y2',b.y); });
+      nodes.forEach((n,i) => circles[i].setAttribute('transform', `translate(${n.x},${n.y})`));
+      Object.values(hulls).forEach(h => {
+        const pts = h.members.map(n => [Math.round(n.x), Math.round(n.y)]);
+        h.p.setAttribute('d', hullPath(pts));
+        const cx = pts.reduce((s, p) => s + p[0], 0) / pts.length, top = Math.min(...pts.map(p => p[1]));
+        h.t.setAttribute('x', cx); h.t.setAttribute('y', top - (small ? 26 : 38));
+      });
+    }
+  }
+  function loop(){ tick(true); requestAnimationFrame(loop); }
+
+  // zoom with the wheel (around the pointer), move the map by dragging the background
+  svg.addEventListener('wheel', ev => { ev.preventDefault(); zoomAt(ev.deltaY < 0 ? 1.15 : 1/1.15, toScreen(ev)); }, {passive: false});
+  function zoomAt(f, [sx, sy]){ const k = Math.max(0.25, Math.min(5, view.k * f)); const r = k / view.k; view.tx = sx - (sx - view.tx) * r; view.ty = sy - (sy - view.ty) * r; view.k = k; apply(); }
+  let pan = null;
+  svg.addEventListener('pointerdown', ev => { if (ev.target !== svg && ev.target.tagName !== 'rect' && ev.target.tagName !== 'path') return; pan = {x: ev.clientX, y: ev.clientY, tx: view.tx, ty: view.ty, moved: false}; svg.setPointerCapture(ev.pointerId); svg.style.cursor = 'grabbing'; });
+  svg.addEventListener('pointermove', ev => { if (!pan) return; const r = svg.getBoundingClientRect(); if (Math.hypot(ev.clientX - pan.x, ev.clientY - pan.y) > 3) pan.moved = true; view.tx = pan.tx + (ev.clientX - pan.x) * W / r.width; view.ty = pan.ty + (ev.clientY - pan.y) * H / r.height; apply(); });
+  svg.addEventListener('pointerup', () => { if (pan && !pan.moved && picked) { picked = null; focusOn(null); if (typeof opts.onSelect === 'function') opts.onSelect(null, []); } pan = null; svg.style.cursor = ''; });
+  svg.addEventListener('dblclick', ev => { if (ev.target === svg) { view.k = home.k; view.tx = home.tx; view.ty = home.ty; apply(); } });
+
+  window.bwGraph = {
+    setData: build,
+    zoomBy: f => zoomAt(f, [W / 2, H / 2]),
+    reset: () => { view.k = home.k; view.tx = home.tx; view.ty = home.ty; apply(); nodes.forEach(n => n.fixed = false); },
+  };
+  build({{ graph_data|tojson }});
+  loop();
+})();
+</script>

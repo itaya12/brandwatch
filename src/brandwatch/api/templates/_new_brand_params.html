@@ -1,0 +1,97 @@
+{# "Customise parameters" on the Add-brand form: change the track's streams, cadence, probes and thresholds from the
+   very start - or copy them from a brand you already tuned - instead of creating the brand and finding the track's
+   defaults. The visible values are what gets saved. Context: copy_sources (the parameters of the existing brands). #}
+<style>
+  #add .customhd{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  #add .toggle{display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border:1px solid var(--border);border-radius:999px;background:var(--panel2);cursor:pointer;font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);transition:all .2s}
+  #add .toggle.on,#add .toggle:hover{color:var(--text);border-color:var(--accent);box-shadow:0 0 12px rgba(53,199,242,.2)}
+  #add .toggle .sw{width:30px;height:16px;border-radius:999px;background:#1E2A3D;position:relative;transition:background .2s}
+  #add .toggle .sw::after{content:"";position:absolute;top:2px;left:2px;width:12px;height:12px;border-radius:50%;background:var(--muted);transition:all .2s}
+  #add .toggle.on .sw{background:rgba(53,199,242,.4)}#add .toggle.on .sw::after{left:16px;background:var(--accent2)}
+  #add #nb-custom{margin-top:12px;animation:fadeUp .35s both}#add #nb-custom.hidden{display:none}
+  #add .cfgcard{padding:12px 14px;border:1px solid var(--border);border-radius:10px;background:rgba(8,11,20,.5)}
+  #add .cfgcard h3{margin:0 0 6px;font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent2)}
+  #add .chkrow{display:flex;flex-wrap:wrap;gap:6px 14px;margin:4px 0}
+  #add .chkrow label{display:inline-flex;align-items:center;gap:6px;text-transform:none;margin:0;color:var(--text);font-family:var(--sans);font-size:13px;letter-spacing:0}
+  #add .chkrow input{width:auto}
+  #add .three{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+  @media (max-width:900px){ #add .three{grid-template-columns:minmax(0,1fr)} }
+</style>
+{% set d0 = PRESETS['standard'].detection %}
+<div style="grid-column:1/-1">
+  <input type="hidden" name="mode" id="nb-mode" value="preset">
+  <div class="customhd">
+    <button type="button" class="toggle" id="nb-btn"><span class="sw"></span> Customise parameters</button>
+    {% if copy_sources %}<label style="margin:0;text-transform:none;letter-spacing:0;font-size:12.5px;display:inline-flex;gap:6px;align-items:center">or start from the parameters of
+      <select id="nb-copy" style="width:auto"><option value="">— the track's defaults —</option>{% for c in copy_sources %}<option value="{{ c.id }}">{{ c.name }}</option>{% endfor %}</select></label>{% endif %}
+    <span class="small muted" id="nb-note">Off: the brand starts with exactly the chosen track. On: set streams, cadence, probes and thresholds yourself now.</span>
+  </div>
+  <div id="nb-custom" class="hidden">
+    <div class="three">
+      <div class="cfgcard">
+        <h3>Discovery</h3>
+        <label>Streams</label>
+        <div class="chkrow">{% for st in ['dnstwist','ct','nrd','search','urlscan'] %}<label><input type="checkbox" name="streams" value="{{ st }}" {{ 'checked' if st in d0.streams }}> {{ st }}</label>{% endfor %}</div>
+        <div class="chkrow"><label><input type="checkbox" name="social_accounts" {{ 'checked' if d0.social_accounts }}> social media (Facebook pages · Instagram profiles)</label></div>
+        <label>dnstwist TLDs</label><select name="tlds">{% for t in ['common','popular','all'] %}<option {{ 'selected' if d0.tlds == t }}>{{ t }}</option>{% endfor %}</select>
+        <label title="how many sites a scan opens in the browser and compares with the real one">Max sites to visit per scan</label><input name="max_candidates" type="number" min="1" max="5000" value="{{ d0.max_candidates }}">
+        <label title="dnstwist look-alike names checked in DNS - keyword combinations, other TLDs and typos first">Max look-alike names to check</label><input name="max_names_checked" type="number" min="1" max="100000" value="{{ d0.max_names_checked }}">
+        <label>Max Google queries per scan</label><input name="search_queries_max" value="{{ d0.search_queries_max or 10 }}">
+        <label>Search countries · languages <span style="text-transform:none">(pick a country, then tick its languages: e.g. United States · English, Spanish)</span></label>
+        {% set mk_list = search_markets(d0) %}{% set mk_disabled = false %}{% include "_markets_picker.html" %}
+      </div>
+      <div class="cfgcard">
+        <h3>Cadence</h3>
+        <label>Watch window (days) · re-check cadence (hours)</label>
+        <div class="actions"><input name="watch_window_days" value="{{ d0.watch_window_days }}" style="flex:1"><input name="watch_cadence_hours" value="{{ d0.watch_cadence_hours }}" style="flex:1"></div>
+        <label>Residential probe</label><select name="residential_probe">{% for t in ['gated','off','always'] %}<option {{ 'selected' if d0.residential_probe == t }}>{{ t }}</option>{% endfor %}</select>
+        <label>Residential country <span style="text-transform:none">(ISO code; empty = auto)</span></label>
+        <input name="residential_country" value="{{ d0.residential_country }}" placeholder="auto">
+      </div>
+      <div class="cfgcard">
+        <h3>Evasion &amp; verdicts</h3>
+        <div class="chkrow" style="flex-direction:column;align-items:flex-start">
+          <label><input type="checkbox" name="cloaking_probes" {{ 'checked' if d0.cloaking_probes }}> Cloaking multi-probe (bot · param · referer)</label>
+          <label><input type="checkbox" name="ai_second_opinion" {{ 'checked' if d0.ai_second_opinion }}> AI second opinion on Medium+ (advisory)</label>
+          <label><input type="checkbox" name="auto_map_on_confirm" {{ 'checked' if d0.auto_map_on_confirm }}> Map the attack infrastructure when a finding is confirmed</label>
+          <label><input type="checkbox" name="auto_investigate_on_confirm" {{ 'checked' if d0.auto_investigate_on_confirm }}> Investigate the site and build the evidence package when a finding is confirmed</label>
+        </div>
+        <label>Severity thresholds (medium · high · critical)</label>
+        <div class="actions"><input name="t_medium" value="25" style="flex:1"><input name="t_high" value="50" style="flex:1"><input name="t_critical" value="75" style="flex:1"></div>
+        <div class="small muted" style="margin-top:8px;text-transform:none">Signal weights and group caps can be tuned on the brand page afterwards.</div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+(function(){
+  const form = document.querySelector('#add form'); if (!form) return;
+  const PRESETS = {{ PRESETS|tojson }}, SOURCES = {{ (copy_sources or [])|tojson }};
+  const mode = document.getElementById('nb-mode'), box = document.getElementById('nb-custom'), btn = document.getElementById('nb-btn');
+  const note = document.getElementById('nb-note'), copy = document.getElementById('nb-copy'), preset = form.elements['preset'];
+  const set = (n, v) => { const el = form.elements[n]; if (el && v !== undefined && v !== null) el.value = v; };
+  const chk = (n, v) => { const el = form.elements[n]; if (el && el.type === 'checkbox') el.checked = !!v; };
+  function fill(d, thresholds){
+    form.querySelectorAll('input[name=streams]').forEach(c => c.checked = (d.streams || []).includes(c.value));
+    ['tlds','max_candidates','max_names_checked','search_queries_max','watch_window_days','watch_cadence_hours','residential_probe'].forEach(k => set(k, d[k]));
+    const pk = form.querySelector('.mkt');
+    if (pk && pk.setMarkets) pk.setMarkets((d.search_markets && d.search_markets.length) ? d.search_markets
+      : String(d.search_geo || 'us').split(',').map(c => c.trim()).filter(Boolean).map(c => ({country: c, langs: [d.search_lang || 'en']})));
+    set('residential_country', d.residential_country || '');
+    ['cloaking_probes','social_accounts','ai_second_opinion','auto_map_on_confirm','auto_investigate_on_confirm'].forEach(k => chk(k, d[k]));
+    if (thresholds) ['medium','high','critical'].forEach(k => set('t_' + k, thresholds[k]));
+  }
+  function open(on){
+    box.classList.toggle('hidden', !on); btn.classList.toggle('on', on); mode.value = on ? 'custom' : 'preset';
+    note.textContent = on ? 'The values below are saved with the brand, on top of the chosen track. Change anything.' : "Off: the brand starts with exactly the chosen track. On: set streams, cadence, probes and thresholds yourself now.";
+  }
+  btn.addEventListener('click', () => { const on = box.classList.contains('hidden'); if (on && !copy?.value) fill((PRESETS[preset.value] || {}).detection || {}); open(on); });
+  preset.addEventListener('change', () => { if (mode.value === 'custom' && !copy?.value) fill((PRESETS[preset.value] || {}).detection || {}); });  // follows the track until a brand is copied
+  copy?.addEventListener('change', () => {
+    const s = SOURCES.find(x => x.id === copy.value);
+    if (!s) { fill((PRESETS[preset.value] || {}).detection || {}); return; }
+    fill(s.detection, s.thresholds); preset.value = s.preset; open(true);
+    note.textContent = 'Started from the parameters of ' + s.name + ' — change anything before creating the brand.';
+  });
+})();
+</script>

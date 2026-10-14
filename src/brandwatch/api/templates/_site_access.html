@@ -1,0 +1,159 @@
+{# Does the official site let BrandWatch in? Shown on the brand page (from the saved baseline) and on the set-up
+   page (checked when the page opens, before the first scan). When the site answers 403 / a bot check / an error,
+   it says so, lays out what BrandWatch can do next (residential proxy, a urlscan.io snapshot of the real site) and
+   offers the legitimate fixes. Context: brand (with baseline_fetch / baseline_blocked), auto, can_write. #}
+<style>
+  .siteacc{margin-top:12px;border:1px solid rgba(255,77,77,.55);border-radius:12px;padding:12px 14px;background:rgba(255,77,77,.07);animation:fadeUp .35s both}
+  .siteacc [hidden]{display:none !important}
+  .siteacc.good{border-color:rgba(46,204,113,.5);background:rgba(46,204,113,.06)}
+  .siteacc.wait{border-color:var(--border);background:rgba(8,11,20,.5)}
+  .siteacc.snap{border-color:rgba(255,159,28,.6);background:rgba(255,159,28,.07)}
+  .siteacc.snap .sa-t{color:var(--high)}
+  .siteacc .sa-t{font-weight:700;font-size:13.5px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  .siteacc .sa-t .k{font:600 10px var(--mono);letter-spacing:.1em;text-transform:uppercase;border:1px solid currentColor;border-radius:999px;padding:1px 8px}
+  .siteacc.bad .sa-t{color:var(--crit)}.siteacc.good .sa-t{color:var(--low)}
+  .siteacc .sa-r{font-size:12.5px;color:#c3cdd9;margin:6px 0 0;line-height:1.5}
+  .siteacc .sa-tried{font:11.5px var(--mono);color:var(--muted);margin:6px 0 0;word-break:break-word}
+  .siteacc .sa-ladder{margin:10px 0 0;padding:0;list-style:none;display:grid;gap:6px}
+  .siteacc .sa-ladder li{display:flex;gap:8px;align-items:flex-start;font-size:12.5px;line-height:1.45;color:#c3cdd9}
+  .siteacc .sa-ladder .m{flex:none;width:18px;text-align:center;font-weight:700}
+  .siteacc .sa-ladder .m.y{color:var(--low)}.siteacc .sa-ladder .m.n{color:var(--crit)}.siteacc .sa-ladder .m.o{color:var(--muted)}
+  .siteacc .sa-ladder b{color:var(--text)}
+  .siteacc .sa-peek{display:flex;gap:12px;flex-wrap:wrap;align-items:flex-start;margin-top:6px}
+  .siteacc .sa-peek img{max-width:220px;max-height:140px;border:1px solid var(--border);border-radius:8px;object-fit:cover;object-position:top}
+  .siteacc .sa-fixes{display:grid;gap:8px;margin-top:10px}
+  .siteacc .sa-fix{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;padding:8px 10px;border:1px solid var(--border);border-radius:10px;background:rgba(8,11,20,.55)}
+  .siteacc .sa-fix .w{flex:1 1 240px;min-width:0}
+  .siteacc .sa-fix .w b{font-size:12.5px}.siteacc .sa-fix .w span{display:block;font-size:11.5px;color:var(--muted);margin-top:2px}
+  .siteacc .sa-fix input{flex:1 1 220px;min-width:0}
+  .siteacc .sa-msg{font-size:12.5px;color:var(--accent2);margin-top:8px;display:block;min-height:1em}
+  @media (max-width:700px){ .siteacc .sa-fix button{flex:1 1 100%} }
+</style>
+<div class="siteacc wait" id="siteacc" data-id="{{ brand.id }}" data-auto="{{ 1 if auto else 0 }}" data-write="{{ 1 if can_write else 0 }}" hidden>
+  <div class="sa-t"><span id="sa-title">Checking the official site …</span><span class="k" id="sa-kind" hidden></span></div>
+  <p class="sa-r" id="sa-reason"></p>
+  <p class="sa-tried" id="sa-tried" hidden></p>
+  <ul class="sa-ladder" id="sa-ladder" hidden></ul>
+  <div class="actions" id="sa-go" hidden style="margin-top:10px"><button type="button" id="sa-build" class="primary">Fingerprint the site this way</button></div>
+  <div class="sa-fixes" id="sa-fixes" hidden>
+    <div class="sa-fix">
+      <div class="w"><b>1 · Try through the residential proxy</b><span>A different IP address — a home connection instead of a data centre. Needs the residential proxy and a budget under Settings. About $0.02 a try.</span></div>
+      <button type="button" id="sa-res">Check through residential</button>
+    </div>
+    <div class="sa-fix">
+      <div class="w"><b>2 · Fingerprint another official page</b><span>A page of the same brand that does not block — a country site (thenorthface.co.il), a help centre, a blog. Its domain is added as an official domain.</span></div>
+      <input id="sa-url" placeholder="https://www.thenorthface.co.il/" dir="ltr" autocomplete="off">
+      <button type="button" id="sa-page">Check this page</button>
+    </div>
+    <div class="sa-fix">
+      <div class="w"><b>3 · Take it from urlscan.io</b><span>A public snapshot of the real site, taken by someone else's browser: its screenshot, colours and title are enough to compare look-alikes with. Free; the site is asked once, only for its status and favicon. Leave the box empty for the newest scan, or paste the link of the urlscan.io scan you want.</span></div>
+      <input id="sa-uscan" placeholder="https://urlscan.io/result/…  (optional)" dir="ltr" autocomplete="off">
+      <button type="button" id="sa-snap">Use the urlscan.io snapshot</button>
+    </div>
+    <div class="sa-fix">
+      <div class="w"><b>4 · Try again</b><span>Some protections only refuse a burst of requests, or a particular hour.</span></div>
+      <button type="button" id="sa-retry">Check again</button>
+    </div>
+  </div>
+  <span class="sa-msg" id="sa-msg"></span>
+</div>
+<script type="application/json" id="sa-init">{{ (brand.baseline_fetch or {})|tojson }}</script>
+<script>
+(function(){
+  const box = document.getElementById('siteacc'); if (!box) return;
+  const id = box.dataset.id, write = box.dataset.write === '1';
+  const $ = s => document.getElementById(s);
+  let init = {}; try { init = JSON.parse($('sa-init').textContent) || {}; } catch (e) {}
+  let last = null;                                   // the last check that got in: {via, url}
+  const say = (t, bad) => { $('sa-msg').textContent = t || ''; $('sa-msg').style.color = bad ? 'var(--crit)' : ''; };
+  const via = v => v === 'residential' ? 'through the residential proxy' : 'from a data-centre IP';
+  const day = t => String(t || '').slice(0, 10);
+  const mk = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text !== undefined) e.textContent = text; return e; };
+  function ladder(items){
+    const ul = $('sa-ladder'); ul.replaceChildren();
+    (items || []).forEach(it => {
+      const li = mk('li'); li.append(mk('span', 'm ' + (it.ok === true ? 'y' : (it.ok === false ? 'n' : 'o')), it.ok === true ? '✓' : (it.ok === false ? '✗' : '○')));
+      const w = mk('div'); w.append(mk('b', '', it.step + ' — '), document.createTextNode(it.text));
+      if (it.snapshot && it.snapshot.screenshot_url) {
+        const peek = mk('div', 'sa-peek'); const img = mk('img'); img.src = it.snapshot.screenshot_url; img.alt = 'urlscan.io screenshot'; img.loading = 'lazy'; img.referrerPolicy = 'no-referrer';
+        const a = mk('a', '', 'open the scan on urlscan.io ↗'); a.href = it.snapshot.result_url; a.target = '_blank'; a.rel = 'noreferrer noopener';
+        peek.append(img, a); w.append(peek);
+      }
+      li.append(w); ul.append(li);
+    });
+    ul.hidden = !(items && items.length);
+  }
+  function show(h){
+    box.hidden = false; $('sa-go').hidden = true;
+    const bad = h.ok === false, snap = h.source === 'urlscan' && h.snapshot;
+    box.className = 'siteacc ' + (snap ? 'snap' : (bad ? 'bad' : 'good'));
+    $('sa-kind').hidden = !bad; $('sa-kind').textContent = (h.kind || '').replace('_', ' ');
+    $('sa-fixes').hidden = !((bad || snap) && write);
+    const tried = (h.attempts || []).map(a => (a.via === 'residential' ? 'residential proxy' : 'data-centre IP') + ' → ' + (a.status ? 'HTTP ' + a.status : 'no answer')).concat(snap ? ['urlscan.io snapshot ' + day(h.snapshot.time) + ' ✓'] : []);
+    $('sa-tried').hidden = !(snap && tried.length); $('sa-tried').textContent = 'Tried: ' + tried.join('  ·  ');
+    ladder(h.ladder);
+    if (snap) {
+      const has = ['screenshot ✓', 'colours ✓', 'title ✓', 'page text + login form ' + (h.snapshot.has_dom ? '✓' : '✗ (needs a urlscan API key)'), 'favicon ' + (h.snapshot.has_favicon ? '✓' : '✗')].join(' · ');
+      $('sa-title').textContent = 'Fingerprint taken from a urlscan.io snapshot of ' + day(h.snapshot.time);
+      $('sa-reason').textContent = (h.ok ? 'The live site answers (HTTP ' + h.status + ') — the snapshot was chosen. ' : h.reason + '. ') + 'It has: ' + has + '. Login and sign-up pages cannot be followed from a snapshot. A live fingerprint needs the residential proxy or another official page.';
+    } else if (bad) {
+      $('sa-title').textContent = 'The official site did not let BrandWatch in' + (h.status ? ' — HTTP ' + h.status : '') + (h.vendor ? ' (' + h.vendor + ')' : '');
+      $('sa-reason').textContent = h.reason + '. Until this is fixed, the real site\'s screenshot, colours, keywords and login form are NOT used to judge look-alikes (a block page is never learned from); only the name, domain, WHOIS and certificate signals count.';
+    } else {
+      $('sa-title').textContent = '✓ The official site answers (HTTP ' + (h.status || 200) + ')';
+      $('sa-reason').textContent = (h.url || '') + ' · ' + via(h.via || 'datacenter');
+    }
+  }
+  async function call(path, body){
+    const r = await fetch('/api/brands/' + id + path, {method: 'POST', credentials: 'same-origin',
+      headers: {'Content-Type': 'application/json'}, body: JSON.stringify(body || {})});
+    let j = {}; try { j = await r.json(); } catch (e) {}
+    if (!r.ok) throw new Error(typeof j.detail === 'string' ? j.detail : 'request failed (' + r.status + ')');
+    return j;
+  }
+  const lock = on => box.querySelectorAll('button').forEach(b => b.disabled = on);
+  function offer(h, body){
+    if (h.ok && (body.via === 'residential' || body.url)) {   // it got in with a fix: offer to fingerprint that way
+      last = {via: body.via || 'datacenter'}; if (body.url) last.url = body.url;
+      $('sa-go').hidden = !write; $('sa-build').textContent = 'Fingerprint the site ' + (body.url ? 'from this page' : via(last.via));
+      return 'It gets in. Press the button to build the fingerprint this way.';
+    }
+    if (!h.ok && h.snapshot) {
+      last = {via: 'snapshot'}; $('sa-go').hidden = !write; $('sa-build').textContent = 'Fingerprint from the urlscan.io snapshot of ' + day(h.snapshot.time);
+      return 'Blocked — but urlscan.io has a snapshot of the real site you can use.';
+    }
+    return h.ok ? '' : 'Still blocked.';
+  }
+  async function check(body, label){
+    say(label || 'Checking …'); lock(true);
+    try {
+      const h = await call('/baseline/check', body);
+      show({...h, source: undefined});                    // a check is about the live site, not about the saved snapshot
+      const m = offer(h, body); say(m, !h.ok && !h.snapshot);
+    } catch (e) { say(String(e.message || e), true); }
+    lock(false);
+  }
+  $('sa-res').onclick = () => check({via: 'residential'}, 'Checking through the residential proxy …');
+  $('sa-retry').onclick = () => check({via: 'datacenter'}, 'Checking again …');
+  $('sa-page').onclick = () => { const u = $('sa-url').value.trim(); if (!u) { say('Type the address of another official page.', true); return; } check({url: u}, 'Checking that page …'); };
+  $('sa-snap').onclick = async () => {
+    say('Asking urlscan.io for a snapshot …'); lock(true);
+    try { const u = $('sa-uscan').value.trim(); await call('/baseline', u ? {via: 'snapshot', urlscan: u} : {via: 'snapshot'}); say('Done.'); location.reload(); }
+    catch (e) { say(String(e.message || e), true); lock(false); }
+  };
+  $('sa-build').onclick = async () => {
+    say('Fingerprinting …'); lock(true);
+    try { await call('/baseline', last || {}); say('Done.'); location.reload(); }
+    catch (e) { say(String(e.message || e), true); lock(false); }
+  };
+  if (init && (init.ok === false || init.source === 'urlscan')) show(init);
+  else if (box.dataset.auto === '1') {
+    box.hidden = false; box.className = 'siteacc wait';
+    call('/baseline/check', {}).then(h => {
+      show({...h, source: undefined});
+      const m = offer(h, {}); if (m) say(m, false);
+      if (h.ok) setTimeout(() => { if (box.classList.contains('good')) box.hidden = true; }, 6000);
+    }).catch(() => { box.hidden = true; });
+  }
+})();
+</script>

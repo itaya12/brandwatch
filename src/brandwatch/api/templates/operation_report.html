@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{ g.name }} · operation report</title>
+<style>
+  :root{--ink:#16202e;--muted:#5d6b7e;--line:#dfe5ec;--soft:#f4f7fa;--paper:#ffffff;--accent:#0b6fbd;--crit:#c62828;--high:#e07b00;--med:#b88a00;--low:#2e7d32;--c:{{ ['#0b6fbd','#b88a00','#e07b00','#2e7d32','#7b4fd1','#d6336c','#00897b','#5d6b7e'][(g.index - 1) % 8] }}}
+  *{box-sizing:border-box}
+  body{margin:0;background:#e9eef3;color:var(--ink);font:14px/1.55 "Segoe UI",system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif}
+  .page{max-width:1020px;margin:24px auto;background:var(--paper);border-radius:14px;box-shadow:0 10px 40px rgba(20,35,55,.15);overflow:hidden}
+  header{background:linear-gradient(135deg,#0d1b2e,#14304f);color:#fff;padding:28px 36px 24px;border-bottom:5px solid var(--c)}
+  header .eyebrow{font-size:11.5px;letter-spacing:.18em;text-transform:uppercase;color:#9fc4e6}
+  header h1{margin:6px 0 4px;font-size:26px;line-height:1.25;word-break:break-word}
+  header .sub{color:#c5d7ea;font-size:13.5px}
+  .toolbar{float:right;margin:-6px 0 0 12px}
+  .toolbar button{background:rgba(255,255,255,.14);color:#fff;border:1px solid rgba(255,255,255,.35);border-radius:8px;padding:6px 14px;cursor:pointer;font-size:12.5px}
+  .toolbar button:hover{background:rgba(255,255,255,.24)}
+  main{padding:8px 36px 32px}
+  .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:22px 0 6px}
+  .kpi{border:1px solid var(--line);border-radius:10px;padding:12px 14px;background:var(--soft)}
+  .kpi .v{font-size:22px;font-weight:700;color:var(--c);line-height:1.2;word-break:break-word}
+  .kpi .l{font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:2px}
+  .meter{height:7px;border-radius:5px;background:#dde5ee;overflow:hidden;margin-top:7px}.meter i{display:block;height:100%;background:var(--c)}
+  h2{font-size:17px;margin:30px 0 8px;padding-bottom:6px;border-bottom:2px solid var(--line);display:flex;align-items:baseline;gap:10px}
+  h2 .n{font-size:12px;font-weight:600;color:var(--muted)}
+  h3{font-size:13.5px;margin:18px 0 6px}
+  p{margin:6px 0}
+  .because{margin:16px 0 0;font-size:13px}
+  .lead{font-size:15.5px;margin:18px 0 6px}
+  .why li{margin:2px 0}
+  table{width:100%;border-collapse:collapse;font-size:12.8px;margin:6px 0 10px}
+  th{background:var(--soft);text-align:left;font-weight:600;color:var(--muted);font-size:11.5px;letter-spacing:.05em;text-transform:uppercase}
+  th,td{padding:7px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+  tr:nth-child(even) td{background:#fbfcfd}
+  .mono{font-family:Consolas,"SFMono-Regular",Menlo,monospace;font-size:12px;word-break:break-all}
+  .sev{display:inline-block;padding:1px 9px;border-radius:999px;font-size:11px;font-weight:700;text-transform:uppercase;color:#fff}
+  .sev.critical{background:var(--crit)}.sev.high{background:var(--high)}.sev.medium{background:var(--med)}.sev.low{background:var(--low)}
+  .chip{display:inline-block;border:1px solid var(--line);background:var(--soft);border-radius:999px;padding:1px 9px;font-size:11.5px;margin:1px 3px 1px 0}
+  .chip.hint{border-style:dashed}
+  .chip{white-space:nowrap}
+  .because .chip,.cluster .chip{white-space:normal;word-break:break-word}
+  td.host{word-break:normal;white-space:nowrap}
+  .chip b{font-weight:600}
+  .pct{color:var(--muted);font-size:11.5px}
+  .cluster{border:1px solid var(--line);border-left:4px solid var(--c);border-radius:8px;padding:9px 12px;margin:8px 0;background:#fff;page-break-inside:avoid}
+  .cluster .sites{margin-bottom:5px}
+  .step{display:flex;gap:12px;margin:10px 0;page-break-inside:avoid}
+  .step .no{flex:none;width:28px;height:28px;border-radius:50%;background:var(--c);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700}
+  .step .t{font-weight:700}
+  .step .targets{margin-top:3px}
+  .gridwrap{overflow:auto}
+  table.grid{width:auto;border-collapse:separate;border-spacing:2px;font-size:10.5px}
+  table.grid th{background:transparent;text-transform:none;letter-spacing:0;padding:2px 4px;border:0}
+  table.grid th.v{height:104px;vertical-align:bottom}
+  table.grid th.v div{writing-mode:vertical-rl;transform:rotate(180deg);font-family:Consolas,monospace;font-weight:500;white-space:nowrap;color:var(--ink)}
+  table.grid th.h{text-align:right;font-family:Consolas,monospace;font-weight:500;white-space:nowrap;color:var(--ink)}
+  table.grid td{width:28px;height:28px;padding:0;text-align:center;vertical-align:middle;border:0;border-radius:4px;background:color-mix(in srgb,var(--c) calc(var(--a) * 100%),#eef2f6);color:#fff;font-weight:700}
+  table.grid td.low{color:var(--ink)}
+  table.grid td.self{background:transparent}
+  .tl{position:relative;height:34px;background:var(--soft);border:1px solid var(--line);border-radius:8px;margin:8px 0 2px}
+  .tl span{position:absolute;top:50%;width:12px;height:12px;margin:-6px 0 0 -6px;border-radius:50%;background:var(--c);border:2px solid #fff;box-shadow:0 0 0 1px var(--c)}
+  .tl span.wave{box-shadow:0 0 0 4px color-mix(in srgb,var(--c) 30%,transparent)}
+  .tlax{display:flex;justify-content:space-between;font-size:11.5px;color:var(--muted)}
+  .note{background:var(--soft);border:1px solid var(--line);border-radius:8px;padding:9px 13px;font-size:12.8px;color:var(--muted)}
+  footer{padding:16px 36px 22px;color:var(--muted);font-size:12px;border-top:1px solid var(--line);background:var(--soft)}
+  @media(max-width:700px){main,header,footer{padding-left:16px;padding-right:16px}.page{margin:0;border-radius:0}h1{font-size:21px}}
+  @media print{body{background:#fff}.page{box-shadow:none;margin:0;border-radius:0}.toolbar{display:none}header{-webkit-print-color-adjust:exact;print-color-adjust:exact}table,.sev,.kpi,.meter i,.tl span,table.grid td,.step .no{-webkit-print-color-adjust:exact;print-color-adjust:exact}h2{page-break-after:avoid}}
+</style>
+</head>
+<body>
+<div class="page">
+<header>
+  <div class="toolbar"><button type="button" onclick="window.print()">Print / save as PDF</button></div>
+  <div class="eyebrow">BrandWatch · operation report{% if brand %} · {{ brand }}{% endif %}</div>
+  <h1>{{ g.name }}</h1>
+  <div class="sub">{{ g.behaviour.label }} · {{ g.size }} sites{% if g.brands|length > 1 %} · {{ g.brands|length }} brands ({{ g.brands|map(attribute='name')|join(', ') }}){% endif %} · {{ g.level }} ({{ (g.confidence * 100)|round|int }}%) · generated {{ generated }}</div>
+</header>
+<main>
+  <div class="kpis">
+    <div class="kpi"><div class="v">{{ g.size }}</div><div class="l">confirmed sites</div></div>
+    <div class="kpi"><div class="v">{{ (g.confidence * 100)|round|int }}%</div><div class="l">confidence · {{ g.level }}</div><div class="meter"><i style="width:{{ (g.confidence * 100)|round|int }}%"></i></div></div>
+    <div class="kpi"><div class="v">{{ g.behaviour.label }}</div><div class="l">what it does</div></div>
+    <div class="kpi"><div class="v" style="font-size:16px">{% if g.pattern.when %}{{ g.pattern.when.first }}{{ ' → ' ~ g.pattern.when.last if g.pattern.when.span_days }}{% else %}–{% endif %}</div><div class="l">domains registered{{ ' · in waves' if g.pattern.when and g.pattern.when.batch }}</div></div>
+    <div class="kpi"><div class="v">{{ g.stop|length }}</div><div class="l">ways to stop it</div></div>
+  </div>
+
+  <p class="because"><b>Because</b> {% for b in g.basis %}<span class="chip {{ 'hint' if b.level != 'solid' }}"><b>{{ b.label }}</b> <span class="mono">{{ b.value|truncate(30) }}</span> <span class="pct">{{ (b.weight * 100)|round|int }}%{{ ' · ' ~ b.n ~ ' of them' if b.n > 1 }}</span></span>{% endfor %}</p>
+  <p class="lead">{{ g.story }}</p>
+  <ul class="why">{% for w in g.behaviour.why %}<li>{{ w }}</li>{% endfor %}</ul>
+
+  <h2>How to stop it <span class="n">· the shortest way, first</span></h2>
+  {% for st in g.stop %}<div class="step"><div class="no">{{ loop.index }}</div><div><div class="t">{{ st.title }}</div><div>{{ st.text }}</div>
+    <div class="targets mono">{{ st.targets|join(', ') }}</div></div></div>{% endfor %}
+
+  <h2>The sites <span class="n">· {{ g.size }}</span></h2>
+  <table><tr><th>Site</th><th>Severity</th><th>Registered</th><th>Registrar</th><th>Server(s)</th><th>Hosting</th><th>Name servers</th><th>Ends on</th></tr>
+    {% for s in g.detail.sites %}<tr><td class="mono host"><b>{{ s.host }}</b>{% if s.affiliate %}<div>{% for a in s.affiliate %}<span class="chip"><b>{{ a }}</b></span>{% endfor %}</div>{% endif %}</td>
+      <td><span class="sev {{ s.severity }}">{{ s.severity }}</span></td><td>{{ s.registered or '–' }}</td><td>{{ s.registrar or '–' }}</td>
+      <td class="mono">{{ s.ips|join(', ') or ('behind a CDN' if s.behind_cdn else '–') }}</td><td>{{ s.hosting|join(', ') or '–' }}</td><td class="mono">{{ s.nameservers|join(', ') or '–' }}</td><td class="mono">{{ s.ends_on or '–' }}</td></tr>{% endfor %}</table>
+
+  <h2>Who is with whom <span class="n">· {{ g.clusters|length }} cluster{{ '' if g.clusters|length == 1 else 's' }}</span></h2>
+  <p class="note">{{ g.detail.summary[0]|upper }}{{ g.detail.summary[1:] }}. Sites that share exactly the same things are shown together, so a long list of links reads as one line.</p>
+  {% for cl in g.clusters %}<div class="cluster"><div class="sites">{% for h in cl.sites %}<span class="chip mono"><b>{{ h }}</b></span>{% endfor %}</div>
+    <div><b>{{ cl.sites|length }} sites</b> share
+      {% for k in cl.by_kind %}<span class="chip {{ 'hint' if k.level != 'solid' }}"><b>{{ k.label }}{{ ' ×' ~ k.vals|length if k.vals|length > 1 }}</b> <span class="mono">{{ k.vals[:4]|join(', ') }}{{ ' +' ~ (k.vals|length - 4) ~ ' more' if k.vals|length > 4 }}</span> <span class="pct">{{ (k.weight * 100)|round|int }}%</span></span>{% endfor %}</div></div>{% endfor %}
+
+  <h3>Who against whom</h3>
+  <p class="pct" style="margin-top:0">How sure we are that two sites are one operation (the darker the cell, the surer). The number is shown from 75%, where two sites count as one operation.</p>
+  <div class="gridwrap"><table class="grid"><tr><th></th>{% for h in g.grid.hosts %}<th class="v"><div>{{ h }}</div></th>{% endfor %}</tr>
+    {% for row in g.grid.cells %}{% set ri = loop.index0 %}<tr><th class="h">{{ g.grid.hosts[ri] }}</th>{% for c in row %}{% if c is none %}<td class="self"></td>{% else %}<td style="--a:{{ c.conf }}" class="{{ 'low' if c.conf < 0.45 }}" title="{{ g.grid.hosts[ri] }} ↔ {{ g.grid.hosts[loop.index0] }} · {{ (c.conf * 100)|round|int }}%{{ ' · ' ~ c.kinds|join(', ') if c.kinds }}">{{ (c.conf * 100)|round|int if c.conf >= 0.75 }}</td>{% endif %}{% endfor %}</tr>{% endfor %}</table></div>
+
+  <h2>Who shares what <span class="n">· every shared server, certificate, registrant and more</span></h2>
+  {% for sec in g.detail.sections %}<h3>{{ sec.title }} <span class="pct">· {{ sec.rows|length }}</span></h3>
+    <table><tr><th style="width:34%">Value</th><th style="width:12%">Strength</th><th>Shared by</th></tr>
+    {% for r in sec.rows %}<tr><td class="mono">{{ r.value }}{% if r.network %}<div class="pct" style="font-family:inherit">{{ r.network }}{{ ' · ' ~ r.class if r.class }}</div>{% endif %}</td>
+      <td>{{ (r.weight * 100)|round|int }}%<div class="pct">{{ 'proof' if r.level == 'solid' else 'a hint' if r.level == 'possible' else 'common' }}</div></td>
+      <td><b>{{ r.sites|length }} site{{ '' if r.sites|length == 1 else 's' }}</b><div class="mono">{{ r.sites|join(', ') }}</div></td></tr>{% endfor %}</table>{% endfor %}
+
+  <h2>Toolkit <span class="n">· what the attacker uses</span></h2>
+  <table><tr><th style="width:22%">Kind</th><th>What</th></tr>
+    <tr><td>Registrars</td><td>{% for r in g.toolkit.registrars %}<span class="chip"><b>{{ r.name }}</b> ×{{ r.count }}</span>{% else %}–{% endfor %}</td></tr>
+    <tr><td>Hosting</td><td>{% for r in g.toolkit.hosting %}<span class="chip"><b>{{ r.name }}</b> ×{{ r.count }}</span>{% else %}–{% endfor %}</td></tr>
+    <tr><td>Redirect hosts</td><td>{% for r in g.toolkit.redirectors %}<span class="chip"><b>{{ r.name }}</b> ×{{ r.count }}</span>{% else %}–{% endfor %}</td></tr>
+    <tr><td>Name servers</td><td>{% for r in g.toolkit.nameservers %}<span class="chip mono">{{ r.name }} ×{{ r.count }}</span>{% else %}–{% endfor %}</td></tr>
+    <tr><td>Certificate issuers</td><td>{% for r in g.toolkit.issuers %}<span class="chip">{{ r.name }} ×{{ r.count }}</span>{% else %}–{% endfor %}</td></tr></table>
+
+  {% if timeline %}<h2>When the domains were registered <span class="n">· a ring = several bought within days of each other</span></h2>
+  <div class="tl">{% for d in timeline.dots %}<span class="{{ 'wave' if d.wave }}" style="left:{{ d.x }}%" title="{{ d.host }} · {{ d.date }}"></span>{% endfor %}</div>
+  <div class="tlax"><span>{{ timeline.first }}</span><span>{{ timeline.last }}</span></div>
+  <table><tr><th>Registered</th><th>Site</th></tr>{% for d in timeline.dots %}<tr><td>{{ d.date }}{{ ' · in a wave' if d.wave }}</td><td class="mono">{{ d.host }}</td></tr>{% endfor %}</table>{% endif %}
+
+  <h2>Evidence per site <span class="n">· which site has which tie</span></h2>
+  <div class="gridwrap"><table><tr><th>Site</th>{% for k in g.matrix.kinds %}<th>{{ k.replace('_', ' ') }}</th>{% endfor %}</tr>
+    {% for r in g.matrix.rows %}<tr><td class="mono">{{ r.host }}</td>{% for k in g.matrix.kinds %}<td class="mono">{{ r.cells[k]|join(', ') or '·' }}</td>{% endfor %}</tr>{% endfor %}</table></div>
+  {% if g.also %}<h3>Also in common, but weak <span class="pct">· they never group sites</span></h3>
+    <table><tr><th>Kind</th><th>Value</th><th>Sites</th></tr>{% for l in g.also %}<tr><td>{{ l.label }}</td><td class="mono">{{ l.value }}</td><td>{{ l.sites|length }}</td></tr>{% endfor %}</table>{% endif %}
+
+  <p class="note" style="margin-top:22px">Confidence is the weakest tie that holds the group together. Every tie has a weight: how likely it is that two sites sharing it are one operation. A server on a CDN is no evidence; a registrar or a name server never ties two sites on its own. This report was generated from the evidence BrandWatch holds today; searching for more sites of this operation is a separate step the analyst starts.</p>
+</main>
+<footer>BrandWatch · {{ brand or 'all brands' }} · {{ stats.sites }} confirmed sites in the workspace, {{ stats.operations }} operation{{ '' if stats.operations == 1 else 's' }} · generated {{ generated }}</footer>
+</div>
+</body>
+</html>

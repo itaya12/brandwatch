@@ -1,0 +1,827 @@
+{% extends "base.html" %}
+{% block title %}How it works{% endblock %}
+{% block content %}
+{#
+  How it works = a two-minute story in six chapters, animated on this workspace's own data
+  (demo/story.py), with a "Play" mode and a sticky chapter rail.
+  The deep material (all 13 steps with "More info", the presenter's walkthrough, the engineering,
+  the glossary every "?" links to) is folded underneath.
+  Animation contract: elements with class "rv" appear when their chapter gets class "live";
+  --t is the delay in ms. Without JS, or with reduced motion, everything is simply visible.
+#}
+{% set B = story.brand %}{% set C = story.candidates %}{% set F = story.finding %}{% set G = story.graph %}{% set T = story.takedown %}{% set X = story.example %}
+{% set key = B.key or (B.name|lower|replace(' ', '')) %}
+<style>
+  /* ------------------------------------------------------------------ shell */
+  .sx{--ink:#E6EDF5;--line:#1E2A3D;--card:rgba(18,26,43,.92)}
+  .sx.js .rv{opacity:0}
+  .sx.js .ch.live .rv,.sx.js .on-view.live .rv{animation:rvIn .6s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(var(--t,0)*1ms)}
+  @keyframes rvIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+  .sx svg .rv{transform-box:fill-box;transform-origin:center}
+  .sx.js .ch.live svg g.rv{animation-name:popIn}
+  @keyframes popIn{from{opacity:0;transform:scale(.4)}to{opacity:1;transform:none}}
+  .sx.js .ch.live svg line.rv{animation-name:draw;animation-duration:.7s}
+  @keyframes draw{from{opacity:1;stroke-dashoffset:1}to{opacity:1;stroke-dashoffset:0}}
+  .sx svg line.rv{stroke-dasharray:1;stroke-dashoffset:0}
+  @media (prefers-reduced-motion:reduce){.sx.js .rv{opacity:1;transform:none}}
+
+  /* ------------------------------------------------------------------ hero */
+  .sx-hero{position:relative;padding:34px 0 26px;display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:34px;align-items:center}
+  .sx-hero h1{font-size:13px;letter-spacing:.2em;margin:0 0 14px;font-family:var(--mono);-webkit-text-fill-color:var(--accent2)}
+  .sx-hero h1 span{-webkit-text-fill-color:var(--muted);letter-spacing:.06em}
+  .sx-head{font:700 clamp(30px,4.4vw,54px)/1.04 var(--display);letter-spacing:.01em;margin:0}
+  .sx-head em{font-style:normal;color:var(--accent2)}
+  .sx-social{display:flex;gap:12px;align-items:flex-start;margin:16px 0 0;padding:12px 14px;border:1px solid rgba(53,199,242,.45);border-radius:14px;background:linear-gradient(90deg,rgba(53,199,242,.10),rgba(53,199,242,.02))}
+  .sx-social .ic{flex:0 0 auto;display:flex;gap:4px}
+  .sx-social .ic span{width:26px;height:26px;border-radius:7px;display:grid;place-items:center;font:700 13px var(--sans);color:#fff}
+  .sx-social b.t{display:block;font-size:14.5px;color:var(--ink)}
+  .sx-social p b{color:var(--ink)}
+  .sx-social p{margin:2px 0 0;font-size:13px;line-height:1.5;color:#c3cdd9}
+  .sx-sub{font-size:16px;line-height:1.55;color:#c3cdd9;margin:16px 0 22px;max-width:620px}
+  .sx-cta{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+  .btn-play{display:inline-flex;align-items:center;gap:12px;padding:14px 22px;border-radius:999px;border:1px solid var(--accent);background:rgba(53,199,242,.12);
+    color:var(--accent2);font:700 15px var(--sans);letter-spacing:.02em;cursor:pointer;transition:transform .2s,background .2s}
+  .btn-play:hover{transform:translateY(-1px);background:rgba(53,199,242,.2)}
+  .btn-play .tri{width:30px;height:30px;border-radius:50%;background:var(--accent);display:grid;place-items:center;color:#06101c;font-size:13px;box-shadow:0 0 0 0 rgba(53,199,242,.55);animation:ping 2.2s infinite}
+  @keyframes ping{0%{box-shadow:0 0 0 0 rgba(53,199,242,.5)}70%{box-shadow:0 0 0 14px rgba(53,199,242,0)}100%{box-shadow:0 0 0 0 rgba(53,199,242,0)}}
+  .sx-cta .alt{font-size:13px;color:var(--muted)}
+  .illus{display:inline-block;font:600 10px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--high);border:1px solid rgba(255,159,28,.5);border-radius:999px;padding:2px 8px;margin-left:6px;vertical-align:middle}
+  /* hero map of the six chapters */
+  .sx-map{position:relative;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+  .sx-map a{position:relative;display:block;padding:14px 14px 12px;border:1px solid var(--line);border-radius:14px;background:var(--card);color:var(--ink);text-decoration:none;transition:border-color .2s,transform .2s}
+  .sx-map a:hover{border-color:var(--accent);transform:translateY(-2px)}
+  .sx-map .ic{font-size:22px;line-height:1;color:var(--accent2)}
+  .sx-map .k{display:block;font:600 10px var(--mono);letter-spacing:.14em;color:var(--muted);margin-top:10px}
+  .sx-map b{display:block;font:700 17px var(--display);letter-spacing:.03em;margin-top:2px}
+  .sx-map a::after{content:"";position:absolute;left:14px;right:14px;bottom:0;height:2px;border-radius:2px;background:var(--accent);transform:scaleX(0);transform-origin:left;animation:mapfill 6s calc(var(--n)*1s) infinite}
+  @keyframes mapfill{0%{transform:scaleX(0);opacity:1}14%{transform:scaleX(1);opacity:1}30%,100%{transform:scaleX(1);opacity:0}}
+
+  /* ------------------------------------------------------------------ chapter rail */
+  .sx-rail{position:sticky;top:64px;z-index:15;display:flex;align-items:center;gap:10px;margin:0 -20px;padding:9px 20px;border-bottom:1px solid var(--line);
+    background:rgba(8,11,20,.88);backdrop-filter:blur(8px)}
+  .sx-rail .segs{flex:1;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px;min-width:0}
+  .sx-rail .seg{position:relative;display:block;padding:0 0 7px;color:var(--muted);text-decoration:none;font:600 11px var(--mono);letter-spacing:.06em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .sx-rail .seg i{position:absolute;left:0;right:0;bottom:0;height:3px;border-radius:3px;background:var(--line);overflow:hidden}
+  .sx-rail .seg i::after{content:"";position:absolute;inset:0;background:var(--accent);transform:scaleX(var(--f,0));transform-origin:left;transition:transform .25s linear}
+  .sx-rail .seg.on{color:var(--ink)}
+  .sx-rail .ctl{display:flex;align-items:center;gap:8px;flex:0 0 auto}
+  .sx-rail button{padding:6px 12px;border-radius:999px;font:600 12px var(--sans)}
+  .sx-rail .left{font:600 11px var(--mono);color:var(--muted);min-width:64px;text-align:right}
+
+  /* ------------------------------------------------------------------ chapters */
+  .ch{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:40px;align-items:center;min-height:calc(100vh - 150px);padding:56px 0;border-bottom:1px solid rgba(30,42,61,.6);scroll-margin-top:110px}
+  .ch-text .eb{font:600 11px var(--mono);letter-spacing:.16em;color:var(--accent2)}
+  .ch-text .eb span{color:var(--muted)}
+  .ch-text h2{font:700 clamp(26px,3vw,38px)/1.08 var(--display);letter-spacing:.01em;text-transform:none;color:var(--ink);margin:10px 0 14px}
+  .ch-text h2::before{display:none}
+  .ch-text p{font-size:15.5px;line-height:1.62;color:#c3cdd9;margin:0 0 12px}
+  .ch-text .why{border-left:2px solid var(--accent);padding:2px 0 2px 12px;color:var(--ink);font-size:14.5px}
+  .ch-text .links{display:flex;flex-wrap:wrap;gap:14px;margin-top:16px;font-size:13px}
+  .stage{position:relative;border:1px solid var(--line);border-radius:18px;padding:42px 20px 20px;background:linear-gradient(180deg,rgba(18,26,43,.75),rgba(10,15,26,.75));min-height:380px}
+  .stage .replay{position:absolute;right:12px;top:10px;z-index:3;font:600 11px var(--mono);color:var(--muted);background:transparent;border:1px solid var(--line);border-radius:999px;padding:3px 9px;cursor:pointer}
+  .stage .replay:hover{color:var(--ink);border-color:var(--accent)}
+  .lbl{font:600 10px var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+  .stamp{display:inline-flex;gap:8px;align-items:center;margin-top:14px;padding:8px 14px;border-radius:10px;border:1px solid var(--accent);background:rgba(53,199,242,.08);font-size:13.5px}
+  .stamp.bad{border-color:rgba(255,77,77,.6);background:rgba(255,77,77,.08);color:#ffd2d2}
+
+  /* chapter 1 · learn */
+  /* the whole screen of the site, never a cropped strip: the frame takes the picture's own 16:10 shape */
+  .browser{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#05080f;max-width:560px;margin:0 auto}
+  .browser .bar{display:flex;align-items:center;gap:6px;padding:7px 10px;border-bottom:1px solid var(--line);background:#0b1220}
+  .browser .bar i{width:9px;height:9px;border-radius:50%;background:#2a3850}
+  .browser .bar .url{margin-left:10px;flex:1;font:12px var(--mono);color:#c3cdd9;background:#121a2b;border-radius:6px;padding:3px 10px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+  .browser .vp{position:relative;aspect-ratio:16/10;overflow:hidden}
+  .browser .vp img{width:100%;height:100%;object-fit:contain;display:block;filter:saturate(.85)}
+  .browser .vp .mock{position:absolute;inset:0;padding:18px;display:grid;gap:10px;align-content:start}
+  .browser .vp .mock span{display:block;height:12px;border-radius:4px;background:#1a2438}
+  .scan{position:absolute;left:0;right:0;top:-30%;height:30%;background:linear-gradient(180deg,transparent,rgba(53,199,242,.28),transparent);pointer-events:none;opacity:0}
+  .sx.js .ch.live .scan{animation:scanY 2.6s .3s ease-in-out both}
+  @keyframes scanY{0%{top:-30%;opacity:1}100%{top:100%;opacity:1}}
+  .fp{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:12px}
+  .fp .c{border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--panel)}
+  .fp .c .v{margin-top:6px;font-size:13px}
+  .fp .fav{width:22px;height:22px;border-radius:5px;vertical-align:middle;margin-right:8px;image-rendering:pixelated;background:#fff}
+  .sw{display:inline-block;width:22px;height:22px;border-radius:6px;margin-right:4px;vertical-align:middle;box-shadow:inset 0 0 0 1px rgba(255,255,255,.12)}
+  .chip{display:inline-block;font:12px var(--mono);border:1px solid var(--line);border-radius:999px;padding:2px 9px;margin:3px 4px 0 0;background:var(--panel2);color:var(--ink)}
+  .fp .wide{grid-column:1/-1}
+
+  /* chapter 2 · find */
+  .streams{display:flex;flex-wrap:wrap;gap:8px}
+  .stream{display:flex;align-items:center;gap:8px;padding:6px 12px;border:1px solid var(--line);border-radius:999px;background:var(--panel);font-size:12.5px}
+  .stream b{font:600 12px var(--mono);color:var(--accent2)}
+  .counter{display:flex;align-items:baseline;gap:12px;margin:16px 0 10px}
+  .counter b{font:700 48px/1 var(--display);color:var(--ink)}
+  .counter span{color:var(--muted);font-size:14px}
+  .found{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:minmax(0,1fr);gap:6px}  /* implicit auto columns grow to nowrap content */
+  .found li{display:flex;align-items:center;gap:10px;padding:8px 12px;border:1px solid var(--line);border-radius:10px;background:var(--panel)}
+  .found .h{font:13px var(--mono);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .found .src{font-size:11.5px;color:var(--muted);white-space:nowrap;min-width:0;overflow:hidden;text-overflow:ellipsis;flex-shrink:1}
+  .found .w{font:600 10px var(--mono);letter-spacing:.06em;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:2px 8px;white-space:nowrap}
+
+  /* chapter 3 · visit */
+  .site-h{display:flex;align-items:center;gap:10px;font:13px var(--mono);margin-bottom:12px}
+  .views{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+  .view{border:1px solid var(--line);border-radius:12px;background:var(--panel);padding:10px;min-width:0}
+  .view .who{display:flex;align-items:center;gap:8px;font-size:12.5px;font-weight:600}
+  .view .who .ico{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;background:var(--panel2);border:1px solid var(--line);font-size:13px}
+  .view .ip{font:11px var(--mono);color:var(--muted);margin:2px 0 8px 34px}
+  .loadbar{height:3px;border-radius:3px;background:var(--line);overflow:hidden;margin-bottom:8px}
+  .loadbar i{display:block;height:100%;width:0;background:var(--accent)}
+  .sx.js .ch.live .loadbar i{animation:load 1s ease-out both;animation-delay:calc(var(--t,0)*1ms)}
+  .sx:not(.js) .loadbar i{width:100%}
+  @keyframes load{to{width:100%}}
+  .view .shot{position:relative;aspect-ratio:16/10;border-radius:8px;overflow:hidden;background:#05080f;border:1px solid var(--line)}
+  .view .shot img{width:100%;height:100%;object-fit:contain;display:block}
+  .view .shot .blank{position:absolute;inset:0;display:grid;place-items:center;color:#5a6678;font-size:12px;text-align:center;padding:14px}
+  .view .saw{margin-top:8px;font-size:13px}
+  .view.victim{border-color:rgba(255,77,77,.5)}
+  .sim{display:flex;align-items:center;gap:14px;margin-top:12px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--panel)}
+  .sim img{width:120px;border-radius:6px;border:1px solid var(--line)}
+  .sim .meter{flex:1;height:8px;border-radius:8px;background:var(--line);overflow:hidden}
+  .sim .meter i{display:block;height:100%;width:0;background:var(--crit);transition:width 1.4s cubic-bezier(.2,.8,.2,1)}
+
+  /* chapter 4 · score */
+  .score{display:grid;grid-template-columns:auto minmax(0,1fr);gap:22px;align-items:start}
+  .bigring{--p:0;--c:var(--crit);width:150px;height:150px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(var(--c) calc(var(--p)*1%),#1E2A3D 0);position:relative}
+  .bigring::after{content:"";position:absolute;inset:12px;border-radius:50%;background:#0b1220}
+  .bigring div{position:relative;z-index:1;text-align:center}
+  .bigring b{display:block;font:700 46px/1 var(--display)}
+  .bigring span{font:600 10px var(--mono);letter-spacing:.12em;color:var(--muted)}
+  .sigs{display:grid;grid-template-columns:minmax(0,1fr);gap:6px}
+  .sig{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:10px;align-items:center;padding:7px 10px;border:1px solid var(--line);border-radius:9px;background:var(--panel)}
+  .sig .g{font:10px var(--mono);color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:1px 7px;white-space:nowrap}
+  .sig b{font:600 13px var(--mono);color:var(--accent2);min-width:34px;text-align:right}
+  .scale{position:relative;height:10px;border-radius:10px;margin:26px 0 6px;background:linear-gradient(90deg,#1E2A3D 0 var(--m),rgba(245,197,24,.45) var(--m) var(--h),rgba(255,159,28,.55) var(--h) var(--c2),rgba(255,77,77,.7) var(--c2) 100%)}
+  .scale .tick{position:absolute;top:14px;transform:translateX(-50%);font:10px var(--mono);color:var(--muted);white-space:nowrap}
+  .scale .needle{position:absolute;top:-8px;left:0;width:3px;height:26px;border-radius:3px;background:var(--ink);box-shadow:0 0 10px rgba(255,255,255,.5);transition:left 1.6s cubic-bezier(.2,.8,.2,1)}
+  .conf{display:flex;flex-wrap:wrap;gap:8px 18px;margin-top:22px;font-size:13px;color:#c3cdd9}
+  .conf b{color:var(--ink)}
+  .summary{margin:14px 0 0;font-size:14.5px;line-height:1.6;color:var(--ink);min-height:3.2em}
+
+  /* chapter 5 · map */
+  .decide{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--panel);margin-bottom:12px}
+  .decide .h{font:13px var(--mono);flex:1;min-width:0}
+  .cbtn{position:relative;display:inline-grid;font:600 13px var(--sans)}
+  .cbtn > span{grid-area:1/1;padding:8px 14px;border-radius:8px;white-space:nowrap}
+  .cbtn .a{border:1px solid var(--low);color:var(--low)}
+  .cbtn .b{border:1px solid var(--low);background:rgba(46,204,113,.15);color:var(--low)}
+  .sx.js .ch.live .cbtn .a{animation:fadeOut .3s both;animation-delay:calc(var(--t,0)*1ms)}
+  @keyframes fadeOut{to{opacity:0}}
+  .cursor{position:absolute;right:-6px;bottom:-14px;font-size:20px;filter:drop-shadow(0 2px 4px rgba(0,0,0,.6));opacity:0}
+  .sx.js .ch.live .cursor{animation:cur 1.4s both;animation-delay:calc(var(--t,0)*1ms)}
+  @keyframes cur{0%{opacity:0;transform:translate(60px,40px)}40%{opacity:1;transform:none}55%{transform:scale(.8)}70%{transform:none;opacity:1}100%{opacity:0}}
+  .graph{width:100%;height:auto;display:block}
+  .graph line{stroke:#2c3d57;stroke-width:1.4}
+  .graph line.x{stroke-dasharray:3 4;stroke:#3a475b}
+  .graph circle{fill:#0b1220;stroke:var(--accent);stroke-width:1.6}
+  .graph .t-domain circle{stroke:#c3cdd9}
+  .graph .crit circle{stroke:var(--crit);fill:rgba(255,77,77,.14)}
+  .graph .seed circle{stroke-width:3}
+  .graph .noise circle{stroke:#4a5568;stroke-dasharray:3 3;fill:transparent}
+  .graph text{font:9.5px var(--mono);fill:#c3cdd9;text-anchor:middle}
+  .graph .noise text{fill:#5a6678}
+  .graph .ty{font-size:8px;fill:#8A97A8;letter-spacing:.06em}
+  .graph .pulse{fill:none;stroke:var(--crit);opacity:0}
+  .sx.js .ch.live .graph .pulse{animation:gpulse 2.4s 1.8s infinite}
+  @keyframes gpulse{0%{opacity:.8;r:14}100%{opacity:0;r:34}}
+  .gstats{display:flex;flex-wrap:wrap;gap:8px 18px;font-size:13px;color:#c3cdd9;margin-top:6px}
+  .gstats b{color:var(--ink)}
+  .noise-note{margin-top:10px;font-size:12.5px;color:var(--muted)}
+  .noise-note b{color:#c3cdd9}
+
+  /* chapter 6 · take down */
+  .mail{border:1px solid var(--line);border-radius:12px;background:#0b1220;overflow:hidden}
+  .mail .mh{padding:10px 14px;border-bottom:1px solid var(--line);font-size:12.5px;display:grid;gap:3px}
+  .mail .mh span{color:var(--muted);display:inline-block;width:58px}
+  .mail .mb{padding:12px 14px;font:12.5px/1.6 var(--mono);color:#c3cdd9;min-height:118px;white-space:pre-wrap;word-break:break-word}
+  .chans{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:12px}
+  .chan{border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--panel);min-width:0}
+  .chan .lbl{display:block}
+  .chan b{display:block;font-size:13px;margin-top:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .chan .to{font:11px var(--mono);color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .portals{display:flex;flex-wrap:wrap;gap:5px;margin-top:12px}
+  .portals span{font-size:11px;border:1px solid var(--line);border-radius:6px;padding:2px 7px;color:var(--muted);background:var(--panel)}
+  .sx.js .ch.live .portals span{animation:lit .5s both;animation-delay:calc(var(--t,0)*1ms)}
+  @keyframes lit{0%{opacity:0}60%{opacity:1;border-color:var(--accent);color:var(--ink)}100%{opacity:1;border-color:rgba(53,199,242,.4);color:#c3cdd9}}
+  .human{display:flex;gap:12px;align-items:center;margin-top:14px;padding:12px 14px;border-radius:12px;border:1px solid rgba(46,204,113,.45);background:rgba(46,204,113,.06);font-size:13.5px}
+  .human .ico{font-size:22px}
+
+  /* ------------------------------------------------------------------ end, facts, deeper */
+  .sx-end{text-align:center;padding:64px 0 40px}
+  .sx-end .flow{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;font:700 clamp(18px,2.4vw,28px) var(--display);letter-spacing:.06em;margin:0 0 14px}
+  .sx-end .flow span{color:var(--muted)}
+  .sx-end .flow b{color:var(--ink)}
+  .sx-end p{color:#c3cdd9;font-size:15px;margin:0 auto 20px;max-width:640px;line-height:1.6}
+  .sx-end .sx-cta{justify-content:center}
+  .facts{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(170px,100%),1fr));gap:10px}
+  .deeper h2.big{font:700 26px var(--display);letter-spacing:.02em;text-transform:none;color:var(--ink);margin:46px 0 6px}
+  .deeper h2.big::before{display:none}
+  details.fold{border:1px solid var(--line);border-radius:14px;background:var(--card);margin-top:12px}
+  details.fold > summary{list-style:none;cursor:pointer;padding:16px 18px;display:flex;align-items:center;gap:14px}
+  details.fold > summary::-webkit-details-marker{display:none}
+  details.fold > summary::before{content:"+";width:26px;height:26px;flex:0 0 26px;border-radius:50%;border:1px solid var(--line);display:grid;place-items:center;font:600 15px var(--mono);color:var(--accent2);transition:transform .25s}
+  details.fold[open] > summary::before{content:"−"}
+  details.fold > summary b{font:700 18px var(--display);letter-spacing:.03em}
+  details.fold > summary span{color:var(--muted);font-size:13px}
+  details.fold > .in{padding:0 18px 18px}
+  .hiw-steps{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(230px,100%),1fr));gap:10px}
+  .hiw-step{border:1px solid var(--border);border-radius:12px;padding:12px 14px;background:linear-gradient(170deg,rgba(18,26,43,.96),rgba(10,15,26,.96));position:relative;scroll-margin-top:120px}
+  .hiw-step:target{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+  .hiw-step .n{font:600 11px var(--mono);letter-spacing:.12em;color:var(--accent2);text-transform:uppercase}
+  .hiw-step b{display:block;font-family:var(--display);font-size:19px;letter-spacing:.03em;margin:4px 0}
+  .hiw-step p{margin:0 0 8px;font-size:13px;line-height:1.5;color:var(--muted)}
+  .hiw-step a.see{font-size:12px}
+  .tour{counter-reset:stop;list-style:none;padding:0;margin:0;display:grid;gap:10px}
+  .tour li{counter-increment:stop;border:1px solid var(--border);border-radius:12px;padding:12px 14px 12px 54px;position:relative;background:var(--panel2)}
+  .tour li::before{content:counter(stop);position:absolute;left:14px;top:12px;width:28px;height:28px;border-radius:50%;border:2px solid var(--accent);color:var(--accent2);display:grid;place-items:center;font:600 13px var(--mono)}
+  .tour .where{font-weight:600}.tour .say{margin:6px 0 0;font-style:italic}.tour .q{margin:6px 0 0;font-size:12px;color:var(--muted)}
+  .uth{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(320px,100%),1fr));gap:10px}
+  .uth .card{border:1px solid var(--border);border-radius:12px;padding:12px 14px;background:var(--panel2);scroll-margin-top:120px}
+  .uth .card:target,.gl dt:target{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+  .uth h3{margin:0 0 6px;font:600 12px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--accent2)}
+  .uth p{margin:0 0 6px;font-size:13px;line-height:1.5}.uth .mod{font:11px var(--mono);color:var(--muted)}
+  .gl{display:grid;grid-template-columns:minmax(150px,220px) 1fr;gap:8px 16px;margin:0}
+  .gl dt{font-weight:600;scroll-margin-top:120px;border-radius:6px;padding:2px 4px}.gl dd{margin:0;color:var(--muted);font-size:13px;line-height:1.5}
+  /* "More info": hover (or tap) a card's button for the exact APIs, limits and code */
+  .hiw-foot{display:flex;align-items:center;justify-content:space-between;gap:8px}
+  .mi{position:relative;display:inline-block}
+  .mi-btn{font:600 11px var(--mono);letter-spacing:.06em;padding:3px 9px;border-radius:999px;color:var(--muted);background:transparent}
+  .mi:hover .mi-btn,.mi.open .mi-btn{color:var(--text);border-color:var(--accent)}
+  .deep{display:none;position:absolute;left:0;top:calc(100% + 8px);z-index:60;width:min(660px,calc(100vw - 32px));max-height:72vh;overflow:auto;
+    padding:14px 16px;border:1px solid var(--accent);border-radius:12px;background:#0b1220;box-shadow:0 18px 50px rgba(0,0,0,.6);text-align:left;cursor:auto}
+  .deep::before{content:"";position:absolute;left:0;right:0;top:-10px;height:10px}
+  .mi.r .deep{left:auto;right:0}
+  .mi:hover .deep,.mi.open .deep,.mi:focus-within .deep{display:block}
+  .deep h4{margin:0 0 2px;font:600 15px var(--sans)}.deep .sub{color:var(--muted);font-size:12px;margin-bottom:10px}
+  .deep h5{margin:12px 0 6px;font:600 10px var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+  .deep .api{border:1px solid var(--border);border-radius:8px;padding:8px 10px;margin:6px 0;background:var(--panel)}
+  .deep .api .nm{font-weight:600;font-size:13px}.deep .api .tg{font:10px var(--mono);color:var(--muted);border:1px solid var(--border);border-radius:999px;padding:1px 6px;margin-left:6px;white-space:nowrap}
+  .deep .api .ln{font-size:12px;color:var(--muted);margin-top:3px}.deep .api .ln code{font:11px var(--mono);color:#c9d3df;word-break:break-word}
+  .deep ul{margin:0;padding-left:16px}.deep li{font-size:12.5px;line-height:1.5;margin:2px 0}
+  .deep .two{display:grid;grid-template-columns:1fr 1fr;gap:4px 18px}
+  .deep .chain{font:11.5px var(--mono);color:#c9d3df;background:var(--panel);border:1px solid var(--border);border-radius:8px;padding:6px 9px;word-break:break-word}
+  .deep .mods span{display:inline-block;font:11px var(--mono);border:1px solid var(--border);border-radius:6px;padding:1px 6px;margin:2px 4px 2px 0;color:#c9d3df}
+
+  /* ------------------------------------------------------------------ phone */
+  @media (max-width:900px){
+    .sx-hero,.ch{grid-template-columns:minmax(0,1fr);gap:22px}
+    .ch{min-height:0;padding:40px 0}
+    .sx-map{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .sx-rail{margin:0 -12px;padding:8px 12px}
+    .sx-rail .segs{display:flex;overflow-x:auto;scrollbar-width:none;gap:10px}
+    .sx-rail .segs::-webkit-scrollbar{display:none}
+    .sx-rail .seg{flex:0 0 auto;overflow:visible}
+    .sx-rail .left{display:none}
+  }
+  @media (max-width:700px){
+    .stage{padding:40px 14px 14px;min-height:0}
+    .views,.chans,.fp{grid-template-columns:minmax(0,1fr)}
+    .score{grid-template-columns:minmax(0,1fr);justify-items:center}
+    .score .sigs,.score > div{width:100%}
+    .gl{grid-template-columns:1fr}.gl dd{margin-bottom:8px}
+    .deep{position:static;width:auto;max-width:100%;max-height:none;margin-top:8px;padding:12px}.deep .two{grid-template-columns:1fr}.deep::before{display:none}
+    .hiw-foot{flex-wrap:wrap}.mi.open{flex:1 0 100%;text-align:right}.mi:hover .deep{display:none}.mi.open .deep{display:block}
+    .deep .api .tg{white-space:normal;display:inline-block;margin:2px 4px 0 0}
+  }
+</style>
+
+{% macro more(n) -%}{% set d = deep.get(n) %}{% if d %}
+<span class="mi"><button type="button" class="mi-btn" aria-expanded="false" aria-label="More info about {{ d.title }}">More info</button>
+  <div class="deep" role="note">
+    <h4>{{ d.title }}</h4><div class="sub">Under the hood · the exact calls, limits and code behind this step</div>
+    <h5>{{ 'External calls' if d.apis else 'External calls · none' }}</h5>
+    {% for a in d.apis %}<div class="api"><div class="nm">{{ a.name }}<span class="tg">{{ a.key }}</span><span class="tg">{{ a.cost }}</span></div>
+      <div class="ln"><code>{{ a.host }}</code></div><div class="ln">call · <code>{{ a.call }}</code></div><div class="ln">returns · {{ a.returns }}</div></div>{% endfor %}
+    <h5>{{ 'Fallback chain' if d.apis else 'How it runs' }}</h5><div class="chain">{{ d.chain }}</div>
+    <div class="two"><div><h5>Computed locally</h5><ul>{% for x in d.local %}<li>{{ x }}</li>{% endfor %}</ul></div>
+      <div><h5>Stored</h5><ul>{% for x in d.stored %}<li>{{ x }}</li>{% endfor %}</ul></div></div>
+    <h5>Limits</h5><ul>{% for x in d.limits %}<li>{{ x }}</li>{% endfor %}</ul>
+    <h5>Demo vs live</h5><div style="font-size:12.5px;line-height:1.5">{{ d.demo_vs_live }}</div>
+    <h5>Code</h5><div class="mods">{% for m in d.modules %}<span>{{ m }}</span>{% endfor %}</div>
+  </div></span>{% endif %}{%- endmacro %}
+
+{% set chapters = [
+  ('learn', '◎', 'Learn', 'the real site'),
+  ('find', '⌕', 'Find', 'the look-alikes'),
+  ('visit', '⧉', 'Visit', 'like a victim'),
+  ('score', '◔', 'Score', 'and explain'),
+  ('map', '⟁', 'Map', 'the attacker'),
+  ('takedown', '✉', 'Take down', 'the site'),
+] %}
+{% set durations = [12, 15, 13, 14, 15, 13] %}
+
+<div class="sx" id="sx">
+
+{# ================================================================== hero #}
+<section class="sx-hero">
+  <div>
+    <h1>HOW IT WORKS <span>· the product in two minutes</span></h1>
+    <p class="sx-head">Someone copies {{ B.name }}'s website to steal passwords. <em>BrandWatch finds it, proves it and gets it taken down.</em></p>
+    <div class="sx-social" id="social">
+      <div class="ic" aria-hidden="true"><span style="background:#1877F2">f</span><span style="background:linear-gradient(45deg,#F58529,#DD2A7B,#8134AF)">◎</span></div>
+      <div><b class="t">Websites — and social media too.</b>
+        <p>It also searches <b>Facebook and Instagram</b> for impostors: pages and profiles that use the brand's name — an AI reads what they post and say — and ads that sell fakes of its products. Each fake account, ad and page gets a ready report to Meta.</p></div>
+    </div>
+    <p class="sx-sub">Six steps, shown on {{ 'an illustration — scan a brand to see your own data' if B.illustrative else "this workspace's real data: " ~ B.name ~ ", its look-alikes, a real cloaked kit and the attacker behind it" }}. Press play and watch, or scroll at your own pace.</p>
+    <div class="sx-cta">
+      <button type="button" class="btn-play" id="play"><span class="tri">▶</span><span>Play the story <span class="muted" style="font-weight:500">· {{ (durations|sum // 60) }}:{{ '%02d'|format(durations|sum % 60) }}</span></span></button>
+      <a class="alt" href="#ch-learn" data-jump="0">or scroll ↓</a>
+      <a class="alt" href="#deeper">skip to the details</a>
+    </div>
+  </div>
+  <div class="sx-map" aria-label="The six steps">
+    {% for id, ic, k, rest in chapters %}<a href="#ch-{{ id }}" data-jump="{{ loop.index0 }}" style="--n:{{ loop.index0 }}"><span class="ic">{{ ic }}</span><span class="k">STEP {{ loop.index }}</span><b>{{ k }}</b><span class="small muted">{{ rest }}</span></a>{% endfor %}
+  </div>
+</section>
+
+{# ================================================================== sticky chapter rail #}
+<nav class="sx-rail" id="rail" aria-label="Chapters">
+  <div class="segs">{% for id, ic, k, rest in chapters %}<a class="seg" href="#ch-{{ id }}" data-jump="{{ loop.index0 }}">{{ loop.index }} · {{ k }}<i></i></a>{% endfor %}</div>
+  <div class="ctl"><span class="left" id="left"></span><button type="button" id="play2" aria-label="Play the story">▶ Play</button></div>
+</nav>
+
+{# ================================================================== 1 · learn #}
+<section class="ch" id="ch-learn" data-dur="{{ durations[0] }}">
+  <div class="ch-text">
+    <div class="eb">STEP 1 <span>/ 6 · LEARN</span>{% if B.illustrative %}<span class="illus">illustration</span>{% endif %}</div>
+    <h2>First, it learns what the real {{ B.name }} looks like.</h2>
+    <p>BrandWatch opens <b>{{ B.domain or 'the official site' }}</b> once and keeps a fingerprint: the favicon's hash, a picture of the homepage, its colours, its login form and the words a phisher would copy.</p>
+    <p>An AI model reads the site and writes the Google searches an attacker would target.</p>
+    <p class="why">Every suspect is later compared against this fingerprint, not against a guess.</p>
+    <div class="links">{% if stops.brand %}<a href="{{ stops.brand }}">see the brand page →</a>{% endif %}<a href="#step-1" data-deep>how exactly? →</a></div>
+  </div>
+  <div class="stage">
+    <button type="button" class="replay">↻ replay</button>
+    <div class="browser rv">
+      <div class="bar"><i></i><i></i><i></i><span class="url">https://{{ B.domain or key ~ '.com' }}/</span></div>
+      <div class="vp">
+        {% if B.screenshot %}<img src="{{ B.screenshot }}" alt="the real {{ B.name }} homepage" loading="lazy">
+        {% else %}<div class="mock"><span style="width:40%"></span><span style="width:85%;height:46px"></span><span style="width:60%"></span><span style="width:70%"></span></div>{% endif %}
+        <div class="scan"></div>
+      </div>
+    </div>
+    <div class="fp">
+      <div class="c rv" style="--t:1300"><span class="lbl">Favicon fingerprint</span>
+        <div class="v">{% if B.favicon %}<img class="fav" src="{{ B.favicon }}" alt="">{% endif %}<span class="mono">mmh3 {{ B.favicon_mmh3 if B.favicon_mmh3 is not none else '—' }}</span></div></div>
+      <div class="c rv" style="--t:2000"><span class="lbl">Colours</span>
+        <div class="v">{% for col in B.palette %}<span class="sw" style="background:{{ col }}" title="{{ col }}"></span>{% endfor %}</div></div>
+      <div class="c rv" style="--t:2700"><span class="lbl">Login form</span>
+        <div class="v">{% if B.login_form %}email + password field{% if B.auth_pages %} · {{ B.auth_pages }} sign-in page(s){% endif %}{% else %}no login form on the homepage{% endif %}</div></div>
+      <div class="c rv" style="--t:3400"><span class="lbl">Words a phisher copies</span>
+        <div class="v">{% for w in B.keywords[:6] %}<span class="chip">{{ w }}</span>{% endfor %}</div></div>
+      <div class="c wide rv" style="--t:4200"><span class="lbl">AI · searches attackers target</span>
+        <div class="v">{% for q in B.queries %}<span class="chip">“{{ q }}”</span>{% endfor %}</div></div>
+    </div>
+    <div class="stamp rv" style="--t:5200">✓ Fingerprint{% if B.version %} v{{ B.version }}{% endif %} saved — the reference for every comparison</div>
+  </div>
+</section>
+
+{# ================================================================== 2 · find #}
+<section class="ch" id="ch-find" data-dur="{{ durations[1] }}">
+  <div class="ch-text">
+    <div class="eb">STEP 2 <span>/ 6 · FIND</span>{% if C.illustrative %}<span class="illus">illustration</span>{% endif %}</div>
+    <h2>Then it hunts for look-alikes — before anyone reports them.</h2>
+    <p>Typos and look-alike letters on more than a thousand domain endings, checked in DNS. Brand-new HTTPS certificates the moment they are issued. Yesterday's newly registered domains. Google results.</p>
+    <p><b>And on social media:</b> Facebook pages and Instagram profiles under the brand's name — their history (new, renamed, run from abroad), their logo, their links and what they post, read by an AI — and the ads in each country you choose.</p>
+    <p>Nothing has to be on a blocklist first. The brand's own sites and big platforms are dropped before anything is fetched.</p>
+    <p class="why">Try it: type any domain in the box and see what the address alone gives away.</p>
+    <div class="links"><a href="/ui/candidates">see the watchlist →</a>{% if stops.scan %}<a href="{{ stops.scan }}">replay a real scan →</a>{% endif %}<a href="#step-2" data-deep>how exactly? →</a></div>
+  </div>
+  <div class="stage">
+    <button type="button" class="replay">↻ replay</button>
+    <div class="streams">
+      {% for name, n in (C.streams if C.streams else [('Look-alike names', none), ('Certificate logs', none), ('New domains', none), ('Google search', none), ('Facebook / Instagram ads', none)]) %}
+      <span class="stream rv" style="--t:{{ loop.index0 * 250 }}">{{ name }}{% if n %} <b>{{ n }}</b>{% endif %}</span>{% endfor %}
+    </div>
+    <div class="counter rv" style="--t:900"><b data-to="{{ C.total or C.rows|length }}" data-t="900">0</b><span>look-alike domains found for {{ B.name }}</span></div>
+    <ul class="found">
+      {% for r in C.rows %}
+      <li class="rv" style="--t:{{ 1500 + loop.index0 * 420 }}"><span class="h" title="{{ r.host }}">{{ r.host }}</span><span class="src">{{ r.streams|join(' · ') }}</span>
+        {% if r.flag in ('critical', 'high') %}<span class="badge sev-{{ r.flag }}">{{ r.flag }}</span>{% elif r.flag %}<span class="badge sev-{{ r.flag }}">{{ r.flag }}</span>{% else %}<span class="w">watching</span>{% endif %}</li>{% endfor %}
+    </ul>
+  </div>
+</section>
+
+{# ================================================================== 3 · visit #}
+{% set shots = F.shots if F else {} %}
+<section class="ch" id="ch-visit" data-dur="{{ durations[2] }}">
+  <div class="ch-text">
+    <div class="eb">STEP 3 <span>/ 6 · VISIT</span>{% if not F %}<span class="illus">illustration</span>{% endif %}</div>
+    <h2>It visits every site the way a victim would.</h2>
+    <p>Each suspect opens in a locked-down browser that can't be tricked into reaching internal systems. Everything it sees is kept as evidence that nobody can edit afterwards.</p>
+    <p>Many phishing kits <b>hide from security scanners</b>: they show a harmless page to datacenter IPs and the fake login only to real people. So BrandWatch also looks like a real person, from a home IP.</p>
+    <p class="why">The score uses what a victim sees, not what the kit chose to show a scanner.</p>
+    <div class="links">{% if F %}<a href="{{ F.url }}#looks">see this kit →</a>{% endif %}<a href="#step-5" data-deep>how exactly? →</a></div>
+  </div>
+  <div class="stage">
+    <button type="button" class="replay">↻ replay</button>
+    <div class="site-h rv"><span class="badge sev-critical">suspect</span><span>{{ F.host if F else 'secure-' ~ key ~ '.com' }}</span></div>
+    <div class="views">
+      <div class="view rv" style="--t:500">
+        <div class="who"><span class="ico">🤖</span>Security scanner</div><div class="ip">datacenter IP · bot user-agent</div>
+        <div class="loadbar"><i style="--t:700"></i></div>
+        <div class="shot">{% if shots.scanner_url %}<img class="rv" style="--t:1700" src="{{ shots.scanner_url }}" alt="what a scanner sees" loading="lazy">{% else %}<div class="blank rv" style="--t:1700">a harmless “under construction” page</div>{% endif %}</div>
+        <div class="saw rv" style="--t:2000">saw: <b>a harmless page</b></div>
+      </div>
+      <div class="view victim rv" style="--t:2400">
+        <div class="who"><span class="ico">👤</span>Real visitor</div><div class="ip">home IP{% if F and F.revealed_by %} · {{ F.revealed_by }} probe{% endif %} · normal browser</div>
+        <div class="loadbar"><i style="--t:2600"></i></div>
+        <div class="shot">{% if shots.suspect_url %}<img class="rv" style="--t:3600" src="{{ shots.suspect_url }}" alt="what a victim sees" loading="lazy">{% else %}<div class="blank rv" style="--t:3600">a copy of the {{ B.name }} login page</div>{% endif %}</div>
+        <div class="saw rv" style="--t:3900">saw: <b style="color:var(--crit)">a fake {{ B.name }} login</b></div>
+      </div>
+    </div>
+    <div class="stamp bad rv" style="--t:4600">⚑ Cloaking caught: the page changes for scanners. That alone is evidence of bad intent.</div>
+    {% if shots.baseline_url and shots.similarity_pct is not none %}
+    <div class="sim rv" style="--t:5600"><img src="{{ shots.baseline_url }}" alt="the real {{ B.name }}" loading="lazy">
+      <div style="flex:1"><div class="lbl">compared with the real {{ B.name }}</div><div class="meter"><i data-w="{{ shots.similarity_pct }}" data-t="5800"></i></div><div class="small" style="margin-top:4px"><b>{{ shots.similarity_pct }}%</b> the same picture</div></div></div>
+    {% endif %}
+  </div>
+</section>
+
+{# ================================================================== 4 · score #}
+{% set sigs = F.signals if F else X.signals %}
+{% set sc = F.score if F else 87 %}
+{% set th = F.thresholds if F else {'medium': 25, 'high': 50, 'critical': 75} %}
+{% set sev = F.severity if F else 'critical' %}
+<section class="ch" id="ch-score" data-dur="{{ durations[3] }}">
+  <div class="ch-text">
+    <div class="eb">STEP 4 <span>/ 6 · SCORE</span>{% if not F %}<span class="illus">illustration</span>{% endif %}</div>
+    <h2>It scores the site — and shows its work.</h2>
+    <p>{{ facts.signals }} signals in {{ facts.signal_groups }} groups, each worth fixed points: does the address use the brand, does the page look the same, does it ask for a password, how new is it, is it hiding.</p>
+    <p>Each group has a cap, so one trick can't dominate. The same evidence always gives the same score. AI gives a second opinion but never changes the number.</p>
+    <p class="why">No black box: every point traces back to a piece of evidence.</p>
+    <div class="links">{% if F %}<a href="{{ F.url }}#why">see every signal →</a>{% endif %}<a href="#step-7" data-deep>how exactly? →</a></div>
+  </div>
+  <div class="stage">
+    <button type="button" class="replay">↻ replay</button>
+    <div class="score">
+      <div class="bigring rv" id="ring" style="--c:{{ {'critical':'var(--crit)','high':'var(--high)','medium':'var(--med)'}.get(sev, 'var(--accent)') }}" data-score="{{ sc }}" data-t="400">
+        <div><b data-to="{{ sc }}" data-t="400" data-dur="{{ 600 + sigs|length * 520 }}">0</b><span>RISK / 100</span></div></div>
+      <div class="sigs">
+        {% for g in sigs %}<div class="sig rv" style="--t:{{ 500 + loop.index0 * 520 }}"><span>{{ g.label }}</span><span class="g">{{ g.group }}</span><b>+{{ g.points }}</b></div>{% endfor %}
+        {% if F and F.more_signals %}<div class="small muted rv" style="--t:{{ 500 + sigs|length * 520 }}">+ {{ F.more_signals }} more signal(s), capped per group</div>{% endif %}
+      </div>
+    </div>
+    {% set tr = 500 + sigs|length * 520 + 300 %}
+    <div class="scale rv" style="--t:{{ tr }};--m:{{ th.medium }}%;--h:{{ th.high }}%;--c2:{{ th.critical }}%">
+      <span class="needle" data-to-left="{{ sc }}" data-t="{{ tr + 300 }}"></span>
+      <span class="tick" style="left:{{ th.medium }}%">medium {{ th.medium }}</span><span class="tick" style="left:{{ th.high }}%">high {{ th.high }}</span><span class="tick" style="left:{{ th.critical }}%">critical {{ th.critical }}</span>
+    </div>
+    <div class="conf rv" style="--t:{{ tr + 900 }}"><span>severity <b style="color:{{ {'critical':'var(--crit)','high':'var(--high)','medium':'var(--med)'}.get(sev, 'var(--ink)') }}">{{ sev|upper }}</b></span>{% if F %}<span>confidence <b>{{ F.confidence }}%</b></span><span><b>{{ F.groups_fired }}</b> independent groups agree</span>{% endif %}</div>
+    {% if F and F.summary %}<p class="summary" data-type data-t="{{ tr + 1400 }}">{{ F.summary }}</p>{% endif %}
+  </div>
+</section>
+
+{# ================================================================== 5 · decide & map #}
+<section class="ch" id="ch-map" data-dur="{{ durations[4] }}">
+  <div class="ch-text">
+    <div class="eb">STEP 5 <span>/ 6 · DECIDE &amp; MAP</span>{% if G.illustrative %}<span class="illus">illustration</span>{% endif %}</div>
+    <h2>A person decides. Then it maps the attacker.</h2>
+    <p>Nothing is confirmed automatically: an analyst reads the evidence and presses <b>Confirm</b>. The reason goes to an audit log nobody can edit.</p>
+    <p>From that one confirmed site, BrandWatch follows what the attacker reused — the same server, certificate, favicon, tracking code or owner — to the rest of the operation. Neighbours that only share a cheap server are dropped as noise, with the reason written down.</p>
+    <p class="why">One fake site leads to the whole operation, and every indicator exports to a SIEM as STIX 2.1.</p>
+    <div class="links">{% if G.url %}<a href="{{ G.url }}">open the full map →</a>{% endif %}<a href="#step-12" data-deep>how exactly? →</a></div>
+  </div>
+  <div class="stage">
+    <button type="button" class="replay">↻ replay</button>
+    {% set seed = G.nodes[0] %}
+    <div class="decide rv"><span class="badge sev-critical">critical</span><span class="h">{{ seed.value }}</span>
+      <span class="cbtn"><span class="a" style="--t:1300">Confirm phishing</span><span class="b rv" style="--t:1500">✓ Confirmed by an analyst</span><span class="cursor" style="--t:200">➤</span></span></div>
+    <svg class="graph" viewBox="0 0 520 340" role="img" aria-label="attack infrastructure graph">
+      {% for e in G.edges %}{% set a = G.nodes[e.a] %}{% set b = G.nodes[e.b] %}
+      <line class="rv {{ 'x' if not b.included }}" pathLength="1" x1="{{ a.x }}" y1="{{ a.y }}" x2="{{ b.x }}" y2="{{ b.y }}" style="--t:{{ 1900 + e.i * 300 - 150 }}"><title>{{ e.label }}</title></line>{% endfor %}
+      {% for n in G.nodes %}
+      <g class="rv t-{{ n.type }}{{ ' crit' if n.flag in ('critical', 'high') and n.included }}{{ ' seed' if n.seed }}{{ ' noise' if not n.included }}" style="--t:{{ 1900 + n.i * 300 }}">
+        <title>{{ n.value }}{{ ' — dropped: ' ~ n.reason if not n.included and n.reason }}</title>
+        {% if n.seed %}<circle class="pulse" cx="{{ n.x }}" cy="{{ n.y }}" r="14"></circle>{% endif %}
+        <circle cx="{{ n.x }}" cy="{{ n.y }}" r="{{ 11 if n.seed else (8 if n.type == 'domain' else 7) }}"></circle>
+        {# labels stay centred under their node, shifted inward only as far as the picture's edge needs #}
+        {% set label = n.value ~ (' ✕' if not n.included else '') %}{% set half = (label|length) * 2.95 + 4 %}
+        {% set lx = [[n.x, half]|max, 520 - half]|min %}
+        {% if n.type != 'certificate' %}<text x="{{ lx }}" y="{{ n.y + (24 if n.seed else 20) }}">{{ label }}</text>{% endif %}
+        {% if n.type != 'domain' %}<text class="ty" x="{{ [[n.x, 34]|max, 486]|min }}" y="{{ n.y - 12 }}">{{ {'ip': 'SERVER', 'certificate': 'SHARED TLS CERT', 'tracking_id': 'TRACKING ID', 'registrant': 'OWNER', 'favicon': 'FAVICON'}.get(n.type, n.type|upper) }}</text>{% endif %}
+      </g>{% endfor %}
+    </svg>
+    {% set tg = 1900 + G.nodes|length * 300 %}
+    <div class="gstats rv" style="--t:{{ tg }}"><span><b>{{ G.stats.included }}</b> pieces of the attacker's setup</span><span><b>{{ G.findings }}</b> phishing sites linked</span><span><b>{{ G.stats.excluded }}</b> dropped as noise</span></div>
+    {% if G.dropped_reason %}<div class="noise-note rv" style="--t:{{ tg + 600 }}">✕ dropped, with the reason kept: <b>“{{ G.dropped_reason }}”</b></div>{% endif %}
+  </div>
+</section>
+
+{# ================================================================== 6 · take down #}
+{% set rep_mail = (T.channels[0].to if T and T.channels[0].to else 'abuse@registrar.example') %}
+<section class="ch" id="ch-takedown" data-dur="{{ durations[5] }}">
+  <div class="ch-text">
+    <div class="eb">STEP 6 <span>/ 6 · TAKE DOWN</span>{% if not T %}<span class="illus">illustration</span>{% endif %}</div>
+    <h2>Finally, it drafts the takedown.</h2>
+    <p>A request backed by the evidence, addressed to the people who can pull the site: the <b>registrar</b>, the <b>hosting provider</b> and the <b>CDN</b> — contacts found automatically from WHOIS and the server's owner.</p>
+    <p>Plus {{ REPORT_PORTAL_COUNT }} browser, anti-virus and blocklist portals, each a direct link to its report form, so the site gets blocked for everyone while the takedown is pending.</p>
+    <p>When the impostor advertises on social media, every <b>Facebook / Instagram ad</b> and <b>page</b> behind it gets a link to Meta's report flow and a ready-to-paste report.</p>
+    <p class="why">BrandWatch never sends anything by itself: a person reviews and sends, and every step lands in the audit log.</p>
+    <div class="links">{% if T %}<a href="{{ T.url }}">open this takedown →</a>{% endif %}<a href="/ui/takedowns">all takedowns →</a><a href="#step-13" data-deep>how exactly? →</a></div>
+  </div>
+  <div class="stage">
+    <button type="button" class="replay">↻ replay</button>
+    <div class="mail rv">
+      <div class="mh"><div><span>To</span><b class="mono">{{ rep_mail }}</b></div>
+        <div><span>Subject</span>{{ T.subject if T else 'Phishing site impersonating ' ~ B.name ~ ' — request for takedown' }}</div>
+        {% if T %}<div><span>Ref</span><span class="mono" style="width:auto;color:var(--ink)">{{ T.reference }}</span></div>{% endif %}</div>
+      <div class="mb" data-type data-t="600">{{ (T.body if T else ['Hello abuse team,', 'We are reporting a website that impersonates ' ~ B.name ~ ' and is designed to steal user credentials.', 'Evidence: identical favicon, cloned login form, registered 4 days ago.'])|join('\n') }}</div>
+    </div>
+    <div class="chans">
+      {% for ch in (T.channels if T else [{'k': 'Registrar', 'who': 'the domain registrar', 'to': none}, {'k': 'Hosting', 'who': 'the hosting provider', 'to': none}, {'k': 'CDN', 'who': 'the CDN / DNS provider', 'to': none}]) %}
+      <div class="chan rv" style="--t:{{ 3300 + loop.index0 * 350 }}"><span class="lbl">{{ ch.k }}</span><b title="{{ ch.who }}">{{ ch.who }}</b><div class="to">{{ ch.to or 'none found for this site' }}</div></div>{% endfor %}
+    </div>
+    <div class="portals" aria-label="report portals">{% for p in story.portals %}<span style="--t:{{ 4500 + loop.index0 * 70 }}" title="{{ p.group }}">{{ p.name }}</span>{% endfor %}</div>
+    <div class="human rv" style="--t:{{ 4700 + story.portals|length * 70 }}"><span class="ico">👤</span><span>A person reviews and sends it. Draft → approved → sent → taken down, every step in the append-only audit log.</span></div>
+  </div>
+</section>
+
+{# ================================================================== the end #}
+<section class="sx-end on-view" id="the-end">
+  <div class="flow rv"><b>Find</b><span>→</span><b>Prove</b><span>→</span><b>Decide</b><span>→</span><b>Map</b><span>→</span><b>Take down</b></div>
+  <p class="rv" style="--t:300">That's BrandWatch. Every step is explainable, every piece of evidence is tamper-proof, and a person decides everything that matters.</p>
+  <div class="sx-cta rv" style="--t:600">
+    <a class="btn primary big" href="/ui/dashboard">Open the dashboard →</a>
+    {% if F %}<a class="btn big" href="{{ F.url }}">Open the cloaked kit</a>{% endif %}
+    <button type="button" class="btn big ghost" id="again">↻ Watch again</button>
+  </div>
+</section>
+
+{# ================================================================== numbers #}
+<div class="panel on-view" style="margin-top:14px" id="about">
+  <h2 style="margin-top:0">About this project <span class="muted">· numbers read from the code, not typed by hand</span></h2>
+  <div class="facts">
+    <div class="kpi cy rv"><div class="v" data-to="{{ facts.signals }}">0</div><div class="l">signals in {{ facts.signal_groups }} groups</div></div>
+    <div class="kpi rv" style="--t:80"><div class="v" data-to="{{ facts.combination_rules }}">0</div><div class="l">combination rules · {{ facts.fp_penalties }} FP penalties</div></div>
+    <div class="kpi vi rv" style="--t:160"><div class="v" data-to="{{ facts.providers }}">0</div><div class="l">providers in {{ facts.provider_kinds }} fallback chains</div></div>
+    <div class="kpi ok rv" style="--t:240"><div class="v" data-to="{{ facts.golden.total }}">0</div><div class="l">recorded golden scenarios</div></div>
+    <div class="kpi rv" style="--t:320"><div class="v" data-to="{{ facts.immutable_tables|length }}">0</div><div class="l">DB-enforced immutable tables</div></div>
+    {% if facts.tests %}<div class="kpi mg rv" style="--t:400"><div class="v" data-to="{{ facts.tests.functions }}">0</div><div class="l">automated tests in {{ facts.tests.files }} files</div></div>{% endif %}
+    {% if facts.api_operations %}<div class="kpi rv" style="--t:480"><div class="v" data-to="{{ facts.api_operations }}">0</div><div class="l">REST API operations (<a href="/docs" target="_blank">OpenAPI</a>)</div></div>{% endif %}
+    {% if facts.migrations %}<div class="kpi rv" style="--t:560"><div class="v" data-to="{{ facts.migrations }}">0</div><div class="l">Alembic migrations · SQLite &amp; PostgreSQL</div></div>{% endif %}
+  </div>
+  <p class="small muted" style="margin-top:8px">Stack: FastAPI · SQLAlchemy 2 · Alembic · Jinja2 · Playwright (Chromium) · httpx · dnspython · cryptography. Scoring version <span class="mono">{{ facts.scoring_version }}</span>.{% if facts.ci_jobs %} CI: {{ facts.ci_jobs|join(' · ') }}.{% endif %}</p>
+</div>
+
+{# ================================================================== go deeper (folded) #}
+<section class="deeper" id="deeper">
+  <h2 class="big">Go deeper</h2>
+  <p class="muted" style="margin:0">For the questions after the demo: every step with its exact APIs and limits, the presenter's script, the engineering, and the glossary every “?” on the site links to.</p>
+
+  <details class="fold" id="all-steps">
+    <summary><b>All 13 steps</b><span>· the pipeline in order — “see it” opens a real example, “More info” shows the exact APIs, limits and code</span></summary>
+    <div class="in">
+      <div class="hiw-steps">
+        {% set see = {'baseline': stops.brand, 'discovery': stops.scan, 'deduplicate': stops.scan, 'enrichment': stops.cloaked or stops.open, 'cloaking': stops.cloaked, 'analysis': stops.cloaked or stops.open, 'scoring': stops.cloaked or stops.open, 'finding': '/ui/findings', 'summary': stops.scan} %}
+        {% set says = {
+          'baseline': "Fingerprint the brand's real site: favicon hash, screenshot hash, colours, the login and sign-up pages, keywords — and an AI-written list of the Google searches a phisher would target.",
+          'discovery': "Five streams look for look-alikes: typo and homoglyph permutations on 1,000+ TLDs (DNS-checked), new TLS certificates, yesterday's newly registered domains, Google results, and the urlscan archive.",
+          'deduplicate': "One candidate per URL with every stream that found it; official domains, whitelisted partners and big platforms (YouTube, app stores) are dropped before anything is fetched.",
+          'enrichment': "Each site is visited in a sandboxed browser behind an SSRF guard: DNS, WHOIS / RDAP, TLS, screenshot, HTML, favicon and reputation feeds — all stored as evidence.",
+          'cloaking': "Kits that hide from scanners are fetched again as a bot, as a victim link, from a Google referer and from a home IP; the score uses what a victim sees.",
+          'analysis': "42 signals in 7 groups compare the site with the brand: identity tricks, visual copy, what the page asks for, shared infrastructure, reputation, freshness, evasion.",
+          'scoring': "Deterministic and versioned: points per signal, a cap per group, combination rules for known kit shapes, false-positive penalties — plus a separate confidence axis. AI and a classifier give advisory opinions only.",
+          'finding': "Medium and above become a finding for an analyst; the rest stays on the watchlist and is re-checked on a schedule (a parked domain that grows a login form jumps to the front).",
+          'summary': "The live console narrates every step while it happens and ends with a plain-language report; an engineering trace records every provider call, AI prompt and the scoring maths.",
+        } %}
+        {% for k in ['baseline','discovery','deduplicate','enrichment','cloaking','analysis','scoring','finding','summary'] %}
+        <div class="hiw-step" id="step-{{ loop.index }}"><div class="n">{{ loop.index }} · {{ STAGE_LABELS[k][1] }}</div><b>{{ STAGE_LABELS[k][0] }}</b><p>{{ says[k] }}</p>
+          <div class="hiw-foot">{% if see[k] %}<a class="see" href="{{ see[k] }}">see it →</a>{% else %}<span></span>{% endif %}{{ more(loop.index) }}</div></div>
+        {% endfor %}
+        <div class="hiw-step" id="step-10"><div class="n">10 · verdict</div><b>Confirm or dismiss</b><p>The finding page explains itself in two sentences and shows every signal, its points and the evidence. A human decides; the reason goes to the audit log and the training set.</p><div class="hiw-foot">{% if stops.open %}<a class="see" href="{{ stops.open }}">see it →</a>{% else %}<span></span>{% endif %}{{ more(10) }}</div></div>
+        <div class="hiw-step" id="step-11"><div class="n">11 · investigate</div><b>Site &amp; network investigation</b><p>VirusTotal-style lookup on the finding page itself: detections, DNS, certificate, RDAP and abuse contact, WHOIS history (every past owner, and details hidden later), passive DNS, every other site on the server, urlscan similar pages.</p><div class="hiw-foot">{% if stops.intel %}<a class="see" href="{{ stops.intel }}">see it →</a>{% else %}<span></span>{% endif %}{{ more(11) }}</div></div>
+        <div class="hiw-step" id="step-12"><div class="n">12 · map the attacker</div><b>Attack infrastructure</b><p>From one confirmed site, a budgeted pivot over shared servers, certificates, favicons and tracking IDs; co-hosted noise is triaged out. Indicators export as STIX 2.1.</p><div class="hiw-foot">{% if stops.campaign %}<a class="see" href="{{ stops.campaign }}">see it →</a>{% else %}<span></span>{% endif %}{{ more(12) }}</div></div>
+        <div class="hiw-step" id="step-13"><div class="n">13 · take it down</div><b>Takedown</b><p>An evidence-backed request with an audited lifecycle; contacts for the registrar, the hosting provider and the CDN; {{ REPORT_PORTAL_COUNT }} blocklists, anti-virus and abuse-report portals. BrandWatch never sends anything itself.</p><div class="hiw-foot">{% if stops.takedown %}<a class="see" href="{{ stops.takedown }}">see it →</a>{% else %}<span></span>{% endif %}{{ more(13) }}</div></div>
+      </div>
+    </div>
+  </details>
+
+  <details class="fold" id="demo">
+    <summary><b>Demo walkthrough · 8 stops</b><span>· the presenter's ten-minute script, with the questions people ask</span></summary>
+    <div class="in">
+      <ol class="tour">
+        <li><div class="where"><a href="/ui/dashboard">Dashboard</a> — the mission line and the five-step strip</div>
+          <p class="say">“BrandWatch finds sites impersonating a brand — on the web and in Facebook / Instagram ads — proves it with tamper-proof evidence, maps the attacker's servers and drafts the takedown. A human decides every step.”</p>
+          <p class="q">Likely question: what's real here? → In demo mode every external service is a recorded scenario; the same code calls VirusTotal, crt.sh, Google and Chromium in live mode.</p></li>
+        <li><div class="where">{% if stops.brand %}<a href="{{ stops.brand }}">The brand page</a>{% else %}A brand page{% endif %} — tick “include fingerprinting”, press START SCAN</div>
+          <p class="say">“First it learns what the real site looks like, then it hunts for copies on five streams.”</p>
+          <p class="q">Likely question: how do you find domains that don't exist in any list yet? → Permutations checked in DNS, new certificates in CT logs, yesterday's registrations.</p>
+          <p class="q">Likely question: what about social media? → Facebook pages by name (Meta's page search, every country) and Instagram / Facebook profiles Google knows; each one's page history, logo, links and posts are checked and an AI reads the content. Fakes become findings with a Report-to-Meta box, a link in their bio goes to the website checks, and the brand's own accounts are never flagged. Ads about the brand are searched too, per country.</p></li>
+        <li><div class="where">The live scan console — then “▶ replay highlights”</div>
+          <p class="say">“Every step is narrated as it happens; the report at the bottom says what the scan did in plain words.”</p>
+          <p class="q">Likely question: what if VirusTotal is down? → Retries with backoff, a circuit breaker, then the next provider in the chain; the alert panel says what happened and how to fix it.</p></li>
+        <li><div class="where">{% if stops.cloaked %}<a href="{{ stops.cloaked }}">A cloaked kit</a>{% else %}A critical finding{% endif %} — read the two-sentence summary, then the three screenshots</div>
+          <p class="say">“This kit shows a blank page to scanners and the login page to real visitors. We fetch it like a victim would.”</p>
+          <p class="q">Likely question: why is VirusTotal at 0? → It's days old; blocklists lag. Unknown is never treated as clean.</p></li>
+        <li><div class="where">Explain Finding — signals, group caps, the score line, “open the arithmetic”</div>
+          <p class="say">“Deterministic, explainable scoring: every point traces back to evidence. Risk and confidence are separate axes. The AI is advisory.”</p>
+          <p class="q">Likely question: false positives? → Penalties (old domain, redirects to the brand), a whitelist, and a golden-dataset regression gate (precision / recall ≥ 0.90).</p></li>
+        <li><div class="where">Press <b>Confirm phishing</b>, then <b>Investigate site &amp; network</b></div>
+          <p class="say">“Confirming maps the attacker's infrastructure automatically. The investigation tabs on the finding page replace twenty minutes of VirusTotal, urlscan and RDAP tabs.”</p></li>
+        <li><div class="where">{% if stops.campaign %}<a href="{{ stops.campaign }}">The attack infrastructure map</a>{% else %}Attack infrastructure{% endif %} — drag the graph, read two triage reasons</div>
+          <p class="say">“One site led to the whole operation. Noise is triaged out with a reason; the indicators go to a SIEM as STIX.”</p></li>
+        <li><div class="where">{% if stops.takedown %}<a href="{{ stops.takedown }}">The takedown</a>{% else %}Takedowns{% endif %} → <a href="/ui/activity">Activity</a></div>
+          <p class="say">“Three channels — registrar, host, CDN — plus the blocklists. Every step is in an append-only audit log the database won't let anyone edit.”</p></li>
+      </ol>
+    </div>
+  </details>
+
+  <details class="fold" id="under-the-hood">
+    <summary><b>Under the hood</b><span>· the engineering an interviewer asks about</span></summary>
+    <div class="in">
+      <div class="uth">
+        <div class="card" id="ssrf"><h3>SSRF guard &amp; sandbox</h3>
+          <p>Every fetch: validate the URL → resolve A/AAAA → fail closed on {{ facts.limits.blocked_networks }} blocked networks (private, loopback, cloud metadata) → connect pinned to the validated IP with Host + SNI → re-validate every redirect hop (≤ {{ facts.limits.max_redirects }}) → size ≤ {{ facts.limits.max_response_mb }} MB, timeout {{ facts.limits.fetch_timeout_s }} s.</p>
+          <p>The same policy gates every Chromium sub-request. Limits are frozen in code — no brand, workspace or env var can change them.</p>
+          <div class="mod">security/fetcher_guard.py · security/limits.py · <a href="/ui/settings#limits">see it in Settings</a></div></div>
+        <div class="card" id="evidence"><h3>Immutable evidence</h3>
+          <p>{{ facts.immutable_tables|length }} append-only tables: database triggers reject UPDATE and DELETE — even for an admin, on SQLite and PostgreSQL. Artifacts are content-addressed: the SHA-256 is the file name.</p>
+          <p>Each finding links its evidence with a role (primary, supporting, contradicting, context): a chain of custody for a takedown or a court.</p>
+          <div class="mod">db/models · migrations/001 · evidence/store.py{% if stops.cloaked %} · <a href="{{ stops.cloaked }}">see it on a finding</a>{% endif %}</div></div>
+        <div class="card" id="resilience"><h3>Provider resilience</h3>
+          <p>Every external call goes through one wrapper: TTL cache → budget check → circuit breaker → token bucket → retry with backoff (honouring Retry-After) → the next provider in the fallback chain.</p>
+          <p>A bad key disables the provider for the job instead of failing 500 calls; "unknown" is never treated as clean.</p>
+          <div class="mod">providers/base.py · providers/registry.py{% if stops.scan %} · <a href="{{ stops.scan }}">see the alerts panel</a>{% endif %}</div></div>
+        <div class="card" id="ledger"><h3>Cost ledger &amp; budgets</h3>
+          <p>Every paid call is recorded with its cost; daily call and spend caps are checked over the trailing 24 h <em>before</em> the call, so a scan stops spending instead of overspending.</p>
+          <div class="mod">providers/ledger.py · <a href="/ui/dashboard#under-the-hood">budget meter</a></div></div>
+        <div class="card" id="golden"><h3>Golden dataset gate</h3>
+          <p>{{ facts.golden.total }} recorded scenarios ({{ facts.golden.get('phishing', 0) }} phishing incl. cloaked kits, {{ facts.golden.get('legit', 0) }} legitimate, {{ facts.golden.get('brand_related_legit', 0) }} brand-related legitimate, {{ facts.golden.get('suspicious_not_phishing', 0) }} suspicious-but-not-phishing) run through the real pipeline in CI.</p>
+          <p>The build fails below precision {{ facts.golden_gate.precision }} / recall {{ facts.golden_gate.recall }} / FP rate {{ facts.golden_gate.fp_rate }}; last measured {{ '%.2f'|format(facts.golden_measured.precision) }} / {{ '%.2f'|format(facts.golden_measured.recall) }} / {{ '%.2f'|format(facts.golden_measured.fp_rate) }}. The same corpus drives the $0 demo.</p>
+          <div class="mod">demo/golden/*.jsonl · tests/test_golden.py · <a href="/ui/settings#quality">quality card</a></div></div>
+        <div class="card" id="events"><h3>Durable live events</h3>
+          <p>Each scan writes an ordered event stream (sequence-numbered, secrets redacted) before publishing it over SSE; a refresh resumes from the last event. Cancellation is cooperative at safe checkpoints.</p>
+          <div class="mod">events/emitter.py · api/scans.py · trace.py</div></div>
+        <div class="card" id="keys"><h3>Secrets, tenants &amp; roles</h3>
+          <p>API keys are envelope-encrypted (random 32-byte key per record, AES-256-GCM, bound to workspace:provider). Passwords: Argon2id. Personal API tokens are stored as SHA-256 only; a read-scoped token caps even an admin at viewer.</p>
+          <p>Every query is workspace-scoped; RBAC (admin / analyst / viewer) is identical in the UI and the API.</p>
+          <div class="mod">keys.py · config/secrets.py · tenancy.py · api/auth.py</div></div>
+        <div class="card" id="tests"><h3>Tests &amp; CI</h3>
+          <p>{% if facts.tests %}{{ facts.tests.functions }} test functions in {{ facts.tests.files }} files{% else %}A full test suite{% endif %}: schema and trigger enforcement, SSRF cases, provider resilience, every UI page, the golden gate.{% if facts.ci_jobs %} CI runs {{ facts.ci_jobs|join(', ') }}, including migrations up and down on PostgreSQL 16.{% endif %}</p>
+          <div class="mod">tests/ · .github/workflows/ci.yml</div></div>
+      </div>
+      <h2>Trust &amp; safety</h2>
+      <ul class="small" style="line-height:1.7;margin:0;padding-left:18px">
+        <li>A human decides every verdict and every takedown; nothing is ever sent automatically.</li>
+        <li>Residential IPs are used to <em>look</em> like a victim, never to interact; probes never submit forms.</li>
+        <li>The AI only gives advisory opinions under a strict JSON schema, with the page text framed as untrusted.</li>
+        <li>Only brands you are authorised to protect; every action is in the append-only audit log.</li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="fold" id="glossary">
+    <summary><b>Glossary</b><span>· every “?” on the site links here</span></summary>
+    <div class="in">
+      <dl class="gl">
+        {% for gkey, name, text in GLOSSARY %}<dt id="g-{{ gkey }}">{{ name }}</dt><dd>{{ text }}</dd>{% endfor %}
+      </dl>
+    </div>
+  </details>
+</section>
+
+</div>
+
+<script>
+(function(){
+  const sx = document.getElementById('sx');
+  const reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  sx.classList.add('js');
+  const $ = id => document.getElementById(id);
+  const chapters = [...document.querySelectorAll('.ch')];
+  const segs = [...document.querySelectorAll('#rail .seg')];
+  const header = document.querySelector('header');
+  const rail = $('rail');
+  const fitRail = () => { rail.style.top = (header ? header.offsetHeight : 0) + 'px'; };
+  fitRail(); addEventListener('resize', fitRail);
+  const offset = () => (header ? header.offsetHeight : 0) + rail.offsetHeight + 8;
+
+  // ---------------------------------------------------------------- chapter animations
+  const timers = new WeakMap();
+  function later(ch, ms, fn){ const t = setTimeout(fn, reduce ? 0 : ms); (timers.get(ch) || timers.set(ch, []).get(ch)).push(t); }
+  function countUp(el){
+    const to = parseFloat(el.dataset.to) || 0, dur = reduce ? 0 : parseInt(el.dataset.dur || 1200, 10);
+    const t0 = performance.now(), fmt = v => Math.round(v).toLocaleString('en-US');
+    const ring = el.closest('.bigring');
+    const step = t => { const k = dur ? Math.min(1, (t - t0) / dur) : 1, e = 1 - Math.pow(1 - k, 3);
+      el.textContent = fmt(to * e); if (ring) ring.style.setProperty('--p', to * e);
+      if (k < 1) requestAnimationFrame(step); };
+    requestAnimationFrame(step);
+    setTimeout(() => { el.textContent = fmt(to); if (ring) ring.style.setProperty('--p', to); }, dur + 300);
+  }
+  function typeOut(el){
+    const full = el.dataset.full; el.textContent = '';
+    if (reduce) { el.textContent = full; return; }
+    const per = Math.max(6, Math.min(22, 2600 / Math.max(1, full.length)));
+    let i = 0; const tick = () => { i = Math.min(full.length, i + 2); el.textContent = full.slice(0, i); if (i < full.length) setTimeout(tick, per * 2); };
+    tick();
+  }
+  document.querySelectorAll('[data-type]').forEach(el => { el.dataset.full = el.textContent; });
+  function run(ch){
+    (timers.get(ch) || []).forEach(clearTimeout); timers.set(ch, []);
+    ch.classList.remove('live'); void ch.offsetWidth; ch.classList.add('live');
+    ch.querySelectorAll('[data-to]').forEach(el => { el.textContent = '0'; later(ch, parseInt(el.dataset.t || 0, 10), () => countUp(el)); });
+    ch.querySelectorAll('[data-type]').forEach(el => { el.textContent = ''; later(ch, parseInt(el.dataset.t || 0, 10), () => typeOut(el)); });
+    ch.querySelectorAll('[data-w]').forEach(el => { el.style.width = '0'; later(ch, parseInt(el.dataset.t || 0, 10), () => { el.style.width = el.dataset.w + '%'; }); });
+    ch.querySelectorAll('[data-to-left]').forEach(el => { el.style.left = '0'; later(ch, parseInt(el.dataset.t || 0, 10), () => { el.style.left = 'calc(' + el.dataset.toLeft + '% - 1px)'; }); });
+    const ring = ch.querySelector('.bigring'); if (ring) ring.style.setProperty('--p', 0);
+  }
+  const seen = new WeakSet();
+  const trigger = el => el.classList.contains('stage') ? el.closest('.ch') : el;
+  const io2 = new IntersectionObserver(entries => entries.forEach(en => {
+    const ch = trigger(en.target);
+    if (en.isIntersecting && !seen.has(ch)) { seen.add(ch); run(ch); }
+  }), {threshold: 0.3});
+  chapters.forEach(ch => io2.observe(ch.querySelector('.stage')));
+  document.querySelectorAll('.on-view').forEach(el => io2.observe(el));
+  document.querySelectorAll('.replay').forEach(b => b.addEventListener('click', () => run(b.closest('.ch'))));
+
+  // ---------------------------------------------------------------- rail: which chapter, how far
+  let playing = false, idx = 0, chStart = 0, chTimer = null, rafId = null;
+  // on a phone the headline is read first, then the stage plays below it: 3.4 s more per chapter
+  const durs = chapters.map(ch => parseFloat(ch.dataset.dur) * 1000 + (innerWidth < 900 ? 3400 : 0));
+  const total = durs.reduce((a, b) => a + b, 0);
+  const mmss = ms => { const s = Math.max(0, Math.round(ms / 1000)); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); };
+  function paint(active, frac){
+    segs.forEach((sg, i) => { sg.classList.toggle('on', i === active);
+      sg.querySelector('i').style.setProperty('--f', i < active ? 1 : (i === active ? frac : 0)); });
+    if (active >= 0 && segs[active] && segs[active].scrollIntoView && innerWidth < 900) segs[active].scrollIntoView({block: 'nearest', inline: 'center'});
+  }
+  function onScroll(){
+    if (playing) return;
+    const mid = innerHeight * 0.5;
+    let active = -1, frac = 0;
+    chapters.forEach((ch, i) => { const r = ch.getBoundingClientRect(); if (r.top <= mid) { active = i; frac = Math.min(1, Math.max(0, (mid - r.top) / r.height)); } });
+    paint(active, frac);
+  }
+  addEventListener('scroll', onScroll, {passive: true}); onScroll();
+
+  // ---------------------------------------------------------------- play mode
+  const btns = [$('play'), $('play2')];
+  function label(){
+    $('play2').textContent = playing ? '❚❚ Pause' : '▶ Play';
+    $('play').querySelector('span:last-child').firstChild.textContent = playing ? 'Pause the story ' : 'Play the story ';
+  }
+  function goTo(i, smooth){
+    const top = chapters[i].getBoundingClientRect().top + scrollY - offset();
+    scrollTo({top, behavior: smooth && !reduce ? 'smooth' : 'auto'});
+  }
+  function tickLeft(){
+    if (!playing) return;
+    const done = durs.slice(0, idx).reduce((a, b) => a + b, 0) + (performance.now() - chStart);
+    $('left').textContent = mmss(total - done) + ' left';
+    paint(idx, Math.min(1, (performance.now() - chStart) / durs[idx]));
+    rafId = requestAnimationFrame(tickLeft);
+  }
+  function playFrom(i){
+    clearTimeout(chTimer); cancelAnimationFrame(rafId);
+    if (i >= chapters.length) { stop(); const end = $('the-end'); scrollTo({top: end.getBoundingClientRect().top + scrollY - offset(), behavior: reduce ? 'auto' : 'smooth'}); return; }
+    idx = i; playing = true; label();
+    goTo(i, true);
+    const narrow = innerWidth < 900, lead = narrow ? 3800 : 450;
+    if (narrow) setTimeout(() => { if (playing && idx === i) { const st = chapters[i].querySelector('.stage');
+      scrollTo({top: st.getBoundingClientRect().top + scrollY - offset(), behavior: reduce ? 'auto' : 'smooth'}); } }, lead - 400);
+    setTimeout(() => { if (playing && idx === i) run(chapters[i]); }, lead);
+    chStart = performance.now(); tickLeft();
+    chTimer = setTimeout(() => playFrom(i + 1), durs[i]);
+  }
+  function stop(){ playing = false; clearTimeout(chTimer); cancelAnimationFrame(rafId); $('left').textContent = ''; label(); onScroll(); }
+  function current(){ const mid = innerHeight * 0.5; let a = 0; chapters.forEach((ch, i) => { if (ch.getBoundingClientRect().top <= mid) a = i; }); return a; }
+  btns.forEach(b => b.addEventListener('click', () => playing ? stop() : playFrom(current() && scrollY > chapters[0].offsetTop - 200 ? current() : 0)));
+  $('again').addEventListener('click', () => playFrom(0));
+  // the reader takes over: wheel, touch or keys pause the story
+  ['wheel', 'touchstart'].forEach(ev => addEventListener(ev, e => { if (playing && !(e.target.closest && e.target.closest('button,a,input'))) stop(); }, {passive: true}));
+  addEventListener('keydown', e => { if (playing && ['ArrowDown', 'ArrowUp', 'PageDown', 'PageUp', 'Home', 'End', ' '].includes(e.key) && !e.target.closest('input,textarea')) stop(); });
+  document.querySelectorAll('[data-jump]').forEach(a => a.addEventListener('click', e => {
+    e.preventDefault(); const i = parseInt(a.dataset.jump, 10);
+    if (playing) playFrom(i); else { goTo(i, true); }
+  }));
+
+  // ---------------------------------------------------------------- "how exactly?" + glossary links open the folded section
+  function openTarget(id, smooth){
+    const el = id && document.getElementById(id); if (!el) return;
+    const d = el.closest('details'); if (d) d.open = true;
+    const top = el.getBoundingClientRect().top + scrollY - offset();
+    scrollTo({top, behavior: smooth && !reduce ? 'smooth' : 'auto'});
+  }
+  document.querySelectorAll('[data-deep]').forEach(a => a.addEventListener('click', e => {
+    e.preventDefault(); if (playing) stop(); const id = a.getAttribute('href').slice(1); history.replaceState(null, '', '#' + id); openTarget(id, true);
+  }));
+  addEventListener('hashchange', () => openTarget(location.hash.slice(1), true));
+  if (location.hash.length > 1) setTimeout(() => openTarget(location.hash.slice(1), false), 60);
+
+  // ---------------------------------------------------------------- "More info" panels
+  const all = [...document.querySelectorAll('.mi')];
+  const place = mi => { mi.classList.remove('r'); if (mi.getBoundingClientRect().left + 680 > innerWidth) mi.classList.add('r'); };
+  all.forEach(mi => {
+    mi.addEventListener('mouseenter', () => place(mi));
+    mi.querySelector('.mi-btn').addEventListener('click', e => { e.stopPropagation(); place(mi);
+      const open = !mi.classList.contains('open'); all.forEach(o => { o.classList.remove('open'); o.querySelector('.mi-btn').setAttribute('aria-expanded', 'false'); });
+      if (open) { mi.classList.add('open'); e.currentTarget.setAttribute('aria-expanded', 'true'); } });
+  });
+  document.addEventListener('click', e => { if (!e.target.closest('.mi')) all.forEach(o => o.classList.remove('open')); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') { all.forEach(o => o.classList.remove('open')); if (document.activeElement && document.activeElement.closest('.mi')) document.activeElement.blur(); } });
+})();
+</script>
+{% endblock %}

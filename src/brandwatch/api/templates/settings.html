@@ -1,0 +1,366 @@
+{% extends "base.html" %}
+{% block title %}Settings{% endblock %}
+{% block content %}
+<style>
+  .set-layout{display:grid;grid-template-columns:210px minmax(0,1fr);gap:18px;align-items:start;margin-top:14px}
+  .set-layout>*{min-width:0}
+  .set-nav{position:sticky;top:64px;display:grid;gap:2px}
+  .set-nav .grp{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:12px 0 4px 10px}
+  .set-nav .grp:first-child{margin-top:0}
+  .set-nav a{display:flex;justify-content:space-between;gap:8px;padding:6px 10px;border-radius:8px;color:var(--text);font-size:13px;border:1px solid transparent}
+  .set-nav a:hover{background:var(--panel2)}.set-nav a.on{border-color:var(--border);background:var(--panel2)}
+  .set-nav a small{color:var(--muted);font-family:var(--mono);font-size:11px}
+  .sec{scroll-margin-top:70px;margin-bottom:14px}
+  .sec > h2:first-child{margin-top:0}
+  .sec .lead{margin:-4px 0 12px;color:var(--muted);font-size:13px;max-width:760px}
+  .ov{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px}
+  .ov a{display:block;padding:10px 12px;border:1px solid var(--border);border-radius:10px;background:var(--panel);color:var(--text)}
+  .ov a:hover{border-color:var(--accent)}
+  .ov .k{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+  .ov .v{font-size:16px;font-weight:600;margin-top:2px}.ov .d{font-size:12px;color:var(--muted)}
+  .opt{display:flex;gap:8px;align-items:flex-start;text-transform:none;letter-spacing:0;font-family:var(--sans);font-size:13px;color:var(--text);margin:5px 0}
+  .opt input{width:auto;margin-top:3px}
+  .box{padding:10px 12px;border:1px solid var(--border);border-radius:10px;margin-bottom:10px}
+  .keygrp{margin:14px 0 4px;font-size:13px;font-weight:600}.keygrp span{font-weight:400;color:var(--muted)}
+  .krow{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:14px;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)}
+  .krow:last-child{border-bottom:0}
+  .krow .nm{font-weight:600}.krow .nm a{font-weight:400;font-size:12px;margin-left:6px}
+  .krow .ds{font-size:12px;color:var(--muted);margin-top:2px}
+  .tag{display:inline-block;font-family:var(--mono);font-size:10px;letter-spacing:.04em;padding:1px 6px;border:1px solid var(--border);border-radius:999px;color:var(--muted);margin-left:6px;vertical-align:1px}
+  .tag.ok{color:var(--low);border-color:rgba(46,204,113,.45)}.tag.rec{color:var(--text)}
+  .krow form{display:flex;gap:6px}.krow form input{min-width:0}
+  .saved{position:fixed;right:18px;bottom:18px;z-index:30;padding:9px 14px;border-radius:10px;background:var(--panel2);border:1px solid rgba(46,204,113,.5);color:var(--text);font-size:13px;box-shadow:0 10px 30px rgba(0,0,0,.45);transition:opacity .4s}
+  .kv th{width:150px}
+  @media (max-width:900px){
+    .set-layout{grid-template-columns:1fr}
+    .set-nav{position:static;display:flex;flex-wrap:nowrap;overflow-x:auto;gap:6px;padding-bottom:4px}
+    .set-nav .grp{display:none}.set-nav a{white-space:nowrap;border-color:var(--border)}
+    .krow{grid-template-columns:1fr}
+  }
+</style>
+
+<h1>Settings <span class="muted small">· {{ ws.name }} · signed in as {{ user.email }} ({{ user.role.value }})</span></h1>
+<p class="intro">Everything that changes how BrandWatch runs, in one place: the data sources it calls, the money and limits it may spend, who can use it, and how good its detection is. Every change is written to the Activity log.</p>
+{% if error %}<div class="error">{{ error }}</div>{% endif %}
+{% if new_token %}
+<div class="panel" style="border-color:var(--low);margin-bottom:14px">
+  <h2 style="margin-top:0;color:var(--low)">New access token — copy it now, it is not shown again</h2>
+  <div class="mono" style="font-size:13px;word-break:break-all;background:#060910;padding:10px;border-radius:6px">{{ new_token }}</div>
+  <p class="small muted">Use it as <span class="mono">Authorization: Bearer {{ new_token[:10] }}…</span> against the API (<a href="/docs" target="_blank">/docs</a>).</p>
+</div>
+{% endif %}
+{% set saved_labels = {'budget': 'Budget saved', 'proxy': 'Proxy saved', 'lookups': 'Lookup methods saved', 'team': 'Team updated', 'keys': 'API key updated', 'tenants': 'Workspace created', 'tokens': 'Token revoked', 'quality': 'Classifier retrained'} %}
+{% if saved and saved in saved_labels %}<div class="saved" id="saved">✓ {{ saved_labels[saved] }} · recorded in Activity</div>{% endif %}
+
+{# ------------------------------------------------------------------ status at a glance #}
+{% set built = [] %}{% for k in api_keys %}{% if k.provider in PROVIDER_INFO and PROVIDER_INFO[k.provider].get('built', true) %}{% set _ = built.append(k) %}{% endif %}{% endfor %}
+{% set built_set = built|selectattr('configured')|list %}
+{% set rec_missing = [] %}{% for k in api_keys %}{% if PROVIDER_INFO.get(k.provider, {}).get('recommended') and not k.configured %}{% set _ = rec_missing.append(PROVIDER_INFO[k.provider].name) %}{% endif %}{% endfor %}
+<div class="ov">
+  <a href="#system"><div class="k">Mode</div><div class="v">{{ 'Demo' if settings.demo_mode else 'Live' }}</div><div class="d">{{ 'recorded scenarios · $0 · no keys needed' if settings.demo_mode else 'real providers and real sites' }}</div></a>
+  <a href="#keys"><div class="k">API keys</div>{% if is_admin %}<div class="v">{{ built_set|length }} of {{ built|length }} set</div><div class="d">{% if rec_missing %}recommended: {{ rec_missing|join(', ') }}{% else %}all recommended keys set{% endif %}</div>{% else %}<div class="v">admin only</div><div class="d">ask an admin to add keys</div>{% endif %}</a>
+  <a href="#proxy"><div class="k">Residential proxy</div><div class="v">{{ {'off': 'Off', 'webshare': 'Webshare', 'manual': 'Manual proxy'}.get(proxy.mode, proxy.mode) }}</div><div class="d">{{ 'cloaking probe from a home IP' if proxy.mode != 'off' else 'datacentre probes only' }}</div></a>
+  <a href="#budget"><div class="k">Daily budget</div><div class="v">${{ ws.economic_limits.max_daily_spend }} · {{ '{:,}'.format(ws.economic_limits.max_api_calls|int) }} calls</div><div class="d">{{ ws.economic_limits.max_candidate_count }} sites per scan at most</div></a>
+  {% if is_admin %}<a href="#team"><div class="k">Team</div><div class="v">{{ users|length }} user(s)</div><div class="d">{{ users|selectattr('role', 'equalto', 'admin')|list|length }} admin · {{ tokens|rejectattr('revoked')|list|length }} API token(s)</div></a>{% endif %}
+</div>
+
+<div class="set-layout">
+  <nav class="set-nav" id="setnav" aria-label="Settings sections">
+    <div class="grp">Data sources</div>
+    {% if is_admin %}<a href="#keys">API keys <small>{{ built_set|length }}/{{ built|length }}</small></a>{% endif %}
+    <a href="#lookups">DNS &amp; WHOIS</a>
+    <a href="#proxy">Residential proxy <small>{{ proxy.mode }}</small></a>
+    <div class="grp">Workspace</div>
+    <a href="#budget">Budget &amp; limits</a>
+    {% if is_admin %}<a href="#team">Team &amp; roles <small>{{ users|length }}</small></a>{% endif %}
+    <a href="#tokens">API tokens <small>{{ tokens|rejectattr('revoked')|list|length }}</small></a>
+    {% if workspaces is not none %}<a href="#tenants">Tenants</a>{% endif %}
+    <div class="grp">System</div>
+    <a href="#system">Notifications &amp; system</a>
+    <a href="#quality">Detection quality</a>
+    <a href="#limits">Security limits</a>
+  </nav>
+
+  <div>
+  {# ================================================================== DATA SOURCES #}
+  {% if is_admin %}
+  <section class="panel sec" id="keys">
+    <h2>Provider API keys <span class="muted">· AES-256-GCM envelope encryption, never shown again</span></h2>
+    <p class="lead">The services BrandWatch calls during a scan. {% if settings.demo_mode %}<b>Demo mode answers every call from recorded scenarios, so no key is needed here.</b> {% endif %}A missing key never breaks a scan: that source is skipped and the console says so. Each key gets its own random 32-byte data key (AES-256-GCM), wrapped by the master key and bound to workspace:provider; only the last four characters are ever displayed.</p>
+    {% set keymap = {} %}{% for k in api_keys %}{% set _ = keymap.update({k.provider: k}) %}{% endfor %}
+    {% for gkey, gname, gdesc in PROVIDER_GROUPS %}
+    <div class="keygrp">{{ gname }} <span>· {{ gdesc }}</span></div>
+    {% for pname, info in PROVIDER_INFO.items() if info.group == gkey and pname in keymap %}{% set k = keymap[pname] %}
+    <div class="krow">
+      <div>
+        <div class="nm">{{ info.name }}{% if info.recommended %}<span class="tag rec">recommended</span>{% endif %}{% if info.built is sameas false %}<span class="tag" title="the key is stored, but the connector is not written yet: this source is skipped">connector not built yet</span>{% endif %}<a href="{{ info.url }}" target="_blank" rel="noreferrer noopener">get a key ↗</a></div>
+        <div class="ds">{{ info.does }}{% if info.plan %} · <span class="mono">{{ info.plan }}</span>{% endif %}</div>
+      </div>
+      <div>
+        <div class="small" style="margin-bottom:6px">{% if k.configured %}<span class="tag ok">✓ set</span> <span class="mono">{{ k.masked }}</span> <span class="muted">from {{ k.source }}{% if k.rotated_at %} · rotated {{ k.rotated_at[:10] }}{% endif %}</span>{% else %}<span class="tag">not set</span>{% endif %}</div>
+        <div style="display:flex;gap:6px">
+          <form method="post" action="/ui/settings/api-keys/{{ k.provider }}" style="flex:1"><input name="key" type="password" placeholder="{{ 'paste a new key to rotate' if k.configured else 'paste key' }}" autocomplete="off" aria-label="{{ info.name }} API key"><button type="submit">Save</button></form>
+          {% if k.source == 'workspace' %}<form method="post" action="/ui/settings/api-keys/{{ k.provider }}/delete"><button class="danger" type="submit" title="remove the stored key">Remove</button></form>{% endif %}
+          {% if k.configured %}<button type="button" class="ghost keytest" data-p="{{ k.provider }}" title="calls the provider once to see whether the key works (WhoisXML: the free balance check)">Test</button>{% if k.provider == 'whoisxml' %}<button type="button" class="ghost keytest" data-p="whoisxml-history" title="WHOIS History is a separate WhoisXML product with its own credits (Domain Research Suite). Looks at the free balance first; spends 1 credit only if there is one to spend.">Test history</button>{% endif %}{% endif %}
+        </div>
+        <div class="small keytest-out" data-for="{{ k.provider }}" style="margin-top:6px;min-height:1em"></div>
+      </div>
+    </div>
+    {% endfor %}
+    {% endfor %}
+    <div class="keygrp">No key needed <span>· always on</span></div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:4px 18px" class="small">{% for n, d in KEYLESS_SOURCES %}<div><span class="tag ok" style="margin:0 6px 0 0">✓</span><b style="font-weight:500">{{ n }}</b> <span class="muted">— {{ d }}</span></div>{% endfor %}</div>
+  </section>
+  {% endif %}
+
+  <section class="panel sec" id="lookups">
+    <h2>Lookups · DNS &amp; WHOIS {% if not is_admin %}<span class="muted">(read-only)</span>{% endif %}</h2>
+    <p class="lead">How BrandWatch answers "does this look-alike domain exist, and who registered it?". Both default to free methods that need no key.</p>
+    <form method="post" action="/ui/settings/lookups">
+      {% for kind, title, py, svc in [
+          ('dns', 'DNS — does a look-alike domain exist? which IP?',
+           'Python: walks the DNS tree itself, from the root servers to the TLD registry — no third party',
+           'Service: public resolvers (Cloudflare 1.1.1.1, Quad9, Google) do the walking'),
+          ('whois', 'WHOIS — registration date, registrar, owner',
+           'Python: RDAP (the registries\' JSON WHOIS) then port-43 WHOIS — free, no key',
+           'Service: WhoisXML API (needs the key and an active subscription)')] %}
+      {% set cur = lookups[kind] %}
+      <div class="box">
+        <div class="small" style="font-weight:600;margin-bottom:6px">{{ title }}</div>
+        <label class="opt"><input type="radio" name="{{ kind }}_mode" value="python" {{ 'checked' if cur.mode == 'python' }} {{ 'disabled' if not is_admin }}> {{ py }}</label>
+        <label class="opt"><input type="radio" name="{{ kind }}_mode" value="service" {{ 'checked' if cur.mode == 'service' }} {{ 'disabled' if not is_admin }}> {{ svc }}</label>
+        <label class="opt" style="color:var(--muted);font-size:12px"><input type="checkbox" name="{{ kind }}_fallback" {{ 'checked' if cur.fallback }} {{ 'disabled' if not is_admin }}> if it gives no answer, fall back to the other method</label>
+      </div>
+      {% endfor %}
+      {% if is_admin %}<button class="primary" type="submit">Save lookups</button>{% endif %}
+      <span class="small muted" style="margin-left:8px">Applies from the next scan. The scan trace records which method answered each look-up.</span>
+    </form>
+  </section>
+
+  <section class="panel sec" id="proxy">
+    <h2>Residential / mobile proxy {% if not is_admin %}<span class="muted">(read-only)</span>{% endif %}</h2>
+    <p class="lead">Optional. Used only by the Tier-4 cloaking probe: re-fetching a suspicious site from a real home or phone-network IP, as a desktop browser and/or as a phone, to catch kits that hide from datacentre scanners or that only target mobile victims. The country is chosen per brand, from its audience. Never used to interact with a site.</p>
+    {% set px = proxy %}
+    <form method="post" action="/ui/settings/proxy" id="proxy-form">
+      <div class="grid two" style="margin-bottom:12px">
+        <div id="proxy-kind"><label>Which proxy the probe uses</label>
+          <label class="opt"><input type="radio" name="proxy_kind" value="residential" {{ 'checked' if probe.proxy_kind == 'residential' }} {{ 'disabled' if not is_admin }}> Residential — a home broadband address</label>
+          <label class="opt"><input type="radio" name="proxy_kind" value="mobile" {{ 'checked' if probe.proxy_kind == 'mobile' }} {{ 'disabled' if not is_admin }}> Mobile — a 4G / 5G carrier address</label>
+        </div>
+        <div id="probe-devices"><label>Visit as</label>
+          <label class="opt"><input type="radio" name="devices" value="desktop" {{ 'checked' if probe.devices == 'desktop' }} {{ 'disabled' if not is_admin }}> A desktop browser</label>
+          <label class="opt"><input type="radio" name="devices" value="mobile" {{ 'checked' if probe.devices == 'mobile' }} {{ 'disabled' if not is_admin }}> A mobile phone</label>
+          <label class="opt"><input type="radio" name="devices" value="both" {{ 'checked' if probe.devices == 'both' }} {{ 'disabled' if not is_admin }}> Both: two visits, one of each</label>
+        </div>
+      </div>
+      <p class="small muted" style="margin:0 0 10px">A phone visit is also made from the data-centre IP (free) when "mobile" or "both" is chosen, because kits that target phones show the lure to a mobile browser whatever the address. Through the proxy it costs the same as a desktop visit, once per device.</p>
+      <h3 class="subh">RESIDENTIAL PROXY</h3>
+      <label class="opt"><input type="radio" name="mode" value="off" {{ 'checked' if px.mode == 'off' }} {{ 'disabled' if not is_admin }}> Off — datacentre probes only</label>
+      <label class="opt"><input type="radio" name="mode" value="webshare" {{ 'checked' if px.mode == 'webshare' }} {{ 'disabled' if not is_admin }}> Webshare rotating residential (paste the API token below)</label>
+      <label class="opt"><input type="radio" name="mode" value="manual" {{ 'checked' if px.mode == 'manual' }} {{ 'disabled' if not is_admin }}> Manual — any proxy (host, port, user, password)</label>
+      <details style="margin-top:8px" {{ 'open' if px.mode != 'off' }}><summary class="small" style="cursor:pointer;color:var(--accent2)">Connection details</summary>
+      <div class="grid two" style="margin-top:6px">
+        <div><label>Host</label><input name="host" value="{{ px.host }}" placeholder="p.webshare.io" {{ 'disabled' if not is_admin }}></div>
+        <div><label>Port</label><input name="port" value="{{ px.port or '' }}" placeholder="80" {{ 'disabled' if not is_admin }}></div>
+        <div><label>Username</label><input name="username" value="{{ px.username }}" autocomplete="off" {{ 'disabled' if not is_admin }}></div>
+        <div><label>Password <span style="text-transform:none">(manual; blank keeps it)</span></label><input name="password" type="password" autocomplete="off" {{ 'disabled' if not is_admin }}></div>
+      </div>
+      <label>Webshare API token <span style="text-transform:none">(blank keeps the stored one)</span></label>
+      <input name="webshare_token" type="password" autocomplete="off" placeholder="webshare.io → API" {{ 'disabled' if not is_admin }}>
+      <label class="opt" style="margin-top:8px"><input type="checkbox" name="rotating" {{ 'checked' if px.rotating }} {{ 'disabled' if not is_admin }}> rotate to a new IP on every request (Webshare)</label>
+      </details>
+      <h3 class="subh" style="margin-top:14px">MOBILE PROXY</h3>
+      <label class="opt"><input type="checkbox" name="mobile_enabled" {{ 'checked' if proxy_mobile.mode == 'manual' }} {{ 'disabled' if not is_admin }}> I have a mobile (4G / 5G) proxy — any provider, entered by hand</label>
+      <details style="margin-top:8px" {{ 'open' if proxy_mobile.mode == 'manual' }}><summary class="small" style="cursor:pointer;color:var(--accent2)">Mobile proxy connection details</summary>
+      <div class="grid two" style="margin-top:6px">
+        <div><label>Host</label><input name="mobile_host" value="{{ proxy_mobile.host }}" placeholder="proxy.example.com" {{ 'disabled' if not is_admin }}></div>
+        <div><label>Port</label><input name="mobile_port" value="{{ proxy_mobile.port or '' }}" placeholder="8000" {{ 'disabled' if not is_admin }}></div>
+        <div><label>Username</label><input name="mobile_username" value="{{ proxy_mobile.username }}" autocomplete="off" {{ 'disabled' if not is_admin }}></div>
+        <div><label>Password <span style="text-transform:none">(blank keeps it)</span></label><input name="mobile_password" type="password" autocomplete="off" {{ 'disabled' if not is_admin }}></div>
+      </div>
+      </details>
+      {% if is_admin %}<div class="actions" style="margin-top:10px"><button class="primary" type="submit">Save proxy</button>
+        <button type="submit" formaction="/ui/settings/proxy/test" name="test" value="1">Save &amp; test</button>
+        <input name="test_country" placeholder="test country, e.g. us" style="max-width:160px"></div>{% endif %}
+    </form>
+    {% if proxy_test %}<div class="{{ 'error' if proxy_test.error else '' }}" id="proxy-result" style="margin-top:10px;font-family:var(--mono);font-size:12px;{{ '' if proxy_test.error else 'color:var(--low);border:1px solid rgba(46,204,113,.4);background:rgba(46,204,113,.08);padding:8px 10px;border-radius:6px' }}">
+      {% if proxy_test.error %}Proxy test failed: {{ proxy_test.error }}{% else %}Proxy works — egress IP {{ proxy_test.ip }}{% if proxy_test.country %} · {{ proxy_test.country }} ({{ proxy_test.country_code }}){% endif %}{% if proxy_test.city %} · {{ proxy_test.city }}{% endif %}{% if proxy_test.isp %} · {{ proxy_test.isp }}{% endif %}{% endif %}</div>{% endif %}
+  </section>
+
+  {# ================================================================== WORKSPACE #}
+  <section class="panel sec" id="budget">
+    <h2>Workspace &amp; budget {% if not is_admin %}<span class="muted">(read-only)</span>{% endif %}</h2>
+    <p class="lead">Hard caps checked before every paid call, over the trailing 24 hours: a scan stops spending instead of overspending. Brands inherit these unless a brand override is set.</p>
+    <form method="post" action="/ui/settings/workspace">
+      <label>Workspace name</label><input name="name" value="{{ ws.name }}" {{ 'disabled' if not is_admin }} style="max-width:420px">
+      <div class="grid three" style="margin-top:4px">
+        <div><label>Max daily spend (USD)</label><input name="max_daily_spend" value="{{ ws.economic_limits.max_daily_spend }}" {{ 'disabled' if not is_admin }}></div>
+        <div><label>Max API calls / day</label><input name="max_api_calls" value="{{ ws.economic_limits.max_api_calls }}" {{ 'disabled' if not is_admin }}></div>
+        <div><label title="the highest 'Max sites to visit' that any scan or brand can use, whatever the track or the START SCAN field says">Max sites visited per scan (hard cap)</label><input name="max_candidate_count" value="{{ ws.economic_limits.max_candidate_count }}" {{ 'disabled' if not is_admin }}></div>
+        <div><label>Max residential GB / day</label><input name="max_residential_gb" value="{{ ws.economic_limits.max_residential_gb }}" {{ 'disabled' if not is_admin }}></div>
+        <div><label>Max investigation cost (USD)</label><input name="max_investigation_cost" value="{{ ws.economic_limits.max_investigation_cost }}" {{ 'disabled' if not is_admin }}></div>
+      </div>
+      {% if is_admin %}<div style="margin-top:10px"><button class="primary" type="submit">Save budget</button></div>{% endif %}
+    </form>
+    <p class="small muted" style="margin-bottom:0">Security limits (SSRF guard, sizes, timeouts) are fixed in code and cannot be raised here — <a href="#limits">see them</a>.</p>
+  </section>
+
+  {% if is_admin %}
+  <section class="panel sec" id="team">
+    <h2>Users &amp; roles</h2>
+    <p class="lead">Admin · analyst · viewer — enforced identically in the UI and the API. The last active admin cannot be demoted or deactivated. Passwords are hashed with Argon2id.</p>
+    <table>
+      <tr><th>User</th><th>Role &amp; status</th><th>Last login</th></tr>
+      {% for u in users %}
+      <tr>
+        <td class="mono">{{ u.email }} {% if u.is_active %}<span class="tag ok">active</span>{% else %}<span class="tag">disabled</span>{% endif %}</td>
+        <td>
+          <form method="post" action="/ui/settings/users/{{ u.id }}" class="actions" style="gap:6px;align-items:center">
+            <select name="role" style="width:auto">{% for r in ['admin','analyst','viewer'] %}<option {{ 'selected' if u.role==r }}>{{ r }}</option>{% endfor %}</select>
+            <select name="is_active" style="width:auto"><option value="true" {{ 'selected' if u.is_active }}>active</option><option value="false" {{ 'selected' if not u.is_active }}>disabled</option></select>
+            <button type="submit">Save</button>
+          </form>
+        </td>
+        <td class="mono small muted">{{ (u.last_login_at or '—')[:16].replace('T',' ') }}</td>
+      </tr>
+      {% endfor %}
+    </table>
+    <details style="margin-top:12px"><summary class="small" style="cursor:pointer;color:var(--accent2)">+ Add a user</summary>
+    <form method="post" action="/ui/settings/users" class="actions" style="margin-top:6px">
+      <div style="flex:2"><label>E-mail</label><input name="email" type="email" required></div>
+      <div style="flex:2"><label>Initial password (≥ 10 chars)</label><input name="password" type="password" minlength="10" required></div>
+      <div><label>Role</label><select name="role"><option>analyst</option><option>viewer</option><option>admin</option></select></div>
+      <div><button class="primary" type="submit">Add user</button></div>
+    </form></details>
+    <p class="small muted" style="margin-bottom:0">admin: everything · analyst: scans, verdicts, reports, takedowns, investigations · viewer: read-only.</p>
+  </section>
+  {% endif %}
+
+  <section class="panel sec" id="tokens">
+    <h2>My API access tokens</h2>
+    <p class="lead">For a SIEM, a script or CI. Only the token's SHA-256 is stored and the token is shown once. A <b>read</b> token caps even an admin at viewer rights. Every UI action is also an API call (<a href="/docs" target="_blank">OpenAPI</a>).</p>
+    <table>
+      <tr><th>Name</th><th>Prefix</th><th>Scope</th><th>Expires</th><th>Last used</th><th></th></tr>
+      {% for t in tokens %}
+      <tr>
+        <td>{{ t.name }}</td><td class="mono">{{ t.prefix }}…</td><td><span class="pill">{{ t.scope }}</span></td>
+        <td class="mono small muted">{{ (t.expires_at or 'never')[:10] }}</td><td class="mono small muted">{{ (t.last_used_at or '—')[:16].replace('T',' ') }}</td>
+        <td class="right">{% if t.revoked %}<span class="tag">revoked</span>{% else %}<form method="post" action="/ui/settings/tokens/{{ t.id }}/revoke"><button class="danger" type="submit">Revoke</button></form>{% endif %}</td>
+      </tr>
+      {% endfor %}
+      {% if not tokens %}<tr><td colspan="6" class="muted">No tokens yet — create one for a SIEM export or a script (a read-only token cannot change anything).</td></tr>{% endif %}
+    </table>
+    <form method="post" action="/ui/settings/tokens" class="actions" style="margin-top:12px">
+      <div style="flex:2"><label>Name</label><input name="name" placeholder="SIEM export" required></div>
+      <div><label>Scope</label><select name="scope"><option value="read">read (viewer rights)</option>{% if can_write %}<option value="write">write</option>{% endif %}</select></div>
+      <div><label>Expires in (days)</label><input name="expires_days" value="90"></div>
+      <div><button class="primary" type="submit">Create token</button></div>
+    </form>
+    <details style="margin-top:10px"><summary class="small" style="cursor:pointer;color:var(--accent2)">curl in 30 seconds</summary>
+<pre class="mono small" style="white-space:pre-wrap;background:var(--panel2);border:1px solid var(--border);border-radius:10px;padding:10px">TOKEN=bw_…        # create one above
+curl -H "Authorization: Bearer $TOKEN" {{ request.base_url }}api/findings?state=open
+curl -H "Authorization: Bearer $TOKEN" "{{ request.base_url }}api/iocs?format=stix" -o iocs.stix.json
+curl -N -H "Authorization: Bearer $TOKEN" {{ request.base_url }}api/jobs/&lt;job_id&gt;/events/stream</pre></details>
+  </section>
+
+  {% if is_admin and workspaces is not none %}
+  <section class="panel sec" id="tenants">
+    <h2>Tenants <span class="muted">· platform admin</span></h2>
+    <p class="lead">Workspaces are fully isolated: brands, findings, evidence, campaigns, IOCs, keys and budgets never cross tenants.</p>
+    <table><tr><th>Workspace</th><th class="right">Users</th><th>Created</th></tr>
+      {% for w in workspaces %}<tr><td>{{ w.name }}</td><td class="right mono">{{ w.users }}</td><td class="mono small muted">{{ w.created_at[:16].replace('T',' ') }}</td></tr>{% endfor %}
+    </table>
+    <details style="margin-top:12px"><summary class="small" style="cursor:pointer;color:var(--accent2)">+ Create a workspace</summary>
+    <form method="post" action="/ui/settings/workspaces" class="actions" style="margin-top:6px">
+      <div style="flex:2"><label>New workspace</label><input name="name" required></div>
+      <div style="flex:2"><label>Its first admin (e-mail)</label><input name="admin_email" type="email" required></div>
+      <div style="flex:2"><label>Initial password</label><input name="admin_password" type="password" minlength="10" required></div>
+      <div><button class="primary" type="submit">Create tenant</button></div>
+    </form></details>
+  </section>
+  {% endif %}
+
+  {# ================================================================== SYSTEM #}
+  <section class="panel sec" id="system">
+    <h2>Notifications &amp; system</h2>
+    <p class="lead">Set through the environment (<span class="mono">NOTIFY_CHANNELS</span>, Slack webhook, Telegram bot, SMTP). Nothing is ever sent to third parties automatically — takedowns stay drafts until an analyst sends them.</p>
+    <table class="small kv">
+      <tr><th>Mode</th><td>{{ 'DEMO (recorded scenarios, $0)' if settings.demo_mode else 'LIVE' }}</td></tr>
+      <tr><th>Channels</th><td class="mono">{{ channels|join(', ') }}</td></tr>
+      <tr><th>Alert threshold</th><td class="mono">{{ settings.notify_min_severity }} and above · daily digest</td></tr>
+      <tr><th>Scheduler</th><td class="mono">{{ 'enabled' if settings.scheduler_enabled else 'disabled' }} (every {{ settings.scheduler_interval_seconds }}s)</td></tr>
+      <tr><th>Queue</th><td class="mono">{{ settings.queue_backend }}</td></tr>
+    </table>
+  </section>
+
+  <section class="panel sec" id="quality">
+    <h2>Detection quality · golden dataset</h2>
+    <p class="lead">How we know the scoring works: {{ facts.golden.total }} recorded scenarios — including cloaked kits that hide by IP, by user-agent and by link parameter — run through the real pipeline on every CI build.</p>
+    <div class="grid two">
+      <div>
+        {% set gvals = [] %}{% for k, v in facts.golden.items() if k != 'total' %}{% set _ = gvals.append(v) %}{% endfor %}{% set gmax = (gvals|max) if gvals else 1 %}
+        {% for k, v in facts.golden.items() if k != 'total' %}
+        <div style="display:grid;grid-template-columns:170px 1fr 30px;gap:8px;align-items:center;margin:6px 0;font-size:12px"><span>{{ k.replace('_', ' ') }}</span><div class="bar" style="height:6px"><i data-w="{{ (v / gmax * 100)|round|int }}"></i></div><b class="mono" style="font-weight:400;color:var(--muted);text-align:right">{{ v }}</b></div>
+        {% endfor %}
+        <p class="small muted" style="margin:8px 0 0">Gate: precision ≥ {{ facts.golden_gate.precision }} · recall ≥ {{ facts.golden_gate.recall }} · false-positive rate ≤ {{ facts.golden_gate.fp_rate }}. Last measured <b style="color:var(--text)">{{ '%.2f'|format(facts.golden_measured.precision) }} / {{ '%.2f'|format(facts.golden_measured.recall) }} / {{ '%.2f'|format(facts.golden_measured.fp_rate) }}</b>. The same corpus drives the $0 demo.</p>
+      </div>
+      <div>
+        <div class="small" style="font-weight:600;margin-bottom:4px">Classifier (advisory)</div>
+        {% if ml.model %}
+        <p class="small" style="margin-top:0"><span class="pill">{{ ml.model.version }}</span> trained on {{ ml.model.n_samples }} labelled candidates ({{ ml.model.positives }} phishing) from <b>{{ ml.model.source }}</b> labels ·
+          accuracy {{ (ml.model.metrics.accuracy * 100)|round|int }}% · precision {{ (ml.model.metrics.precision * 100)|round|int }}% · recall {{ (ml.model.metrics.recall * 100)|round|int }}% ({{ ml.model.metrics.folds }}-fold CV)</p>
+        <p class="small muted">Top features: {% for f in ml.model.top_features[:5] %}<span class="pill">{{ f.feature }} {{ '%+.2f'|format(f.weight) }}</span> {% endfor %}</p>
+        {% else %}<p class="small muted" style="margin-top:0">No model yet. Labelled candidates: analyst {{ ml.labelled_candidates.analyst }}, golden {{ ml.labelled_candidates.golden }} (minimum {{ ml.min_samples }}).</p>{% endif %}
+        {% if can_write %}
+        <form method="post" action="/ui/settings/ml/train" class="actions">
+          <select name="source" style="width:auto"><option value="analyst">analyst verdicts</option>{% if settings.demo_mode %}<option value="golden">golden dataset (demo)</option><option value="both">both</option>{% endif %}</select>
+          <button type="submit">Train classifier</button>
+        </form>
+        {% endif %}
+        <p class="small muted">Its opinion is shown on each finding for context; it never changes the score.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel sec" id="limits">
+    <h2>Fixed security limits <span class="muted">· not configurable by brand, workspace or environment</span></h2>
+    <p class="lead">What happens before BrandWatch fetches anything from a suspect site — the same policy for the HTTP client, every Chromium sub-request and the TLS probe.</p>
+    <ol class="small" style="margin:0;padding-left:18px;line-height:1.7">
+      <li>Validate the URL: http/https only, allowed ports, no credentials, no internal host names.</li>
+      <li>Resolve A / AAAA and <b>fail closed</b> if any address is private, loopback, link-local or cloud metadata — {{ facts.limits.blocked_networks }} blocked networks; IPv4-mapped IPv6 is unwrapped first.</li>
+      <li>Connect <b>pinned to the validated IP</b> with the original Host header and TLS SNI (defeats DNS rebinding).</li>
+      <li>Re-validate every redirect hop · at most {{ facts.limits.max_redirects }} redirects.</li>
+      <li>Response ≤ {{ facts.limits.max_response_mb }} MB · timeout {{ facts.limits.fetch_timeout_s }} s.</li>
+      <li>Infrastructure pivots stop at depth {{ facts.limits.pivot_depth }}, {{ facts.limits.pivot_nodes }} nodes, {{ facts.limits.pivot_edges }} edges.</li>
+    </ol>
+    <p class="small muted" style="margin-bottom:0">security/fetcher_guard.py · security/limits.py (a frozen dataclass; tests assert none of its fields can appear in any configuration). <a href="/ui/how-it-works#ssrf">How it works →</a></p>
+  </section>
+  </div>
+</div>
+<script>
+(function(){
+  // highlight the section in view; fade the "saved" note; jump to a proxy test result
+  const links = [...document.querySelectorAll('#setnav a')];
+  const secs = links.map(a => document.querySelector(a.getAttribute('href'))).filter(Boolean);
+  const mark = () => { let cur = secs[0]; for (const s of secs) if (s.getBoundingClientRect().top < 140) cur = s;
+    links.forEach(a => a.classList.toggle('on', cur && a.getAttribute('href') === '#' + cur.id)); };
+  addEventListener('scroll', mark, {passive: true}); mark();
+  const sv = document.getElementById('saved'); if (sv) setTimeout(() => { sv.style.opacity = 0; setTimeout(() => sv.remove(), 500); }, 3500);
+  const pr = document.getElementById('proxy-result'); if (pr) document.getElementById('proxy').scrollIntoView();
+  // "Test" next to a stored key: one call to the provider, the answer written under the row
+  document.querySelectorAll('.keytest').forEach(btn => btn.addEventListener('click', async () => {
+    const p = btn.dataset.p, key = p.replace('-history', ''), out = document.querySelector('.keytest-out[data-for="' + key + '"]');
+    if (!out) return;
+    btn.disabled = true; out.style.color = ''; out.textContent = 'Testing ' + p + ' …';
+    try {
+      const r = await fetch('/api/admin/api-keys/' + encodeURIComponent(p) + '/test', {method: 'POST', credentials: 'same-origin'});
+      const j = await r.json().catch(() => ({}));
+      const ok = r.ok && j.ok;
+      out.style.color = ok ? 'var(--low)' : 'var(--crit)';
+      out.textContent = (ok ? '✓ ' : '✗ ') + p + ': ' + (j.detail || (typeof j.detail === 'string' ? j.detail : r.statusText)) + (j.latency_ms ? ' · ' + j.latency_ms + ' ms' : '');
+    } catch (e) { out.style.color = 'var(--crit)'; out.textContent = '✗ ' + p + ': ' + (e.message || e); }
+    btn.disabled = false;
+  }));
+})();
+</script>
+{% endblock %}

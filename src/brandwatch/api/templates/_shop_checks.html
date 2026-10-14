@@ -1,0 +1,118 @@
+{# "Shop checks" tab of a finding: every check with its result, the AI's opinion, and Report to Meta.
+   Context: sh = the shop record (score breakdown "shop"); d, s, meta, takedowns, can_write. #}
+{% set why = sh.why or {} %}{% set fx = sh.facts or {} %}{% set reg = sh.registry or {} %}{% set web = sh.web or {} %}{% set pr = sh.price or {} %}
+<style>
+  .chk{display:grid;grid-template-columns:28px minmax(0,1fr);gap:4px 10px;padding:10px 0;border-top:1px solid var(--border)}
+  .chk:first-of-type{border-top:0}
+  .chk .ic{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font:700 13px var(--sans);border:1px solid var(--border)}
+  .chk .ic.bad{color:var(--crit);border-color:rgba(255,77,77,.6);background:rgba(255,77,77,.08)}
+  .chk .ic.ok{color:var(--low);border-color:rgba(46,204,113,.5)}
+  .chk .ic.na{color:var(--muted)}
+  .chk b{font-size:13.5px}.chk .d{font-size:12.5px;color:#c3cdd9;margin-top:2px;overflow-wrap:anywhere}
+  .chk .d a{font-size:12px}
+  .ai-shop{border:1px solid var(--border);border-radius:12px;padding:12px 14px;background:var(--panel2)}
+  .ai-shop .v{font:700 18px var(--display);letter-spacing:.03em}
+  .shop-grid{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:14px}
+  @media (max-width:900px){.shop-grid{grid-template-columns:minmax(0,1fr)}}
+</style>
+{% macro row(state, title, detail) -%}
+<div class="chk"><span class="ic {{ state }}">{{ {'bad': '✕', 'ok': '✓', 'na': '–'}[state] }}</span><div><b>{{ title }}</b><div class="d">{{ detail }}</div></div></div>
+{%- endmacro %}
+{% set lv = d.finding.shop_level %}
+{% if lv %}
+<div class="panel lvl-box" style="margin-bottom:14px">
+  <h2 style="margin-top:0">Conclusion <span class="muted">· how sure are we that it sells fakes? — every letter and report claims only this</span></h2>
+  <div class="lvl-steps">
+    {% for key, info in shop_levels.items() %}
+    <div class="lvl-step {{ 'on' if key == lv.level }} {{ 'sys' if key == lv.system.level }}"><b>{{ loop.index }} · {{ info.label }}</b><span>{{ info.help }}</span>
+      {% if key == lv.level %}<em>{{ 'the analyst’s conclusion' if lv.conclusion else 'BrandWatch’s reading' }}</em>{% elif key == lv.system.level %}<em>BrandWatch’s reading</em>{% endif %}</div>
+    {% endfor %}
+  </div>
+  {% if lv.system.because %}<p class="small" style="margin:10px 0 0"><b>BrandWatch reads “{{ lv.system_label }}” because:</b> {{ lv.system.because|join(' · ') }}.</p>{% endif %}
+  {% if lv.system.next and lv.level != 'confirmed_counterfeit' %}<p class="small" style="margin:6px 0 0"><b>What would move it up:</b></p>
+  <ul class="small" style="margin:4px 0 0;padding-left:18px">{% for n in lv.system.next %}<li>{{ n }}</li>{% endfor %}</ul>{% endif %}
+  {% if lv.conclusion %}<p class="small muted" style="margin:8px 0 0">Concluded by {{ lv.conclusion.by }} · {{ (lv.conclusion.at or '')[:16].replace('T', ' ') }}{% if lv.proof_label %} · proof: {{ lv.proof_label }}{% endif %}{% if lv.conclusion.note %} · “{{ lv.conclusion.note }}”{% endif %}</p>{% endif %}
+</div>
+<style>
+  .lvl-steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+  .lvl-step{border:1px solid var(--border);border-radius:10px;padding:9px 11px;background:var(--panel2);opacity:.6}
+  .lvl-step b{display:block;font-size:13px}.lvl-step span{display:block;font-size:12px;color:var(--muted);margin-top:2px}
+  .lvl-step em{display:inline-block;margin-top:6px;font:600 10.5px var(--mono);letter-spacing:.06em;color:var(--accent2);font-style:normal;text-transform:uppercase}
+  .lvl-step.sys{opacity:.85}
+  .lvl-step.on{opacity:1;border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+  @media (max-width:700px){.lvl-steps{grid-template-columns:minmax(0,1fr)}}
+</style>
+{% endif %}
+<div class="shop-grid">
+  <div class="panel">
+    <h2 style="margin-top:0">Shop checks <span class="muted">· is this a real seller of {{ d.brand.name }} products? · separate from the phishing score ({{ sh.scoring_version }})</span></h2>
+    {% if sh.about_brand %}{{ row('ok', 'About ' ~ d.brand.name, sh.about_brand) }}{% endif %}
+    {% if 'shop_ad_page_uses_brand' in why %}{{ row('bad', 'The ad page uses the brand’s name', why.shop_ad_page_uses_brand) }}{% endif %}
+    {% if 'shop_brand_catalog' in why %}{{ row('bad', 'A one-brand catalogue', why.shop_brand_catalog) }}{% endif %}
+    {% if reg.status == 'not_found' %}{{ row('bad', 'Company number not in the registry', reg.number ~ ' (' ~ (reg.label or 'printed on the page') ~ ') does not exist in ' ~ (reg.registry or 'the registry')) }}
+    {% elif reg.status == 'dissolved' %}{{ row('bad', 'Company dissolved', (reg.name or reg.number) ~ ' · ' ~ (reg.registry or '')) }}
+    {% elif reg.status == 'found' and reg.name_match == false %}{{ row('bad', 'The number belongs to another business', why.shop_company_name_mismatch or ((reg.name or reg.number) ~ ' · ' ~ (reg.registry or ''))) }}
+    {% elif reg.status == 'found' %}{{ row('ok', 'Company found in the registry', (reg.name or reg.number) ~ ((' · registered ' ~ reg.registered) if reg.registered else '') ~ ' · ' ~ (reg.registry or '') ~ ('' if reg.name_match else ' · name not compared')) }}
+    {% else %}{{ row('na', 'Company number', (reg.why or 'not checked') ~ ' — not checked is never “valid”') }}{% endif %}
+    {% if reg.source_url %}<div class="small" style="margin:-4px 0 6px 38px"><a href="{{ reg.source_url }}" target="_blank" rel="noreferrer noopener">open the registry ↗</a></div>{% endif %}
+
+    {% set pol = (fx.policy_links or {}) %}
+    {% if 'shop_no_policy_pages' in why %}{{ row('bad', 'No privacy, terms or returns page', 'a real shop links them from every page') }}
+    {% else %}{{ row('ok', 'Policy pages linked', pol.keys()|list|join(', ')) }}{% endif %}
+
+    {% if 'shop_free_email_only' in why %}{{ row('bad', 'Free-mail contact only', (fx.free_emails or [])|join(', ')) }}
+    {% elif fx.own_emails %}{{ row('ok', 'E-mail on the shop’s own domain', fx.own_emails|join(', ')) }}
+    {% else %}{{ row('na', 'Contact e-mail', 'none on the page') }}{% endif %}
+    {% if 'shop_chat_or_phone_only' in why %}{{ row('bad', 'WhatsApp / phone only', 'no e-mail on the shop’s own domain') }}{% endif %}
+
+    {% if 'shop_no_company_details' in why %}{{ row('bad', 'No company details', 'no company name or registration number on the page') }}
+    {% else %}{{ row('ok', 'Company details on the page', (fx.company_name or '') ~ ' ' ~ ((fx.company_ids or [])|map(attribute='number')|join(', '))) }}{% endif %}
+
+    {% if 'shop_price_far_below_official' in why %}{{ row('bad', 'Half the official price or less', why.shop_price_far_below_official) }}
+    {% elif pr.reference and pr.offer %}{{ row('ok', 'Price close to the official price', '%.0f %s per item vs %.0f %s official'|format(pr.offer.unit, pr.offer.currency, pr.reference.price, pr.reference.currency)) }}
+    {% elif not pr.reference %}<div class="chk"><span class="ic na">–</span><div><b>Price vs official</b><div class="d">no official price saved for {{ sh.country }} — <a href="/ui/brands/{{ d.brand.id }}#profile">add it in the brand profile</a></div></div></div>
+    {% else %}{{ row('na', 'Price vs official', 'no price in ' ~ pr.reference.currency ~ ' found on the page') }}{% endif %}
+    {% if 'shop_multibuy_bait' in why %}{{ row('bad', 'Multi-buy offer', why.shop_multibuy_bait) }}{% endif %}
+    {% if 'shop_deep_discounts' in why %}{{ row('bad', 'Invented discounts', why.shop_deep_discounts) }}{% endif %}
+
+    {% if 'shop_new_domain' in why %}{{ row('bad', 'New domain', why.shop_new_domain) }}{% endif %}
+    {% if 'shop_established_domain' in why %}{{ row('ok', 'Old domain', why.shop_established_domain) }}{% endif %}
+    {% if 'shop_young_domain' in why %}{{ row('bad', 'Young domain', why.shop_young_domain) }}{% endif %}
+    {% if 'shop_tld_language_mismatch' in why %}{{ row('bad', 'Local language, generic domain', why.shop_tld_language_mismatch) }}{% endif %}
+
+    {% if web.presence == 'none' %}{{ row('bad', 'No footprint on Google', why.shop_no_web_presence or 'nothing about the business outside the shop itself') }}
+    {% elif web.presence == 'found' %}{{ row('ok', 'The business shows up on Google', (web.results or [])|length ~ ' result(s) outside the shop') }}
+    {% else %}{{ row('na', 'Google', web.why or 'not checked') }}{% endif %}
+    {% if 'shop_reviews_warn' in why %}{{ row('bad', 'Reviews mention scam / replica', why.shop_reviews_warn) }}{% endif %}
+    {% if web.reviews %}<details style="margin:4px 0 0 38px"><summary class="small" style="cursor:pointer;color:var(--accent2)">search results about the shop ({{ web.reviews|length }})</summary>
+      <ul class="small" style="margin:6px 0 0;padding-left:16px">{% for r in web.reviews %}<li><a href="{{ r.url }}" target="_blank" rel="noreferrer noopener" dir="auto">{{ r.title or r.url }}</a>{% if r.snippet %} — <span class="muted" dir="auto">{{ r.snippet|truncate(140) }}</span>{% endif %}</li>{% endfor %}</ul></details>{% endif %}
+    {% if not sh.external %}<p class="small muted" style="margin:10px 0 0">Registry, Google and AI checks run for shops that were advertised or sell products (up to {{ 15 }} per scan).</p>{% endif %}
+  </div>
+
+  <div>
+    {% set ai = sh.ai %}
+    <div class="ai-shop">
+      <h2 style="margin-top:0">AI: is this shop legitimate? <span class="muted">· advisory, never part of the score</span></h2>
+      {% if ai %}
+        <div class="v" style="color:{{ {'likely_scam': 'var(--crit)', 'suspicious': 'var(--high)', 'legitimate': 'var(--low)'}[ai.verdict] }}">{{ ai.verdict.replace('_', ' ')|upper }}</div>
+        <div class="small muted">{{ (ai.confidence * 100)|round|int }}% · {{ ai.model }}{% if ai.sells_replicas_likely %} · likely sells replicas{% endif %}</div>
+        {% if ai.reasons %}<ul class="small" style="margin:8px 0 0;padding-left:16px">{% for r in ai.reasons %}<li>{{ r }}</li>{% endfor %}</ul>{% endif %}
+        {% if ai.review_summary %}<p class="small" style="margin:8px 0 0">{{ ai.review_summary }}</p>{% endif %}
+      {% else %}<p class="small muted" style="margin:0">No AI opinion{% if not sh.external %} — only advertised or selling shops get one{% else %} — no AI model configured or it did not answer{% endif %}.</p>{% endif %}
+    </div>
+    <div class="panel" style="margin-top:14px">
+      <h2 style="margin-top:0">Where it was found</h2>
+      <p class="small" style="margin:0">Country <b>{{ sh.country }}</b> · page language <b>{{ sh.lang or '?' }}</b>{% if fx.platform %} · built on <b>{{ fx.platform|title }}</b>{% endif %}</p>
+      {% if sh.ads %}<p class="small" style="margin:6px 0 0"><b>{{ sh.ads|length }}</b> Meta ad(s) send buyers here — see <a href="#meta" data-goto="shop">Report to Meta</a> below.</p>{% endif %}
+    </div>
+  </div>
+</div>
+
+{% if meta and meta.pages %}
+<div class="panel" style="margin-top:14px">
+  <h2 style="margin-top:0">Report to Meta <span class="muted">· the ads and the pages that send buyers to this shop</span></h2>
+  {% set draft_id = takedowns[0].id if takedowns else none %}
+  {% set reports = ((takedowns[0].channels or {}).get('reports') or {}) if takedowns else {} %}
+  {% include "_meta_report.html" %}
+</div>
+{% endif %}

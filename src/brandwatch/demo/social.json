@@ -1,0 +1,47 @@
+{
+  "note": "Recorded social accounts of the demo world for the fictional brand ShopNova. Served by MockSocialProvider (Facebook page search, page info, Instagram profiles) and MockSearchProvider (Google site: searches). 'image' points at a demo asset: demo:<folder>/<file>.",
+  "pages": [
+    {
+      "page_id": "100094400000001", "name": "ShopNova Support", "page_alias": "shopnova.support.help",
+      "category": "Customer service", "verification": "NOT_VERIFIED", "likes": 212,
+      "ig_username": "shopnova_refunds", "ig_followers": 340, "entity_type": "PERSON_PROFILE", "image": "demo:icons/_brand.png",
+      "info": {"about": "Official ShopNova customer care. Order problem? Message us your order number and the card you paid with for a refund within 24 hours. https://shopnova-refund.net/",
+               "created_days_ago": 18, "renamed_days_ago": 9, "admin_countries": {"VN": 2}}
+    },
+    {
+      "page_id": "100091111111111", "name": "ShopNova", "page_alias": "shopnova",
+      "category": "Shopping & retail", "verification": "BLUE_VERIFIED", "likes": 182400,
+      "ig_username": "shopnova", "ig_followers": 210500, "entity_type": "BUSINESS", "image": "demo:icons/_brand.png",
+      "info": {"about": "Run lighter. The official ShopNova page.", "created_days_ago": 2900, "admin_countries": {"US": 4}}
+    },
+    {
+      "page_id": "100092222222222", "name": "ShopNova Runners Club", "page_alias": "shopnovarunners",
+      "category": "Community", "verification": "NOT_VERIFIED", "likes": 4800, "entity_type": "BUSINESS",
+      "image": "demo:icons/trailrunners-club.org.png",
+      "info": {"about": "Unofficial fan group for people who run in ShopNova shoes. Weekly group runs in Austin. Not affiliated with ShopNova.",
+               "created_days_ago": 1250, "admin_countries": {"US": 3}}
+    },
+    {
+      "page_id": "100093333333333", "name": "Nova Shop Bakery", "page_alias": "novashopbakery",
+      "category": "Bakery", "verification": "NOT_VERIFIED", "likes": 950, "entity_type": "BUSINESS",
+      "image": "demo:icons/quietcafe-berlin.de.png",
+      "info": {"about": "Fresh bread every morning in Lisbon.", "created_days_ago": 2100, "admin_countries": {"PT": 1}}
+    }
+  ],
+  "instagram": [
+    {"username": "shopnova", "name": "ShopNova", "bio": "Run lighter. Official account.", "verified": true, "business": true,
+     "followers": 210500, "image": "demo:icons/_brand.png", "external_link": "https://shopnova.com/",
+     "posts": ["New ShopNova Trail drops Friday.", "Run club this weekend in Austin."]},
+    {"username": "shopnova_refunds", "name": "ShopNova Refund Center", "bio": "ShopNova Refund Center. DM your order # and email. Claim link below",
+     "verified": false, "business": false, "followers": 340, "image": "demo:icons/_brand.png", "external_link": "https://shopnova-refund.net/claim",
+     "posts": ["Refunds open for 48 hours only. Claim yours at the link in bio.", "Winners of the ShopNova giveaway: check your DMs and verify your card."]},
+    {"username": "shopnova.israel.official", "name": "ShopNova Israel | Official",
+     "bio": "Giveaway! 2 pairs of ShopNova Runner. Follow, tag 3 friends and pay only shipping (19 ILS) at the link",
+     "verified": false, "business": true, "followers": 1240, "image": "demo:icons/_brand.png", "external_link": "https://onestyle-shopping.com/",
+     "posts": ["מבצע! 2 זוגות ShopNova Runner ב-699 ₪", "Giveaway closes tonight. Pay shipping at the link."]}
+  ],
+  "google": {
+    "instagram": ["https://www.instagram.com/shopnova/", "https://www.instagram.com/shopnova.israel.official/", "https://www.instagram.com/p/CxAbC123/"],
+    "facebook": ["https://www.facebook.com/shopnova", "https://www.facebook.com/shopnova.support.help", "https://www.facebook.com/groups/shopnovafans/"]
+  }
+}

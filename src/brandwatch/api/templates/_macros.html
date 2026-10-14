@@ -1,0 +1,16 @@
+{# Shared presentation macros: signal pills, host with homoglyph tag, VT pill, cloaked badge. #}
+{% macro host(h, display=none, idn=false) -%}
+  <span class="mono">{{ display or h }}</span>{% if idn %} <span class="pill" style="font-size:10px" title="written with look-alike Unicode characters; the real (punycode) name is {{ h }}">homoglyph</span>{% endif %}
+{%- endmacro %}
+{% macro pills(items, n=4, link=none) -%}
+  {%- for it in items[:n] %}<span class="pill g-{{ it.group }}" title="{{ it.evidence }} · +{{ it.points|int }} pts">{{ it.label }}</span> {% endfor -%}
+  {%- if items|length > n %}{% if link %}<a href="{{ link }}" class="muted small">+{{ items|length - n }} more</a>{% else %}<span class="muted small">+{{ items|length - n }} more</span>{% endif %}{% endif -%}
+{%- endmacro %}
+{% macro cloaked_badge(on) -%}
+  {%- if on %}<span class="badge" style="border:1px solid rgba(230,237,245,.35);color:var(--text);background:rgba(230,237,245,.05)" title="the kit hides from scanners: BrandWatch revealed the real page with its cloaking probes">CLOAKED KIT</span>{% endif -%}
+{%- endmacro %}
+{% macro vt(v) -%}
+  {%- if v %}{% if v.positives %}<a class="pill" href="{{ v.url }}" target="_blank" rel="noreferrer noopener" title="VirusTotal: {{ v.summary }}" style="font-size:10px;border-color:var(--crit);color:var(--crit)">VT {{ v.positives }}{% if v.total %}/{{ v.total }}{% endif %}</a>
+  {%- elif v.checked and v.status == 'negative' %}<a class="pill" href="{{ v.url }}" target="_blank" rel="noreferrer noopener" title="VirusTotal engines do not flag it (yet)" style="font-size:10px;color:var(--muted)">VT clean</a>
+  {%- else %}<a class="pill" href="{{ v.url }}" target="_blank" rel="noreferrer noopener" title="not in VirusTotal yet — unknown is never treated as clean" style="font-size:10px;color:var(--muted)">VT —</a>{% endif %}{% endif -%}
+{%- endmacro %}

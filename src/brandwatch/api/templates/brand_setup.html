@@ -1,0 +1,175 @@
+{% extends "base.html" %}
+{% block title %}Set up {{ brand.name }}{% endblock %}
+{# Before the first scan: the Google queries (typed by hand or proposed by the AI) and, for a brand that
+   other shops sell, the countries, ad keywords and official prices. One button approves it all and
+   starts the scan — nothing is asked half-way through. Context: brand, search_on, retail, error. #}
+{% set sq = brand.search_queries %}
+{% set cfg = brand.config %}
+{% set qmax = cfg.detection.search_queries_max %}
+{% set mkpairs = search_pairs(cfg.detection) %}{% set geos = mkpairs %}
+{% set pf = brand.profile or {} %}
+{% set rows = sq.queries if sq.approved else sq.proposal %}
+{% block content %}
+<style>
+  .setup{max-width:980px;margin:0 auto}
+  .setup .step{border:1px solid var(--border);border-radius:14px;padding:16px 18px;background:var(--panel);margin-top:14px}
+  .setup .step h2{margin:0 0 4px;display:flex;gap:10px;align-items:center}
+  .setup .num{display:inline-grid;place-items:center;width:26px;height:26px;border-radius:50%;border:1px solid var(--accent);color:var(--accent2);font:700 13px var(--mono)}
+  .setup .qrow{display:flex;gap:8px;margin-top:6px}
+  .setup .qrow input{flex:1 1 auto;min-width:0}
+  .setup .qrow.over input{opacity:.5}
+  .setup .two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px}
+  .setup table.prod td{padding:4px 6px}.setup table.prod input{width:100%;min-width:0}
+  .setup .setup-actions{margin-top:16px;padding:14px 18px;border:1px solid var(--accent);border-radius:14px;background:var(--panel2);
+              display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+  .setup .setup-actions .grow{flex:1 1 220px;font-size:12.5px;color:#c3cdd9}
+  .setup .msg{font-size:12.5px;color:var(--accent2);margin-left:6px}
+  @media (max-width:700px){ .setup .two{grid-template-columns:minmax(0,1fr)} .setup .setup-actions button{flex:1 1 100%} }
+</style>
+<div class="setup">
+  {% set crumbs = [("Brands & Scans", "/ui/brands"), (brand.name, "/ui/brands/" ~ brand.id), ("Set up", none)] %}
+  {% include "_crumbs.html" %}
+  <h1>Set up {{ brand.name }} <span class="muted small">· before the first scan</span></h1>
+  <p class="intro" style="margin-top:-6px">Decide here, once, what BrandWatch searches for. Then approve, and the scan runs from start to end — and every
+    automatic scan after it — with exactly these settings. You can change them later on the brand page.</p>
+  {% if error %}<div class="error">{{ error }}</div>{% endif %}
+  {% set auto = not brand.baseline %}{% set can_write = true %}{% include "_site_access.html" %}
+
+  <form method="post" action="/ui/brands/{{ brand.id }}/setup" id="setup-form">
+  {% if search_on %}
+  <div class="step" id="s-queries">
+    <h2><span class="num">1</span> Google search queries</h2>
+    <p class="small muted" style="margin:0 0 8px">What BrandWatch types into Google to find sites that use {{ brand.name }}'s name. Write your own, or let the AI propose a list — then edit it.</p>
+    <div id="qlist">
+      {% for q in rows %}<div class="qrow{{ ' over' if loop.index > qmax }}"><input name="q" value="{{ q }}" maxlength="100" dir="auto"><button type="button" class="ghost qdel" title="remove">✕</button></div>{% endfor %}
+    </div>
+    <div class="actions" style="margin-top:10px">
+      <button type="button" id="qadd">+ Add a query</button>
+      <button type="button" id="qai" title="the AI proposes a list from the brand's name, site and type — nothing is saved until you approve">✨ Suggest with AI</button>
+      <span class="msg" id="qmsg"></span>
+    </div>
+    <p class="small muted" style="margin:10px 0 0">Each scan searches the first <b>{{ qmax }}</b> queries in <b>{% for g in mkpairs %}{{ g[0]|upper }} ({{ g[1] }}){{ ', ' if not loop.last }}{% endfor %}</b>:
+      about <b id="qcost">${{ '%.2f'|format([rows|length, qmax]|min * geos|length * 0.01) }}</b> a scan (SerpApi).</p>
+  </div>
+  {% endif %}
+
+  {% if retail %}
+  <div class="step" id="s-profile">
+    <h2><span class="num">{{ 2 if search_on else 1 }}</span> Where it is sold, and for how much</h2>
+    <p class="small muted" style="margin:0 0 8px">Scam shops advertise {{ brand.name }} on Facebook / Instagram country by country and sell at a fraction of the official price.
+      The ads are searched in these countries; every shop found is compared with these prices.</p>
+    <div class="actions" style="margin:0 0 10px">
+      <button type="button" id="psuggest" title="the AI answers from its own knowledge — check the prices before you approve">✨ Suggest with AI</button>
+      <span class="msg" id="pmsg"></span>
+    </div>
+    <div class="two">
+      <div><label>Countries <span class="muted small">· ISO codes</span></label><input name="countries" value="{{ pf.countries|join(', ') }}" placeholder="IL, US"></div>
+      <div><label>Ad keywords <span class="muted small">· one per line — the brand's name and its own model names (e.g. “the north face”, “nuptse”); never “mountain jacket”: that finds every brand's ads</span></label>
+        <textarea name="ad_keywords" rows="3" placeholder="{{ brand.name|lower }}">{{ pf.ad_keywords|join('\n') }}</textarea></div>
+    </div>
+    <label style="margin-top:10px">Official prices <span class="muted small">· per single item, per country</span></label>
+    <div class="tw"><table class="prod" id="prodtable"><tr><th>Product</th><th>Price</th><th>Currency</th><th>Country</th><th></th></tr>
+      {% for p in pf.products + [{}, {}] %}
+      <tr><td><input name="product_name" value="{{ p.name or '' }}" placeholder="product name"></td>
+        <td><input name="product_price" value="{{ (p.price|int if p.price == p.price|int else p.price) if p.price else '' }}" inputmode="decimal" placeholder="799"></td>
+        <td><input name="product_currency" value="{{ p.currency or '' }}" maxlength="3" placeholder="ILS"></td>
+        <td><input name="product_country" value="{{ p.country or '' }}" maxlength="2" placeholder="IL"></td>
+        <td class="small muted"><span class="src">{{ 'AI' if p.source == 'ai' else '' }}</span><input type="hidden" name="product_source" value="{{ p.source or 'analyst' }}"></td></tr>
+      {% endfor %}
+    </table></div>
+    {% include "_ad_reach.html" %}
+  </div>
+  {% endif %}
+
+  {% set ws_cap = cfg.economic_limits.max_candidate_count or 0 %}
+  <div class="step" id="s-size">
+    <h2><span class="num">{{ (1 if search_on else 0) + (1 if retail else 0) + 1 }}</span> How big should the scan be?</h2>
+    <p class="small muted" style="margin:0 0 8px">What the scan does and for how long. Both numbers are the brand's defaults — saved with the brand, used by this scan and by every automatic one; you can still change them on any single scan.</p>
+    <div class="two">
+      <div><label for="sz-sites">Max sites to visit <span class="muted small">· opened in the sandboxed browser and compared with the real site</span></label>
+        <input id="sz-sites" name="max_candidates" type="number" min="1" max="5000" value="{{ cfg.detection.max_candidates }}" data-cap="{{ ws_cap }}"></div>
+      <div><label for="sz-names">Max look-alike names to check <span class="muted small">· dnstwist names looked up in DNS — keyword combinations, other TLDs and typos first</span></label>
+        <input id="sz-names" name="max_names_checked" type="number" min="1" max="100000" value="{{ cfg.detection.max_names_checked }}"></div>
+    </div>
+    <p class="small muted" style="margin:8px 0 0">Saved for this brand: <b>{{ cfg.detection.max_candidates }}</b> sites and <b>{{ cfg.detection.max_names_checked }}</b> names — what you type here stays until you change it.{% if ws_cap %} The workspace limit is <b>{{ ws_cap }}</b> sites per scan.{% endif %}</p>
+    {% if request.query_params.get('cap') == 'raised' %}<p class="small" style="margin:8px 0 0;color:var(--low)">✓ The workspace limit is now {{ ws_cap }} sites per scan.</p>{% endif %}
+    {% if ws_cap %}<div id="capwarn" class="small" style="margin-top:8px;padding:8px 12px;border:1px solid var(--high);border-radius:8px;{{ '' if cfg.detection.max_candidates > ws_cap else 'display:none' }}">
+      <b style="color:var(--high)">The workspace limit cuts this to {{ ws_cap }}.</b> Your <b id="capwant">{{ cfg.detection.max_candidates }}</b> is saved, but no scan visits more than {{ ws_cap }} sites until the limit is raised.
+      {% if is_admin %}<button type="submit" name="raise_cap" value="1" class="small" formnovalidate style="margin-left:8px">Raise the limit to <span id="capwant2">{{ cfg.detection.max_candidates }}</span></button>
+      {% else %}An admin raises it in <a href="/ui/settings#budget">Settings → Workspace &amp; budget</a>.{% endif %}
+    </div>
+    <script>(function(){const i=document.getElementById('sz-sites'),w=document.getElementById('capwarn');if(!i||!w)return;const cap=+i.dataset.cap;
+      const sync=()=>{const v=+i.value||0;w.style.display=v>cap?'':'none';document.getElementById('capwant').textContent=v;const b=document.getElementById('capwant2');if(b)b.textContent=v;};
+      i.addEventListener('input',sync);sync();})();</script>{% endif %}
+  </div>
+
+  {% if not search_on and not retail %}
+  <div class="step"><p style="margin:0">Nothing to set up for this track — the scan needs no queries. <a href="/ui/brands/{{ brand.id }}">Back to the brand</a>.</p></div>
+  {% endif %}
+
+  <div class="setup-actions">
+    <div class="grow">Approving saves {{ 'the queries' if search_on }}{{ ' and ' if search_on and retail }}{{ 'the profile' if retail }}; the scan then runs without stopping to ask.</div>
+    <button type="submit" name="action" value="save" class="ghost">Save, scan later</button>
+    <button type="submit" name="action" value="scan" class="primary">✓ Approve &amp; start the scan</button>
+  </div>
+  </form>
+</div>
+<script>
+(function(){
+  const esc = s => String(s == null ? '' : s);
+  const list = document.getElementById('qlist');
+  if (list) {
+    const max = {{ qmax }}, geos = {{ geos|length }}, msg = document.getElementById('qmsg'), cost = document.getElementById('qcost');
+    const mark = () => { const rows = [...list.children]; rows.forEach((r, i) => r.classList.toggle('over', i >= max));
+      const n = Math.min(rows.filter(r => r.querySelector('input').value.trim()).length, max); cost.textContent = '$' + (n * geos * 0.01).toFixed(2); };
+    const row = v => { const d = document.createElement('div'); d.className = 'qrow';
+      d.innerHTML = '<input name="q" maxlength="100" dir="auto"><button type="button" class="ghost qdel" title="remove">✕</button>';
+      d.querySelector('input').value = v || ''; list.appendChild(d); return d; };
+    list.addEventListener('click', e => { const b = e.target.closest('.qdel'); if (b) { b.parentElement.remove(); mark(); } });
+    list.addEventListener('input', mark);
+    document.getElementById('qadd').addEventListener('click', () => { row('').querySelector('input').focus(); mark(); });
+    const ai = document.getElementById('qai');
+    ai.addEventListener('click', async () => {
+      ai.disabled = true; msg.textContent = 'asking the AI…';
+      try {
+        const r = await fetch('/api/brands/{{ brand.id }}/search-queries/suggest', {method: 'POST', credentials: 'same-origin'});
+        const j = await r.json();
+        if (!j.available) { msg.textContent = j.reason || 'no suggestion'; return; }
+        list.innerHTML = ''; (j.queries || []).forEach(q => row(q)); mark();
+        msg.textContent = `AI list loaded (${esc(j.vertical) || 'business type unknown'}) — edit it, then approve.`;
+      } catch (e) { msg.textContent = 'could not reach the AI: ' + e; } finally { ai.disabled = false; }
+    });
+    mark();
+  }
+  const ps = document.getElementById('psuggest');
+  if (ps) ps.addEventListener('click', async () => {
+    const form = document.getElementById('setup-form'), pmsg = document.getElementById('pmsg');
+    ps.disabled = true; pmsg.textContent = 'asking the AI…';
+    try {
+      const countries = form.countries.value.split(/[,\s]+/).filter(Boolean);
+      const r = await fetch('/api/brands/{{ brand.id }}/profile/suggest', {method: 'POST', credentials: 'same-origin',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({countries, current_keywords: form.ad_keywords.value.split('\n').map(s => s.trim()).filter(Boolean)})});
+      const j = await r.json();
+      if (!j.available) { pmsg.textContent = j.reason || 'no suggestion'; return; }
+      if (!form.countries.value) form.countries.value = (j.countries || []).join(', ');
+      const gone = new Set((j.generic_current || []).map(s => s.toLowerCase()));
+      const kws = form.ad_keywords.value.split('\n').map(s => s.trim()).filter(s => s && !gone.has(s.toLowerCase()));
+      for (const k of j.ad_keywords || []) if (!kws.some(x => x.toLowerCase() === k.toLowerCase())) kws.push(k);
+      form.ad_keywords.value = kws.join('\n');
+      const table = document.getElementById('prodtable');
+      for (const p of j.products || []) {
+        let tr = [...table.querySelectorAll('tr')].slice(1).find(t => !t.querySelector('[name=product_name]').value);
+        if (!tr) { tr = table.rows[table.rows.length - 1].cloneNode(true); tr.querySelectorAll('input').forEach(i => { i.value = ''; }); table.appendChild(tr); }
+        tr.querySelector('[name=product_name]').value = p.name; tr.querySelector('[name=product_price]').value = p.price;
+        tr.querySelector('[name=product_currency]').value = p.currency; tr.querySelector('[name=product_country]').value = p.country;
+        tr.querySelector('[name=product_source]').value = 'ai'; tr.querySelector('.src').textContent = 'AI';
+      }
+      pmsg.textContent = 'AI suggestion loaded — check the prices, then approve.';
+      if (gone.size) pmsg.textContent += ' Removed from your keywords as too generic: ' + [...gone].join(', ') + '.';
+      if ((j.dropped_keywords || []).length) pmsg.textContent += ' Left out as too generic (they would bring every brand\'s ads): ' + j.dropped_keywords.join(', ') + '.';
+    } catch (e) { pmsg.textContent = 'could not reach the AI: ' + e; } finally { ps.disabled = false; }
+  });
+})();
+</script>
+{% endblock %}

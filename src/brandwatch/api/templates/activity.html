@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+{% block title %}Activity{% endblock %}
+{% set a = stats %}
+{% block content %}
+<style>
+  .feed{position:relative;padding-left:8px}
+  .feed::before{content:"";position:absolute;left:25px;top:0;bottom:0;width:1px;background:var(--border)}
+  .ev{position:relative;display:grid;grid-template-columns:36px 1fr auto;gap:12px;align-items:start;padding:9px 0;animation:fadeUp .45s ease both;animation-delay:calc(var(--r,0)*35ms)}
+  .ev .av{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;font-family:var(--mono);font-size:11px;font-weight:600;color:var(--text);
+    background:var(--panel2);border:1px solid rgba(53,199,242,.45);box-shadow:0 0 0 3px var(--bg);position:relative;z-index:1}
+  .ev .av.sys{color:var(--muted);border-color:var(--border)}
+  .ev .what{font-size:13px}.ev .what b{color:var(--text);font-family:var(--mono);font-weight:600}
+  .ev.t-crit .what b{color:var(--crit)}.ev.t-ok .what b{color:var(--low)}
+  .ev .diff{margin-top:4px;font-family:var(--mono);font-size:11px;color:var(--muted);word-break:break-word}
+  .ev .diff .old{text-decoration:line-through;opacity:.6}.ev .diff .new{color:#c9d3df}
+  .day{position:relative;z-index:1;margin:14px 0 4px 44px;font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+  .more{margin:10px 0 0 44px}
+  .hbar{display:grid;grid-template-columns:110px 1fr 34px;gap:8px;align-items:center;margin:7px 0;font-size:12px}
+  .hbar .bar{height:6px}.hbar b{font-family:var(--mono);font-weight:400;color:var(--muted);text-align:right}
+  .ev .when{font-family:var(--mono);font-size:11px;color:var(--muted);white-space:nowrap}
+  .ev:hover .what{color:#fff}
+</style>
+<h1>ACTIVITY LOG <span class="muted">· who · what · object · old → new · reason · when — append-only</span></h1>
+<p class="intro">{{ PAGE_INTROS.activity }}</p>
+
+<div class="kpis">
+  <div class="kpi"><div class="v" data-count="{{ a.total }}">0</div><div class="l">events (latest)</div></div>
+  <div class="kpi"><div class="v" data-count="{{ a.analyst }}">0</div><div class="l">analyst actions</div></div>
+  <div class="kpi"><div class="v" data-count="{{ a.system }}">0</div><div class="l">system actions</div></div>
+  <div class="kpi"><div class="v" data-count="{{ a.verdicts }}">0</div><div class="l">verdicts recorded</div></div>
+  <div class="kpi"><div class="v" data-count="{{ a.logins_24h }}">0</div><div class="l">logins (24h)</div></div>
+</div>
+
+<div class="grid" style="grid-template-columns:2.2fr 1fr;margin-top:14px">
+  <div class="panel">
+    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px" id="chips">
+      <span class="chip on" data-cat="notable" title="everything except sign-ins">notable</span>
+      <span class="chip" data-cat="*">all</span>
+      {% for c in a.categories %}<span class="chip" data-cat="{{ c }}">{{ c.replace('_', ' ') }}</span>{% endfor %}
+    </div>
+    <div class="feed" id="feed">
+      {% set ns = namespace(day='') %}
+      {% for e in a.events %}
+      {% if e.at[:10] != ns.day %}{% set ns.day = e.at[:10] %}<div class="day" data-day="{{ ns.day }}">{{ ns.day }}</div>{% endif %}
+      <div class="ev {{ 't-' ~ e.tone if e.tone }}" data-cat="{{ e.category }}" data-notable="{{ 1 if e.notable else 0 }}" style="--r:{{ [loop.index0, 30]|min }}{{ ';display:none' if not e.notable }}">
+        <div class="av {{ 'sys' if e.actor_type == 'system' else '' }}" title="{{ e.actor }}">{{ 'SYS' if e.actor_type == 'system' else e.initials }}</div>
+        <div>
+          <div class="what"><span class="muted">{{ e.actor }}</span> <b>{{ e.category }}</b> · {{ e.verb.replace('_', ' ') }}{% if e.count > 1 %} <span class="pill" title="{{ e.count }} consecutive events, first {{ (e.first_at or '')[:16].replace('T',' ') }}">×{{ e.count }}</span>{% endif %}
+            {% set href = {'finding': '/ui/findings/', 'candidate': '/ui/candidates/', 'brand': '/ui/brands/', 'campaign': '/ui/campaigns/', 'takedown_draft': '/ui/takedowns/', 'takedown': '/ui/takedowns/', 'scan_job': '/ui/jobs/', 'job': '/ui/jobs/'}.get(e.object_type) %}
+            <span class="muted small">{{ e.object_type.replace('_', ' ') }} {% if href and e.object_id and e.object_name %}<a href="{{ href }}{{ e.object_id }}" class="mono">{{ e.object_name }} ↗</a>{% elif href and e.object_id %}<span class="mono" title="this object no longer exists (e.g. its brand was deleted with Start over)">{{ e.old.name if e.old is mapping and e.old.name else e.object_id[:8] }} · deleted</span>{% else %}{{ e.object_name or (e.object_id or '')[:8] }}{% endif %}</span></div>
+          {% if e.old or e.new or e.reason %}
+          {% macro kv(v) -%}{%- if v is mapping and v|length <= 4 and v.values()|select('mapping')|list|length == 0 -%}{% for k, x in v.items() %}{{ k.replace('_', ' ') }}: {{ ('yes' if x else 'no') if x is sameas true or x is sameas false else (x|join(', ') if x is iterable and x is not string else x) }}{{ ' · ' if not loop.last }}{% endfor %}{%- else -%}{{ v|tojson|truncate(220) }}{%- endif -%}{%- endmacro %}
+          <div class="diff">{% if e.old %}<span class="old">{{ kv(e.old) }}</span> → {% endif %}{% if e.new %}<span class="new">{{ kv(e.new) }}</span>{% endif %}
+            {% if e.reason %}<div style="color:var(--text);opacity:.8;margin-top:2px">“{{ e.reason }}”</div>{% endif %}</div>
+          {% endif %}
+        </div>
+        <div class="when" data-rel="{{ e.at }}" title="{{ e.at }}">{{ e.at[:19].replace('T',' ') }}</div>
+      </div>
+      {% endfor %}
+      {% if not a.events %}<p class="muted">No activity yet.</p>{% endif %}
+    </div>
+    <div class="more"><button type="button" id="more" style="display:none">Show older events</button></div>
+  </div>
+  <div>
+    <div class="panel">
+      <h2>By category</h2>
+      {% set cmax = (a.category_segments|map(attribute='value')|max) if a.category_segments else 1 %}
+      {% for seg in a.category_segments[:8] %}
+      <div class="hbar"><span>{{ seg.label.replace('_', ' ') }}</span><div class="bar"><i data-w="{{ (seg.value / cmax * 100)|round|int }}"></i></div><b>{{ seg.value }}</b></div>
+      {% endfor %}
+    </div>
+    <div class="panel" style="margin-top:14px">
+      <h2>Activity · 14 days</h2>
+      <svg class="spark" data-spark='{{ {"series": [{"values": a.per_day, "color": "#35C7F2"}]}|tojson }}'></svg>
+    </div>
+    <div class="panel" style="margin-top:14px">
+      <h2>Most active</h2>
+      {% for t in a.top_actors %}
+      <div style="display:grid;grid-template-columns:1fr 40px;gap:8px;align-items:center;margin:8px 0">
+        <div><div class="small mono">{{ t.name }}</div><div class="bar" style="height:6px;margin-top:3px"><i data-w="{{ t.pct }}"></i></div></div>
+        <div class="mono small right">{{ t.count }}</div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+<script>
+(function(){
+  // filter by category, show the newest PAGE events, group them under day headers
+  const PAGE = 40; let cat = 'notable', limit = PAGE;
+  const chips = document.querySelectorAll('#chips .chip'), more = document.getElementById('more');
+  const today = new Date().toISOString().slice(0, 10), yday = new Date(Date.now() - 864e5).toISOString().slice(0, 10);
+  document.querySelectorAll('#feed .day').forEach(d => { d.textContent = d.dataset.day === today ? 'Today' : (d.dataset.day === yday ? 'Yesterday' : d.dataset.day); });
+  function render(){
+    let shown = 0, total = 0;
+    document.querySelectorAll('#feed .ev').forEach(ev => {
+      const match = cat === '*' || ev.dataset.cat === cat || (cat === 'notable' && ev.dataset.notable === '1');
+      if (match) total++;
+      const on = match && shown < limit; if (on) shown++;
+      ev.style.display = on ? '' : 'none';
+    });
+    document.querySelectorAll('#feed .day').forEach(d => {  // a day header only when that day has a visible event
+      let n = d.nextElementSibling, vis = false;
+      while (n && !n.classList.contains('day')) { if (n.classList.contains('ev') && n.style.display !== 'none') { vis = true; break; } n = n.nextElementSibling; }
+      d.style.display = vis ? '' : 'none';
+    });
+    more.style.display = total > shown ? '' : 'none';
+    more.textContent = `Show older events (${total - shown} more)`;
+  }
+  chips.forEach(ch => ch.addEventListener('click', () => { chips.forEach(c => c.classList.toggle('on', c === ch)); cat = ch.dataset.cat; limit = PAGE; render(); }));
+  more.addEventListener('click', () => { limit += PAGE; render(); });
+  render();
+})();
+</script>
+{% endblock %}

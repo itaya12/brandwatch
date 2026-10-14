@@ -1,0 +1,346 @@
+{# The other views of the map of all confirmed sites: Connections, Matrix, Flow and Timeline. Plain SVG, no libraries; every one can be zoomed
+   (wheel, or the + / - / fit buttons) and moved (drag). Needs window.BW_VIEWS (sites in order of operation, the shared things by kind,
+   the flow rows, the registration swimlane) and window.bwState = {g, hints, common} from the page. #}
+<style>
+  .vhead{display:flex;gap:10px;align-items:flex-start;flex-wrap:wrap;padding:6px 2px 8px}
+  .vhead .txt{flex:1;min-width:240px;font-size:12.5px;color:var(--muted)}
+  .vtools{display:flex;gap:4px}
+  .vtools button{padding:3px 10px;font-size:12px}
+  .vlegend{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:11.5px;color:var(--muted);padding:0 2px 6px}
+  .vlegend i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:5px;vertical-align:-2px}
+  .vbox{border:1px solid var(--border);border-radius:8px;background:radial-gradient(circle at 50% 30%,#0f1c30,#060910 75%);overflow:hidden}
+  .vbox svg{display:block;width:100%;height:auto;cursor:grab;user-select:none}
+  .vinfo{min-height:22px;padding:8px 4px 0;font-size:12.5px}
+  .vinfo .mono{word-break:break-all}
+  svg.focus .ln{opacity:.05}
+  svg.focus .ln.on{opacity:1}
+  svg.focus .bx{opacity:.28}
+  svg.focus .bx.on{opacity:1}
+  .bx{cursor:pointer}
+</style>
+<script>
+(function(){
+  const V = window.BW_VIEWS, state = window.bwState;
+  if (!V || !state) return;
+  const GC = ['#35C7F2', '#F5C518', '#FF9F1C', '#2ECC71', '#B388FF', '#FF6FA8', '#4DD0C4', '#9AA5B1'];
+  const SEV = {critical: '#FF4D4D', high: '#FF9F1C', medium: '#F5C518', low: '#2ECC71'};
+  const KC = {affiliate_id: '#FF4D4D', registrant: '#FF4D4D', dns_token: '#FF4D4D', tracking_id: '#FF9F1C', data_sink: '#FF9F1C', ip: '#35C7F2', past_ip: '#5aa9c9',
+              shared_ip: '#5aa9c9', certificate: '#F5C518', kit: '#F5C518', kit_look: '#d8b65a', redirector: '#B388FF', tds_campaign: '#2ECC71', shared_tds: '#2ECC71',
+              cf_ns_pair: '#8A97A8', batch: '#8A97A8', registrar: '#8A97A8', nameserver: '#8A97A8', favicon: '#6fbf8f'};
+  const col = op => op ? GC[(op - 1) % GC.length] : '#8499b0';
+  const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'}[c]));
+  const cut = (s, n) => { s = String(s); return s.length > n ? s.slice(0, Math.max(1, n - 1)) + '…' : s; };
+  const info = {}; V.sites.forEach(s => { info[s.host] = s; });
+  const inScope = h => info[h] && (state.g === 'all' || String(info[h].op) === String(state.g));
+  const sitesNow = () => V.order.filter(inScope);
+  const opName = op => op ? ((V.names || {})[String(op)] || ('Group ' + op)) : 'No strong link';
+  const wide = el => Math.max(el.clientWidth || 0, 340);
+  const LVL = {solid: 'proof', possible: 'a hint', weak: 'common'};
+  const empty = (el, msg) => { el.innerHTML = `<p class="muted small" style="padding:14px">${esc(msg || 'Nothing to show for this selection.')}</p>`; };
+  const head = (txt, zoom = true) => `<div class="vhead"><div class="txt">${txt}</div>${zoom ? '<div class="vtools"><button type="button" data-z="in" title="zoom in">＋</button><button type="button" data-z="out" title="zoom out">－</button><button type="button" data-z="fit" title="everything back in view">fit</button></div>' : ''}</div>`;
+  const openFinding = (svg, h) => { if (Date.now() - (svg.__dragged || 0) > 250 && info[h]) location.href = '/ui/findings/' + info[h].id; };
+
+  // zoom (wheel, buttons) and move (drag) any of these drawings, by changing its viewBox
+  function panzoom(svg, bar){
+    const b = svg.viewBox.baseVal, init = {x: b.x, y: b.y, w: b.width, h: b.height};
+    let v = {...init};
+    const set = () => svg.setAttribute('viewBox', `${v.x} ${v.y} ${v.w} ${v.h}`);
+    const at = ev => { const r = svg.getBoundingClientRect(); return [v.x + (ev.clientX - r.left) / r.width * v.w, v.y + (ev.clientY - r.top) / r.height * v.h]; };
+    const zoom = (f, cx, cy) => { const w = Math.max(init.w / 12, Math.min(init.w, v.w / f)), k = w / v.w; v.x = cx - (cx - v.x) * k; v.y = cy - (cy - v.y) * k; v.w = w; v.h *= k; if (w === init.w) v = {...init}; set(); };
+    svg.addEventListener('wheel', ev => { ev.preventDefault(); const [x, y] = at(ev); zoom(ev.deltaY < 0 ? 1.2 : 1 / 1.2, x, y); }, {passive: false});
+    let drag = null;
+    svg.addEventListener('pointerdown', ev => { drag = {x: ev.clientX, y: ev.clientY, vx: v.x, vy: v.y, moved: false}; });
+    svg.addEventListener('pointermove', ev => {
+      if (!drag) return;
+      if (Math.abs(ev.clientX - drag.x) + Math.abs(ev.clientY - drag.y) > 4) { drag.moved = true; svg.style.cursor = 'grabbing'; }
+      if (drag.moved) { const r = svg.getBoundingClientRect(); v.x = drag.vx - (ev.clientX - drag.x) / r.width * v.w; v.y = drag.vy - (ev.clientY - drag.y) / r.height * v.h; set(); }
+    });
+    const end = () => { if (drag && drag.moved) svg.__dragged = Date.now(); drag = null; svg.style.cursor = ''; };
+    svg.addEventListener('pointerup', end); svg.addEventListener('pointerleave', end);
+    if (bar) bar.addEventListener('click', ev => { const z = ev.target.closest('[data-z]'); if (!z) return; if (z.dataset.z === 'fit') { v = {...init}; set(); } else zoom(z.dataset.z === 'in' ? 1.35 : 1 / 1.35, v.x + v.w / 2, v.y + v.h / 2); });
+  }
+
+  // the things that two or more sites of this selection share; the same kind shared by exactly the same sites is one row ("old server ×4")
+  function things(){
+    const out = [];
+    Object.entries(V.pivot).forEach(([kind, d]) => {
+      const groups = {};
+      d.rows.forEach(r => {
+        if (r.level === 'weak' && !state.common) return;
+        const sites = r.sites.filter(inScope); if (sites.length < 2) return;
+        const k = sites.join('|');
+        const t = groups[k] = groups[k] || {kind, short: d.short, label: d.label, sites, weight: 0, level: r.level, values: [], networks: new Set()};
+        t.values.push(r.value); if (r.network) t.networks.add(r.network);
+        if (r.weight > t.weight) { t.weight = r.weight; t.level = r.level; }
+      });
+      Object.values(groups).sort((a, b) => b.sites.length - a.sites.length).forEach(t => out.push(t));
+    });
+    return out;
+  }
+  const tname = t => t.values.length > 1 ? `${t.short} ×${t.values.length}` : `${t.short}: ${t.values[0]}`;
+  const tinfo = t => `<b>${esc(t.label)}</b> <span class="muted">· ${Math.round(t.weight * 100)}% · ${LVL[t.level] || ''}</span><div class="mono">${esc(t.values.join(', '))}${t.networks.size ? ' <span class="muted">(' + esc([...t.networks].join(', ')) + ')</span>' : ''}</div><div>shared by <b>${t.sites.length} sites</b>: <span class="mono">${esc(t.sites.join(', '))}</span></div>`;
+  const legend = T => '<div class="vlegend">' + [...new Map(T.map(t => [t.kind, t])).values()].map(t => `<span><i style="background:${KC[t.kind] || '#888'}"></i>${esc(t.short)}</span>`).join('') + '<span><i style="background:transparent;border:1px dashed #8A97A8"></i>dashed = a hint, not proof alone</span></div>';
+
+  // put the sites in the order of their operation, and both lists in an order that crosses as few lines as possible
+  function arrange(T, S){
+    const opRank = h => info[h].op || 1e6;
+    for (let pass = 0; pass < 2; pass++) {
+      const ti = new Map(T.map((t, i) => [t, i])), bs = new Map();
+      S.forEach(h => { const idx = T.filter(t => t.sites.includes(h)).map(t => ti.get(t)); bs.set(h, idx.length ? idx.reduce((a, b) => a + b, 0) / idx.length : 1e6); });
+      S.sort((a, b) => opRank(a) - opRank(b) || bs.get(a) - bs.get(b) || a.localeCompare(b));
+      const si = new Map(S.map((h, i) => [h, i])), bary = t => t.sites.reduce((a, h) => a + (si.has(h) ? si.get(h) : 0), 0) / t.sites.length;
+      const kinds = [...new Set(T.map(t => t.kind))], T2 = [];
+      kinds.forEach(k => T2.push(...T.filter(t => t.kind === k).sort((a, b) => bary(a) - bary(b))));
+      T.splice(0, T.length, ...T2);
+    }
+    return [T, S];
+  }
+
+  function focus(svg, on){
+    if (!on) { svg.classList.remove('focus'); svg.querySelectorAll('.on').forEach(x => x.classList.remove('on')); return; }
+    svg.classList.add('focus'); svg.querySelectorAll('.on').forEach(x => x.classList.remove('on')); on.forEach(x => x.classList.add('on'));
+  }
+
+  // ------------------------------------------------------------------ Connections: what is shared (left) and by which sites (right)
+  function connections(el){
+    let T = things(), hs = sitesNow();
+    if (!T.length) return empty(el, 'No two sites of this selection share anything' + (state.common ? '.' : '. Switch on “show common things” for registrars and name servers.'));
+    const used = new Set(T.flatMap(t => t.sites));
+    let S = hs.filter(h => used.has(h)); const lone = hs.filter(h => !used.has(h));
+    [T, S] = arrange(T, S);
+    const W = wide(el), row = 30, kh = 22, wl = Math.min(380, W * 0.42), wr = Math.min(300, W * 0.34), xl = 10, xr = W - wr - 10;
+    const ty = new Map(), sy = new Map();
+    let y = 10, lastK = null; const kindHeads = [];
+    T.forEach(t => { if (t.kind !== lastK) { kindHeads.push({k: t, y: y}); y += kh; lastK = t.kind; } ty.set(t, y); y += row; });
+    const hl = y;
+    y = 10; let lastOp = null; const opHeads = [];
+    S.forEach(h => { if (info[h].op !== lastOp) { opHeads.push({op: info[h].op, y: y}); y += kh; lastOp = info[h].op; } sy.set(h, y); y += row; });
+    const hr = y, H = Math.max(hl, hr) + 10, dl = (H - hl) / 2, dr = (H - hr) / 2;
+    let s = `<svg viewBox="0 0 ${W} ${H}" font-family="JetBrains Mono, monospace">`;
+    T.forEach((t, i) => t.sites.forEach(h => { if (!sy.has(h)) return;
+      const x1 = xl + wl, y1 = ty.get(t) + dl + (row - 6) / 2, x2 = xr, y2 = sy.get(h) + dr + (row - 6) / 2, mx = (x1 + x2) / 2;
+      s += `<path class="ln" data-t="${i}" data-s="${esc(h)}" d="M${x1},${y1} C${mx},${y1} ${mx},${y2} ${x2},${y2}" fill="none" stroke="${KC[t.kind] || '#888'}" stroke-width="${(1 + t.weight * 2.2).toFixed(1)}" stroke-opacity=".6"${t.level === 'solid' ? '' : ' stroke-dasharray="5 4"'}/>`; }));
+    kindHeads.forEach(k => { s += `<text x="${xl + 2}" y="${k.y + dl + 15}" font-size="10.5" letter-spacing=".1em" fill="${KC[k.k.kind] || '#888'}">${esc(k.k.label.replace(/^the same |^a |^an /, '').toUpperCase())}</text>`; });
+    opHeads.forEach(o => { s += `<text x="${xr + 2}" y="${o.y + dr + 15}" font-size="10.5" letter-spacing=".06em" fill="${col(o.op)}" font-weight="700">${esc(cut(opName(o.op), 40).toUpperCase())}</text>`; });
+    const chars = Math.floor((wl - 84) / 6.6);
+    T.forEach((t, i) => { const yy = ty.get(t) + dl, c = KC[t.kind] || '#888';
+      s += `<g class="bx th" data-t="${i}"><rect x="${xl}" y="${yy}" width="${wl}" height="${row - 6}" rx="6" fill="rgba(14,22,34,.95)" stroke="${c}" stroke-opacity=".75"${t.level === 'solid' ? '' : ' stroke-dasharray="4 3"'}/><rect x="${xl}" y="${yy}" width="5" height="${row - 6}" rx="2" fill="${c}"/>`
+        + `<text x="${xl + 12}" y="${yy + 16}" font-size="11.5" fill="#e6edf5">${esc(cut(tname(t), chars))}</text><text x="${xl + wl - 8}" y="${yy + 16}" font-size="11" text-anchor="end" fill="#8fa6bf">${t.sites.length} sites</text><title>${esc(t.label)} · ${esc(t.values.join(', '))} · ${Math.round(t.weight * 100)}%</title></g>`; });
+    S.forEach(h => { const yy = sy.get(h) + dr;
+      s += `<g class="bx st" data-s="${esc(h)}"><rect x="${xr}" y="${yy}" width="${wr}" height="${row - 6}" rx="6" fill="rgba(14,22,34,.95)" stroke="${col(info[h].op)}" stroke-opacity=".6"/><circle cx="${xr + 12}" cy="${yy + 12}" r="4.5" fill="${SEV[info[h].severity] || '#aaa'}"/>`
+        + `<text x="${xr + 24}" y="${yy + 16}" font-size="11.5" fill="${col(info[h].op)}">${esc(cut(h, Math.floor((wr - 34) / 6.6)))}</text><title>${esc(h)} · ${esc(opName(info[h].op))} · click to open the finding</title></g>`; });
+    s += '</svg>';
+    el.innerHTML = head('<b>What is shared</b> on the left, <b>the sites</b> on the right, a line = “this site has that”. Point at a box to follow its lines; click a shared thing for the details, a site to open its finding. Things shared by exactly the same sites are one box (“old server ×4”).')
+      + legend(T) + `<div class="vbox">${s}</div><div class="vinfo" id="cn-info"></div>` + (lone.length ? `<div class="small muted" style="padding:4px">Share nothing with the others: <span class="mono">${esc(lone.join(', '))}</span></div>` : '');
+    const svg = el.querySelector('svg'), box = el.querySelector('#cn-info'), lines = [...svg.querySelectorAll('.ln')];
+    panzoom(svg, el.querySelector('.vtools'));
+    svg.querySelectorAll('g.th').forEach(g => {
+      const i = g.dataset.t, t = T[i];
+      g.addEventListener('mouseenter', () => focus(svg, [g, ...lines.filter(l => l.dataset.t === i), ...[...svg.querySelectorAll('g.st')].filter(x => t.sites.includes(x.dataset.s))]));
+      g.addEventListener('mouseleave', () => focus(svg, null));
+      g.addEventListener('click', () => { box.innerHTML = tinfo(t); });
+    });
+    svg.querySelectorAll('g.st').forEach(g => {
+      const h = g.dataset.s, mine = lines.filter(l => l.dataset.s === h);
+      g.addEventListener('mouseenter', () => focus(svg, [g, ...mine, ...mine.map(l => svg.querySelector(`g.th[data-t="${l.dataset.t}"]`))]));
+      g.addEventListener('mouseleave', () => focus(svg, null));
+      g.addEventListener('click', () => openFinding(svg, h));
+    });
+  }
+
+  // ------------------------------------------------------------------ Matrix: a row per site, a column per shared thing
+  function matrix(el){
+    let T = things(), S = sitesNow();
+    if (!T.length || S.length < 2) return empty(el, 'No two sites of this selection share anything' + (state.common ? '.' : '. Switch on “show common things” for registrars and name servers.'));
+    [T, S] = arrange(T, S);
+    const W = wide(el), lw = 200, th = 160, n = T.length;
+    const cell = Math.max(16, Math.min(34, Math.floor((W - lw - 70) / n)));
+    let y = th; const rowY = new Map(), opHeads = []; let lastOp = null;
+    S.forEach(h => { if (info[h].op !== lastOp) { opHeads.push({op: info[h].op, y}); y += 20; lastOp = info[h].op; } rowY.set(h, y); y += cell; });
+    const w = lw + n * cell + 70, H = y + 34;
+    let s = `<svg viewBox="0 0 ${w} ${H}" font-family="JetBrains Mono, monospace"><rect id="mx-row" x="0" y="0" width="0" height="0" fill="rgba(53,199,242,.08)"/><rect id="mx-col" x="0" y="0" width="0" height="0" fill="rgba(53,199,242,.08)"/>`;
+    T.forEach((t, j) => { const x = lw + j * cell + cell / 2, c = KC[t.kind] || '#888';
+      s += `<text transform="translate(${x + 3},${th - 10}) rotate(-55)" font-size="11" fill="${c}">${esc(cut(tname(t), 24))}<title>${esc(t.label)} · ${esc(t.values.join(', '))}</title></text>`
+        + `<rect x="${lw + j * cell + 2}" y="${th - 6}" width="${cell - 4}" height="3" rx="1" fill="${c}"${t.level === 'solid' ? '' : ' fill-opacity=".45"'}/>`
+        + `<text x="${x}" y="${H - 14}" font-size="10.5" text-anchor="middle" fill="#8fa6bf">${t.sites.length}</text>`; });
+    opHeads.forEach(o => { s += `<text x="6" y="${o.y + 14}" font-size="10.5" font-weight="700" letter-spacing=".06em" fill="${col(o.op)}">${esc(cut(opName(o.op), 44).toUpperCase())}</text><line x1="0" x2="${w}" y1="${o.y + 1}" y2="${o.y + 1}" stroke="${col(o.op)}" stroke-opacity=".35"/>`; });
+    S.forEach(h => { const yy = rowY.get(h), mine = T.filter(t => t.sites.includes(h)).length;
+      s += `<g class="bx mrow" data-s="${esc(h)}"><circle cx="12" cy="${yy + cell / 2}" r="4" fill="${SEV[info[h].severity] || '#aaa'}"/><text x="22" y="${yy + cell / 2 + 4}" font-size="11.5" fill="${col(info[h].op)}">${esc(cut(h, 24))}</text><title>${esc(h)} · click to open the finding</title></g>`
+        + `<text x="${lw + n * cell + 10}" y="${yy + cell / 2 + 4}" font-size="10.5" fill="#8fa6bf">${mine}</text>`;
+      T.forEach((t, j) => { const has = t.sites.includes(h), c = KC[t.kind] || '#888';
+        s += `<rect class="mc" data-s="${esc(h)}" data-t="${j}" x="${lw + j * cell + 2}" y="${yy + 2}" width="${cell - 4}" height="${cell - 4}" rx="4" fill="${has ? c : 'rgba(255,255,255,.04)'}" fill-opacity="${has ? (0.35 + 0.65 * t.weight).toFixed(2) : 1}"${has && t.level !== 'solid' ? ` stroke="${c}" stroke-dasharray="3 2"` : ''}/>`; }); });
+    s += `<text x="${lw - 6}" y="${H - 14}" font-size="10.5" text-anchor="end" fill="#8fa6bf">sites sharing it</text><text x="${lw + n * cell + 10}" y="${th - 10}" font-size="10.5" fill="#8fa6bf">ties</text></svg>`;
+    el.innerHTML = head('<b>A row per site, a column per shared thing</b>: a filled square = the site has it. A long column = many sites share that one thing; rows that look alike = sites built the same way. Point at a square for what it is, click a site to open its finding.')
+      + legend(T) + `<div class="vbox">${s}</div><div class="vinfo" id="mx-info"></div>`;
+    const svg = el.querySelector('svg'), box = el.querySelector('#mx-info'), rr = svg.querySelector('#mx-row'), rc = svg.querySelector('#mx-col');
+    panzoom(svg, el.querySelector('.vtools'));
+    svg.querySelectorAll('rect.mc').forEach(r => r.addEventListener('mouseenter', () => {
+      const t = T[r.dataset.t], h = r.dataset.s, yy = rowY.get(h), x = lw + Number(r.dataset.t) * cell;
+      rr.setAttribute('x', 0); rr.setAttribute('y', yy); rr.setAttribute('width', w); rr.setAttribute('height', cell);
+      rc.setAttribute('x', x); rc.setAttribute('y', th - 4); rc.setAttribute('width', cell); rc.setAttribute('height', H - th - 24);
+      box.innerHTML = `<b class="mono">${esc(h)}</b> ${t.sites.includes(h) ? 'has' : '<span class="muted">does not have</span>'} ` + tinfo(t);
+    }));
+    svg.querySelectorAll('g.mrow').forEach(g => g.addEventListener('click', () => openFinding(svg, g.dataset.s)));
+  }
+
+  // ------------------------------------------------------------------ Flow: site -> registrar -> hosting -> redirect host -> operation
+  function flow(el){
+    const rows = V.flow.rows.filter(r => inScope(r.host)); if (!rows.length) return empty(el);
+    const withSites = rows.length <= 60, cols = (withSites ? ['Site'] : []).concat(V.flow.columns);
+    const vals = rows.map(r => (withSites ? [r.host] : []).concat(r.vals)), nc = cols.length, n = rows.length;
+    const W = wide(el), unit = Math.max(withSites ? 18 : 10, Math.min(26, Math.floor(560 / n))), gap = 10, top = 30;
+    const lastW = Math.max(150, Math.min(300, W * 0.24)), step = (W - 20 - lastW) / (nc - 1), bw = Math.max(104, Math.min(210, step * 0.72));
+    const xs = cols.map((_, i) => 10 + i * step), bwOf = c => c === nc - 1 ? lastW : bw;
+    const order = new Map(V.order.map((h, i) => [h, i]));
+    const nodes = cols.map((_, c) => { const m = {}; rows.forEach((r, k) => { const v = vals[k][c]; const nd = m[v] = m[v] || {name: v, sites: [], ops: new Set()}; nd.sites.push(r.host); nd.ops.add(r.op); });
+      return Object.values(m).sort((a, b) => a.sites.reduce((s, h) => s + order.get(h), 0) / a.sites.length - b.sites.reduce((s, h) => s + order.get(h), 0) / b.sites.length); });
+    let H = 0;
+    nodes.forEach(list => { let y = top; list.forEach(nd => { nd.flow = nd.sites.length * unit; nd.h = Math.max(nd.flow, 22); nd.y = y; nd.out = 0; nd.inn = 0; y += nd.h + gap; }); H = Math.max(H, y); });
+    H += 8;
+    const idx = nodes.map(list => Object.fromEntries(list.map((nd, i) => [nd.name, i])));
+    let s = `<svg viewBox="0 0 ${W} ${H}">`;
+    for (let c = 0; c < nc - 1; c++) {
+      const links = {};
+      rows.forEach((r, k) => { const a = vals[k][c], b = vals[k][c + 1], key = a + '\u0001' + b; const l = links[key] = links[key] || {a, b, sites: [], ops: new Set()}; l.sites.push(r.host); l.ops.add(r.op); });
+      const list = Object.values(links).sort((p, q) => idx[c][p.a] - idx[c][q.a] || idx[c + 1][p.b] - idx[c + 1][q.b]);
+      [...list].sort((p, q) => idx[c + 1][p.b] - idx[c + 1][q.b] || idx[c][p.a] - idx[c][q.a]).forEach(l => { const t = nodes[c + 1][idx[c + 1][l.b]]; l.inOff = t.inn; t.inn += l.sites.length * unit; });
+      list.forEach(l => {
+        const sN = nodes[c][idx[c][l.a]], tN = nodes[c + 1][idx[c + 1][l.b]], hgt = l.sites.length * unit;
+        const y0 = sN.y + (sN.h - sN.flow) / 2 + sN.out + hgt / 2, y1 = tN.y + (tN.h - tN.flow) / 2 + l.inOff + hgt / 2, x0 = xs[c] + bwOf(c), x1 = xs[c + 1], mx = (x0 + x1) / 2;
+        sN.out += hgt;
+        const one = l.ops.size === 1 ? [...l.ops][0] : 0;
+        s += `<path class="ln" data-sites="${esc(l.sites.join('|'))}" d="M${x0},${y0} C${mx},${y0} ${mx},${y1} ${x1},${y1}" fill="none" stroke="${one ? col(one) : '#6c86a3'}" stroke-opacity=".38" stroke-width="${Math.max(hgt - 2, 1.5)}"><title>${esc(l.a)} → ${esc(l.b)} · ${l.sites.length} site${l.sites.length === 1 ? '' : 's'}</title></path>`;
+      });
+    }
+    nodes.forEach((list, c) => {
+      s += `<text x="${xs[c] + 2}" y="18" font-size="11" fill="#8fa6bf" letter-spacing=".1em" font-family="JetBrains Mono, monospace">${esc(cols[c].toUpperCase())}</text>`;
+      const site = withSites && c === 0, last = c === nc - 1;
+      list.forEach(nd => {
+        const one = nd.ops.size === 1 ? [...nd.ops][0] : 0, fill = last ? col(one) : 'rgba(18,30,48,.97)', ink = last ? '#06121d' : (site ? col(one) : '#e6edf5');
+        const w = bwOf(c), lim = Math.floor((w - (site ? 26 : 44)) / 6.6), ty = nd.y + nd.h / 2 + 4;
+        s += `<g class="bx fn" data-sites="${esc(nd.sites.join('|'))}"${site ? ` data-s="${esc(nd.name)}"` : ''}><rect x="${xs[c]}" y="${nd.y}" width="${w}" height="${nd.h}" rx="6" fill="${fill}" stroke="${last ? 'none' : (site ? col(one) : '#4f7cb3')}" stroke-opacity=".7"/>`
+          + (site ? `<circle cx="${xs[c] + 10}" cy="${nd.y + nd.h / 2}" r="4" fill="${SEV[info[nd.name].severity] || '#aaa'}"/>` : '')
+          + `<text x="${xs[c] + (site ? 20 : 9)}" y="${ty}" font-size="11.5" fill="${ink}" font-weight="${last ? 700 : 500}" font-family="JetBrains Mono, monospace">${esc(cut(nd.name, lim))}</text>`
+          + (site ? '' : `<text x="${xs[c] + w - 8}" y="${ty}" font-size="11" text-anchor="end" fill="${last ? '#06121d' : '#8fa6bf'}" font-family="JetBrains Mono, monospace">${nd.sites.length}</text>`)
+          + `<title>${esc(nd.name)} · ${nd.sites.length} site${nd.sites.length === 1 ? '' : 's'}: ${esc(nd.sites.join(', '))}</title></g>`;
+      });
+    });
+    s += '</svg>';
+    el.innerHTML = head('<b>How each site is built</b>, left to right: the site, who registered it, where it is hosted, which host forwards its visitors, and the operation it belongs to. The number in a box = how many sites go through it; a box that many sites go through is the one party a single report reaches. Point at a box to follow its sites.')
+      + `<div class="vbox">${s}</div><div class="vinfo" id="fl-info"></div>`;
+    const svg = el.querySelector('svg'), box = el.querySelector('#fl-info'), lines = [...svg.querySelectorAll('.ln')];
+    panzoom(svg, el.querySelector('.vtools'));
+    svg.querySelectorAll('g.fn').forEach(g => {
+      const mine = new Set(g.dataset.sites.split('|'));
+      g.addEventListener('mouseenter', () => { focus(svg, [...svg.querySelectorAll('g.fn')].filter(x => x.dataset.sites.split('|').some(h => mine.has(h))).concat(lines.filter(l => l.dataset.sites.split('|').some(h => mine.has(h))))); box.innerHTML = `<b>${esc(g.querySelector('title').textContent.split(' · ')[0])}</b> · ${mine.size} site${mine.size === 1 ? '' : 's'}: <span class="mono">${esc([...mine].join(', '))}</span>`; });
+      g.addEventListener('mouseleave', () => focus(svg, null));
+      if (g.dataset.s) g.addEventListener('click', () => openFinding(svg, g.dataset.s));
+    });
+  }
+
+  // ------------------------------------------------------------------ Timeline: when the domains were bought, on a time axis you can zoom
+  const DAY = 86400000, tl = {d0: null, d1: null, scope: null};
+  const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const ts = d => Date.parse(d + 'T00:00:00Z');
+  function ticksFor(d0, d1, px){
+    const span = (d1 - d0) / DAY, maxT = Math.max(3, Math.floor(px / 90));
+    const steps = [[1, 'd'], [7, 'd'], [1, 'm'], [3, 'm'], [6, 'm'], [12, 'm'], [24, 'm'], [60, 'm']];
+    const pick = steps.find(([k, u]) => span / (u === 'd' ? k : k * 30.4) <= maxT) || [120, 'm'];
+    const out = [], [k, u] = pick, a = new Date(d0);
+    let t = u === 'd' ? Date.UTC(a.getUTCFullYear(), a.getUTCMonth(), a.getUTCDate()) : Date.UTC(a.getUTCFullYear(), Math.floor(a.getUTCMonth() / Math.min(k, 12)) * Math.min(k, 12), 1);
+    while (t <= d1 && out.length < 60) {
+      if (t >= d0) { const d = new Date(t); out.push({t, label: u === 'd' ? `${d.getUTCDate()} ${MONTHS[d.getUTCMonth()]}${k === 1 ? '' : ' ' + d.getUTCFullYear()}` : (k >= 12 ? String(d.getUTCFullYear()) : `${MONTHS[d.getUTCMonth()]} ${d.getUTCFullYear()}`)}); }
+      const d = new Date(t); t = u === 'd' ? t + k * DAY : Date.UTC(d.getUTCFullYear(), d.getUTCMonth() + k, 1);
+    }
+    return out;
+  }
+  function timeline(el){
+    const sw = V.swimlane || {rows: []};
+    const lanes = sw.rows.filter(r => state.g === 'all' || String(r.index) === String(state.g)).map(r => ({...r, dots: r.dots.map(d => ({...d, t: ts(d.date)})).sort((a, b) => a.t - b.t)}));
+    const all = lanes.flatMap(r => r.dots); if (!all.length) return empty(el, 'No registration date is known for these sites yet.');
+    const lo = Math.min(...all.map(d => d.t)), hi = Math.max(...all.map(d => d.t)), pad = Math.max((hi - lo) * 0.05, 20 * DAY);
+    if (tl.scope !== state.g || tl.d0 === null) { tl.d0 = lo - pad; tl.d1 = hi + pad; tl.scope = state.g; tl.lo = lo - pad; tl.hi = hi + pad; }
+    el.innerHTML = head('<b>When each domain was registered</b>, one row per operation. Domains bought within 3 days of each other sit in a shaded band (a purchase wave). <b>Scroll</b> on the chart to zoom into a period (names appear as there is room), <b>drag</b> to move along the time axis, click a dot to open the finding.')
+      + '<div class="vbox"><svg></svg></div><div class="vinfo" id="tl-info"></div>'
+      + `<details style="margin-top:6px"><summary class="small" style="cursor:pointer">Every date (${all.length})</summary><table class="shares" style="width:100%;margin-top:4px">${lanes.flatMap(r => r.dots.map(d => `<tr><td class="val">${esc(d.date)}</td><td class="mono">${esc(d.host)}</td><td class="muted">${esc(r.label)}${d.wave ? ' · in a wave' : ''}</td></tr>`)).join('')}</table></details>`;
+    const svg = el.querySelector('svg'), W = wide(el), left = Math.min(230, W * 0.3), right = 20, px = W - left - right;
+    function draw(){
+      const d0 = tl.d0, d1 = tl.d1, X = t => left + (t - d0) / (d1 - d0) * px;
+      const ticks = ticksFor(d0, d1, px);
+      let y = 34, body = '';
+      lanes.forEach(r => {
+        const c = col(r.index), vis = r.dots.filter(d => d.t >= d0 - DAY && d.t <= d1 + DAY);
+        // every dot, and its name, gets a free slot: a row grows a level when two would overlap. If that needs too many levels (zoomed far out), only the dots get slots.
+        const lw = d => d.host.length * 6.4 + 14;
+        const assign = named => { const ends = []; return vis.map(d => { const x = X(d.t), need = named ? lw(d) : 13; let l = ends.findIndex(e => x >= e + (named ? 4 : 0)); if (l < 0) { l = ends.length; ends.push(0); } ends[l] = x + need; return {...d, x, l}; }); };
+        let named = true, placed = assign(true);
+        if (Math.max(0, ...placed.map(d => d.l)) >= 6) { named = false; placed = assign(false); }
+        const levels = new Array(Math.max(0, ...placed.map(d => d.l + 1)) || 0).fill(0);
+        const hgt = Math.max(46, 30 + levels.length * 13);
+        body += `<rect x="${left}" y="${y}" width="${px}" height="${hgt - 6}" rx="6" fill="rgba(255,255,255,.025)"/>`;
+        if (!vis.length) body += `<text x="${left + 12}" y="${y + 24}" font-size="10.5" fill="#6f7b8a">none registered in this period</text>`;
+        body += `<text x="10" y="${y + 18}" font-size="12" font-weight="700" fill="${c}">${esc(cut(r.label, Math.floor((left - 20) / 7)))}</text><text x="10" y="${y + 33}" font-size="10.5" fill="#8fa6bf">${r.dots.length} domain${r.dots.length === 1 ? '' : 's'}</text>`;
+        // purchase waves: dates within 3 days of the previous one
+        let run = [];
+        const flush = () => { if (run.length > 1) { const a = X(run[0].t) - 8, b = X(run[run.length - 1].t) + 8, days = Math.round((run[run.length - 1].t - run[0].t) / DAY) + 1;
+          body += `<rect x="${a}" y="${y + 3}" width="${Math.max(b - a, 16)}" height="${hgt - 12}" rx="8" fill="${c}" fill-opacity=".13" stroke="${c}" stroke-opacity=".35"/>`;
+          if (b - a > 70) body += `<text x="${(a + b) / 2}" y="${y + hgt - 12}" font-size="10" text-anchor="middle" fill="${c}">${run.length} in ${days} day${days === 1 ? '' : 's'}</text>`; } run = []; };
+        r.dots.forEach(d => { if (run.length && d.t - run[run.length - 1].t > 3 * DAY) flush(); run.push(d); }); flush();
+        const lastLabel = [];
+        placed.forEach((d, i) => {
+          const next = placed.slice(i + 1).find(o => o.l === d.l);
+          const cy = y + 14 + d.l * 13;
+          body += `<circle class="bx tdot" data-h="${esc(d.host)}" cx="${d.x}" cy="${cy}" r="5.5" fill="${c}" stroke="#060910" stroke-width="1.5"><title>${esc(d.host)} · ${esc(d.date)}${d.wave ? ' · bought within days of another' : ''}</title></circle>`;
+          const wl = d.host.length * 6.4 + 10;
+          const fits = named || ((lastLabel[d.l] === undefined || d.x - 8 > lastLabel[d.l]) && (!next || next.x - 8 > d.x + wl));
+          if (fits && d.x + wl < left + px + 4) { body += `<text x="${d.x + 8}" y="${cy + 4}" font-size="10.5" fill="#cfe0f2" pointer-events="none">${esc(d.host)}</text>`; lastLabel[d.l] = d.x + wl; }
+          else if (fits && d.x - wl > left && (!placed[i - 1] || placed.slice(0, i).filter(o => o.l === d.l).every(o => o.x < d.x - wl - 8))) { body += `<text x="${d.x - 8}" y="${cy + 4}" font-size="10.5" text-anchor="end" fill="#cfe0f2" pointer-events="none">${esc(d.host)}</text>`; }
+        });
+        y += hgt;
+      });
+      const H = y + 10;
+      let grid = '';
+      ticks.forEach(t => { const x = X(t.t); grid += `<line x1="${x}" x2="${x}" y1="24" y2="${H - 8}" stroke="rgba(255,255,255,.07)"/><text x="${x}" y="16" font-size="10.5" text-anchor="${x > left + px - 30 ? 'end' : x < left + 30 ? 'start' : 'middle'}" fill="#8fa6bf">${esc(t.label)}</text>`; });
+      const now = Date.now(); if (now >= d0 && now <= d1) grid += `<line x1="${X(now)}" x2="${X(now)}" y1="20" y2="${H - 8}" stroke="#FF4D4D" stroke-dasharray="4 4" stroke-opacity=".6"/><text x="${X(now) - 4}" y="${H - 12}" font-size="10" text-anchor="end" fill="#FF4D4D">today</text>`;
+      svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+      svg.innerHTML = `<defs><clipPath id="tl-clip"><rect x="${left - 6}" y="0" width="${px + 12}" height="${H}"/></clipPath></defs><g clip-path="url(#tl-clip)">${grid}</g>` + body;
+      svg.querySelectorAll('circle.tdot').forEach(cn => { cn.addEventListener('click', () => openFinding(svg, cn.dataset.h)); cn.addEventListener('mouseenter', () => { el.querySelector('#tl-info').innerHTML = `<b class="mono">${esc(cn.dataset.h)}</b> · ${esc(cn.querySelector('title').textContent.split(' · ').slice(1).join(' · '))}`; }); });
+    }
+    const zoomAt = (f, t) => { const span = Math.min(tl.hi - tl.lo, Math.max(3 * DAY, (tl.d1 - tl.d0) / f)), k = span / (tl.d1 - tl.d0); tl.d0 = t - (t - tl.d0) * k; tl.d1 = tl.d0 + span; if (span >= tl.hi - tl.lo) { tl.d0 = tl.lo; tl.d1 = tl.hi; } draw(); };
+    const tAt = ev => { const r = svg.getBoundingClientRect(), x = (ev.clientX - r.left) / r.width * W; return tl.d0 + (Math.min(Math.max(x, left), left + px) - left) / px * (tl.d1 - tl.d0); };
+    svg.addEventListener('wheel', ev => { ev.preventDefault(); zoomAt(ev.deltaY < 0 ? 1.25 : 1 / 1.25, tAt(ev)); }, {passive: false});
+    let drag = null;
+    svg.addEventListener('pointerdown', ev => { drag = {x: ev.clientX, d0: tl.d0, d1: tl.d1, moved: false}; });
+    svg.addEventListener('pointermove', ev => { if (!drag) return; const r = svg.getBoundingClientRect(), dx = (ev.clientX - drag.x) / r.width * W; if (Math.abs(dx) > 4) drag.moved = true; if (!drag.moved) return;
+      const dt = dx / px * (drag.d1 - drag.d0); tl.d0 = drag.d0 - dt; tl.d1 = drag.d1 - dt; svg.style.cursor = 'grabbing'; draw(); });
+    const end = () => { if (drag && drag.moved) svg.__dragged = Date.now(); drag = null; svg.style.cursor = ''; };
+    svg.addEventListener('pointerup', end); svg.addEventListener('pointerleave', end);
+    el.querySelector('.vtools').addEventListener('click', ev => { const z = ev.target.closest('[data-z]'); if (!z) return; if (z.dataset.z === 'fit') { tl.d0 = tl.lo; tl.d1 = tl.hi; draw(); } else zoomAt(z.dataset.z === 'in' ? 1.5 : 1 / 1.5, (tl.d0 + tl.d1) / 2); });
+    draw();
+  }
+
+  // ------------------------------------------------------------------ the switch
+  const RENDER = {connections, matrix, flow, timeline};
+  let current = 'graph';
+  function show(name){
+    if (name !== 'graph' && !RENDER[name]) name = 'graph';
+    current = name;
+    document.querySelectorAll('#vsw button').forEach(b => b.classList.toggle('on', b.dataset.v === name));
+    document.querySelectorAll('.vw').forEach(v => { v.hidden = v.id !== 'view-' + name; });
+    const vis = (id, on) => { const e = document.getElementById(id); if (e) e.style.display = on ? '' : 'none'; };
+    vis('zoombar', name === 'graph'); vis('lbl-hints', name === 'graph'); vis('lbl-common', name !== 'timeline' && name !== 'flow');
+    if (RENDER[name]) RENDER[name](document.getElementById('view-' + name));
+    try { localStorage.setItem('bw-view', name); } catch (e) { /* a private window */ }
+  }
+  window.bwViews = {show, refresh: () => { if (RENDER[current]) RENDER[current](document.getElementById('view-' + current)); }, get current(){ return current; }};
+  const sw = document.getElementById('vsw');
+  if (sw) sw.addEventListener('click', ev => { const b = ev.target.closest('button'); if (b) show(b.dataset.v); });
+  const n = V.order.length, suggested = n <= 25 ? 'graph' : 'connections';
+  const star = sw && sw.querySelector(`button[data-v="${suggested}"]`); if (star) star.insertAdjacentHTML('beforeend', ' <span title="suggested for ' + n + ' sites">★</span>');
+  let start = suggested;
+  try { const saved = localStorage.getItem('bw-view'); if (saved && (saved === 'graph' || RENDER[saved])) start = saved; } catch (e) { /* ignore */ }
+  if (start !== 'graph') show(start);
+  let rt = null;
+  window.addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => { if (current !== 'graph') window.bwViews.refresh(); }, 200); });
+})();
+</script>

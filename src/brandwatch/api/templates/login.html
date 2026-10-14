@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Sign in{% endblock %}
+{% block content %}
+<div class="panel" style="max-width:420px;margin:60px auto">
+  <div class="mono small" style="letter-spacing:.16em;color:var(--accent2)">BRANDWATCH</div>
+  <p style="margin:6px 0 14px;line-height:1.5">Finds websites impersonating your brand, proves it with tamper-proof evidence, maps the attacker's servers and drafts the takedown — a human decides every step.</p>
+  <h1>Sign in</h1>
+  {% if error %}<div class="error">{{ error }}</div>{% endif %}
+  <form method="post" action="/ui/login">
+    <input type="hidden" name="next" value="{{ next }}">
+    <label>Username or email</label><input type="text" name="email" autocomplete="username" required autofocus>
+    <label>Password</label><input type="password" name="password" required>
+    <div style="margin-top:14px"><button class="primary" type="submit">Sign in</button></div>
+  </form>
+  {% if demo_mode %}<p style="margin-top:14px"><span class="pill" style="color:var(--accent2);border-color:var(--accent)">DEMO · admin / admin · recorded scenarios, offline, $0</span></p>
+  {% else %}<p class="muted small" style="margin-top:14px">Sign in with the admin account configured in <span class="mono">.env</span>; add analysts in Settings → Users.</p>{% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,104 @@
+{# Google search queries: the AI proposes, the analyst edits and approves. Google search runs only
+   with the approved list (every scan, and the scheduled scan). Context: brand (incl. search_queries,
+   config), cfg, can_write, scheduler_on. #}
+{% set sq = brand.search_queries %}
+{% set qmax = cfg.detection.search_queries_max %}
+{% set mkpairs = search_pairs(cfg.detection) %}{% set geos = mkpairs %}
+{% set search_on = 'search' in cfg.detection.streams %}
+{% set rows = sq.queries if sq.approved else sq.proposal %}
+<style>
+  #queries{scroll-margin-top:90px}
+  #queries .qstate{border-radius:12px;padding:10px 12px;margin:4px 0 12px;font-size:13px;border:1px solid var(--border);background:var(--panel2)}
+  #queries .qstate.pending{border-color:rgba(255,159,28,.6);background:rgba(255,159,28,.07)}
+  #queries .qstate.ok{border-color:rgba(46,204,113,.45);background:rgba(46,204,113,.05)}
+  #queries .qstate.new{border-color:rgba(53,199,242,.55);background:rgba(53,199,242,.05)}
+  #queries .qstate b{font-size:13.5px}
+  #queries .qlist{display:grid;gap:6px;counter-reset:q}
+  #queries .qrow{display:grid;grid-template-columns:28px minmax(0,1fr) auto;gap:8px;align-items:center}
+  #queries .qrow::before{counter-increment:q;content:counter(q);font:600 11px var(--mono);color:var(--muted);text-align:right}
+  #queries .qrow input{width:100%;min-width:0}
+  #queries .qrow.over input{opacity:.55}
+  #queries .qrow.over::after{content:"over the limit of {{ qmax }} per scan — not searched";grid-column:2/4;font-size:11px;color:var(--muted);margin-top:-2px}
+  #queries .qrow button{padding:5px 10px}
+  #queries .chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+  #queries .chip{font:12px var(--mono);border:1px solid var(--border);border-radius:999px;padding:2px 9px}
+  #queries .chip.add{color:var(--low);border-color:rgba(46,204,113,.5)}
+  #queries .chip.del{color:var(--crit);border-color:rgba(255,77,77,.5);text-decoration:line-through}
+  #queries .runs{font-size:12.5px;color:#c3cdd9;margin:12px 0 0;line-height:1.55}
+</style>
+<div class="panel" style="margin-top:14px" id="queries">
+  <h2>Google search queries <span class="muted">· what BrandWatch types into Google on every scan — the AI proposes, you approve</span></h2>
+  {% if request and request.query_params.get('queries') == 'approved' %}<div class="small" style="color:var(--low);margin-bottom:6px">✓ Queries approved — the next scan searches Google with exactly this list</div>{% endif %}
+
+  {% if sq.status == 'pending' %}
+    <div class="qstate pending"><b style="color:var(--high)">Waiting for your approval.</b>
+      Google search is skipped until you approve a list, so nothing is searched with words you did not check.
+      <div class="small muted" style="margin-top:4px">Proposed by: {{ sq.proposal_source }}</div></div>
+  {% elif sq.status == 'configured' %}
+    <div class="qstate ok"><b style="color:var(--low)">In use</b> · set earlier in the detection configuration, which counts as approved. Approving here replaces it.</div>
+  {% else %}
+    <div class="qstate ok"><b style="color:var(--low)">Approved</b> by {{ sq.approved_by or '—' }} · {{ (sq.approved_at or '')[:16].replace('T', ' ') }} UTC — every scan uses this list.</div>
+  {% endif %}
+  {% if sq.new_proposal %}
+    <div class="qstate new"><b style="color:var(--accent2)">The AI proposes a different list</b> after the official site was fingerprinted again (v{{ brand.baseline.version if brand.baseline else '?' }}). Nothing changes until you approve.
+      <div class="chips">{% for q in sq.added %}<span class="chip add">+ {{ q }}</span>{% endfor %}{% for q in sq.removed %}<span class="chip del">{{ q }}</span>{% endfor %}</div></div>
+  {% endif %}
+
+  <form method="post" action="/ui/brands/{{ brand.id }}/search-queries" id="qform">
+    <div class="qlist" id="qlist">
+      {% for q in rows %}
+      <div class="qrow{{ ' over' if loop.index > qmax }}"><input name="q" value="{{ q }}" maxlength="100" dir="auto" {{ 'disabled' if not can_write }}>
+        {% if can_write %}<button type="button" class="ghost qdel" title="remove this query" aria-label="remove {{ q }}">✕</button>{% endif %}</div>
+      {% endfor %}
+    </div>
+    {% if can_write %}
+    <div class="actions" style="margin-top:10px">
+      <button type="button" id="qadd">+ Add a query</button>
+      <button type="button" id="qai" title="asks the AI for a fresh list from the brand's name, site and type — nothing is saved until you approve">✨ Ask the AI again</button>
+      {% if sq.approved %}<button type="button" id="qreset" title="put the AI's current proposal in the list (not saved)">Load the AI's proposal</button>{% endif %}
+      <button type="submit" class="primary">Approve these queries</button>
+      <span class="small muted" id="qmsg"></span>
+    </div>
+    {% endif %}
+  </form>
+
+  <p class="runs">
+    {% if not search_on %}<b>The “search” stream is off</b> in this brand's detection track, so Google is not searched at all; the list is used once you switch it on.<br>{% endif %}
+    Each scan searches the first <b>{{ qmax }}</b> queries in <b>{% for g in mkpairs %}{{ g[0]|upper }} ({{ g[1] }}){{ ', ' if not loop.last }}{% endfor %}</b>:
+    up to <b>{{ [rows|length, qmax]|min * geos|length }}</b> Google searches (SerpApi, about ${{ '%.2f'|format([rows|length, qmax]|min * geos|length * 0.01) }}).
+    {% if scheduler_on %}The scheduled scan repeats this every <b>{{ cfg.detection.scan_interval_hours }} h</b> once a first scan has run.
+    {% else %}<span style="color:var(--high)">Scheduled scans are off on this server</span>, so Google is searched only when someone starts a scan.{% endif %}
+    Every result is triaged before it is visited: the brand's own site and well-known platforms are skipped.
+  </p>
+</div>
+<script>
+(function(){
+  const list = document.getElementById('qlist'); if (!list) return;
+  const max = {{ qmax }}, proposal = {{ sq.proposal|tojson }};
+  const msg = document.getElementById('qmsg');
+  const mark = () => [...list.children].forEach((r, i) => r.classList.toggle('over', i >= max));
+  const row = (v) => {
+    const d = document.createElement('div'); d.className = 'qrow';
+    d.innerHTML = '<input name="q" maxlength="100" dir="auto"><button type="button" class="ghost qdel" title="remove this query">✕</button>';
+    d.querySelector('input').value = v || ''; list.appendChild(d); return d;
+  };
+  const fill = (qs) => { list.innerHTML = ''; qs.forEach(q => row(q)); mark(); };
+  list.addEventListener('click', e => { const b = e.target.closest('.qdel'); if (b) { b.parentElement.remove(); mark(); } });
+  const add = document.getElementById('qadd');
+  if (add) add.addEventListener('click', () => { row('').querySelector('input').focus(); mark(); });
+  const reset = document.getElementById('qreset');
+  if (reset) reset.addEventListener('click', () => { fill(proposal); msg.textContent = 'AI proposal loaded — edit it, then approve.'; });
+  const ai = document.getElementById('qai');
+  if (ai) ai.addEventListener('click', async () => {
+    ai.disabled = true; msg.textContent = 'asking the AI…';
+    try {
+      const r = await fetch('/api/brands/{{ brand.id }}/search-queries/suggest', {method: 'POST', credentials: 'same-origin'});
+      const j = await r.json();
+      if (!j.available) { msg.textContent = j.reason || 'no suggestion'; return; }
+      fill(j.queries || []);
+      msg.textContent = `AI list loaded (${j.vertical || 'business type unknown'}) — check it, edit, then approve.`;
+    } catch (e) { msg.textContent = 'could not reach the AI: ' + e; }
+    finally { ai.disabled = false; }
+  });
+})();
+</script>

@@ -1,0 +1,171 @@
+{% extends "base.html" %}
+{% block title %}Findings{% endblock %}
+{% set s = stats %}
+{% block content %}
+{% import "_macros.html" as m %}
+<style>
+  .hbar{display:grid;grid-template-columns:96px 1fr 34px;gap:8px;align-items:center;margin:7px 0;font-size:12px}
+  .hbar .bar{height:6px}.hbar b{font-family:var(--mono);font-weight:400;color:var(--muted);text-align:right}
+</style>
+<div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:12px">
+  <h1 style="margin:0">FINDINGS <span class="muted">· ranked by severity, then score · {{ findings|length }} shown</span></h1>
+</div>
+<p class="intro">{{ PAGE_INTROS.findings }}</p>
+
+<div class="kpis">
+  <a class="kpi crit {{ 'on' if filters.severity=='critical' }}" href="?state=open&severity=critical{{ '&brand_id=' ~ filters.brand_id if filters.brand_id }}"><div class="v" data-count="{{ s.open_sev.critical }}">0</div><div class="l"><span class="pulse"></span> critical open</div></a>
+  <a class="kpi hi {{ 'on' if filters.severity=='high' }}" href="?state=open&severity=high{{ '&brand_id=' ~ filters.brand_id if filters.brand_id }}"><div class="v" data-count="{{ s.open_sev.high }}">0</div><div class="l">high open</div></a>
+  <a class="kpi med {{ 'on' if filters.severity=='medium' }}" href="?state=open&severity=medium{{ '&brand_id=' ~ filters.brand_id if filters.brand_id }}"><div class="v" data-count="{{ s.open_sev.medium }}">0</div><div class="l">medium open</div></a>
+  <a class="kpi cy {{ 'on' if filters.state=='open' and not filters.severity }}" href="?state=open{{ '&brand_id=' ~ filters.brand_id if filters.brand_id }}"><div class="v" data-count="{{ s.open_total }}">0</div><div class="l">awaiting verdict</div></a>
+  <a class="kpi ok {{ 'on' if filters.state=='confirmed' }}" href="?state=confirmed{{ '&brand_id=' ~ filters.brand_id if filters.brand_id }}"><div class="v" data-count="{{ s.by_state.get('confirmed', 0) }}">0</div><div class="l">confirmed phishing</div></a>
+  <a class="kpi {{ 'on' if filters.state=='dismissed' }}" href="?state=dismissed{{ '&brand_id=' ~ filters.brand_id if filters.brand_id }}"><div class="v" data-count="{{ s.by_state.get('dismissed', 0) }}">0</div><div class="l">dismissed</div></a>
+  <div class="kpi vi"><div class="v" data-count="{{ s.avg_confidence }}" data-suffix="%">0</div><div class="l">avg confidence</div></div>
+  <div class="kpi mg"><div class="v" data-count="{{ s.new_24h }}">0</div><div class="l">new in 24h</div></div>
+</div>
+
+<h2 style="margin:18px 0 8px">Statistics <span class="muted">· across open findings{{ " of the chosen brand" if filters.brand_id }}</span></h2>
+<div class="grid fstats" style="grid-template-columns:repeat(auto-fit,minmax(260px,1fr))">
+  <div class="panel">
+    <h2>Open by severity <span class="muted">· Medium ≥ 25 · High ≥ 50 · Critical ≥ 75</span></h2>
+    <div class="donut-wrap">
+      <svg class="donut" data-donut='{{ s.sev_segments|tojson }}' data-center="open"></svg>
+      <div class="legend">{% for seg in s.sev_segments %}<div><i style="background:{{ seg.color }}"></i>{{ seg.label }}<b>{{ seg.value }}</b></div>{% endfor %}
+        {% if not s.sev_segments %}<span class="muted small">no open findings</span>{% endif %}</div>
+    </div>
+  </div>
+  <div class="panel">
+    <h2>Why things are flagged <span class="muted">· signals fired per group across open findings</span></h2>
+    {% set gmax = (s.group_segments|map(attribute='value')|max) if s.group_segments else 1 %}
+    {% for seg in s.group_segments %}
+    <div class="hbar"><span>{{ seg.key|group_label }}</span><div class="bar"><i data-w="{{ (seg.value / gmax * 100)|round|int }}"></i></div><b>{{ seg.value }}</b></div>
+    {% endfor %}
+    {% if not s.group_segments %}<p class="muted small">No open findings.</p>{% endif %}
+  </div>
+  <div class="panel">
+    <h2>Risk score distribution</h2>
+    <div class="hist">
+      {% for n in s.histogram %}{% set c = ['#2ECC71','#2ECC71','#F5C518','#F5C518','#F5C518','#FF9F1C','#FF9F1C','#FF4D4D','#FF4D4D','#FF4D4D'][loop.index0] %}
+      <i data-h="{{ (n / s.hist_max * 100)|round|int }}" style="--c:{{ c }}" title="{{ loop.index0*10 }}–{{ loop.index0*10+9 }}: {{ n }}">{% if n %}<b>{{ n }}</b>{% endif %}<span>{{ loop.index0*10 }}</span></i>{% endfor %}
+    </div>
+  </div>
+  <div class="panel">
+    <h2>New findings · 14 days</h2>
+    <svg class="spark" data-spark='{{ {"series": [{"values": s.per_day, "color": "#35C7F2"}]}|tojson }}'></svg>
+    <div class="small muted" style="display:flex;justify-content:space-between;margin-top:6px"><span>14 days ago</span><span>today · {{ s.per_day[-1] }}</span></div>
+    <h2>Surface <span class="muted">· where the brand appears: domain name · subdomain · URL path</span></h2>
+    <div class="stack">{% set tot = (s.surface_segments|sum(attribute='value')) or 1 %}{% for seg in s.surface_segments %}<i data-w="{{ (seg.value / tot * 100)|round(1) }}" style="background:{{ seg.color }}" title="{{ seg.label }}: {{ seg.value }}"></i>{% endfor %}</div>
+    <div class="small muted" style="margin-top:6px">{% for seg in s.surface_segments %}<span style="color:{{ seg.color }}">■</span> {{ seg.label }} {{ seg.value }} &nbsp;{% endfor %}</div>
+  </div>
+  <div class="panel">
+    <h2>Top fired signals</h2>
+    {% for t in s.top_signals %}
+    <div style="display:grid;grid-template-columns:1fr 34px;gap:8px;align-items:center;margin:6px 0">
+      <div><div class="small" title="{{ t.name }}">{{ t.label }}</div><div class="bar" style="height:6px;margin-top:3px"><i data-w="{{ t.pct }}"></i></div></div>
+      <div class="mono small right">{{ t.count }}</div>
+    </div>
+    {% endfor %}
+    {% if not s.top_signals %}<p class="muted small">No signals yet.</p>{% endif %}
+    <p class="small muted" style="margin-top:14px">Every signal belongs to one of 7 groups, and each group has a points cap so correlated evidence is not counted twice. Hover a signal for its evidence and points. <a href="/ui/how-it-works#g-signal">How scoring works →</a></p>
+  </div>
+</div>
+<div class="ftable-wrap" style="margin-top:14px">
+  <div class="panel" style="padding-top:10px;overflow-x:auto">
+    {% set bname = {} %}{% for b in brands %}{% set _ = bname.update({b.id|string: b.name}) %}{% endfor %}
+    {% set keep = '&state=' ~ filters.state ~ '&severity=' ~ filters.severity ~ '&kind=' ~ filters.kind %}
+    {% if brand_chips|length > 1 %}<div class="bchips" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px">
+      <a class="btn {{ 'primary' if not filters.brand_id }}" style="padding:4px 12px;font-size:12.5px;{{ 'border-color:var(--accent);color:var(--accent2)' if not filters.brand_id }}" href="/ui/findings?brand_id={{ keep }}">All brands <b>{{ brand_total }}</b></a>
+      {% for b in brand_chips %}<a class="btn" style="padding:4px 12px;font-size:12.5px;{{ 'border-color:var(--accent);color:var(--accent2)' if filters.brand_id == b.id }}" href="/ui/findings?brand_id={{ b.id }}{{ keep }}">{{ b.name }} <b>{{ b.count }}</b></a>{% endfor %}
+    </div>{% endif %}
+    <form method="get" action="/ui/findings" class="actions" style="margin-bottom:8px">
+      <div><label>Brand</label><select name="brand_id" onchange="this.form.submit()"><option value="">all</option>{% for b in brands %}<option value="{{ b.id }}" {{ 'selected' if filters.brand_id==b.id }}>{{ b.name }}</option>{% endfor %}</select></div>
+      <div><label>State</label><select name="state" onchange="this.form.submit()"><option value="">all</option>{% for st in FindingStates %}<option value="{{ st }}" {{ 'selected' if filters.state==st }}>{{ st }}</option>{% endfor %}</select></div>
+      <div><label>Severity</label><select name="severity" onchange="this.form.submit()"><option value="">all</option>{% for sv in Severity %}<option value="{{ sv }}" {{ 'selected' if filters.severity==sv }}>{{ sv }}</option>{% endfor %}</select></div>
+      <div><label>Kind</label><select name="kind" onchange="this.form.submit()"><option value="">all</option><option value="phishing" {{ 'selected' if filters.kind=='phishing' }}>phishing</option><option value="shop" {{ 'selected' if filters.kind=='shop' }}>suspicious shop</option><option value="social" {{ 'selected' if filters.kind=='social' }}>fake social account</option></select></div>
+      <div><label>Search host</label><input id="q" placeholder="type to filter…" autocomplete="off"></div>
+      <div><label>View</label><label class="shotsw" title="a screenshot next to every site (off by default: the list stays short)"><input type="checkbox" id="t-shots"> show screenshots</label></div>
+      <div><button type="submit">Apply</button></div>
+    </form>
+    {% set bulk = request.query_params.get('bulk') or '' %}
+    {% if bulk %}{% set bp = bulk.split(':') %}<div class="panel small" style="border-color:rgba(46,204,113,.5);margin-bottom:8px"><b>{{ bp[1] }} finding{{ '' if bp[1] == '1' else 's' }} {{ 'confirmed as phishing' if bp[0] == 'confirm' else 'dismissed as not phishing' }}.</b>
+      {% if bp|length > 2 and bp[2] != '0' %}{{ bp[2] }} skipped (not open any more).{% endif %}
+      {% if bp[0] == 'confirm' %}Map and investigate them together from <a href="/ui/campaigns#confirmed">Attack infrastructure</a> (MAP ALL · INVESTIGATE ALL).{% endif %}</div>{% endif %}
+    {% if can_write and findings %}<form id="bulkform" method="post" action="/ui/findings/bulk" class="bulkbar" hidden>
+      <input type="hidden" name="next" value="{{ request.url.path }}{{ '?' ~ request.url.query if request.url.query }}">
+      <b id="bulkn">0 selected</b>
+      <input name="reason" placeholder="reason (optional, kept in the audit log)" maxlength="2000">
+      <button type="submit" name="action" value="confirm" class="primary" data-confirm="Confirm {n} finding(s) as phishing? They move to Attack infrastructure; map and investigate them there with MAP ALL and INVESTIGATE ALL." data-confirm-count=".sel:checked" data-confirm-title="Confirm phishing" data-confirm-ok="✓ Confirm phishing">✓ Confirm phishing</button>
+      <button type="submit" name="action" value="dismiss" data-confirm="Dismiss {n} finding(s) as not phishing? They leave the open list; the verdict is kept and teaches the classifier." data-confirm-count=".sel:checked" data-confirm-title="Not phishing" data-confirm-ok="✕ Dismiss them" data-confirm-danger>✕ Not phishing</button>
+      <button type="button" id="bulkclear" class="small">clear</button>
+    </form>{% endif %}
+    {% if findings %}
+    <table id="ftable">
+      <tr>{% if can_write %}<th class="selcol"><input type="checkbox" id="selall" title="select every finding shown"></th>{% endif %}<th class="shotcol">Screenshot</th><th>Severity</th><th>Host</th><th>Score</th><th>Conf.</th><th>Signals</th><th>State</th><th>Found</th></tr>
+      {% for f in findings %}
+      <tr class="sevrow {{ f.severity }}" data-host="{{ f.hostname }}">
+        {% if can_write %}<td class="selcol">{% if f.state == 'open' %}<input type="checkbox" class="sel" name="ids" value="{{ f.id }}" form="bulkform" title="select for a verdict on many at once">{% endif %}</td>{% endif %}
+        <td class="shotcol">{% if f.thumbnail_url %}<img class="bigshot" data-src="{{ f.thumbnail_url }}" alt="screenshot of {{ f.hostname }}" title="click to enlarge" data-host="{{ f.hostname }}" data-href="/ui/findings/{{ f.id }}">{% else %}<div class="noshot">{{ f.preview_note or 'no screenshot' }}</div>{% endif %}</td>
+        <td><span class="badge sev-{{ f.severity }}">{{ f.severity }}</span>{% if f.kind == 'shop' %}<div style="margin-top:4px"><span class="badge" style="border:1px solid {{ 'var(--crit)' if f.shop_level and f.shop_level.level != 'suspicious_retailer' else 'var(--high)' }};color:{{ 'var(--crit)' if f.shop_level and f.shop_level.level != 'suspicious_retailer' else 'var(--high)' }}" title="{{ f.shop_level.label if f.shop_level else 'Suspicious shop' }} — {{ f.shop_level.help if f.shop_level else '' }}">shop · {{ f.shop_level.short if f.shop_level else 'suspicious' }}</span></div>{% elif f.kind == 'social' %}<div style="margin-top:4px"><span class="badge" style="border:1px solid var(--accent);color:var(--accent2)" title="a Facebook page or Instagram profile that poses as the brand">social</span></div>{% endif %}{% if f.cloaked %}<div style="margin-top:4px">{{ m.cloaked_badge(true) }}</div>{% endif %}</td>
+        <td><a href="/ui/findings/{{ f.id }}">{{ m.host(f.hostname, f.host_display, f.is_idn) }}</a>{% if not filters.brand_id and brand_chips|length > 1 and bname.get(f.brand_id) %} <span class="pill" style="font-size:10.5px;padding:0 7px" title="the brand this finding is about">{{ bname.get(f.brand_id) }}</span>{% endif %}<div class="small muted">{{ SURFACE_LABELS.get(f.surface, f.surface) }} · found by {{ f.sources|map('stream_label')|unique|join(', ') }}{% if f.kind == 'social' %} · <a href="/ui/findings/{{ f.id }}#social" title="the account, its content and Report to Meta">account</a> · {% else %} · <a href="/ui/findings/{{ f.id }}#network" title="site & network investigation: servers, WHOIS history, urlscan">network</a> · {% endif %}<a href="/ui/candidates/{{ f.candidate_id }}" title="domain timeline on the watchlist">timeline</a></div></td>
+        <td class="mono" style="white-space:nowrap">{{ f.score if f.score is not none else '—' }}{% if f.score is not none %}<span class="scorebar"><i data-w="{{ f.score }}"></i></span>{% endif %}
+          {% if f.kind != 'social' %}<span style="margin-left:6px">{{ m.vt(f.vt) }}</span>{% endif %}</td>
+        <td>{% if f.confidence is not none %}<div class="ring sm" data-p="{{ f.confidence|round|int }}" style="--c:{{ 'var(--accent)' if f.confidence >= 85 else 'var(--muted)' }}" title="confidence in the evidence: {{ f.confidence|round|int }}%"><div>{{ f.confidence|round|int }}</div></div>{% else %}—{% endif %}</td>
+        <td class="small" style="max-width:360px">{{ m.pills(f.signal_items, 4, '/ui/findings/' ~ f.id) }}</td>
+        <td><span class="badge state st-{{ f.state }}" title="{{ STATE_HELP.get(f.state, '') }}">{{ f.state|state_label }}</span></td>
+        <td class="mono small muted" data-rel="{{ f.created_at }}">{{ f.created_at[:16].replace('T',' ') }}</td>
+      </tr>
+      {% endfor %}
+    </table>
+    {% else %}
+    <p class="muted">No findings match. Run a scan from <a href="/ui/brands">Brands &amp; Scans</a>.</p>
+    {% endif %}
+  </div>
+</div>
+<div id="shotbox" hidden><div class="inner"><img alt=""><div class="cap"><b class="mono"></b> <a>open the finding →</a> <button type="button" class="small">close ✕</button></div></div></div>
+<style>
+  .shotsw{display:flex;gap:6px;align-items:center;text-transform:none;letter-spacing:0;font-size:13px;color:var(--text);cursor:pointer;margin-top:6px}
+  .shotsw input{width:auto;margin:0}
+  #ftable:not(.shots) .shotcol{display:none}
+  .bigshot{width:220px;height:138px;object-fit:cover;object-position:top;border:1px solid var(--border);border-radius:6px;background:#000;cursor:zoom-in;display:block}
+  .noshot{width:220px;height:138px;border:1px dashed var(--border);border-radius:6px;display:flex;align-items:center;justify-content:center;text-align:center;padding:10px;font-size:11.5px;color:var(--muted)}
+  .selcol{width:28px}
+  .selcol input{width:16px;height:16px;margin:0;cursor:pointer}
+  .bulkbar{position:sticky;top:8px;z-index:20;display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:8px 12px;margin-bottom:8px;border:1px solid var(--accent);border-radius:10px;background:rgba(10,18,30,.97);box-shadow:0 8px 24px rgba(0,0,0,.45)}
+  .bulkbar[hidden]{display:none}
+  .bulkbar input[name=reason]{flex:1;min-width:200px;margin:0}
+  #shotbox{position:fixed;inset:0;z-index:60;background:rgba(3,6,10,.85);display:flex;align-items:center;justify-content:center;padding:20px}
+  #shotbox[hidden]{display:none}
+  #shotbox .inner{max-width:min(1200px,96vw);max-height:92vh;display:flex;flex-direction:column;gap:8px}
+  #shotbox img{max-width:100%;max-height:82vh;object-fit:contain;border:1px solid var(--border);border-radius:8px;background:#000}
+  #shotbox .cap{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+  #shotbox .cap button{margin-left:auto}
+</style>
+<script>
+(function(){
+  // screenshots next to every site: a view the analyst switches on (remembered in this browser), off by default
+  const table = document.getElementById('ftable'), sw = document.getElementById('t-shots');
+  const showShots = on => { if (!table) return; table.classList.toggle('shots', on); if (on) table.querySelectorAll('img.bigshot[data-src]').forEach(i => { i.src = i.dataset.src; i.removeAttribute('data-src'); }); };
+  let on = false; try { on = localStorage.getItem('bw-findings-shots') === '1'; } catch (e) { /* private window */ }
+  if (sw) { sw.checked = on; sw.addEventListener('change', () => { showShots(sw.checked); try { localStorage.setItem('bw-findings-shots', sw.checked ? '1' : '0'); } catch (e) { /* ignore */ } }); }
+  showShots(on);
+  const box = document.getElementById('shotbox');
+  if (table && box) {
+    table.addEventListener('click', ev => { const im = ev.target.closest('img.bigshot'); if (!im) return; box.querySelector('img').src = im.src; box.querySelector('b').textContent = im.dataset.host; box.querySelector('a').href = im.dataset.href; box.hidden = false; });
+    box.addEventListener('click', ev => { if (ev.target === box || ev.target.closest('button')) box.hidden = true; });
+    document.addEventListener('keydown', ev => { if (ev.key === 'Escape') box.hidden = true; });
+  }
+  // one verdict for many: tick the rows, then Confirm phishing or Not phishing
+  const bar = document.getElementById('bulkform'), all = document.getElementById('selall');
+  const visible = () => [...document.querySelectorAll('#ftable tr[data-host]')].filter(tr => tr.style.display !== 'none').map(tr => tr.querySelector('.sel')).filter(Boolean);
+  const count = () => { const n = document.querySelectorAll('.sel:checked').length; if (bar) { bar.hidden = n === 0; document.getElementById('bulkn').textContent = n + ' selected'; } if (all) { const v = visible(); all.checked = v.length > 0 && v.every(c => c.checked); } };
+  document.querySelectorAll('.sel').forEach(c => c.addEventListener('change', count));
+  if (all) all.addEventListener('change', () => { visible().forEach(c => { c.checked = all.checked; }); count(); });
+  const clear = document.getElementById('bulkclear'); if (clear) clear.addEventListener('click', () => { document.querySelectorAll('.sel:checked').forEach(c => { c.checked = false; }); count(); });
+  count();
+})();
+(function(){
+  const q = document.getElementById('q'); if (!q) return;
+  q.addEventListener('input', () => { const v = q.value.toLowerCase();
+    document.querySelectorAll('#ftable tr[data-host]').forEach(tr => tr.style.display = tr.dataset.host.includes(v) ? '' : 'none'); });
+})();
+</script>
+{% endblock %}

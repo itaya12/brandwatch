@@ -1,0 +1,446 @@
+{% extends "base.html" %}
+{% block title %}{{ brand.name }}{% endblock %}
+{% set cfg = brand.config %}
+{% set custom = brand.config_custom %}
+{% set running = (jobs or [])|selectattr('state', 'in', ['queued','running'])|list %}
+{% block content %}
+{% import "_macros.html" as m %}
+<style>
+  details.adv{margin-top:18px;border:1px solid var(--border);border-radius:10px;padding:10px 14px;background:var(--panel)}
+  details.adv > summary{cursor:pointer;font-size:13px}
+  details.adv[open] > summary{margin-bottom:6px}
+  /* ---- START SCAN hero ---- */
+  .scanhero{display:grid;grid-template-columns:1fr auto;gap:18px;align-items:center;padding:18px 22px;margin-top:14px;
+    border:1px solid rgba(53,199,242,.35);background:linear-gradient(120deg,rgba(53,199,242,.10),rgba(14,20,32,.96) 50%,rgba(167,139,250,.10))}
+  .scanhero h2{margin-top:0}
+  .scanhero .track{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:13px}
+  .scanhero .track b{font-family:var(--display);font-size:22px;letter-spacing:.04em}
+  .tr-basic{color:var(--low)}.tr-standard{color:var(--accent2)}.tr-enterprise{color:var(--magenta)}
+  .scanhero .what{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+  .startscan{position:relative;display:inline-flex;align-items:center;gap:14px;padding:18px 34px;border:0;border-radius:14px;cursor:pointer;text-align:left;
+    font-family:var(--display);font-size:26px;font-weight:700;letter-spacing:.10em;text-transform:uppercase;color:#06101c;
+    background:linear-gradient(90deg,var(--accent2),var(--accent) 55%,#2386a6);box-shadow:0 0 0 1px rgba(53,199,242,.5),0 12px 40px rgba(53,199,242,.35);
+    transition:transform .2s,box-shadow .2s;animation:ssglow 2.6s ease-in-out infinite}
+  .startscan:hover{transform:translateY(-2px) scale(1.02);box-shadow:0 0 0 1px rgba(95,227,255,.9),0 16px 50px rgba(53,199,242,.55)}
+  .startscan .ico{width:36px;height:36px;border-radius:50%;border:3px solid #06101c;display:grid;place-items:center;font-size:15px;flex:none}
+  .startscan small{display:block;font-family:var(--mono);font-size:10px;letter-spacing:.14em;opacity:.75;font-weight:400;text-transform:none}
+  @keyframes ssglow{0%,100%{box-shadow:0 0 0 1px rgba(53,199,242,.5),0 12px 40px rgba(53,199,242,.3)}50%{box-shadow:0 0 0 1px rgba(95,227,255,.9),0 12px 56px rgba(53,199,242,.55)}}
+  .runlink{display:inline-flex;align-items:center;gap:12px;padding:16px 26px;border-radius:14px;border:1px solid var(--accent);font-family:var(--display);font-size:22px;letter-spacing:.06em;color:var(--accent2)}
+  details.urls summary{cursor:pointer;color:var(--accent);font-size:12px;font-family:var(--mono);letter-spacing:.06em;text-transform:uppercase}
+  @media (max-width:900px){.scanhero{grid-template-columns:1fr}.startscan{width:100%;justify-content:center;font-size:22px}}
+
+  /* ---- track cards ---- */
+  .tracks{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+  @media (max-width:900px){.tracks{grid-template-columns:1fr}}
+  .track-card{position:relative;overflow:hidden;cursor:pointer;display:block;padding:16px;border:1px solid var(--border);border-radius:12px;
+    background:linear-gradient(170deg,rgba(18,26,43,.96),rgba(10,15,26,.96));transition:transform .25s,border-color .25s,box-shadow .25s;text-transform:none;margin:0;color:var(--text);font-family:var(--sans);font-size:14px;letter-spacing:0}
+  .track-card input{position:absolute;opacity:0;pointer-events:none;width:auto}
+  .track-card::before{content:"";position:absolute;inset:0 auto 0 0;width:4px;background:var(--tc);box-shadow:0 0 14px var(--tc);opacity:.5;transition:opacity .25s}
+  .track-card::after{content:"";position:absolute;right:-60px;top:-60px;width:170px;height:170px;border-radius:50%;background:radial-gradient(circle,color-mix(in srgb,var(--tc) 20%,transparent),transparent 70%)}
+  .track-card.basic{--tc:var(--low)}.track-card.standard{--tc:var(--accent2)}.track-card.enterprise{--tc:var(--magenta)}
+  .track-card:hover{transform:translateY(-3px);border-color:var(--tc)}
+  .track-card.on{border-color:var(--tc);box-shadow:0 0 0 1px var(--tc),0 14px 40px rgba(0,0,0,.45),0 0 40px color-mix(in srgb,var(--tc) 22%,transparent)}
+  .track-card.on::before{opacity:1}
+  .track-card .hd{display:flex;align-items:center;gap:10px}
+  .track-card .lvl{width:30px;height:30px;border-radius:50%;border:2px solid var(--tc);color:var(--tc);display:grid;place-items:center;font-family:var(--mono);font-weight:600;flex:none}
+  .track-card b{font-family:var(--display);font-size:24px;letter-spacing:.04em;color:var(--tc)}
+  .track-card .tag{margin-left:auto;font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);border:1px solid var(--border);border-radius:999px;padding:2px 8px}
+  .track-card.on .tag{color:var(--tc);border-color:var(--tc)}
+  .track-card p{color:var(--muted);font-size:12.5px;margin:10px 0;line-height:1.5;min-height:3em}
+  .track-card ul{list-style:none;margin:0;padding:0;display:grid;gap:4px;font-family:var(--mono);font-size:11px}
+  .track-card li::before{content:"▸ ";color:var(--tc)}
+  .track-card .chk{position:absolute;right:14px;bottom:12px;width:22px;height:22px;border-radius:50%;background:var(--tc);color:#06101c;display:grid;place-items:center;font-size:13px;opacity:0;transform:scale(.6);transition:all .25s}
+  .track-card.on .chk{opacity:1;transform:none}
+  .customhd{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:14px}
+  .toggle{display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border:1px solid var(--border);border-radius:999px;background:var(--panel2);cursor:pointer;font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);transition:all .2s}
+  .toggle.on,.toggle:hover{color:var(--text);border-color:var(--accent);box-shadow:0 0 12px rgba(53,199,242,.2)}
+  .toggle .sw{width:30px;height:16px;border-radius:999px;background:#1E2A3D;position:relative;transition:background .2s}
+  .toggle .sw::after{content:"";position:absolute;top:2px;left:2px;width:12px;height:12px;border-radius:50%;background:var(--muted);transition:all .2s}
+  .toggle.on .sw{background:rgba(53,199,242,.4)}.toggle.on .sw::after{left:16px;background:var(--accent2)}
+  #custom{margin-top:14px;animation:fadeUp .4s both}#custom.hidden{display:none}
+  .cfgcard{padding:12px 14px;border:1px solid var(--border);border-radius:10px;background:rgba(8,11,20,.5)}
+  .cfgcard h3{margin:0 0 6px;font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent2)}
+  .chkrow{display:flex;flex-wrap:wrap;gap:6px 14px;margin:4px 0}
+  .chkrow label{display:inline-flex;align-items:center;gap:6px;text-transform:none;margin:0;color:var(--text);font-family:var(--sans);font-size:13px;letter-spacing:0}
+  .chkrow input{width:auto}
+  .savebar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:14px;padding-top:14px;border-top:1px dashed var(--border)}
+</style>
+{% set crumbs = [("Brands & Scans", "/ui/brands"), (brand.name, none)] %}
+{% set crumb_links = [("Findings", "/ui/findings?brand_id=" ~ brand.id), ("Watchlist", "/ui/candidates?brand_id=" ~ brand.id), ("Attack infrastructure", "/ui/campaigns?brand_id=" ~ brand.id), ("Takedowns", "/ui/takedowns?brand_id=" ~ brand.id)] %}
+{% include "_crumbs.html" %}
+<h1>{{ brand.name }} <span class="muted small">· {{ brand.vertical or 'vertical unknown' }} · {% for d in brand.domains %}<span class="mono">{{ d }}</span>{{ ' · ' if not loop.last }}{% endfor %} · <a href="#edit" class="mono">edit ›</a></span></h1>
+{% if error %}<div class="error">{{ error }}</div>{% endif %}
+{% set bf = brand.baseline_fetch or {} %}{% if bf.source == 'urlscan' %}<div class="panel" style="border-color:rgba(255,159,28,.6);margin-top:8px"><b style="color:var(--high)">Fingerprint taken from a urlscan.io snapshot of {{ (bf.snapshot.time or '')[:10] }}</b> <span class="small">— {% if bf.ok %}the live site answers, but the snapshot was chosen{% else %}{{ bf.reason }}{% endif %}. <a href="#baseline">Options ↓</a></span></div>
+{% elif brand.baseline_blocked %}<div class="panel" style="border-color:rgba(255,77,77,.55);margin-top:8px"><b style="color:var(--crit)">The official site did not let BrandWatch in</b> <span class="small">— {{ bf.reason }}. The visual comparison with the real site is off until this is fixed. <a href="#baseline">What can I do ↓</a></span></div>{% endif %}
+{% if edited == 'domains' %}<div class="panel" style="border-color:rgba(255,159,28,.5);margin-top:8px"><b style="color:var(--high)">Official domains changed.</b> <span class="small">Rebuild the baseline so the fingerprint matches the new official site(s): <a href="#baseline">Rebuild baseline ↓</a> (the next scan does it automatically too).</span></div>
+{% elif edited == 'saved' %}<div class="panel" style="border-color:rgba(46,204,113,.5);margin-top:8px"><b style="color:var(--low)">Brand updated.</b></div>{% endif %}
+{% if request and request.query_params.get('setup') == 'saved' %}<div class="panel" style="border-color:rgba(46,204,113,.5);margin-top:8px"><b style="color:var(--low)">✓ Set up — the queries{{ ' and the profile' if brand.kind == 'retail' }} are approved.</b> Press Start scan when you are ready.</div>{% endif %}
+{% set pk = pulse.kpis if pulse else {} %}
+<div class="kpis">
+  <a class="kpi lnk crit" href="/ui/findings?brand_id={{ brand.id }}&severity=critical"><div class="v" data-count="{{ pk.critical_open or 0 }}">0</div><div class="l"><span class="pulse"></span> critical open</div></a>
+  <a class="kpi lnk hi" href="/ui/findings?brand_id={{ brand.id }}"><div class="v" data-count="{{ brand.open_findings }}">0</div><div class="l">open findings</div></a>
+  <a class="kpi lnk ok" href="/ui/findings?brand_id={{ brand.id }}&state=confirmed"><div class="v" data-count="{{ pk.findings_confirmed or 0 }}">0</div><div class="l">confirmed</div></a>
+  <a class="kpi lnk cy" href="/ui/candidates?brand_id={{ brand.id }}"><div class="v" data-count="{{ pk.candidates_total or 0 }}">0</div><div class="l">domains examined</div></a>
+  <a class="kpi lnk vi" href="/ui/candidates?brand_id={{ brand.id }}&state=watching"><div class="v" data-count="{{ pk.candidates_watching or 0 }}">0</div><div class="l">on watchlist</div></a>
+  <a class="kpi lnk mg" href="/ui/campaigns?brand_id={{ brand.id }}"><div class="v" data-count="{{ pk.campaigns or 0 }}">0</div><div class="l">infrastructure maps</div></a>
+  <a class="kpi lnk" href="#whitelist"><div class="v" data-count="{{ brand.whitelist|length }}">0</div><div class="l">whitelisted</div></a>
+  <div class="kpi"><div class="v">{% if brand.baseline %}v{{ brand.baseline.version }}{% else %}—{% endif %}</div><div class="l">baseline · {{ PRESETS[cfg.preset].label }}{{ ' · custom' if custom }}</div></div>
+</div>
+
+{# ---------------------------------------------------------------- START SCAN ---------------------------------------------------------------- #}
+<div class="panel scanhero">
+  <div style="min-width:0">
+    <h2>Scan this brand</h2>
+    <div class="track"><span class="muted">track</span> <b class="tr-{{ cfg.preset }}">{{ PRESETS[cfg.preset].label }}</b>
+      {% if custom %}<span class="badge state">custom parameters</span>{% endif %}
+      <a href="#config" class="small mono">edit search rules ›</a></div>
+    <div class="what">
+      {% for st in cfg.detection.streams %}<span class="pill">{{ st }}</span>{% endfor %}
+      <span class="pill">tlds {{ cfg.detection.tlds }}</span>
+      <span class="pill">max {{ cfg.detection.max_candidates }}</span>
+      <span class="pill" style="{{ 'color:var(--low)' if cfg.detection.cloaking_probes else 'color:var(--muted)' }}">cloaking {{ 'on' if cfg.detection.cloaking_probes else 'off' }}</span>
+      <span class="pill" style="{{ 'color:var(--low)' if cfg.detection.ai_second_opinion else 'color:var(--muted)' }}">AI {{ 'on' if cfg.detection.ai_second_opinion else 'off' }}</span>
+      <span class="pill">re-check every {{ cfg.detection.watch_cadence_hours }}h</span>
+      <span class="pill" style="{{ 'color:var(--low)' if cfg.detection.social_accounts else 'color:var(--muted)' }}" title="Facebook pages / Instagram profiles under the brand's name">social media {{ 'on' if cfg.detection.social_accounts else 'off' }}</span>
+      <a class="pill" href="#schedule" style="{{ 'color:var(--low)' if brand.schedule.enabled else 'color:var(--muted)' }}">automatic: {{ brand.schedule.label if brand.schedule.enabled else 'off' }}</a>
+      {% if 'search' in cfg.detection.streams %}<a class="pill" href="#queries" style="{{ 'color:var(--low)' if brand.search_queries.approved else 'color:var(--high)' }}">Google queries {{ 'approved' if brand.search_queries.approved else '· waiting for approval' }}</a>{% endif %}
+    </div>
+    {% if brand.kind == 'retail' and not (brand.profile.countries and brand.profile.products) %}
+    <p class="small" style="margin:8px 0 0;color:var(--high)">Brand profile incomplete —
+      {% if not brand.profile.countries %}Facebook / Instagram ads will be searched only in <b>{{ cfg.detection.search_geo|upper }}</b> (no countries set){% endif %}{% if not brand.profile.countries and not brand.profile.products %}; {% endif %}{% if not brand.profile.products %}no official prices, so shops cannot be compared with them{% endif %}
+      — <a href="#profile">fill in the brand profile ↓</a> (Suggest with AI pre-fills it)</p>
+    {% endif %}
+    {% if 'search' in cfg.detection.streams and not brand.search_queries.approved %}
+    <p class="small" style="margin:8px 0 0;color:var(--high)">Google search is skipped until you approve its queries — <a href="#queries">review the {{ brand.search_queries.proposal|length }} proposed queries ↓</a></p>
+    {% endif %}
+    <p class="small muted" style="margin:10px 0 0">{% if brand.baseline %}The official site is fingerprinted (baseline v{{ brand.baseline.version }}).{% else %}The first scan starts by fingerprinting the official site.{% endif %}
+      Then every stream looks for look-alikes, each candidate is visited in a sandboxed browser, compared with the real site and scored. You follow every step live.</p>
+    {% if can_write %}
+    <details class="urls" style="margin-top:10px"><summary>scan specific URLs instead ▾</summary>
+      <form method="post" action="/ui/brands/{{ brand.id }}/scan-urls" style="margin-top:8px">
+        <textarea name="urls" rows="3" placeholder="https://suspicious-site.example/&#10;another-lookalike.example"></textarea>
+        <div style="margin-top:8px"><button type="submit">Scan these URLs</button></div>
+      </form>
+    </details>
+    {% endif %}
+  </div>
+  <div style="text-align:center">
+    {% if running %}
+      <a class="runlink" href="/ui/jobs/{{ running[0].id }}"><span class="radar"></span> SCAN RUNNING · open console</a>
+    {% elif can_write and setup_needed %}
+      <a class="startscan" href="/ui/brands/{{ brand.id }}/setup" style="display:inline-flex;text-decoration:none"><span class="ico">▶</span><span>Set up &amp; start the scan<small>Google queries{{ ' · countries & prices' if brand.kind == 'retail' }} — approve once, then it runs</small></span></a>
+      <form method="post" action="/ui/brands/{{ brand.id }}/scan" style="margin-top:8px"><button type="submit" class="ghost small" title="scan now without Google search{{ ' and with ads searched only in the search country' if brand.kind == 'retail' }}">or start now without setting up</button></form>
+    {% elif can_write %}
+      {% set ws_cap = cfg.economic_limits.max_candidate_count or 0 %}
+      {% set default_cap = cfg.detection.max_candidates %}
+      <form method="post" action="/ui/brands/{{ brand.id }}/scan">
+        <button class="startscan" type="submit"><span class="ico">▶</span><span>Start scan<small>{{ PRESETS[cfg.preset].label }} track · {{ cfg.detection.streams|length }} streams</small></span></button>
+        <div style="margin-top:10px;display:flex;align-items:center;gap:8px;justify-content:center">
+          <label for="maxc" style="margin:0;font-size:11px">Max sites to visit</label>
+          <input id="maxc" name="max_candidates" type="number" min="1" max="5000" value="{{ default_cap }}" style="width:90px;padding:5px 8px;text-align:center">
+        </div>
+        <div style="margin-top:6px;display:flex;align-items:center;gap:8px;justify-content:center">
+          <label for="maxn" style="margin:0;font-size:11px" title="dnstwist look-alike names checked in DNS — keyword combinations, other TLDs and typos first">Max look-alike names to check</label>
+          <input id="maxn" name="max_names" type="number" min="1" max="100000" value="{{ cfg.detection.max_names_checked }}" style="width:90px;padding:5px 8px;text-align:center">
+        </div>
+        <div style="margin-top:6px;display:flex;align-items:center;gap:8px;justify-content:center">
+          <label for="rbl" style="margin:0;font-size:11px;text-transform:none;letter-spacing:0;display:inline-flex;gap:6px;align-items:center"><input id="rbl" name="rebuild_baseline" type="checkbox" style="width:auto" {{ 'checked' if not brand.baseline }}> include fingerprinting of the official site · ~2 s</label>
+        </div>
+        <div class="small muted" style="margin-top:4px">{% if ws_cap %}no scan visits more than <b>{{ ws_cap }}</b> sites — the workspace limit · <a href="/ui/settings#budget">change it in Settings → Workspace &amp; budget</a>{% else %}no workspace limit set{% endif %}</div>
+        {% if ws_cap and default_cap > ws_cap %}<div class="small" style="margin-top:4px;color:var(--high)">your {{ default_cap }} is saved, but this scan visits {{ ws_cap }} — the workspace limit · <a href="/ui/brands/{{ brand.id }}/setup#s-size">raise it</a></div>{% endif %}
+      </form>
+    {% else %}<p class="muted">Viewer access: scans are started by analysts.</p>{% endif %}
+  </div>
+</div>
+
+{% include "_regions.html" %}
+{% include "_schedule.html" %}
+
+{# ---------------------------------------------------------------- EDIT BRAND ---------------------------------------------------------------- #}
+<div class="panel" style="margin-top:14px" id="edit">
+  <h2>Edit brand <span class="muted">· name, vertical and the official domains (the sites the scanner must never flag and compares look-alikes against)</span></h2>
+  {% if can_write %}
+  <form method="post" action="/ui/brands/{{ brand.id }}/edit" class="grid" style="grid-template-columns:1.6fr 1fr;align-items:end">
+    <div><label>Name</label><input name="name" value="{{ brand.name }}" required></div>
+    <div><label>Vertical</label>
+      <select name="vertical">{% for v in ['', 'ecommerce', 'saas', 'banking', 'crypto', 'delivery'] %}<option value="{{ v }}" {{ 'selected' if (brand.vertical or '') == v }}>{{ v or 'auto / unknown' }}</option>{% endfor %}</select></div>
+    <div style="grid-column:1/-1"><label>Official domains <span style="text-transform:none">· one per line</span></label>{% set rows = brand.domains + (brand.profile.official_apps or []) %}{% include "_domain_rows.html" %}</div>
+    <div style="grid-column:1/-1"><button type="submit">Save brand</button></div>
+  </form>
+  <p class="small muted" style="margin-top:8px">Changing the official domains does not touch the whitelist or past findings; rebuild the baseline afterwards. Search rules and the detection track are edited just below.</p>
+  {% else %}<p class="muted small">Viewer access: {{ brand.domains|join(', ') }}</p>{% endif %}
+</div>
+
+{% include "_search_queries.html" %}
+
+{% include "_brand_profile.html" %}
+
+{# ---------------------------------------------------------------- CONFIGURATION ---------------------------------------------------------------- #}
+<div class="panel" style="margin-top:14px" id="config">
+  <h2>Detection track &amp; search rules <span class="muted">· how deep the scan goes — streams, TLDs, Google queries, cadence, probes, thresholds, weights</span></h2>
+  <form method="post" action="/ui/brands/{{ brand.id }}/config" id="cfgform">
+    <input type="hidden" name="mode" id="mode" value="{{ 'custom' if custom else 'preset' }}">
+    <div class="tracks">
+      {% for key in ['basic','standard','enterprise'] %}{% set pi = PRESETS[key] %}{% set d = pi.detection %}
+      <label class="track-card {{ key }} {{ 'on' if cfg.preset == key }}" data-key="{{ key }}">
+        <input type="radio" name="preset" value="{{ key }}" {{ 'checked' if cfg.preset == key }} {{ 'disabled' if not can_write }}>
+        <div class="hd"><span class="lvl">{{ loop.index }}</span><b>{{ pi.label }}</b><span class="tag">{{ pi.tagline }}</span></div>
+        <p>{{ pi.blurb }}</p>
+        <ul>
+          <li>streams: {{ d.streams|join(' · ') }}</li>
+          <li>TLDs {{ d.tlds }} · up to {{ d.max_candidates }} sites · {{ d.max_names_checked }} look-alike names</li>
+          <li>cloaking probes {{ 'on' if d.cloaking_probes else 'off' }} · residential {{ d.residential_probe }}</li>
+          <li>AI second opinion {{ 'on' if d.ai_second_opinion else 'off' }}</li>
+          <li>re-check every {{ d.watch_cadence_hours }}h when automatic scans are on</li>
+        </ul>
+        <span class="chk">✓</span>
+      </label>
+      {% endfor %}
+    </div>
+
+    <div class="customhd">
+      <button type="button" class="toggle {{ 'on' if custom }}" id="customBtn"><span class="sw"></span> Customise parameters</button>
+      <span class="small muted" id="customNote">{% if custom %}This brand deviates from its track. Switch off to go back to the pure track.{% else %}Switch on to change streams, cadence, probes, thresholds and signal weights.{% endif %}</span>
+    </div>
+
+    <div id="custom" class="{{ '' if custom else 'hidden' }}">
+      <div class="grid three">
+        <div class="cfgcard">
+          <h3>Discovery</h3>
+          <label>Streams</label>
+          <div class="chkrow">{% for st in ['dnstwist','ct','nrd','search','urlscan'] %}<label><input type="checkbox" name="streams" value="{{ st }}" {{ 'checked' if st in cfg.detection.streams }} {{ 'disabled' if not can_write }}> {{ st }}</label>{% endfor %}</div>
+          <div class="chkrow"><label title="Facebook pages / Instagram profiles under the brand's name — page history, logo, links and posts, read by an AI"><input type="checkbox" name="social_accounts" {{ 'checked' if cfg.detection.social_accounts }} {{ 'disabled' if not can_write }}> social media (Facebook pages · Instagram profiles)</label></div>
+          <label>dnstwist TLDs</label><select name="tlds" {{ 'disabled' if not can_write }}>{% for t in ['common','popular','all'] %}<option {{ 'selected' if cfg.detection.tlds==t }}>{{ t }}</option>{% endfor %}</select>
+          <label title="how many sites a scan opens in the browser and compares with the real one">Max sites to visit per scan</label><input name="max_candidates" value="{{ cfg.detection.max_candidates }}" {{ 'disabled' if not can_write }}>
+          {% set wcap = cfg.economic_limits.max_candidate_count or 0 %}{% if wcap %}<div class="small" style="margin:2px 0 6px;text-transform:none;color:{{ 'var(--high)' if cfg.detection.max_candidates > wcap else 'var(--muted)' }}">{% if cfg.detection.max_candidates > wcap %}Only <b>{{ wcap }}</b> will be visited: the workspace limit caps it. {% else %}Never more than the workspace limit, <b>{{ wcap }}</b>. {% endif %}<a href="/ui/settings#budget">Settings → Workspace &amp; budget</a> (an admin changes it).</div>{% endif %}
+          <label title="dnstwist look-alike names checked in DNS - keyword combinations, other TLDs and typos first">Max look-alike names to check</label><input name="max_names_checked" value="{{ cfg.detection.max_names_checked }}" {{ 'disabled' if not can_write }}>
+          <label>Google search queries</label>
+          <div class="small" style="margin:2px 0 6px;text-transform:none">Edited and approved in <a href="#queries">Google search queries ↑</a> — {{ brand.search_queries.queries|length }} {{ 'approved' if brand.search_queries.approved else 'waiting for approval' }}.</div>
+          <label>Max queries per scan</label><input name="search_queries_max" value="{{ cfg.detection.search_queries_max }}" {{ 'disabled' if not can_write }}>
+          <label>Search countries · languages <span style="text-transform:none">(each country, in one or more languages)</span></label>
+          {% set mk_list = search_markets(cfg.detection) %}{% set mk_disabled = not can_write %}{% include "_markets_picker.html" %}
+        </div>
+        <div class="cfgcard">
+          <h3>Cadence</h3>
+          <label>Watch window (days) · re-check cadence (hours)</label>
+          <div class="actions"><input name="watch_window_days" value="{{ cfg.detection.watch_window_days }}" style="flex:1" {{ 'disabled' if not can_write }}><input name="watch_cadence_hours" value="{{ cfg.detection.watch_cadence_hours }}" style="flex:1" {{ 'disabled' if not can_write }}></div>
+          <div class="small" style="margin-top:8px;text-transform:none">Full automatic scans — how often, when and what — are set in <a href="#schedule">Automatic scans ↑</a>.</div>
+          <label>Residential probe (Tier 4)</label><select name="residential_probe" {{ 'disabled' if not can_write }}>{% for t in ['gated','off','always'] %}<option {{ 'selected' if cfg.detection.residential_probe==t }}>{{ t }}</option>{% endfor %}</select>
+          <label>Residential country <span style="text-transform:none">(ISO code, e.g. us; empty = auto from search country / language)</span></label>
+          <input name="residential_country" value="{{ cfg.detection.residential_country }}" placeholder="auto" {{ 'disabled' if not can_write }}>
+        </div>
+        <div class="cfgcard">
+          <h3>Evasion &amp; verdicts</h3>
+          <div class="chkrow" style="flex-direction:column;align-items:flex-start">
+            <label><input type="checkbox" name="cloaking_probes" {{ 'checked' if cfg.detection.cloaking_probes }} {{ 'disabled' if not can_write }}> Cloaking multi-probe (bot · param · referer)</label>
+            <label><input type="checkbox" name="ai_second_opinion" {{ 'checked' if cfg.detection.ai_second_opinion }} {{ 'disabled' if not can_write }}> AI second opinion on Medium+ (advisory)</label>
+            <label><input type="checkbox" name="auto_map_on_confirm" {{ 'checked' if cfg.detection.auto_map_on_confirm }} {{ 'disabled' if not can_write }}> Map the attack infrastructure automatically when a finding is confirmed</label>
+            <label><input type="checkbox" name="auto_investigate_on_confirm" {{ 'checked' if cfg.detection.auto_investigate_on_confirm }} {{ 'disabled' if not can_write }}> Investigate the site and its network and build the evidence package automatically when a finding is confirmed</label>
+          </div>
+          <label>Severity thresholds (medium · high · critical)</label>
+          <div class="actions">{% for k in ['medium','high','critical'] %}<input name="t_{{ k }}" value="{{ cfg.scoring.thresholds[k] }}" style="flex:1" {{ 'disabled' if not can_write }}>{% endfor %}</div>
+        </div>
+      </div>
+      <details class="adv" id="weights"><summary><b>Signal weights &amp; group caps</b> <span class="muted small">· advanced — the points behind every score, calibrated on the golden dataset; open to tune</span></summary>
+      <h2>Signal weights &amp; group caps <span class="muted">· calibrated on the golden dataset; security limits are not configurable here</span></h2>
+      <p class="small muted" style="margin:0 0 8px">Each fired signal adds its points; inside a group the total stops at the group's cap so correlated evidence is not double-counted. Raw 0–150 is normalised to a 0–100 risk score; combination rules can raise the severity.</p>
+      <div class="grid three">
+        {% for group, cap in cfg.scoring.group_caps.items() %}
+        <div class="cfgcard">
+          <div style="display:flex;justify-content:space-between;align-items:center"><h3 style="margin:0" title="{{ GROUP_LABELS.get(group, ('', ''))[1] }}">{{ group|group_label }} <span class="muted" style="text-transform:none;letter-spacing:0;font-family:var(--sans)">· {{ GROUP_LABELS.get(group, ('', ''))[1] }}</span></h3>
+            <span class="small muted">cap <input name="cap_{{ group }}" value="{{ cap }}" style="width:56px;padding:3px 6px" {{ 'disabled' if not can_write }}></span></div>
+          <table class="small" style="margin-top:6px">
+            {% for sig, g in SIGNAL_GROUPS.items() if g == group %}
+            <tr><td title="{{ sig|signal_help }}">{{ sig|signal_label }}<div class="mono muted" style="font-size:10px">{{ sig }}</div></td><td class="right"><input name="w_{{ sig }}" value="{{ cfg.scoring.weights.get(sig, 0) }}" style="width:56px;padding:3px 6px" {{ 'disabled' if not can_write }}></td></tr>
+            {% endfor %}
+          </table>
+        </div>
+        {% endfor %}
+      </div>
+      {% if can_write %}<div class="actions" style="margin-top:10px"><button type="button" id="previewBtn">Preview re-score</button><span class="small muted" id="previewNote"></span></div>{% endif %}
+      <div id="previewOut" style="margin-top:12px"></div>
+      </details>
+    </div>
+
+    {% if can_write %}
+    <div class="savebar">
+      <button class="primary" type="submit">Save</button>
+      <button type="submit" name="then_scan" value="1" style="border-color:var(--accent2);color:var(--accent2)">Save &amp; START SCAN ▶</button>
+      <label style="text-transform:none;margin:0;display:inline-flex;align-items:center;gap:6px;letter-spacing:0;font-family:var(--sans);font-size:13px;color:var(--text)"><input type="checkbox" name="apply_rescore" style="width:auto"> re-score open findings when saving</label>
+    </div>
+    {% endif %}
+  </form>
+</div>
+
+
+{% if pulse %}
+<div class="grid four" style="margin-top:14px">
+  <div class="panel">
+    <h2>Threat mix · open</h2>
+    {% set segs = [] %}{% for sv, col in [('critical','#FF4D4D'),('high','#FF9F1C'),('medium','#F5C518'),('low','#2ECC71')] %}{% if pulse.severity_distribution[sv] %}{% set _ = segs.append({'label': sv, 'value': pulse.severity_distribution[sv], 'color': col}) %}{% endif %}{% endfor %}
+    <div class="donut-wrap"><svg class="donut" data-donut='{{ segs|tojson }}' data-center="open"></svg>
+      <div class="legend">{% for sg in segs %}<div><i style="background:{{ sg.color }}"></i>{{ sg.label }}<b>{{ sg.value }}</b></div>{% endfor %}{% if not segs %}<span class="muted small">all clear</span>{% endif %}</div></div>
+  </div>
+  <div class="panel">
+    <h2>Activity · 14 days</h2>
+    <svg class="spark" data-spark='{{ {"series": [{"values": pulse.scans_per_day|map(attribute="jobs")|list, "color": "#35C7F2"}, {"values": pulse.scans_per_day|map(attribute="findings")|list, "color": "#FF4D4D"}]}|tojson }}'></svg>
+    <div class="small muted" style="margin-top:6px"><span style="color:#35C7F2">■</span> scans &nbsp; <span style="color:#FF4D4D">■</span> new findings</div>
+  </div>
+  <div class="panel">
+    <h2>Which stream finds phishing</h2>
+    {% set smax = (pulse.source_effectiveness|map(attribute='candidates')|max) if pulse.source_effectiveness else 1 %}
+    {% for se in pulse.source_effectiveness %}
+    <div style="display:grid;grid-template-columns:72px 1fr 52px;gap:8px;align-items:center;margin:6px 0">
+      <span class="small" title="{{ se.source }}">{{ se.source|stream_label }}</span><div class="bar" style="height:6px"><i data-w="{{ (se.candidates / smax * 100)|round|int }}"></i></div><span class="mono small right">{{ se.findings }}/{{ se.candidates }}</span>
+    </div>
+    {% endfor %}
+    {% if not pulse.source_effectiveness %}<p class="muted small">no scans yet</p>{% endif %}
+  </div>
+  <div class="panel">
+    <h2>Watchlist states</h2>
+    {% set wtot = (pulse.watchlist.values()|sum) or 1 %}
+    {% for st, n in pulse.watchlist.items() if n %}
+    <div style="display:grid;grid-template-columns:82px 1fr 34px;gap:8px;align-items:center;margin:6px 0">
+      <span class="small" title="{{ STATE_HELP.get(st, '') }}">{{ st|state_label }}</span><div class="bar" style="height:6px"><i data-w="{{ (n / wtot * 100)|round|int }}" style="background:{{ {'new':'#8A97A8','watching':'#35C7F2','analyzing':'#5FE3FF','flagged':'#FF4D4D','long_watch':'#a78bfa','dismissed':'#3a4658'}[st] }}"></i></div><span class="mono small right">{{ n }}</span>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+
+<div class="grid two" style="margin-top:14px">
+  <div class="panel">
+    <h2 id="baseline">Attack-surface baseline {{ term('baseline') }}</h2>
+    {% set auto = false %}{% include "_site_access.html" %}
+    {% if brand.baseline %}
+    <table>
+      <tr><th>Official domains</th><td class="mono">{{ brand.domains|join(', ') }}</td></tr>
+      {% if brand.baseline.fetch %}<tr><th>Fetched</th><td class="small"><span class="mono">{{ brand.baseline.fetch.url }}</span> · {{ brand.baseline.fetch.reason }}{% if brand.baseline.fetch.source == 'urlscan' %} · fingerprint from a urlscan.io snapshot of {{ (brand.baseline.fetch.snapshot.time or '')[:10] }}{% elif brand.baseline.fetch.via == 'residential' %} · through the residential proxy{% endif %}{% if brand.profile.baseline_url %} · <span class="muted">fingerprint page chosen by an analyst</span>{% endif %}</td></tr>{% endif %}
+      <tr><th>Brand key</th><td class="mono">{{ brand.baseline.brand_key }}</td></tr>
+      <tr><th>Favicon mmh3</th><td class="mono">{{ brand.baseline.favicon_mmh3 }} <img src="/api/brands/{{ brand.id }}/baseline/favicon" alt="" style="width:16px;height:16px;vertical-align:middle;margin-left:6px"></td></tr>
+      <tr><th>Screenshot pHash</th><td class="mono">{{ brand.baseline.screenshot_phash or '—' }}</td></tr>
+      <tr><th>Keywords</th><td>{% for k in brand.baseline.keywords %}<span class="pill">{{ k }}</span> {% endfor %}</td></tr>
+      <tr><th>Google queries <span class="muted small">(AI proposal)</span></th><td>{% for q in brand.baseline.search_queries %}<span class="pill" style="color:var(--accent2)">{{ q }}</span> {% endfor %}
+        <div class="small muted" style="margin-top:4px">What the AI thinks people and impostors search for, given the type of business. Only a proposal: Google is searched with the list approved in <a href="#queries">Google search queries ↑</a>.</div></td></tr>
+      <tr><th>Login / sign-up pages</th><td>
+        {% for a in brand.baseline.auth_pages %}<span class="pill" style="{{ 'color:var(--low)' if a.has_password else ('color:var(--muted)' if not a.ok else '') }}" title="{{ a.url }}">{{ a.kind }} · /{{ a.url.split('/', 3)[3] if a.url.count('/') >= 3 else '' }}{{ ' · password form' if a.has_password }}{{ ' · bot protection (Cloudflare-style gate)' if a.bot_challenge }}{{ ' · unreachable' if not a.ok }}</span> {% endfor %}
+        {% if not brand.baseline.auth_pages %}<span class="muted">none linked from the homepage</span>{% endif %}
+        <div class="small muted" style="margin-top:4px">password form found on the site: <b style="color:{{ 'var(--low)' if brand.baseline.has_login_form else 'var(--muted)' }}">{{ 'yes' if brand.baseline.has_login_form else ('unknown — the login page sits behind bot protection' if brand.baseline.auth_pages|selectattr('bot_challenge')|list else 'no') }}</b>{% if brand.baseline.login_screenshot_phash %} · suspicious pages are compared with the login page as well as the homepage{% endif %}</div></td></tr>
+    </table>
+    {% if brand.baseline.screenshot_phash %}<img class="shot" style="margin-top:10px;max-width:320px" src="/api/brands/{{ brand.id }}/baseline/screenshot" alt="official homepage">{% endif %}
+    {% else %}<p class="muted">Not built yet — it is created automatically by the first scan, or build it now.</p>{% endif %}
+    {% if can_write %}<form method="post" action="/ui/brands/{{ brand.id }}/baseline" style="margin-top:10px"><button type="submit">Rebuild baseline</button></form>{% endif %}
+  </div>
+  <div class="panel">
+    <h2>Recent scans</h2>
+    {% if jobs %}
+    <table>
+      <tr><th>Started</th><th>Kind</th><th>State</th><th class="right">Cost</th></tr>
+      {% for j in jobs %}
+      <tr><td class="mono small"><a href="/ui/jobs/{{ j.id }}">{{ (j.started_at or j.created_at)[:19].replace('T',' ') }}</a></td>
+          <td>{{ j.kind|job_label }}</td>
+          <td>{% if j.state in ('queued','running') %}<span class="radar"></span> <span class="mono small" style="color:var(--accent2)">{{ j.state|state_label }}</span>
+              {% elif j.state == 'done' %}<span class="badge sev-low">done</span>{% else %}<span class="badge sev-critical">{{ j.state|state_label }}</span>{% endif %}</td>
+          <td class="right mono">${{ '%.4f'|format(j.cost_usd) }}</td></tr>
+      {% endfor %}
+    </table>
+    {% else %}<p class="muted">No scans yet — press START SCAN above.</p>{% endif %}
+    <h2>Latest findings</h2>
+    {% for f in findings %}<div style="padding:4px 0;border-bottom:1px solid var(--border)"><span class="badge sev-{{ f.severity }}">{{ f.severity }}</span> <a href="/ui/findings/{{ f.id }}">{{ m.host(f.hostname, f.host_display, f.is_idn) }}</a> <span class="muted small">{{ f.risk_score }} · {{ f.state }}</span></div>{% endfor %}
+    {% if not findings %}<p class="muted small">No findings for this brand yet.</p>{% endif %}
+  </div>
+</div>
+
+<div class="panel" style="margin-top:14px" id="whitelist">
+  <h2>False-positive whitelist <span class="muted">· partner / CDN / subsidiary domains that must never become findings</span></h2>
+  {% if brand.whitelist %}
+  <table>
+    <tr><th>Domain</th><th>Kind</th><th></th></tr>
+    {% for w in brand.whitelist %}
+    <tr><td class="mono">{{ w.domain }}</td><td><span class="pill">{{ w.kind }}</span></td>
+      <td>{% if can_write %}<form method="post" action="/ui/brands/{{ brand.id }}/whitelist/{{ w.domain }}/delete"><button class="danger" type="submit">Remove</button></form>{% endif %}</td></tr>
+    {% endfor %}
+  </table>
+  {% else %}<p class="muted small">Nothing whitelisted. Official domains are always excluded automatically.</p>{% endif %}
+  {% if can_write %}
+  <form method="post" action="/ui/brands/{{ brand.id }}/whitelist" class="actions" style="margin-top:10px">
+    <div style="flex:2"><label>Domain</label><input name="domain" placeholder="shopnova-partners.com" required></div>
+    <div><label>Kind</label><select name="kind"><option>partner</option><option>subsidiary</option><option>reseller</option><option>cdn</option></select></div>
+    <div><button type="submit">Add to whitelist</button></div>
+  </form>
+  {% endif %}
+</div>
+
+{% if is_admin %}
+<div class="panel" style="margin-top:14px;border-color:rgba(255,77,77,.35)">
+  <h2 style="color:var(--crit)">Start over <span class="muted">· delete this brand with every candidate, finding, campaign, scan and evidence row it produced</span></h2>
+  <form method="post" action="/ui/brands/{{ brand.id }}/delete" class="actions"
+        data-confirm="This deletes {{ brand.name }} with every candidate, finding, campaign, scan and evidence row it produced. It cannot be undone. Type the brand name to confirm." data-confirm-expect="{{ brand.name }}" data-confirm-title="Delete the brand" data-confirm-ok="Delete for good" data-confirm-danger>
+    <button class="danger" type="submit">Delete brand &amp; all its data</button>
+    <span class="small muted">Audit-log entries are kept. Add the brand again afterwards for a clean slate.</span>
+  </form>
+</div>
+{% endif %}
+
+
+<script>
+(function(){
+  const PRESETS = {{ PRESETS|tojson }};
+  const form = document.getElementById('cfgform'), mode = document.getElementById('mode');
+  const customBox = document.getElementById('custom'), customBtn = document.getElementById('customBtn'), note = document.getElementById('customNote');
+  const cards = [...document.querySelectorAll('.track-card')];
+  function fill(key){
+    const d = PRESETS[key].detection; if (!d) return;
+    form.querySelectorAll('input[name=streams]').forEach(c => c.checked = d.streams.includes(c.value));
+    const set = (n, v) => { const el = form.elements[n]; if (el) el.value = v; };
+    set('tlds', d.tlds); set('max_candidates', d.max_candidates); set('max_names_checked', d.max_names_checked); set('watch_window_days', d.watch_window_days);
+    set('watch_cadence_hours', d.watch_cadence_hours); set('residential_probe', d.residential_probe);
+    set('search_queries_max', d.search_queries_max || 10);
+    if (form.elements['cloaking_probes']) form.elements['cloaking_probes'].checked = !!d.cloaking_probes;
+    if (form.elements['ai_second_opinion']) form.elements['ai_second_opinion'].checked = !!d.ai_second_opinion;
+  }
+  // a track card is a <label>: a click reaches it twice (the label, then its radio), so listen to the radio's change
+  cards.forEach(c => c.querySelector('input').addEventListener('change', () => {
+    if (c.querySelector('input').disabled) return;
+    cards.forEach(x => x.classList.toggle('on', x === c));
+    // with custom parameters on, picking another track must not silently throw the analyst's values away
+    if (mode.value === 'custom' && !customBox.classList.contains('hidden')) {
+      bwConfirm('Replace your custom parameters with the ' + PRESETS[c.dataset.key].label + " track's values?\n\nKeep them, and only the track underneath changes.",
+                {title: 'Change the track', ok: 'Replace them', cancel: 'Keep my values'}).then(yes => { if (yes) fill(c.dataset.key); });
+      return;
+    }
+    fill(c.dataset.key);  // the detailed fields mirror the chosen track until edited
+  }));
+  customBtn && customBtn.addEventListener('click', async () => {
+    if (!customBox.classList.contains('hidden') && !(await bwConfirm("When you save, the track's own profile replaces every parameter you changed.",
+        {title: 'Switch off custom parameters?', ok: 'Switch off', cancel: 'Keep them'}))) return;
+    const open = customBox.classList.toggle('hidden') === false;
+    customBtn.classList.toggle('on', open); mode.value = open ? 'custom' : 'preset';
+    note.textContent = open ? 'Everything below is saved as custom parameters on top of the selected track.' : 'Back to the pure track: its profile replaces every parameter when you save.';
+    if (!open) { const on = cards.find(x => x.classList.contains('on')); if (on) fill(on.dataset.key); }
+    else customBox.scrollIntoView({behavior: 'smooth', block: 'start'});
+  });
+  customBox.addEventListener('input', () => { mode.value = 'custom'; });
+
+  const btn = document.getElementById('previewBtn'); if (!btn) return;
+  const out = document.getElementById('previewOut'), pnote = document.getElementById('previewNote');
+  const esc = s => String(s).replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+  btn.addEventListener('click', async () => {
+    const fd = new FormData(form); const weights = {}, caps = {}, thresholds = {};
+    for (const [k, v] of fd.entries()) {
+      if (v === '') continue;
+      if (k.startsWith('w_')) weights[k.slice(2)] = +v; else if (k.startsWith('cap_')) caps[k.slice(4)] = +v; else if (k.startsWith('t_')) thresholds[k.slice(2)] = +v;
+    }
+    pnote.textContent = 'computing…';
+    const r = await fetch('/api/brands/{{ brand.id }}/config/preview', {method: 'POST', credentials: 'same-origin', headers: {'content-type': 'application/json'},
+      body: JSON.stringify({scoring: {weights, group_caps: caps, thresholds}})});
+    const d = await r.json();
+    if (!r.ok) { pnote.textContent = ''; out.innerHTML = `<div class="error">${esc(d.detail || 'invalid configuration')}</div>`; return; }
+    pnote.textContent = `${d.severity_changes} of ${d.total} finding(s) would change severity under ${d.version}`;
+    out.innerHTML = '<table><tr><th>Host</th><th>State</th><th class="right">Before</th><th class="right">After</th><th class="right">Δ</th></tr>' +
+      d.findings.map(f => `<tr><td class="mono">${esc(f.hostname)}</td><td>${f.state}</td><td class="right"><span class="badge sev-${f.before.severity}">${f.before.severity}</span> ${f.before.score}</td>` +
+        `<td class="right"><span class="badge sev-${f.after.severity}">${f.after.severity}</span> ${f.after.score}</td><td class="right mono" style="color:${f.delta > 0 ? 'var(--crit)' : (f.delta < 0 ? 'var(--low)' : 'var(--muted)')}">${f.delta > 0 ? '+' : ''}${f.delta}</td></tr>`).join('') + '</table>';
+  });
+})();
+</script>
+{% endblock %}

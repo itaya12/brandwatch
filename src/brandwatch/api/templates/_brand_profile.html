@@ -1,0 +1,111 @@
+{# Brand profile: does anyone else sell this brand's products? In which countries, with which ad
+   keywords, at what official price, through which authorised retailers. The AI suggests; the
+   analyst saves. Context: brand (incl. kind, profile), can_write. #}
+{% set pf = brand.profile or {} %}
+<style>
+  #profile .kinds{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(260px,100%),1fr));gap:10px;margin:6px 0 4px}
+  #profile .kind{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--border);border-radius:12px;padding:10px 12px;background:var(--panel2);cursor:pointer}
+  #profile .kind:has(input:checked){border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+  #profile .kind,#profile .kind *{text-transform:none;letter-spacing:0;font-family:var(--sans)}
+  #profile .kind input{margin-top:3px;width:auto;flex:0 0 auto}
+  #profile .kind b{display:block;font-size:13.5px}#profile .kind span{font-size:12px;color:var(--muted)}
+  #profile .two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px}
+  #profile table.prod td{padding:4px 6px}#profile table.prod input{width:100%;min-width:0}
+  #profile .sugg{border:1px dashed rgba(53,199,242,.55);border-radius:12px;padding:10px 12px;background:rgba(53,199,242,.04);margin-top:10px}
+  #profile .retail-only[hidden]{display:none}
+  @media (max-width:700px){ #profile .two{grid-template-columns:minmax(0,1fr)}}
+</style>
+<div class="panel" style="margin-top:14px" id="profile">
+  <h2>Brand profile <span class="muted">· who sells {{ brand.name }}'s products — decides whether BrandWatch hunts for scam shops in Facebook / Instagram ads</span></h2>
+  {% if request and request.query_params.get('profile') == 'new' %}<div class="small" style="border:1px solid rgba(255,159,28,.6);background:rgba(255,159,28,.07);border-radius:10px;padding:8px 12px;margin-bottom:8px">Before the first scan: the <b>countries</b> where {{ brand.name }} sells (Facebook / Instagram ads are searched country by country), the <b>ad keywords</b>, and the <b>official prices</b> — a shop at half the official price or less is the strongest sign of fakes. <b>Suggest with AI</b> pre-fills all three; check the prices.</div>{% endif %}
+  {% if request and request.query_params.get('profile') == 'saved' %}<div class="small" style="color:var(--low);margin-bottom:6px">✓ Profile saved{% if request.query_params.get('retailers') %} · {{ request.query_params.get('retailers') }} authorised retailer(s) added to the whitelist{% endif %}</div>{% endif %}
+  <form method="post" action="/ui/brands/{{ brand.id }}/profile" id="pform">
+    <div class="kinds">
+      <label class="kind"><input type="radio" name="kind" value="retail" {{ 'checked' if brand.kind == 'retail' }} {{ 'disabled' if not can_write }}>
+        <div><b>Other shops sell it too</b><span>shoes, clothing, electronics — scam shops advertise the products on Facebook / Instagram and ship replicas. BrandWatch searches the ads in your countries and checks every shop they link to.</span></div></label>
+      <label class="kind"><input type="radio" name="kind" value="service" {{ 'checked' if brand.kind != 'retail' }} {{ 'disabled' if not can_write }}>
+        <div><b>Only the brand sells it</b><span>software, finance, a service — anyone else using the name is an impostor. The phishing streams cover it; fake Facebook / Instagram pages are the next step.</span></div></label>
+    </div>
+    <div class="retail-only" {{ 'hidden' if brand.kind != 'retail' }}>
+      <div class="two">
+        <div><label>Countries <span class="muted small">· ISO codes, the ads are searched in each one</span></label>
+          <input name="countries" value="{{ pf.countries|join(', ') }}" placeholder="IL, US, GB" {{ 'disabled' if not can_write }}></div>
+        <div><label>Ad keywords <span class="muted small">· one per line — the brand's name and its own model names (e.g. “the north face”, “nuptse”); never “mountain jacket”: that finds every brand's ads</span></label>
+          <textarea name="ad_keywords" rows="3" placeholder="{{ brand.name|lower }}&#10;{{ brand.name|lower }} sale" {{ 'disabled' if not can_write }}>{{ pf.ad_keywords|join('\n') }}</textarea></div>
+      </div>
+      <label style="margin-top:10px">Official prices <span class="muted small">· per single item, per country — a shop at half the price or less is flagged</span></label>
+      <div class="tw"><table class="prod" id="prodtable"><tr><th>Product</th><th>Price</th><th>Currency</th><th>Country</th><th></th></tr>
+        {% for p in pf.products + [{}, {}] %}
+        <tr><td><input name="product_name" value="{{ p.name or '' }}" placeholder="product name" {{ 'disabled' if not can_write }}></td>
+          <td><input name="product_price" value="{{ (p.price|int if p.price == p.price|int else p.price) if p.price else '' }}" inputmode="decimal" placeholder="799" {{ 'disabled' if not can_write }}></td>
+          <td><input name="product_currency" value="{{ p.currency or '' }}" maxlength="3" placeholder="ILS" {{ 'disabled' if not can_write }}></td>
+          <td><input name="product_country" value="{{ p.country or '' }}" maxlength="2" placeholder="IL" {{ 'disabled' if not can_write }}></td>
+          <td class="small muted"><span class="src">{{ 'AI' if p.source == 'ai' else '' }}</span><input type="hidden" name="product_source" value="{{ p.source or 'analyst' }}"></td></tr>
+        {% endfor %}
+      </table></div>
+      {% include "_ad_reach.html" %}
+      <label style="margin-top:10px">Authorised retailers to add <span class="muted small">· domains, one per line — added to the whitelist as “reseller”, never flagged</span></label>
+      <textarea name="retailers" rows="2" placeholder="footlocker.com" id="retailers" {{ 'disabled' if not can_write }}></textarea>
+    </div>
+    <label style="margin-top:12px">The brand's own Facebook / Instagram accounts <span class="muted small">· one per line, URL or platform:handle — never flagged as fake; accounts linked from the official site are added automatically</span></label>
+    <textarea name="official_social" rows="2" placeholder="https://www.facebook.com/{{ brand.name|lower|replace(' ', '') }}&#10;instagram:{{ brand.name|lower|replace(' ', '') }}" {{ 'disabled' if not can_write }}>{{ (pf.official_social or [])|join('\n') }}</textarea>
+    <div class="sugg" id="sugg" hidden></div>
+    {% if can_write %}
+    <div class="actions" style="margin-top:12px">
+      <button type="button" id="suggest" title="the AI answers from its own knowledge — nothing is fetched; check it before saving">✨ Suggest with AI</button>
+      <button type="submit" class="primary">Save profile</button>
+      <span class="small muted" id="suggmsg"></span>
+    </div>
+    {% endif %}
+  </form>
+</div>
+<script>
+(function(){
+  const form = document.getElementById('pform'); if (!form) return;
+  const retailOnly = form.querySelector('.retail-only');
+  form.querySelectorAll('input[name=kind]').forEach(r => r.addEventListener('change', () => { retailOnly.hidden = form.kind.value !== 'retail'; }));
+  const btn = document.getElementById('suggest'); if (!btn) return;
+  const box = document.getElementById('sugg'), msg = document.getElementById('suggmsg');
+  const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[c]));
+  btn.addEventListener('click', async () => {
+    btn.disabled = true; msg.textContent = 'asking the AI…';
+    const countries = form.countries.value.split(/[,\s]+/).filter(Boolean);
+    try {
+      const r = await fetch('/api/brands/{{ brand.id }}/profile/suggest', {method: 'POST', credentials: 'same-origin',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({countries, current_keywords: form.ad_keywords.value.split('\n').map(s => s.trim()).filter(Boolean)})});
+      const j = await r.json();
+      if (!j.available) { msg.textContent = j.reason || 'no suggestion'; return; }
+      msg.textContent = 'AI suggestion loaded below — check it, then save.';
+      const gone = new Set((j.generic_current || []).map(s => s.toLowerCase()));
+      if (gone.size) msg.textContent += ' Removed from your keywords as too generic: ' + [...gone].join(', ') + '.';
+      if ((j.dropped_keywords || []).length) msg.textContent += ' Left out as too generic (they would bring every brand\'s ads): ' + j.dropped_keywords.join(', ') + '.';
+      form.kind.value = j.resold_by_retailers ? 'retail' : 'service'; retailOnly.hidden = !j.resold_by_retailers;
+      if (!form.countries.value) form.countries.value = (j.countries || []).join(', ');
+      { const kws = form.ad_keywords.value.split('\n').map(s => s.trim()).filter(s => s && !gone.has(s.toLowerCase()));
+        for (const k of j.ad_keywords || []) if (!kws.some(x => x.toLowerCase() === k.toLowerCase())) kws.push(k);
+        form.ad_keywords.value = kws.join('\n'); }
+      // fill the empty product rows (add rows when needed)
+      const table = document.getElementById('prodtable');
+      for (const p of j.products || []) {
+        let row = [...table.querySelectorAll('tr')].slice(1).find(tr => !tr.querySelector('[name=product_name]').value);
+        if (!row) { row = table.rows[table.rows.length - 1].cloneNode(true); row.querySelectorAll('input').forEach(i => { i.value = ''; }); table.appendChild(row); }
+        row.querySelector('[name=product_name]').value = p.name; row.querySelector('[name=product_price]').value = p.price;
+        row.querySelector('[name=product_currency]').value = p.currency; row.querySelector('[name=product_country]').value = p.country;
+        row.querySelector('[name=product_source]').value = 'ai'; row.querySelector('.src').textContent = 'AI';
+      }
+      const rets = j.authorized_retailers || [];
+      box.hidden = false;
+      box.innerHTML = `<b>AI suggestion — check it before saving</b> <span class="small muted">· ${esc(j.model || '')}</span>
+        <div class="small" style="margin:4px 0">${esc(j.why || '')}</div>` +
+        (rets.length ? `<div class="small" style="margin-top:6px">Authorised retailers it knows of — tick the ones you confirm:</div>` +
+          rets.map(x => `<label class="small" style="display:block;margin:3px 0"><input type="checkbox" class="ret" value="${esc(x.domain)}"> ${esc(x.name)} · <span class="mono">${esc(x.domain)}</span> · ${esc(x.country)}</label>`).join('') : '');
+      box.querySelectorAll('.ret').forEach(cb => cb.addEventListener('change', () => {
+        const ticked = [...box.querySelectorAll('.ret:checked')].map(c => c.value);
+        document.getElementById('retailers').value = ticked.join('\n');
+      }));
+    } catch (e) { msg.textContent = 'could not reach the AI: ' + e; }
+    finally { btn.disabled = false; }
+  });
+})();
+</script>

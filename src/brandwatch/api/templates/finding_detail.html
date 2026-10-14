@@ -1,0 +1,578 @@
+{% extends "base.html" %}
+{% block title %}{{ d.candidate.hostname }}{% endblock %}
+{% set s = d.score %}
+{% set sevcolor = {'critical':'var(--crit)','high':'var(--high)','medium':'var(--med)','low':'var(--low)'}[d.finding.severity] %}
+{% block content %}
+{% set is_shop = d.finding.kind == 'shop' %}
+{% set sl = d.finding.shop_level %}
+{% set is_social = d.finding.kind == 'social' %}
+{% import "_macros.html" as m %}
+{% from "_cap.html" import cap %}
+{% include "_intel_css.html" %}
+<style>
+  .lv-pick{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(210px,100%),1fr));gap:8px}
+  .lv-pick .lv{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--border);border-radius:10px;padding:9px 11px;background:var(--panel);cursor:pointer;text-transform:none;letter-spacing:0;font-family:var(--sans)}
+  .lv-pick .lv *{text-transform:none;letter-spacing:0;font-family:var(--sans)}
+  .lv-pick .lv input{width:auto;margin-top:3px;flex:0 0 auto}
+  .lv-pick .lv b{font-size:13.5px;color:var(--text)}.lv-pick .lv span{display:block;font-size:12px;color:var(--muted)}
+  .lv-pick .lv span.pill{display:inline-block;font-size:10.5px;color:var(--accent2)}
+  .lv-pick .lv:has(input:checked){border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+  .badge.lvl{border:1px solid var(--high);color:var(--high)}
+  .badge.lvl-likely_counterfeit{border-color:var(--crit);color:var(--crit)}
+  .badge.lvl-confirmed_counterfeit{border-color:var(--crit);color:#fff;background:rgba(255,77,77,.25)}
+  .lead{font-size:15px;line-height:1.55;margin:8px 0 2px;max-width:860px}
+  .shots3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}@media (max-width:700px){.shots3{grid-template-columns:1fr}}
+  .shots3 .cap{font-size:11px;color:var(--muted);font-family:var(--mono);margin-bottom:4px}
+  .btn-intel{display:flex;align-items:center;gap:12px;margin:0;padding:12px 14px;border-radius:12px;text-decoration:none;color:#06101c;
+    background:linear-gradient(135deg,var(--accent2),var(--accent) 55%,var(--violet));box-shadow:0 10px 30px rgba(53,199,242,.22);transition:transform .15s,box-shadow .15s}
+  .btn-intel:hover{transform:translateY(-1px);box-shadow:0 14px 36px rgba(53,199,242,.35)}
+  .btn-intel .ico{font-size:22px;line-height:1}.btn-intel b{display:block;font-family:var(--display);letter-spacing:.06em;font-size:14px}
+  .btn-intel small{display:block;opacity:.8;font-size:11px;margin-top:2px}.btn-intel .arr{margin-left:auto;font-size:20px}
+  /* header */
+  .fhead{display:grid;grid-template-columns:auto minmax(0,1fr);gap:24px;align-items:start}
+  .fhead .ringwrap{text-align:center;padding-top:6px}
+  .fhead .ringwrap .lbl{font:600 10px var(--mono);letter-spacing:.1em;color:var(--muted);margin-top:8px;text-transform:uppercase}
+  .facts{display:flex;flex-wrap:wrap;gap:6px 22px;font-size:13px;color:var(--muted);margin-top:10px}
+  .facts b{color:var(--text);font-weight:500}
+  .facts > span{min-width:0;overflow-wrap:anywhere}
+  .facts .meter{display:inline-block;width:60px;height:5px;border-radius:3px;background:#1E2A3D;vertical-align:middle;margin:0 6px;overflow:hidden}
+  .facts .meter i{display:block;height:100%;background:var(--accent)}
+  .ti{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:8px;margin-top:14px;max-width:980px}
+  .ti a,.ti .t{display:block;padding:9px 12px;border:1px solid var(--border);border-radius:10px;background:var(--panel2);color:var(--text);text-decoration:none}
+  .ti a:hover{border-color:var(--accent)}
+  .ti .k{font:600 10px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);display:flex;justify-content:space-between}
+  .ti .v{font-size:13px;margin-top:3px}
+  .ti .bad{border-color:rgba(255,77,77,.55)}.ti .bad .v{color:var(--crit)}
+  .ti .off .v{color:var(--muted)}
+  .tinote{font-size:12px;color:var(--muted);margin-top:6px}
+  .tilabel{margin-top:16px;font-size:11px}.tilabel .mono{letter-spacing:.12em;color:var(--muted);font-weight:600}
+  .tilabel + .ti{margin-top:6px}
+  /* next step */
+  .nextstep{margin-top:14px}
+  .verdict-form{display:grid;grid-template-columns:minmax(0,2fr) minmax(160px,1fr) auto auto;gap:10px;align-items:end}
+  .verdict-form label{margin-top:0}
+  .done-box{border:1px solid rgba(46,204,113,.45);border-radius:12px;padding:12px 14px;background:rgba(46,204,113,.05)}
+  .sec-actions{display:flex;flex-wrap:wrap;gap:8px 10px;margin-top:12px;align-items:center}
+  .sec-actions form{margin:0}
+  .hint{font-size:12.5px;color:var(--muted);margin:10px 0 0}
+  /* tabs */
+  .tabs{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;margin:18px 0 0;border-bottom:1px solid var(--border)}
+  @media (min-width:701px){.tabs{flex-wrap:wrap;overflow:visible}}  /* eight tabs: wrap on a desktop rather than hide the last ones */
+  .tabs::-webkit-scrollbar{display:none}
+  .tabs button{flex:0 0 auto;background:transparent;border:0;border-bottom:2px solid transparent;color:var(--muted);padding:10px 14px;cursor:pointer;font:600 13px var(--sans);letter-spacing:.03em;border-radius:0;display:flex;gap:7px;align-items:center;box-shadow:none}
+  .tabs button:hover{color:var(--text);box-shadow:none}
+  .tabs button[aria-selected=true]{color:var(--accent2);border-bottom-color:var(--accent)}
+  .tabs .n{font:600 11px var(--mono);padding:1px 7px;border-radius:999px;background:var(--panel2);border:1px solid var(--border);color:var(--muted)}
+  .tabpane{display:none;margin-top:12px}.tabpane.on{display:block}
+  .tabpane > h2:first-child{margin-top:0}
+  .tabs .n.bad{color:var(--crit);border-color:rgba(255,77,77,.5)}
+  .tabs .grp{flex:0 0 auto;align-self:center;width:1px;height:18px;background:var(--border);margin:0 6px}
+  /* investigation bar: shown on the three investigation tabs */
+  .invbar{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;margin-top:12px}
+  .invbar[hidden]{display:none}
+  .invbar .ib-t{flex:1;min-width:min(320px,100%)}
+  .invbar .ib-t b{font-size:14px}
+  .invbar .progress{flex:0 0 100%;margin-top:0}
+  .jump{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:0 0 12px;color:var(--muted)}
+  .jump a{padding:3px 10px;border:1px solid var(--border);border-radius:999px;background:var(--panel2);color:var(--text);text-decoration:none}
+  .jump a:hover{border-color:var(--accent)}
+  .inv-empty{border-style:dashed}
+  .why-grid{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:18px}
+  .why-grid>*,.fhead>*{min-width:0}
+  @media (max-width:900px){.why-grid,.verdict-form,.fhead{grid-template-columns:minmax(0,1fr)}.fhead .ringwrap{text-align:left}}
+</style>
+{% set crumbs = [("Brands & Scans", "/ui/brands"), (d.brand.name, "/ui/brands/" ~ d.brand.id), ("Findings", "/ui/findings?brand_id=" ~ d.brand.id), (d.candidate.hostname, none)] %}
+{% set crumb_links = [("Domain timeline", "/ui/candidates/" ~ d.candidate.id)] + ([("Attack infrastructure map", "/ui/campaigns/" ~ d.campaign_id)] if d.campaign_id else []) %}
+{% include "_crumbs.html" %}
+
+{# ================================================================ header: what this site is #}
+<div class="panel fhead">
+  <div class="ringwrap">
+    <div class="ring" style="--p:{{ s.score if s else 0 }};--c:{{ sevcolor }}"><div>{{ s.score if s else '—' }}</div></div>
+    <div class="lbl">risk {{ term('risk') }}</div>
+  </div>
+  <div style="min-width:0">
+    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+      <span class="badge sev-{{ d.finding.severity }}">{{ d.finding.severity }}</span>
+      {% if is_shop %}<span class="badge lvl lvl-{{ sl.level if sl else 'suspicious_retailer' }}" title="{{ (sl.help if sl else '') }}{{ ' · concluded by ' ~ sl.conclusion.by if sl and sl.conclusion else ' · BrandWatch’s reading of the shop checks' }}">{{ (sl.label if sl else 'Suspicious shop')|lower }}</span>{% endif %}
+      {% if is_social %}<span class="badge" style="border:1px solid var(--accent);color:var(--accent2)" title="a Facebook page or Instagram profile that poses as {{ d.brand.name }} — scored by the social checks">fake social account</span>{% endif %}
+      <span class="badge state" title="{{ STATE_HELP.get(d.finding.state, '') }}">{% if is_shop and d.finding.state == 'confirmed' %}confirmed · {{ (sl.short if sl else 'suspicious') }}{% else %}{{ ('confirmed_social' if is_social and d.finding.state == 'confirmed' else d.finding.state)|state_label }}{% endif %}</span>
+      {% if s and s.cloaked %}{{ m.cloaked_badge(true) }}{% endif %}
+      {% if d.finding.analyst_verdict and d.finding.state != 'confirmed' %}<span class="pill">verdict: {{ d.finding.analyst_verdict }}</span>{% endif %}
+      <span class="muted small">brand <a href="/ui/brands/{{ d.brand.id }}">{{ d.brand.name }}</a></span>
+    </div>
+    <h1 class="mono" style="margin:8px 0 2px;word-break:break-all">{{ m.host(d.candidate.hostname, d.candidate.host_display, 'xn--' in d.candidate.hostname) }}</h1>
+    {% if s %}<p class="lead">{{ s.summary }}</p>{% endif %}
+    <div class="facts">
+      {% if s and s.age_days is not none %}<span>registered <b>{{ s.age_days }} day{{ 's' if s.age_days != 1 }} ago</b></span>{% endif %}
+      <span title="{% for src in d.candidate.sources %}{{ src.source|stream_label }}{% if src.pattern %}: {{ src.pattern }}{% endif %}{{ ' · ' if not loop.last }}{% endfor %}">found by <b>{{ d.candidate.sources|map(attribute='source')|map('stream_label')|unique|join(', ') }}</b></span>
+      <span>confidence {{ term('confidence') }}<span class="meter"><i style="width:{{ d.finding.confidence|round|int }}%"></i></span><b>{{ d.finding.confidence|round|int }}%</b></span>
+      <span>{{ SURFACE_LABELS.get(d.candidate.surface, d.candidate.surface) }} · <span class="mono">{{ d.candidate.canonical_url }}</span></span>
+      {% if v.ips %}<span>hosted {% for ip in v.ips[:2] %}<a class="mono" href="#ips" data-goto="ips" title="{{ ip.country_name }}{{ ' · ' ~ ip.as_owner if ip.as_owner }}">{{ flag_img(ip.country, 16) }}{{ ip.ip }}</a>{{ ', ' if not loop.last }}{% endfor %}{% if v.ips|length > 2 %} +{{ v.ips|length - 2 }}{% endif %}</span>{% endif %}
+      {% if v.registrar %}<span>registrar <b>{{ v.registrar }}</b></span>{% endif %}
+    </div>
+    {% if d.redirect and (d.redirect['from'] or d.redirect.to) %}<div class="small" id="redirect-links" style="margin-top:6px">
+      {% if d.redirect['from'] %}↩ Visitors of <a href="/ui/findings/{{ d.redirect['from'].finding_id }}"><b>{{ d.redirect['from'].host }}</b></a> (rated {{ d.redirect['from'].severity|upper }}) are redirected here: the same operation, so this address carries that verdict.{% endif %}
+      {% if d.redirect.to %}↪ Redirects its visitors{% if d.redirect.chain|length > 1 %} (via {% for u in d.redirect.chain[1:] %}<span class="mono">{{ u }}</span>{{ ' → ' if not loop.last }}{% endfor %}){% endif %} to <span class="mono">{{ d.redirect.to.url }}</span>{% if d.redirect.to.finding_id %} — also a finding: <a href="/ui/findings/{{ d.redirect.to.finding_id }}"><b>{{ d.redirect.to.host }}</b></a> ({{ d.redirect.to.severity|upper }}){% endif %}.{% endif %}
+    </div>{% endif %}
+    {% if s and s.cloaked %}<div class="small" style="margin-top:6px">Hides from scanners: the real page was revealed by BrandWatch's probes — see <a href="#looks" data-goto="looks">Looks like {{ d.brand.name }}</a>.</div>{% endif %}
+
+    {% if not is_social %}
+    {% set flagged = d.threat_intel|selectattr('positives')|list %}
+    <div class="tilabel"><span class="mono">THREAT INTEL</span><span class="muted"> · what public blocklists say about this site — each card opens the lookup</span></div>
+    <div class="ti" aria-label="Threat intel">
+      {% for t in d.threat_intel %}
+      {% set cls = 'bad' if t.positives else ('off' if not t.checked else '') %}
+      {% if t.url %}<a class="{{ cls }}" href="{{ t.url }}" target="_blank" rel="noreferrer noopener" title="opens {{ t.label }}'s own page for this site">
+      {% else %}<div class="t {{ cls }}">{% endif %}
+        <div class="k"><span>{{ t.label }}</span>{% if t.url %}<span>↗</span>{% endif %}</div>
+        <div class="v">{{ t.summary }}</div>
+      {% if t.url %}</a>{% else %}</div>{% endif %}
+      {% endfor %}
+    </div>
+    {% if not flagged %}<div class="tinote">Not on public blocklists yet — they lag by hours or days{% if s and s.age_days is not none %}, and this domain is {{ s.age_days }} day{{ 's' if s.age_days != 1 }} old{% endif %}. BrandWatch found it first; <em>unknown</em> is never treated as safe.</div>{% endif %}
+    {% else %}
+    <div class="tinote">An account on {{ 'Facebook' if s and s.social and s.social.platform == 'facebook' else 'Instagram' }}, not a website: there is no domain or server to look up — it is reported to Meta (see <a href="#social" data-goto="social">Social account</a>).</div>
+    {% endif %}
+  </div>
+</div>
+
+{# ================================================================ next step: one place, no duplicates #}
+<div class="panel nextstep" id="verdict">
+  <h2 style="margin-top:0">What do I do <span class="muted">· {{ {'open': 'review the evidence below, then give a verdict', 'confirmed': 'get it taken down', 'dismissed': 'nothing — this finding is closed'}.get(d.finding.state, 'nothing to do') }}</span></h2>
+  {% if can_write %}<form method="post" id="rescan" action="/ui/candidates/{{ d.candidate.id }}/rescan" hidden></form>{% endif %}
+
+  {% if not can_write %}
+    <p class="muted small" style="margin:0">Viewer access: verdicts, reports and takedowns are analyst actions.</p>
+  {% elif d.finding.state == 'open' and d.confirmed_twin %}
+    <div class="done-box">
+      <b style="color:var(--low)">This site is already confirmed as phishing</b>
+      <div class="small" style="margin:6px 0 10px">An analyst confirmed it on {{ (d.confirmed_twin.confirmed_at or '')[:16].replace('T',' ') }}. This older open record predates one-finding-per-site and needs no verdict.</div>
+      <a class="btn" href="/ui/findings/{{ d.confirmed_twin.id }}">Open the confirmed finding →</a>
+      <form method="post" action="/ui/findings/{{ d.finding.id }}/verdict" style="display:inline;margin-left:8px"><input type="hidden" name="next" value="{{ back or '' }}">
+        <input type="hidden" name="action" value="dismiss"><input type="hidden" name="verdict" value="unknown">
+        <input type="hidden" name="reason" value="duplicate of an already-confirmed finding">
+        <button type="submit">Close this duplicate</button>
+      </form>
+    </div>
+  {% elif d.finding.state == 'open' and is_shop and sl %}
+    <form method="post" action="/ui/findings/{{ d.finding.id }}/verdict" id="concl-form"><input type="hidden" name="next" value="{{ back or '' }}">
+      <div class="small muted" style="margin-bottom:6px">How sure are you that it sells fakes? The takedown letter and the text for Meta claim exactly this — no more.</div>
+      <div class="lv-pick">
+        {% for key, info in shop_levels.items() %}
+        <label class="lv lvl-{{ key }}"><input type="radio" name="conclusion" value="{{ key }}" {{ 'checked' if key == sl.system.level }}>
+          <div><b>{{ info.label }}</b>{% if key == sl.system.level %} <span class="pill">BrandWatch’s reading</span>{% endif %}<span>{{ info.help }}</span></div></label>
+        {% endfor %}
+      </div>
+      {% if sl.system.because %}<div class="small" style="margin-top:6px"><span class="muted">BrandWatch’s reading rests on:</span> {{ sl.system.because|join(' · ') }}</div>{% endif %}
+      <div class="proof-box" hidden><label for="proof">The proof</label><select id="proof" name="proof">{% for k, v in shop_proofs.items() %}<option value="{{ k }}">{{ v }}</option>{% endfor %}</select></div>
+      <div class="verdict-form" style="margin-top:8px">
+        <div><label for="reason">Reason · audit log and training data <span class="muted" id="reason-need"></span></label><input id="reason" name="reason" placeholder="e.g. replica price, number not in the registry"></div>
+        <div><label for="verdict">If dismissing, verdict</label><select id="verdict" name="verdict">{% for v in Verdicts %}<option value="{{ v }}">{{ v }}</option>{% endfor %}</select></div>
+        <button class="ok" name="action" value="confirm" type="submit">Confirm at this conclusion</button>
+        <button class="danger" name="action" value="dismiss" type="submit">Dismiss</button>
+      </div>
+    </form>
+    <script>
+    (function(){
+      const f = document.getElementById('concl-form'); if (!f) return;
+      const sys = {{ sl.system.level|tojson }}, order = {{ shop_levels.keys()|list|tojson }};
+      const box = f.querySelector('.proof-box'), need = f.querySelector('#reason-need'), reason = f.querySelector('#reason');
+      function sync(){
+        const v = (f.querySelector('input[name=conclusion]:checked') || {}).value;
+        box.hidden = v !== 'confirmed_counterfeit';
+        need.textContent = v === 'confirmed_counterfeit' ? '· required: describe the proof' : (order.indexOf(v) > order.indexOf(sys) ? '· required: why more than BrandWatch’s reading' : '');
+        reason.placeholder = v === 'confirmed_counterfeit' ? 'e.g. test order #1042 arrived — a replica, photos in the case file' : 'e.g. replica price, number not in the registry';
+      }
+      f.addEventListener('change', sync); sync();
+    })();
+    </script>
+    {% if s and s.shop %}<form method="post" action="/ui/findings/{{ d.finding.id }}/authorized" class="small" style="margin:8px 0 0"
+          data-confirm="Add {{ d.candidate.canonical_domain }} to {{ d.brand.name }}’s authorised retailers and close this finding?" data-confirm-title="Authorised retailer" data-confirm-ok="Add and close">
+      <button type="submit" class="ghost" title="a genuine retailer of {{ d.brand.name }}: whitelisted as an authorised retailer, this finding and any other open one on the site are closed">✓ Authorised retailer</button>
+      <span class="muted">— a genuine shop: never flagged again</span></form>{% endif %}
+    <p class="hint">{% if sl.system.level == 'likely_counterfeit' %}Evidence about the goods and about the seller → confirm as a likely counterfeit seller, report the ads and the page to Meta, then draft the takedown.{% else %}Warning signs, but nothing yet shows the goods are fake → confirm as a suspicious shop (the letter asks for a review, it does not claim counterfeits), or open “Shop checks” and add what is missing.{% endif %}</p>
+  {% elif d.finding.state == 'open' %}
+    <form method="post" action="/ui/findings/{{ d.finding.id }}/verdict" class="verdict-form"><input type="hidden" name="next" value="{{ back or '' }}">
+      <div><label for="reason">Reason · goes to the audit log and the training data</label><input id="reason" name="reason" placeholder="e.g. cloned login, exfil form"></div>
+      <div><label for="verdict">If dismissing, verdict</label><select id="verdict" name="verdict">{% for v in Verdicts %}<option value="{{ v }}">{{ v }}</option>{% endfor %}</select></div>
+      <button class="ok" name="action" value="confirm" type="submit">{{ 'Confirm scam shop' if is_shop else ('Confirm fake account' if is_social else 'Confirm phishing') }}</button>
+      <button class="danger" name="action" value="dismiss" type="submit">Dismiss</button>
+    </form>
+    {% if s and s.shop %}<form method="post" action="/ui/findings/{{ d.finding.id }}/authorized" class="small" style="margin:8px 0 0"
+          data-confirm="Add {{ d.candidate.canonical_domain }} to {{ d.brand.name }}’s authorised retailers and close this finding?" data-confirm-title="Authorised retailer" data-confirm-ok="Add and close">
+      <button type="submit" class="ghost" title="a genuine retailer of {{ d.brand.name }}: whitelisted as an authorised retailer, this finding and any other open one on the site are closed">✓ Authorised retailer</button>
+      <span class="muted">— a genuine shop: never flagged again</span></form>{% endif %}
+    {% if is_social %}<form method="post" action="/ui/findings/{{ d.finding.id }}/official-account" class="small" style="margin:8px 0 0"
+          data-confirm="Add this account to {{ d.brand.name }}’s own accounts and close the finding?" data-confirm-title="The brand\'s own account" data-confirm-ok="Add and close">
+      <button type="submit" class="ghost" title="one of the brand's real accounts: added to the official list, never flagged again">✓ This is our account</button>
+      <span class="muted">— a real {{ d.brand.name }} account: never flagged again</span></form>{% endif %}
+    <p class="hint">
+      {% set sev = d.finding.severity %}
+      {% if is_social %}{% if sev in ('critical', 'high') %}Several independent signs that this account poses as {{ d.brand.name }} → confirm, then report the account to Meta (Social account tab).{% else %}Some signs of impersonation → read the content in the Social account tab; dismiss a fan page, or mark one of your own accounts.{% endif %}
+      {% elif is_shop %}{% if sev in ('critical', 'high') %}Several independent signs of a scam shop → confirm, report the ads and the page to Meta, then draft the takedown.{% else %}Some signs of a scam shop → open “Shop checks”; if it is a genuine retailer, mark it as an authorised retailer.{% endif %}
+      {% elif sev in ('critical', 'high') and d.finding.confidence >= 85 %}High risk and complete evidence → confirm, then draft the takedown.
+      {% elif sev in ('critical', 'high') %}High risk, but some evidence is missing ({{ s.unavailable|join(', ') if s and s.unavailable else 'few independent signal groups' }}) → review the screenshots, or re-scan before confirming.
+      {% elif s and ((s.ai and not s.ai.is_phishing) or (s.ml and s.ml.probability < 0.5)) %}Medium risk and the advisory AI / classifier lean legitimate → most likely dismiss, or re-scan later.
+      {% else %}Medium risk: the evidence is real but weak → check the screenshots; dismiss if it is a legitimate site.{% endif %}
+      {% if s and s.ai and sev in ('critical', 'high') and not s.ai.is_phishing %}<br>Note: the AI second opinion disagrees — it is advisory and never changes the score.{% endif %}
+    </p>
+  {% elif d.finding.state == 'confirmed' %}
+    <div class="done-box">
+      <div style="margin-bottom:10px"><b style="color:var(--low)">✓ {{ 'Confirmed fake account' if is_social else ('Confirmed · ' ~ sl.label if is_shop and sl else 'Confirmed phishing') }}</b> <span class="muted small">· {{ d.finding.updated_at[:16].replace('T',' ') }}</span>
+        {% if is_shop and sl and sl.conclusion %}<div class="small muted" style="margin-top:4px">by {{ sl.conclusion.by }}{% if sl.proof_label %} · proof: {{ sl.proof_label }}{% endif %}{% if sl.conclusion.note %} · “{{ sl.conclusion.note }}”{% endif %}</div>{% endif %}</div>
+      {% if is_shop and sl and can_write %}<details class="small" style="margin:-4px 0 10px"{{ ' open' if request and request.query_params.get('conclusion') }}><summary style="cursor:pointer;color:var(--accent2)">change the conclusion{{ ' — saved ✓' if request and request.query_params.get('conclusion') == 'saved' }}</summary>
+        <form method="post" action="/ui/findings/{{ d.finding.id }}/conclusion" id="concl-change" style="margin-top:8px">
+          <div class="lv-pick">{% for key, info in shop_levels.items() %}<label class="lv lvl-{{ key }}"><input type="radio" name="level" value="{{ key }}" {{ 'checked' if key == sl.level }}><div><b>{{ info.label }}</b><span>{{ info.help }}</span></div></label>{% endfor %}</div>
+          <div class="proof-box" hidden><label>The proof</label><select name="proof">{% for k, v in shop_proofs.items() %}<option value="{{ k }}">{{ v }}</option>{% endfor %}</select></div>
+          <label>Reason</label><input name="reason" placeholder="e.g. test order arrived — a replica">
+          <div style="margin-top:8px"><button type="submit">Save the conclusion</button> <span class="muted">— the takedown subject follows; a drafted letter can be rewritten on the takedown page</span></div>
+        </form>
+        <script>(function(){const f=document.getElementById('concl-change');if(!f)return;const b=f.querySelector('.proof-box');const s=()=>{b.hidden=(f.querySelector('input[name=level]:checked')||{}).value!=='confirmed_counterfeit'};f.addEventListener('change',s);s();})();</script>
+      </details>{% endif %}
+      {% if is_social %}
+        <a class="btn-intel" href="#social" data-goto="social"><span class="ico">⚑</span><span><b>REPORT IT TO META</b><small>open the account, Meta's report steps and the impersonation forms · ready-to-paste text</small></span><span class="arr">↓</span></a>
+        {% if not takedowns %}<form method="post" action="/ui/findings/{{ d.finding.id }}/takedown" class="small" style="margin:8px 0 0"><button type="submit" class="ghost">Open a report record</button> <span class="muted">— to tick each report as done, with an audit trail</span></form>
+        {% else %}<div class="small" style="margin-top:8px"><a href="/ui/takedowns/{{ takedowns[0].id }}">report record {{ takedowns[0].reference }} →</a></div>{% endif %}
+      {% elif takedowns %}
+        <a class="btn-intel" href="/ui/takedowns/{{ takedowns[0].id }}"><span class="ico">✉</span><span><b>TAKEDOWN · {{ takedowns[0].state.replace('_',' ')|upper }}</b><small>{{ takedowns[0].reference }} · {{ takedowns[0].abuse_contact or 'abuse contact not resolved yet' }} · open the request and report the site to {{ REPORT_PORTAL_COUNT }} blocklists</small></span><span class="arr">→</span></a>
+      {% else %}
+        <form method="post" action="/ui/findings/{{ d.finding.id }}/takedown" style="margin:0">
+          <button type="submit" class="btn-intel" aria-label="Draft takedown request" style="width:100%;border:0;cursor:pointer"><span class="ico">✉</span><span><b>DRAFT TAKEDOWN REQUEST</b><small>evidence-backed request to the registrar, the host and the CDN · you review and send it yourself</small></span><span class="arr">→</span></button>
+        </form>
+      {% endif %}
+      {% if not is_social %}<div class="small" style="margin-top:10px">
+        Attack infrastructure:
+        {% if d.campaign_id %}<a href="/ui/campaigns/{{ d.campaign_id }}">mapped → open the map</a>
+        {% elif map_job and map_job.state in ('queued','running') %}<span class="radar"></span> mapping now · <a href="/ui/jobs/{{ map_job.id }}">watch the console</a>
+        {% elif map_job and map_job.state in ('failed','cancelled') %}<span style="color:var(--high)">mapping {{ map_job.state }}</span> — try again below
+        {% else %}<span class="muted">not mapped yet</span> — press <em>Map attack infrastructure</em> below{% endif %}
+      </div>{% endif %}
+    </div>
+  {% else %}
+    <p class="muted small" style="margin:0">Closed by an analyst · {{ d.finding.updated_at[:16].replace('T',' ') }}.</p>
+  {% endif %}
+  {% if error %}<div class="error" style="margin-top:10px">{{ error }}</div>{% endif %}
+
+  <div class="sec-actions">
+    {% if is_social %}<button type="button" class="primary" data-goto="social">◎ THE ACCOUNT AND REPORT TO META ↓</button>
+    {% else %}<button type="button" class="primary" id="investigate" data-goto="reputation" title="detections · DNS · certificate · registration and WHOIS history · the server and every site on it · urlscan — the tabs below">◉ INVESTIGATE SITE AND ITS NETWORK ↓</button>{% endif %}
+    {% if can_write %}
+      {% if d.finding.state == 'confirmed' and not is_social %}
+      <form method="post" action="/ui/findings/{{ d.finding.id }}/investigate"><button type="submit" title="pivot over shared servers, certificates, favicons and tracking ids into a map of the attacker's infrastructure">{{ 'Map attack infrastructure again' if d.campaign_id else 'Map attack infrastructure' }}</button></form>
+      {% endif %}
+      <form method="post" action="/ui/findings/{{ d.finding.id }}/report"><button type="submit" title="HTML + JSON with screenshots and SHA-256 of every piece of evidence">Generate evidence package</button></form>
+      {% if not is_social %}<button type="button" onclick="document.getElementById('rescan').submit()" title="visit the site again now">Re-scan now</button>{% endif %}
+    {% endif %}
+    <a class="small" href="/ui/candidates/{{ d.candidate.id }}" style="margin-left:4px">domain timeline</a>
+    {% if reports %}<span class="small muted" style="margin-left:6px">evidence packages:</span>{% for r in reports %}<a href="{{ r.url }}" target="_blank" class="pill">{{ r.format }} · {{ r.created_at[:16].replace('T',' ') }}</a>{% endfor %}{% endif %}
+  </div>
+</div>
+
+{# ================================================================ details, in tabs #}
+{% set dt = v.detections %}{% set ipbad = v.ips|selectattr('positives')|list %}
+<nav class="tabs" role="tablist" id="tabs" aria-label="Finding details">
+  {% if is_social and s and s.social %}<button role="tab" data-tab="social">Social account {% if s.social.why %}<span class="n bad">{{ s.social.why|length }} sign{{ 's' if s.social.why|length != 1 }}</span>{% endif %}</button>{% endif %}
+  {% if s and s.shop %}<button role="tab" data-tab="shop">Shop checks {% if s.shop.why %}<span class="n {{ 'bad' if is_shop }}">{{ s.shop.why|length }} warning{{ 's' if s.shop.why|length != 1 }}</span>{% endif %}</button>{% endif %}
+  <button role="tab" data-tab="why">Why flagged {% if s %}<span class="n">{{ s.signals|length }} signals</span>{% endif %}</button>
+  {% if not is_social %}
+  <button role="tab" data-tab="looks">Looks like {{ d.brand.name }} {% if d.screenshots.similarity_pct is not none %}<span class="n">{{ d.screenshots.similarity_pct }}%</span>{% endif %}</button>
+  <span class="grp" aria-hidden="true"></span>
+  <button role="tab" data-tab="reputation" title="site & network investigation">Reputation {% if has_intel and dt and dt.available %}<span class="n {{ 'bad' if dt.positives }}">{{ dt.positives }}/{{ dt.total }}</span>{% endif %}</button>
+  <button role="tab" data-tab="domain" title="site & network investigation">Domain &amp; registration {% if has_intel and v.whois_history %}<span class="n">{{ v.whois_history.summary.records }} WHOIS</span>{% endif %}</button>
+  <button role="tab" data-tab="network" title="site & network investigation">Hosting &amp; network {% if has_intel and v.ips %}<span class="n {{ 'bad' if ipbad }}">{{ v.ips|length }} server{{ 's' if v.ips|length != 1 }}</span>{% endif %}</button>
+  {% endif %}
+  <span class="grp" aria-hidden="true"></span>
+  <button role="tab" data-tab="timeline">Timeline <span class="n">{{ d.observations|length }}</span></button>
+  <button role="tab" data-tab="evidence">Evidence <span class="n">{{ d.evidence|length }}</span></button>
+  {% if s and (s.ai or s.ml) %}<button role="tab" data-tab="ai">AI opinions</button>{% endif %}
+</nav>
+
+<div class="panel invbar" id="invbar" hidden>
+  <div class="ib-t">
+    <b>Site &amp; network investigation</b>
+    <span class="small muted">· VirusTotal · RDAP · WHOIS history · DNS · certificate · AbuseIPDB · urlscan · passive DNS</span>
+    <div class="small {{ 'muted' if has_intel }}" style="margin-top:3px">{% if has_intel %}fetched <span data-rel="{{ v.fetched_at.isoformat() }}"></span> · cached 24 h{% if v.missing %} · not available: {% for mm in v.missing %}<span class="pill" title="{{ v.status[mm].error if v.status and mm in v.status else '' }}">{{ mm }}</span> {% endfor %}{% endif %}
+      {% else %}Not run yet for this site. It looks the site up in public sources once and caches the result — 1 to 3 minutes, because VirusTotal's free API allows 4 requests a minute.{% endif %}</div>
+  </div>
+  <div class="btnrow">
+    {% if can_write %}<button id="refresh" class="{{ 'primary' if not has_intel }}" type="button" {{ 'disabled' if intel_running }}>{{ 'Running…' if intel_running else ('Refresh' if has_intel else 'Run investigation') }}</button>{% endif %}
+    {% if intel_job %}<a class="btn" href="/ui/jobs/{{ intel_job.id }}" title="the job's live console and detailed trace">job console</a>{% endif %}
+  </div>
+  <div id="progress" class="progress" {{ '' if intel_running else 'hidden' }}>
+    <div class="radar"></div>
+    <div class="msg"><span id="prog-msg">{{ 'Investigation running — the tabs fill in as results arrive' if intel_running else 'Starting the investigation…' }}</span><small>VirusTotal's free API allows 4 requests a minute, so a full run takes 1–3 minutes.</small></div>
+  </div>
+</div>
+
+{% if s and s.shop %}<section class="tabpane" id="tab-shop">{% set sh = s.shop %}{% include "_shop_checks.html" %}</section>{% endif %}
+{% if is_social and s and s.social %}<section class="tabpane" id="tab-social">{% set sa = s.social %}{% include "_social_account.html" %}</section>{% endif %}
+
+<section class="tabpane" id="tab-why">
+  {% if s %}
+  <div class="why-grid">
+    <div class="panel">
+      <h2>Explain Finding — why it was flagged <span class="muted">· every signal, its points and the evidence behind it</span></h2>
+      {% macro sigrow(sig) -%}
+        <tr><td title="{{ sig.name|signal_help }}">{{ sig.name|signal_label }}<div class="mono muted" style="font-size:10px">{{ sig.name }}</div></td><td class="muted" title="{{ GROUP_LABELS.get(sig.group, ('', ''))[1] }}">{{ sig.group|group_label }}</td><td class="right mono">+{{ sig.points|int }}</td><td class="small">{{ sig.detail }}</td></tr>
+      {%- endmacro %}
+      <table>
+        <tr><th>Signal</th><th>Group</th><th class="right">Points</th><th>Evidence</th></tr>
+        {% for sig in s.signals[:8] %}{{ sigrow(sig) }}{% endfor %}
+      </table>
+      {% if s.signals|length > 8 or s.bonuses or s.penalties %}
+      <details style="margin-top:6px"><summary class="small" style="cursor:pointer;color:var(--accent2)">show all {{ s.signals|length }} signals{% if s.bonuses %}, bonuses{% endif %}{% if s.penalties %} and false-positive checks{% endif %}</summary>
+        <table>
+          {% for sig in s.signals[8:] %}{{ sigrow(sig) }}{% endfor %}
+          {% for b in s.bonuses %}<tr><td>combination bonus</td><td class="muted">cluster</td><td class="right mono">+{{ b.points }}</td><td class="small">{{ b.cluster|join(' + ') }}</td></tr>{% endfor %}
+          {% for p in s.penalties %}<tr><td>{{ p.flag|fp_label }}<div class="mono muted" style="font-size:10px">{{ p.flag }}</div></td><td class="muted">false-positive check</td><td class="right mono">{{ p.points }}</td><td class="small">lowers the score: a sign the site may be legitimate</td></tr>{% endfor %}
+        </table>
+      </details>
+      {% endif %}
+    </div>
+    <div class="panel">
+      <h2>How the score adds up</h2>
+      <p class="small" style="margin-top:0">{{ cap('golden', 'deterministic · versioned', 'same evidence + same config ⇒ same score; the scoring version is a hash of the weights, caps and rules; a golden dataset gates every change') }} Raw <b class="mono">{{ s.raw }}</b> of {{ s.raw_max }} → normalised to <b class="mono">{{ s.score }}</b> / 100{% if s.rules_fired %} · severity raised to <b>{{ s.rules_fired[0].min_severity }}</b> by the rule “{{ s.rules_fired[0].rule|rule_label }}”{% endif %}.
+        <span class="muted">Thresholds: Medium {{ s.thresholds.medium }} · High {{ s.thresholds.high }} · Critical {{ s.thresholds.critical }} · scoring <span class="mono">{{ s.scoring_version }}</span>{% if s.not_evaluated_groups %} · not evaluated: {{ s.not_evaluated_groups|join(', ') }}{% endif %}</span>
+        {% if s.rules_fired|length > 1 %}<br><span class="muted">Other rules that fired: {% for r in s.rules_fired[1:] %}{{ r.rule|rule_label }} (≥ {{ r.min_severity }}){{ '; ' if not loop.last }}{% endfor %}</span>{% endif %}
+        {% if s.trace_job_id and can_write %}<br><a href="/api/jobs/{{ s.trace_job_id }}/trace?host={{ d.candidate.hostname }}" target="_blank" rel="noopener">open the arithmetic ↗</a> <span class="muted">— this site's section of the scan trace</span>{% endif %}</p>
+      <h2>Group caps {{ term('group-cap') }} <span class="muted">· stop correlated evidence from double counting</span></h2>
+      {% for g in s.groups %}
+      <div style="display:grid;grid-template-columns:100px 1fr 96px;gap:10px;align-items:center;margin:5px 0">
+        <span class="small" title="{{ GROUP_LABELS.get(g.name, ('', ''))[1] }}">{{ g.name|group_label }}</span>
+        <div class="bar" style="height:6px"><i style="width:{{ ((g.capped / g.cap) * 100)|round|int if g.cap else 0 }}%"></i></div>
+        <span class="mono small right">{% if g.cap and g.total > g.cap %}{{ g.total|int }} → {{ g.counted|int }}{% else %}{{ g.total|int }}{% if g.cap %} / {{ g.cap|int }}{% endif %}{% endif %}</span>
+      </div>
+      {% endfor %}
+      <h2>Confidence {{ term('confidence') }} <span class="muted">· {{ d.finding.confidence|round|int }}%</span></h2>
+      {% set cb = s.confidence_breakdown %}
+      <table class="small">
+        <tr><td>Breadth ({{ cb.groups_fired|length }} independent groups)</td><td class="right mono">+{{ cb.breadth }}</td></tr>
+        <tr><td>Hard confirmers {{ cb.hard_confirmers|join(', ') }}</td><td class="right mono">+{{ cb.hard_confirmer_points }}</td></tr>
+        <tr><td>Evidence completeness</td><td class="right mono">+{{ cb.evidence_completeness }}</td></tr>
+        <tr><td>Provider agreement</td><td class="right mono">+{{ cb.provider_agreement }}</td></tr>
+        <tr><td>Unavailable evidence {{ cb.unavailable|join(', ') }}</td><td class="right mono">{{ cb.unavailable_penalty }}</td></tr>
+        <tr><td>Single weak signal</td><td class="right mono">{{ cb.single_weak_signal_penalty }}</td></tr>
+      </table>
+    </div>
+  </div>
+  {% else %}<div class="panel"><p class="muted" style="margin:0">No score recorded.</p></div>{% endif %}
+</section>
+
+<section class="tabpane" id="tab-looks">
+  <div class="panel">
+    <h2>Suspect vs. official {% if d.screenshots.similarity_pct is not none %}<span class="pill">similarity {{ d.screenshots.similarity_pct }}%</span>{% endif %}</h2>
+    {% if s and s.clickfix %}<div class="small" id="clickfix" style="border:1px solid rgba(255,77,77,.6);border-radius:8px;padding:10px 12px;background:rgba(255,77,77,.08);margin-bottom:10px"><b style="color:var(--crit)">This page tries to make the visitor run a command (ClickFix).</b>
+      {{ s.clickfix.reason }}.
+      {% if s.clickfix.indicators %}<ul style="margin:6px 0 4px 18px">{% for i in s.clickfix.indicators %}<li>{{ i }}</li>{% endfor %}</ul>{% endif %}
+      Following those steps (Win+R, paste, Enter) runs the attacker's code on the visitor's computer, so this is malware delivery, not only phishing. BrandWatch only read the page: it never clicked, copied or ran anything.</div>
+    {% endif %}
+    {% if s and s.security_warning %}<p class="small" style="border:1px solid rgba(255,77,77,.5);border-radius:8px;padding:8px 10px;background:rgba(255,77,77,.06)"><b style="color:var(--crit)">Already flagged as phishing by {{ s.security_warning.vendor }}.</b>
+      {{ s.security_warning.reason }}. Somebody else already judged this site, so BrandWatch rated it High without opening it any further — no “Ignore &amp; proceed”, no cloaking probes, no AI opinion. The picture below is the warning page, not the site. Press <b>Rescan</b> for a full check that looks behind it.</p>
+    {% endif %}
+    {% if s and s.snapshot and s.snapshot.reason == 'blank' %}<p class="small" style="border:1px solid rgba(255,159,28,.5);border-radius:8px;padding:8px 10px;background:rgba(255,159,28,.07)"><b style="color:var(--high)">This picture is from urlscan.io, not what BrandWatch saw.</b>
+      BrandWatch's own screenshot of this page was blank (one flat colour), so it says nothing. urlscan.io has {{ s.snapshot.via or 'a scan' }} from {{ (s.snapshot.time or '')[:10] }}{% if s.snapshot.url %} (<span class="mono">{{ s.snapshot.url }}</span>){% endif %}{% if s.snapshot.result_url %} — <a href="{{ s.snapshot.result_url }}" target="_blank" rel="noreferrer noopener">open it on urlscan.io ↗</a>{% endif %}; it is shown instead. It may not show the same page BrandWatch reached.</p>
+    {% elif s and s.snapshot %}<p class="small" style="border:1px solid rgba(255,159,28,.5);border-radius:8px;padding:8px 10px;background:rgba(255,159,28,.07)"><b style="color:var(--high)">This picture is a urlscan.io snapshot, not what BrandWatch saw.</b>
+      The live site refuses automated visitors{% if s.scanner_block %} (HTTP {{ s.scanner_block.status }}{{ ', ' ~ s.scanner_block.vendor if s.scanner_block.vendor }}){% endif %}, so its screenshot{{ ' and page' if s.snapshot.has_dom else ' and title' }} come from a public scan of {{ (s.snapshot.time or '')[:10] }}{% if s.snapshot.result_url %} — <a href="{{ s.snapshot.result_url }}" target="_blank" rel="noreferrer noopener">open it on urlscan.io ↗</a>{% endif %}. It may be older than the site's current look.</p>
+    {% elif s and s.scanner_block %}<p class="small" style="border:1px solid rgba(255,77,77,.5);border-radius:8px;padding:8px 10px;background:rgba(255,77,77,.06)"><b style="color:var(--crit)">The live site refuses automated visitors</b> (HTTP {{ s.scanner_block.status }}{{ ', ' ~ s.scanner_block.vendor if s.scanner_block.vendor }}) and urlscan.io has no public scan of it, so its real page was not seen. The comparison below rests on the domain, WHOIS and certificate signals.</p>{% endif %}
+    {% if s and s.scanner_block and s.scanner_block.user_agent %}{% set sent = s.scanner_block.headers or {} %}{% set miss = ['accept-language', 'sec-ch-ua', 'sec-fetch-site', 'sec-fetch-mode', 'sec-fetch-dest']|reject('in', sent)|list if sent else [] %}
+    <p class="small muted">Who was refused: BrandWatch's browser visit ({{ s.scanner_block.profile or 'datacenter' }} profile, from a data-centre IP) with the User-Agent <span class="mono">{{ s.scanner_block.user_agent }}</span>{% if miss %}. A person's browser also sends {{ miss|join(', ') }}; this visit did not{% endif %}.
+      {% if sent %}<details style="display:inline"><summary>every header it sent</summary>{% for k, v in sent.items() %}<div><span class="mono">{{ k }}</span>: <span class="mono">{{ v }}</span></div>{% endfor %}</details>{% endif %}</p>
+    {% endif %}
+    <div class="{{ 'shots3' if d.screenshots.scanner_url else 'cols' }}">
+      {% if d.screenshots.scanner_url %}<div><div class="cap">what a scanner sees (datacenter IP)</div><img class="shot" src="{{ d.screenshots.scanner_url }}" alt="what a scanner sees" style="filter:saturate(.6)"></div>{% endif %}
+      <div><div class="cap">{{ 'what a victim sees (home IP)' if d.screenshots.scanner_url else d.candidate.hostname }}</div>
+        {% if d.screenshots.suspect_url %}<img class="shot" src="{{ d.screenshots.suspect_url }}" alt="suspect">{% elif s and s.no_picture %}{% set np = s.no_picture %}<div class="small" id="no-picture" style="border:1px dashed rgba(255,159,28,.6);border-radius:8px;padding:10px 12px"><b style="color:var(--high)">No screenshot: the page is blank.</b>
+          <div class="muted">{{ np.why }}</div>
+          <div style="margin-top:6px">Where the visit ended up{% if np.status %} (HTTP {{ np.status }}){% endif %}:</div>
+          <ol class="mono" style="margin:4px 0 0 18px;word-break:break-all">{% for u in np.chain %}<li>{{ u }}</li>{% endfor %}<li><b>{{ np.final_url or d.candidate.canonical_url }}</b></li></ol>
+          <div class="muted" style="margin-top:6px">A page that shows nothing and forwards visitors is usually a gate that decides who gets the real page: BrandWatch's browser got the blank one.</div></div>
+        {% else %}<p class="muted small">{% if s and s.security_warning %}No screenshot: the warning page was read with a plain request, not a browser — a Rescan opens the site.{% else %}No screenshot captured (unavailable — not "clean").{% endif %}</p>{% endif %}</div>
+      <div><div class="cap">the real {{ d.brand.name }} {{ term('baseline') }}</div>
+        {% if d.screenshots.baseline_url %}<img class="shot" src="{{ d.screenshots.baseline_url }}" alt="official">{% else %}<p class="muted small">No baseline screenshot.</p>{% endif %}</div>
+    </div>
+    {% if d.screenshots.scanner_url %}<p class="small muted">The kit shows a harmless decoy to security scanners and the phishing page to real visitors. BrandWatch keeps both — the decoy is evidence of evasion.</p>{% endif %}
+  </div>
+  {% if s and s.challenge %}{% set ch = s.challenge %}
+  <div class="panel" style="margin-top:12px" id="bot-check">
+    <h2>Bot check — who was challenged, and why</h2>
+    <p class="small"><b>{{ ch.visitor }}</b> was shown a bot check{{ ' (' ~ ch.vendor ~ ')' if ch.vendor }} instead of the page: HTTP {{ ch.status }}{% if ch.title %}, titled “{{ ch.title }}”{% endif %}. {{ ch.why }}</p>
+    <div class="cols">
+      <div><div class="cap">what the crawler was shown</div>
+        {% if ch.screenshot_url %}<img class="shot" src="{{ ch.screenshot_url }}" alt="the bot check the crawler was shown">{% else %}<p class="muted small">This visit returned no screenshot.</p>{% endif %}
+        {% if ch.said %}<p class="small muted">The page says: “{{ ch.said }}”</p>{% endif %}</div>
+      <div>
+        <table class="small">
+          <tr><th>Visitor</th><td>{{ ch.visitor }} (probe “{{ ch.probe }}”, profile {{ ch.profile }})</td></tr>
+          <tr><th>User-Agent it sent</th><td class="mono">{{ ch.user_agent or '—' }}</td></tr>
+          <tr><th>Came from</th><td>{{ ch.ip }}</td></tr>
+          <tr><th>Compared with</th><td>the browser-like visit of the same scan ({{ ch.compared.profile }}): HTTP {{ ch.compared.status if ch.compared.status is not none else '—' }}, {{ 'a bot check too' if ch.compared.challenged else 'no bot check' }}<br><span class="mono muted">{{ ch.compared.user_agent or '' }}</span></td></tr>
+          {% if ch.differences %}<tr><th>What differed</th><td>{% for x in ch.differences %}<div><span class="mono">{{ x.header }}</span>: <span class="mono">{{ x.crawler if x.crawler is not none else '(not sent)' }}</span> <span class="muted">vs</span> <span class="mono">{{ x.browser if x.browser is not none else '(not sent)' }}</span></div>{% endfor %}</td></tr>{% endif %}
+          {% if ch.not_sent %}<tr><th>Not sent (a person's browser sends them)</th><td class="mono">{{ ch.not_sent|join(', ') }}</td></tr>{% endif %}
+          {% if ch.headers %}<tr><th>Every header it sent</th><td><details><summary>{{ ch.headers|length }} headers</summary>{% for k, v in ch.headers.items() %}<div><span class="mono">{{ k }}</span>: <span class="mono muted">{{ v }}</span></div>{% endfor %}</details></td></tr>{% endif %}
+        </table>
+      </div>
+    </div>
+    <p class="small muted">BrandWatch only looks: it does not solve a CAPTCHA or try to get past a bot check. A site that turns away crawlers and shows the page to browsers is hiding from security scanners — which is why this adds to the score.</p>
+  </div>
+  {% endif %}
+  {% if s and s.cloaking %}
+  <div class="panel" style="margin-top:12px">
+    <h2>Cloaking multi-probe {{ term('cloaking') }} {{ cap('ssrf', 'Tier 3/4 multi-probe', 'bot UA, victim link, search referer and a home IP — each fetch through the SSRF-guarded sandbox; the victim view wins') }} {% if s.cloaking.revealed_by %}<span class="pill" style="color:var(--high)">real page revealed by {{ s.cloaking.revealed_by }}</span>{% endif %}</h2>
+    <table class="small">
+      <tr><th>Probe</th><th>Profile</th><th>Login form</th><th>Diverged</th><th>Note</th></tr>
+      {% for p in s.cloaking.probes %}<tr><td class="mono">{{ p.probe }}</td><td class="mono">{{ p.profile }}</td><td>{{ 'yes' if p.credential_form else 'no' }}</td>
+        <td>{% if p.diverged %}<span class="badge sev-high">diverged</span>{% else %}<span class="muted">same</span>{% endif %}</td><td class="muted">{{ p.error or ('bot check shown' if p.challenge else '') }}</td></tr>{% endfor %}
+    </table>
+    <p class="small muted">Fetched several ways — a crawler user-agent, a victim-style link (?email=), a Google referer, a phone (when chosen in Settings → Proxy) and a real home or phone-network IP (Tier 4). {% if s.cloaking.revealed_by %}Only the {{ s.cloaking.revealed_by }} view showed the login form, so the score uses what a victim sees.{% endif %} Residential (Tier 4): {{ s.cloaking.residential }}. Residential IPs are used to look, never to interact.</p>
+  </div>
+  {% endif %}
+</section>
+
+{% include "_finding_investigation.html" %}
+
+<section class="tabpane" id="tab-timeline">
+  <div class="cols">
+    <div class="panel">
+      <h2>Observation timeline</h2>
+      <ul class="timeline">
+        {% for o in d.observations %}
+        <li class="{{ 'changed' if o.changed }}"><span class="mono small">{{ o.observed_at[:19].replace('T',' ') }}</span>
+          · HTTP {{ o.http_status if o.http_status is not none else '—' }} · state {{ o.state_at_time }} · {{ o.scanner_profile }}
+          {% if o.changed %}· <span style="color:var(--high)">content changed</span>{% endif %}
+          {% if o.content_hash %}· <span class="mono muted small">{{ o.content_hash[:12] }}</span>{% endif %}
+          {% if o.screenshot_url %}· <a href="{{ o.screenshot_url }}" target="_blank">screenshot</a>{% endif %}</li>
+        {% endfor %}
+      </ul>
+      <p class="small muted">first seen {{ d.candidate.first_seen[:16].replace('T',' ') }} · scans {{ d.candidate.scan_count }} · next {{ d.candidate.next_scan_at[:16].replace('T',' ') if d.candidate.next_scan_at else '—' }} · candidate state {{ d.candidate.state }} · <a href="#history" data-goto="history">WHOIS history →</a></p>
+    </div>
+    <div class="panel">
+      <h2>Score history</h2>
+      <table class="small"><tr><th>When</th><th class="right">Score</th><th>Severity</th><th class="right">Confidence</th><th>Version</th></tr>
+        {% for h in d.score_history %}<tr><td class="mono">{{ h.created_at[:19].replace('T',' ') }}{% if h.is_current %} <span class="pill">current</span>{% endif %}</td><td class="right mono">{{ h.score }}</td><td>{{ h.severity }}</td><td class="right mono">{{ h.confidence|round|int }}%</td><td class="mono">{{ h.scoring_version }}</td></tr>{% endfor %}
+      </table>
+    </div>
+  </div>
+</section>
+
+<section class="tabpane" id="tab-evidence">
+  <div class="panel">
+    <h2>Evidence · chain of custody {{ term('evidence') }} {{ cap('evidence', 'immutable · DB-enforced', 'database triggers reject UPDATE and DELETE on evidence tables; artifacts are content-addressed by SHA-256') }}</h2>
+    <p class="small muted" style="margin:0 0 8px">Append-only by the database: UPDATE and DELETE are rejected by triggers, even for an admin. Every artifact is stored under its own SHA-256, so the hash is literally the file name — any tampering is visible.
+      Role: <b>primary</b> = proves a signal · <b>supporting</b> = corroborates · <b>contradicting</b> = argues the site is legitimate · <b>context</b> = background.</p>
+    {% set ev_rows = d.evidence|reverse|list %}
+    {% macro evrow(e) -%}
+      <tr>
+        <td class="mono small">{{ e.observed_at[:19].replace('T',' ') }}</td>
+        <td class="mono">{{ e.type }}{% if e.meta.probe %} <span class="muted">· {{ e.meta.probe }} view</span>{% elif e.type in ('html','screenshot') %} <span class="muted">· datacenter view</span>{% endif %}</td>
+        <td><span class="badge state">{{ e.role }}</span></td>
+        <td class="small" title="collected by {{ e.collector }}">{{ e.source }}</td>
+        <td class="mono small muted" title="{{ e.sha256 or '' }}">{{ e.sha256[:16] if e.sha256 else '—' }}</td>
+        <td class="small">{% set metas = e.meta.items()|rejectattr('1', 'none')|rejectattr('0', 'equalto', 'redirect_chain')|list %}{% for k, v in metas[:3] %}<span class="pill" title="{{ k }}: {{ v if v is not mapping else v|tojson }}">{{ k }}: {{ (v if v is not mapping else v|tojson)|string|truncate(28, true, '…') }}</span> {% endfor %}{% if metas|length > 3 %}<span class="muted small" title="{% for k, v in metas[3:] %}{{ k }}: {{ v }}&#10;{% endfor %}">+{{ metas|length - 3 }}</span>{% endif %}</td>
+        <td>{% if e.artifact_url %}<a href="{{ e.artifact_url }}" target="_blank">artifact</a>{% endif %}</td>
+      </tr>
+    {%- endmacro %}
+    <table>
+      <tr><th>Observed (UTC)</th><th>Type</th><th>Role</th><th>Source</th><th>SHA-256</th><th>Details</th><th></th></tr>
+      {% for e in ev_rows[:12] %}{{ evrow(e) }}{% endfor %}
+    </table>
+    {% if ev_rows|length > 12 %}
+    <details style="margin-top:8px"><summary class="small" style="cursor:pointer;color:var(--accent2)">show all {{ ev_rows|length }} evidence rows from {{ d.observations|length }} scan(s)</summary>
+      <table style="margin-top:6px">{% for e in ev_rows[12:] %}{{ evrow(e) }}{% endfor %}</table></details>
+    {% endif %}
+  </div>
+</section>
+
+{% if s and (s.ai or s.ml) %}
+<section class="tabpane" id="tab-ai">
+  <div class="panel">
+    <h2>Advisory opinions <span class="muted">· shown for context, never part of the score</span> {{ cap('g-advisory', 'AI advisory · JSON schema', 'strict JSON schema, page text framed as untrusted input; the deterministic score never depends on it') }}</h2>
+    {% if s.ai %}<p class="small"><span class="pill">AI · {{ s.ai.model }}</span>
+      <strong style="color:{{ 'var(--crit)' if s.ai.is_phishing else 'var(--text)' }}">{{ 'phishing' if s.ai.is_phishing else 'not phishing' }}</strong>
+      {% if s.ai.impersonated_brand %}impersonating <strong>{{ s.ai.impersonated_brand }}</strong>{% endif %} · {{ (s.ai.confidence * 100)|round|int }}% — <span class="muted">{{ s.ai.rationale }}</span></p>{% endif %}
+    {% if s.ml %}<p class="small"><span class="pill">classifier · {{ s.ml.model }}</span> P(phishing) = <strong>{{ (s.ml.probability * 100)|round|int }}%</strong>
+      {% if s.ml.metrics %}<span class="muted">(cross-validated accuracy {{ (s.ml.metrics.accuracy * 100)|round|int }}%)</span>{% endif %}</p>{% endif %}
+  </div>
+</section>
+{% endif %}
+
+<script>
+(function(){
+  const $ = id => document.getElementById(id);
+  const tabs = [...document.querySelectorAll('#tabs [role=tab]')];
+  const INV = ['reputation', 'domain', 'network'];
+  // old Site & network intel tab names, and the sections inside the investigation tabs
+  const ALIAS = {detections: 'reputation', links: 'reputation', registration: 'domain:sec-registration', history: 'domain:sec-history',
+                 dns: 'domain:sec-dns', cert: 'domain:sec-cert', ips: 'network:sec-ips', urlscan: 'network:sec-urlscan', relations: 'network:sec-relations'};
+  function select(name, push){
+    let section = null, hash = name;
+    if (ALIAS[name]) [name, section] = ALIAS[name].split(':');
+    if (!tabs.some(t => t.dataset.tab === name)) { name = tabs[0].dataset.tab; hash = name; section = null; }
+    tabs.forEach(t => t.setAttribute('aria-selected', t.dataset.tab === name));
+    document.querySelectorAll('.tabpane').forEach(p => p.classList.toggle('on', p.id === 'tab-' + name));
+    $('invbar').hidden = !INV.includes(name);
+    if (push) history.replaceState(null, '', '#' + hash);
+    const el = section && $(section);
+    if (el) setTimeout(() => el.scrollIntoView({behavior: 'smooth', block: 'start'}), 30);
+    return !!el;
+  }
+  tabs.forEach(t => t.addEventListener('click', () => select(t.dataset.tab, true)));
+  $('tabs').addEventListener('keydown', e => {
+    const i = tabs.findIndex(t => t.getAttribute('aria-selected') === 'true');
+    if (e.key === 'ArrowRight') { tabs[(i + 1) % tabs.length].click(); tabs[(i + 1) % tabs.length].focus(); }
+    if (e.key === 'ArrowLeft') { tabs[(i - 1 + tabs.length) % tabs.length].click(); tabs[(i - 1 + tabs.length) % tabs.length].focus(); }
+  });
+  document.querySelectorAll('[data-goto]').forEach(a => a.addEventListener('click', e => {
+    e.preventDefault();
+    if (!select(a.dataset.goto, true)) $('tabs').scrollIntoView({behavior: 'smooth', block: 'start'});
+  }));
+  select((location.hash || '').slice(1) || {{ ("'shop'" if is_shop else ("'social'" if is_social else "'why'"))|safe }}, false);
+  // back / forward and typed hashes (#history, #ips …) re-select without a reload
+  window.addEventListener('hashchange', () => select((location.hash || '').slice(1) || {{ ("'shop'" if is_shop else ("'social'" if is_social else "'why'"))|safe }}, false));
+
+  // --- the investigation job: start / refresh, stream its narration, reload as results land ---
+  const startUrl = {{ ('/api/findings/' ~ d.finding.id ~ '/intel')|tojson }};
+  const canWrite = {{ 'true' if can_write else 'false' }}, hasData = {{ 'true' if has_intel else 'false' }};
+  let running = {{ 'true' if intel_running else 'false' }}, done = false;
+  async function count(){
+    try { const r = await fetch(startUrl, {credentials: 'same-origin'}); const v = await r.json();
+      let n = 0; const st = v.status || {}; for (const k in st) if (st[k].status === 'ok') n++;
+      for (const ip of v.ips || []) for (const k in ip.status || {}) if (ip.status[k].status === 'ok') n++;
+      return n; } catch (e) { return null; }
+  }
+  function reload(){ if (done) return; done = true; location.reload(); }
+  async function watch(id){
+    running = true; $('invbar').hidden = false; $('progress').hidden = false;
+    const btn = $('refresh'); if (btn) { btn.disabled = true; btn.textContent = 'Running…'; }
+    const base = await count();
+    const tick = async () => { if (done) return; const n = await count(); if (n !== null && base !== null && n > base + 2) { reload(); return; } setTimeout(tick, 6000); };
+    setTimeout(tick, 6000);
+    const es = window.EventSource ? new EventSource(`/api/jobs/${id}/events/stream?from_seq=0`, {withCredentials: true}) : null;
+    if (es) {
+      es.addEventListener('scan', ev => { const e = JSON.parse(ev.data); if (e.message) $('prog-msg').textContent = e.message; });
+      es.addEventListener('end', () => { es.close(); setTimeout(reload, 400); });
+      es.onerror = () => { es.close(); poll(); };
+    } else poll();
+    async function poll(){
+      if (done) return;
+      try { const r = await fetch(`/api/jobs/${id}`, {credentials: 'same-origin'}); const j = await r.json();
+        if (['done', 'failed', 'cancelled'].includes(j.state)) { reload(); return; } } catch (e) {}
+      setTimeout(poll, 3000);
+    }
+  }
+  async function start(force){
+    if (!canWrite || running) return;
+    $('progress').hidden = false; $('prog-msg').textContent = force ? 'Re-fetching everything…' : 'Starting the investigation…';
+    try { const r = await fetch(startUrl + (force ? '?force=1' : ''), {method: 'POST', credentials: 'same-origin'});
+      if (r.status === 401) { location = '/ui/login?next=' + encodeURIComponent(location.pathname); return; }
+      const j = await r.json(); if (j.job_id) watch(j.job_id); else $('prog-msg').textContent = j.detail || 'could not start';
+    } catch (e) { $('prog-msg').textContent = 'could not start: ' + e; }
+  }
+  const btn = $('refresh'); if (btn) btn.addEventListener('click', () => start(hasData));
+  // the primary action: open the investigation tabs, and run it if it never ran for this site
+  const inv = $('investigate'); if (inv) inv.addEventListener('click', () => { if (!hasData) start(false); });
+  const jobId = {{ (intel_job.id if intel_job else none)|tojson }};
+  if (running && jobId) watch(jobId);
+})();
+</script>
+{% endblock %}

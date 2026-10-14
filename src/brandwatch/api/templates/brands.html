@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+{% block title %}Brands{% endblock %}
+{% block content %}
+<style>
+  .bcards{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(340px,100%),1fr));gap:14px}
+  .bcard{position:relative;overflow:hidden;display:block;color:inherit;background:linear-gradient(160deg,rgba(18,26,43,.96),rgba(10,15,26,.96));
+    border:1px solid var(--border);border-radius:12px;padding:16px;animation:fadeUp .6s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(var(--i,0)*90ms);transition:transform .3s,border-color .3s,box-shadow .3s}
+  .bcard:hover{transform:translateY(-3px);border-color:var(--tc);box-shadow:0 0 0 1px var(--tc),0 14px 40px rgba(0,0,0,.45),0 0 40px color-mix(in srgb,var(--tc) 25%,transparent);color:inherit}
+  .bcard::before{content:"";position:absolute;inset:0 auto 0 0;width:4px;background:var(--tc);box-shadow:0 0 16px var(--tc)}
+  .bcard::after{content:"";position:absolute;right:-60px;top:-60px;width:180px;height:180px;border-radius:50%;background:radial-gradient(circle,color-mix(in srgb,var(--tc) 22%,transparent),transparent 70%)}
+  .bcard.critical{--tc:var(--crit)}.bcard.high{--tc:var(--high)}.bcard.medium{--tc:var(--med)}.bcard.low{--tc:var(--low)}
+  .bcard .top{display:flex;align-items:center;gap:12px}
+  .bcard .fav{width:34px;height:34px;border-radius:8px;border:1px solid var(--border);background:#0b1220;image-rendering:pixelated;object-fit:cover}
+  .bcard .name{font-family:var(--display);font-size:22px;font-weight:700;letter-spacing:.03em}
+  .bcard .nums{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:14px 0 10px}
+  .bcard .nums div{background:rgba(8,11,20,.55);border:1px solid var(--border);border-radius:8px;padding:8px;text-align:center}
+  .bcard .nums b{display:block;font-family:var(--display);font-size:24px;line-height:1}
+  .bcard .nums span{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+  @media (max-width:420px){.bcard .nums{grid-template-columns:repeat(2,1fr)}.bcard .name{font-size:19px}}
+  .live{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:11px;color:var(--accent2)}
+</style>
+{% set addform %}
+<div class="panel" style="margin-top:14px" id="add">
+  <h2>Add brand <span class="muted">· the brand you are authorised to protect</span></h2>
+  <form method="post" action="/ui/brands" class="grid" style="grid-template-columns:1.4fr 1fr 1fr 1.4fr;align-items:end">
+    <div><label>Name</label><input name="name" placeholder="ShopNova" value="{{ prefill.name if prefill }}" required></div>
+    <div><label>Vertical</label>
+      <select name="vertical"><option value="">auto / unknown</option><option>ecommerce</option><option>saas</option><option>banking</option><option>crypto</option><option>delivery</option></select></div>
+    <div><label>Detection track</label>
+      <select name="preset"><option value="basic">Light · fast &amp; free</option><option value="standard" selected>Standard · recommended</option><option value="enterprise">Deep · every stream</option></select></div>
+    <div><label>Who sells its products?</label>
+      <select name="kind" title="if other shops resell the products, BrandWatch also hunts scam shops advertising them on Facebook / Instagram">
+        <option value="service">only the brand (a service, an app, a bank)</option>
+        <option value="retail">other shops too (shoes, clothing, electronics)</option></select></div>
+    <div style="grid-column:1/-1"><label>Official domains <span style="text-transform:none">· one per line</span></label>{% set rows = prefill.entries if prefill else [''] %}{% include "_domain_rows.html" %}</div>
+    {% include "_new_brand_params.html" %}
+    <div style="grid-column:1/-1"><button class="primary" type="submit">Create brand</button></div>
+  </form>
+  <p class="muted small" style="margin-top:10px">The attack-surface baseline (favicon, screenshot, login form, keywords of the official site) is built automatically on the first scan. You can change the track and every search rule on the brand page afterwards.</p>
+</div>
+{% endset %}
+<div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+  <h1 style="margin:0">BRANDS &amp; SCANS <span class="muted">· {{ cards|length }} monitored brand(s)</span></h1>
+  {% if can_write and cards %}<a class="btn" href="#add" style="margin-left:auto">+ Add brand</a>{% endif %}
+</div>
+<p class="intro">{{ PAGE_INTROS.brands }}</p>
+{% if error %}<div class="error" style="margin-top:10px">{{ error }}</div>{% endif %}
+<details class="panel" style="margin-top:14px;border-color:rgba(53,199,242,.45)" id="getting-started" {{ 'open' if not cards }}>
+  <summary style="cursor:pointer"><b>Getting started</b> <span class="muted small">· four steps from zero to a takedown · <a href="/ui/how-it-works">how it works →</a></span></summary>
+  <ol class="steps" style="margin:0;padding-left:20px;line-height:1.8">
+    <li><b>Add a brand</b> below — its name and official domains. Everything else is optional.</li>
+    <li>On the brand page press <b>START SCAN</b>. The official site is fingerprinted, look-alikes are discovered and each one is visited and scored. You follow every step live.</li>
+    <li>Open <a href="/ui/findings">Findings</a>: review the evidence and <b>confirm</b> real phishing or dismiss the rest. Known-legit domains can be removed on the <a href="/ui/candidates">Watchlist</a>.</li>
+    <li>From a confirmed finding: investigate the site &amp; its network, map the <a href="/ui/campaigns">attack infrastructure</a>, generate the evidence package and draft the <a href="/ui/takedowns">takedown</a>.</li>
+  </ol>
+</details>
+{% if not cards %}
+{{ addform if can_write }}
+{% endif %}
+
+{% set open_total = cards|sum(attribute='open_findings') %}
+<div class="kpis" style="margin-top:14px">
+  <div class="kpi cy"><div class="v" data-count="{{ cards|length }}">0</div><div class="l">brands</div></div>
+  <div class="kpi"><div class="v" data-count="{{ cards|map(attribute='domains')|map('length')|sum }}">0</div><div class="l">official domains</div></div>
+  <div class="kpi crit"><div class="v" data-count="{{ cards|map(attribute='sev')|map(attribute='critical')|sum }}">0</div><div class="l"><span class="pulse"></span> critical open</div></div>
+  <div class="kpi hi"><div class="v" data-count="{{ open_total }}">0</div><div class="l">open findings</div></div>
+  <div class="kpi vi"><div class="v" data-count="{{ cards|sum(attribute='candidates') }}">0</div><div class="l">domains examined</div></div>
+  <div class="kpi ok"><div class="v" data-count="{{ cards|sum(attribute='confirmed') }}">0</div><div class="l">confirmed phishing</div></div>
+  <div class="kpi"><div class="v" data-count="{{ cards|sum(attribute='scans') }}">0</div><div class="l">scans run</div></div>
+  <div class="kpi mg"><div class="v" data-count="{{ cards|sum(attribute='scans_today') }}">0</div><div class="l">scans today</div></div>
+</div>
+
+<div class="grid" style="grid-template-columns:minmax(0,1.6fr) minmax(320px,1fr);margin-top:14px;align-items:start">
+<div class="bcards" style="grid-template-columns:repeat(auto-fill,minmax(min(380px,100%),1fr))">
+  {% for b in cards %}
+  <a class="bcard {{ b.threat }}" href="/ui/brands/{{ b.id }}" style="--i:{{ loop.index0 }}">
+    <div class="top">
+      {% if b.has_baseline %}<img class="fav" src="/api/brands/{{ b.id }}/baseline/favicon" alt="" onerror="this.style.visibility='hidden'">{% else %}<div class="fav"></div>{% endif %}
+      <div style="flex:1;min-width:0">
+        <div class="name">{{ b.name }}</div>
+        {% if b.parent_name %}<div class="small" style="color:var(--accent2)">regional campaign of {{ b.parent_name }}</div>
+        {% elif b.regions %}<div class="small" style="color:var(--accent2)">{{ b.regions|length }} region{{ 's' if b.regions|length != 1 }}: {{ b.regions|map(attribute='region')|join(' · ') }} · {{ b.family_open_findings }} open in all</div>{% endif %}
+        {% if b.baseline_blocked %}<div class="small" style="color:var(--crit)" title="{{ b.baseline_fetch.reason }}">⚠ official site blocks BrandWatch · HTTP {{ b.baseline_fetch.status or '—' }}{{ ' · ' ~ b.baseline_fetch.vendor if b.baseline_fetch.vendor }}{{ ' · urlscan.io snapshot in use' if b.baseline_fetch.source == 'urlscan' }}</div>{% endif %}
+        <div class="small muted mono" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ b.domains|join(' · ') }}{% if b.vertical %} · {{ b.vertical }}{% endif %}</div>
+      </div>
+      <span class="badge sev-{{ b.threat }}">{{ b.threat if b.open_findings else 'calm' }}</span>
+    </div>
+    <div class="nums">
+      <div><b data-count="{{ b.open_findings }}" style="color:var(--high)">0</b><span>open</span></div>
+      <div><b data-count="{{ b.sev.critical }}" style="color:var(--crit)">0</b><span>critical</span></div>
+      <div><b data-count="{{ b.candidates }}" style="color:var(--accent2)">0</b><span>examined</span></div>
+      <div><b data-count="{{ b.campaigns }}" style="color:var(--magenta)">0</b><span>campaigns</span></div>
+    </div>
+    <div class="stack" title="open findings by severity">
+      {% for sv in ['critical','high','medium','low'] %}<i data-w="{{ b.sev_pct[sv] }}" style="background:var(--{{ {'critical':'crit','high':'high','medium':'med','low':'low'}[sv] }})"></i>{% endfor %}
+    </div>
+    <svg class="spark" style="height:46px;margin-top:10px" data-spark='{{ {"series": [{"values": b.per_day, "color": "#FF4D4D" if b.threat == "critical" else "#35C7F2"}]}|tojson }}'></svg>
+    <div class="small" style="display:flex;justify-content:space-between;align-items:center;margin-top:6px">
+      {% if b.running %}<span class="live"><span class="radar"></span> scanning now</span>
+      {% elif b.last_scan %}<span class="muted">last scan <span data-rel="{{ b.last_scan }}"></span></span>{% else %}<span class="muted">never scanned</span>{% endif %}
+      <span class="muted">{{ b.watching }} watching · {{ b.confirmed }} confirmed · baseline {{ 'v' ~ b.fingerprint_version if b.fingerprint_version else '—' }}</span>
+    </div>
+  </a>
+  {% endfor %}
+  {% if not cards %}<div class="panel"><p class="muted">No brands yet — add the first one above.</p></div>{% endif %}
+</div>
+<div class="panel">
+  <h2>Recent scans</h2>
+  <table>
+    {% for j in jobs or [] %}
+    {% set icon = {'brand_scan':'◎','url_scan':'⌖','investigate':'⟁','intel':'◉','noop':'·'}.get(j.kind, '·') %}
+    {% set kind_label = {'brand_scan':'brand scan','url_scan':'URL scan','investigate':'infrastructure map','intel':'site intel'}.get(j.kind, j.kind.replace('_',' ')) %}
+    <tr>
+      <td style="width:26px;font-size:16px;color:var(--muted)">{{ icon }}</td>
+      <td><a href="/ui/jobs/{{ j.id }}" class="mono small">{{ kind_label }}</a>{% if j.campaign_id %} · <a href="/ui/campaigns/{{ j.campaign_id }}" class="small">open map →</a>{% endif %}<div class="small muted">{{ j.brand_name or '—' }}</div></td>
+      <td>{% if j.state in ('queued','running') %}<span class="radar"></span> <span class="mono small" style="color:var(--accent2)">{{ j.state|state_label }}</span>
+          {% elif j.state == 'done' %}<span class="badge sev-low">done</span>{% else %}<span class="badge sev-critical">{{ j.state|state_label }}</span>{% endif %}</td>
+      <td class="mono small muted right" data-rel="{{ j.created_at }}">{{ j.created_at[:16].replace('T',' ') }}</td>
+    </tr>
+    {% endfor %}
+  </table>
+  {% if not jobs %}<p class="muted small">No scans yet.</p>{% endif %}
+</div>
+</div>
+
+{% if can_write and cards %}{{ addform }}{% endif %}
+{% endblock %}

@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% block title %}{{ c.name }}{% endblock %}
+{% block content %}
+{% from "_cap.html" import cap %}
+<style>
+  line.flow{stroke-dasharray:7 5;animation:flow 1.1s linear infinite}
+  @keyframes flow{to{stroke-dashoffset:-24}}
+  circle.halo{animation:halo 1.8s ease-out infinite;transform-box:fill-box;transform-origin:center}
+  @keyframes halo{0%{opacity:.9;transform:scale(1)}100%{opacity:0;transform:scale(2.6)}}
+  #graph{background:radial-gradient(circle at 50% 45%,#0f1c30,#060910 70%)!important}
+</style>
+{% set crumbs = [("Brands & Scans", "/ui/brands")] + ([(brand_name, "/ui/brands/" ~ c.brand_id)] if brand_name else []) + [("Attack infrastructure", "/ui/campaigns?brand_id=" ~ c.brand_id), (c.name, none)] %}
+{% set crumb_links = ([("Scan console", "/ui/jobs/" ~ job_id)] if job_id else []) + ([("Seed finding " ~ seed.hostname, "/ui/findings/" ~ seed.id)] if seed else ([("Finding " ~ c.findings[0].hostname, "/ui/findings/" ~ c.findings[0].id)] if c.findings else [])) %}
+{% include "_crumbs.html" %}
+<h1>{{ c.title }} <span class="muted small">· {{ c.servers }} server{{ 's' if c.servers != 1 }} · {{ c.findings_total }} finding{{ 's' if c.findings_total != 1 }}</span></h1>
+<div class="mono muted small" style="margin:-4px 0 6px">{{ c.name }} · {{ c.id }}</div>
+<p class="intro" style="font-size:15px;color:var(--text)">{{ c.headline }}</p>
+<div class="kpis">
+  <div class="kpi cy"><div class="v" data-count="{{ c.stats.nodes }}">0</div><div class="l">nodes</div></div>
+  <div class="kpi ok"><div class="v" data-count="{{ c.stats.included }}">0</div><div class="l">included</div></div>
+  <div class="kpi vi"><div class="v" data-count="{{ c.stats.edges }}">0</div><div class="l">pivot edges</div></div>
+  <div class="kpi crit"><div class="v" data-count="{{ c.findings|length }}">0</div><div class="l">findings linked</div></div>
+  <div class="kpi hi"><div class="v" data-count="{{ c.actor_profile.servers|length if c.actor_profile.servers else 0 }}">0</div><div class="l">servers</div></div>
+  <div class="kpi med"><div class="v" data-count="{{ iocs|length }}">0</div><div class="l">IOCs</div></div>
+  <div class="kpi mg"><div class="v" data-count="{{ (c.actor_profile.other_brands_hit or [])|length }}">0</div><div class="l">other brands hit</div></div>
+</div>
+<div class="cols" style="margin-top:14px">
+  <div class="panel">
+    <h2>Infrastructure graph <span class="muted">· drag nodes · solid = included, dashed = excluded by triage</span> {{ cap('g-attack-infrastructure', 'budgeted pivot · ≤2 hops · ≤100 nodes', 'breadth-first pivot with depth, node, edge, API-call and cost budgets; shared-hosting neighbours are triaged, not trusted') }}</h2>
+    <div class="small" style="margin:-2px 0 8px">{% for e in c.edge_counts %}<span class="pill">{{ e.label }} · {{ e.count }}</span> {% endfor %}</div>
+    <svg id="graph" width="100%" height="520" style="background:#060910;border:1px solid var(--border);border-radius:8px"></svg>
+    <p class="small muted">Dashed nodes were excluded by triage (reverse-IP noise, or the brand's own / whitelisted sites shown only for context). Edges: <span style="color:#35C7F2">passive_dns</span> · <span style="color:#F5C518">cert</span> · <span style="color:#2ECC71">favicon</span> · <span style="color:#FF9F1C">tracking_id</span> · <span style="color:#FF4D4D">reverse_whois</span></p>
+  </div>
+  <div class="panel">
+    <h2>Actor profile <span class="muted">· what ties the operation together</span></h2>
+    <table class="small">
+      <tr><th>Registrant</th><td class="mono">{{ (c.actor_profile.registrant_email or '') ~ ' ' ~ (c.actor_profile.registrant_org or '') if (c.actor_profile.registrant_email or c.actor_profile.registrant_org) else 'none observed (privacy-protected)' }}</td></tr>
+      <tr><th>Servers</th><td class="mono">{{ c.actor_profile.servers|join(', ') if c.actor_profile.servers else '—' }}</td></tr>
+      <tr><th>Certificates</th><td class="mono small">{% for f in c.actor_profile.certificates or [] %}{{ f[:16] }}… {% endfor %}{% if not c.actor_profile.certificates %}—{% endif %}</td></tr>
+      <tr><th>Tracking ids</th><td class="mono">{{ c.actor_profile.tracking_ids|join(', ') if c.actor_profile.tracking_ids else 'none observed' }}</td></tr>
+      <tr><th>Investigated</th><td class="mono">{{ (c.actor_profile.investigated_at or '')[:19].replace('T',' ') }}</td></tr>
+    </table>
+    {% if c.actor_profile.other_brands_hit %}<p class="small" style="color:var(--magenta)">Other brands hit by the same operator: <b>{{ c.actor_profile.other_brands_hit|join(', ') }}</b> (found by AI triage — shared with those brands' teams, never acted on).</p>{% endif %}
+    <h2>Export <span class="muted">· indicators your firewall or SIEM can block</span></h2>
+    <p class="small muted" style="margin:0 0 8px">Domains, IPs, certificate hashes and tracking IDs, each with first_seen and the evidence row it came from. STIX 2.1 imports directly into MISP, OpenCTI or Splunk ES. Mapped indicators also feed the Infrastructure signals of later scans.</p>
+    <div class="small" style="margin-bottom:8px">{% for t, rows in iocs|groupby('type') %}<span class="pill">{{ t }} · {{ rows|length }}</span> {% endfor %}</div>
+    <div class="actions">
+      <a class="btn" href="/api/iocs?campaign_id={{ c.id }}&format=csv">IOCs CSV</a>
+      <a class="btn" href="/api/iocs?campaign_id={{ c.id }}&format=json" target="_blank">IOCs JSON</a>
+      <a class="btn" href="/api/iocs?campaign_id={{ c.id }}&format=stix">STIX 2.1 bundle</a>
+    </div>
+    {% if can_write %}
+    <form method="post" action="/ui/campaigns/{{ c.id }}/delete" style="margin-top:12px"
+          data-confirm="Delete this infrastructure map? Findings and IOCs are kept (unlinked); you can map again from a confirmed finding." data-confirm-title="Delete the map" data-confirm-ok="Delete" data-confirm-danger>
+      <button class="danger" type="submit">Delete this map</button>
+      <span class="small muted" style="margin-left:8px">removes the infrastructure map and starts the attribution over</span>
+    </form>
+    {% endif %}
+    <h2>Findings in this map</h2>
+    {% for f in c.findings %}<div><a href="/ui/findings/{{ f.id }}" class="mono">{{ f.hostname }}</a> <span class="badge sev-{{ f.severity }}">{{ f.severity }}</span> <span class="badge state">{{ f.state }}</span></div>{% endfor %}
+  </div>
+</div>
+<div class="panel" style="margin-top:14px">
+  <h2>Co-hosted triage <span class="muted">· every node and why it is in or out</span></h2>
+  <p class="small muted" style="margin:0 0 8px">Triage keeps a neighbour only if it shares a link signal (certificate, favicon, tracking ID, registrant) or looks like the brand; everything else on a shared server is reverse-IP noise. The brand's own and whitelisted sites are shown for context only.</p>
+  <table>
+    <tr><th>Node</th><th>Type</th><th>Decision</th><th>Reason</th><th>Attributes</th></tr>
+    {% for n in c.nodes %}
+    <tr>
+      <td class="mono">{{ n.value }}{% if n.finding %} <a href="/ui/findings/{{ n.finding.id }}" class="badge sev-{{ n.finding.severity }}">{{ n.finding.severity }}</a>{% endif %}</td>
+      <td>{{ n.type }}</td>
+      <td>{% if n.included %}<span class="badge sev-low">included</span>{% else %}<span class="badge state">excluded</span>{% endif %}</td>
+      <td class="small">{{ n.triage_reason }}</td>
+      <td class="small muted">{% if c.ai_text.get(n.id) %}<div style="color:var(--text)">{{ c.ai_text[n.id] }}</div>{% endif %}{% for k, v in n.attrs.items() if v is not none and k not in ('ai_verdict', 'finding_id') %}<span class="pill">{{ k.replace('_',' ') }}: {{ v|join(', ') if v is iterable and v is not string and v is not mapping else v }}</span> {% endfor %}</td>
+    </tr>
+    {% endfor %}
+  </table>
+</div>
+{% set graph_data = {"nodes": c.nodes, "edges": c.edges} %}
+{% include "_graph_js.html" %}
+{% endblock %}

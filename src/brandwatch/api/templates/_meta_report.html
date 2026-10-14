@@ -1,0 +1,62 @@
+{# Report to Meta: one row per advertiser page that sends buyers to the shop, with each of its ads.
+   Context: meta = {"pages": [...], "forms": [...], "text": str}; reports = {key: {at, by}} (takedown
+   page only); draft_id (takedown page only — enables "Mark reported"); can_write. #}
+<style>
+  .meta-box .mrow{border:1px solid var(--border);border-radius:12px;padding:12px 14px;background:var(--panel2);margin-top:10px}
+  .meta-box .mrow h3{margin:0;font:600 14px var(--sans);display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+  .meta-box .ad{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 12px;align-items:center;padding:8px 0;border-top:1px dashed var(--border);margin-top:8px}
+  .meta-box .ad .t{font-size:13px;color:#c3cdd9;overflow-wrap:anywhere}
+  .meta-box .ad .m{font:11px var(--mono);color:var(--muted);margin-top:2px}
+  .meta-box .acts{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+  .meta-box .acts form{margin:0}
+  .meta-box .acts .btn,.meta-box .acts button{padding:5px 10px;font-size:12px}
+  .meta-box .done{color:var(--low);font-size:12px;font-weight:600}
+  .meta-box .steps{font-size:12px;color:var(--muted);margin-top:6px}
+  .meta-box textarea{width:100%;min-height:96px;font:12px/1.5 var(--mono);margin-top:6px}
+  .meta-box .forms{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(260px,100%),1fr));gap:8px;margin-top:8px}
+  .meta-box .forms .f{border:1px solid var(--border);border-radius:10px;padding:10px 12px;background:var(--panel)}
+  .meta-box .forms .f b{display:block;font-size:13px}.meta-box .forms .f span{font-size:12px;color:var(--muted)}
+</style>
+{% macro mark(key) -%}
+  {% if draft_id is defined and draft_id and can_write %}
+    <form method="post" action="/ui/takedowns/{{ draft_id }}/reported">
+      <input type="hidden" name="portal" value="{{ key }}"><input type="hidden" name="next" value="meta">
+      {% if reports and key in reports %}<button type="submit" class="ghost" title="reported {{ reports[key].at[:16].replace('T', ' ') }} by {{ reports[key].by }} — click to undo"><span class="done">Reported ✓</span></button>
+      {% else %}<button type="submit">Mark reported</button>{% endif %}
+    </form>
+  {% elif reports and key in reports %}<span class="done">Reported ✓</span>{% endif %}
+{%- endmacro %}
+<div class="meta-box" id="meta">
+  <p class="small muted" style="margin:0">Meta's own “Report ad” and “Report Page” flows work for anyone with a Facebook account. BrandWatch prepares the links and the text; a person files the report.{% if not (draft_id is defined and draft_id) %} Draft a takedown to keep track of what was reported.{% endif %}</p>
+  {% for p in meta.pages %}
+  <div class="mrow">
+    <h3><bdi>{{ p.page_name }}</bdi> {% if p.ads %}<span class="pill">{{ p.ads|length }} ad{{ 's' if p.ads|length != 1 }}</span>{% endif %}{% if p.instagram %}<span class="pill">also on Instagram</span>{% endif %}</h3>
+    <div class="acts" style="margin-top:8px">
+      {% if p.page_url %}<a class="btn" href="{{ p.page_url }}" target="_blank" rel="noreferrer noopener">Open the {{ 'profile' if p.platform == 'instagram' else 'page' }} ↗</a>{% endif %}
+      {{ mark('meta_page:' ~ p.page_id) }}
+    </div>
+    {% if p.platform == 'instagram' %}<div class="steps">Report the profile: open it → “…” → <b>Report</b> → <b>Report account</b> → <b>It's pretending to be someone else</b> → <b>A business or organisation</b>.</div>
+    {% elif meta.social %}<div class="steps">Report the page: open it → “…” → <b>Report Page</b> (or <b>Find support or report</b>) → <b>Pretending to be something</b> → <b>a business</b>.</div>
+    {% else %}<div class="steps">Report the page: open it → “…” → <b>Report Page</b> → <b>Scam / fraud</b> or <b>Pretending to be a business</b>.</div>{% endif %}
+    {% for a in p.ads %}
+    <div class="ad">
+      <div><div class="t" dir="auto">“{{ (a.text or '')|truncate(160) }}”</div>
+        <div class="m">{{ a.country }}{% if a.start_date %} · running since {{ a.start_date }}{% endif %}{% if a.platforms %} · {{ a.platforms|join(', ') }}{% endif %} · ad {{ a.ad_id }}</div></div>
+      <div class="acts">
+        {% if a.library_url %}<a class="btn" href="{{ a.library_url }}" target="_blank" rel="noreferrer noopener" title="opens the ad in Meta's Ad Library, where '…' → Report ad lives">Report this ad ↗</a>{% endif %}
+        {{ mark('meta_ad:' ~ a.ad_id) }}
+      </div>
+    </div>
+    {% endfor %}
+    {% if p.ads %}<div class="steps">Report an ad: open it in the Ad Library → “…” → <b>Report ad</b> → <b>{{ meta.meta_reason or 'Scam or fraud' }}</b>.</div>{% endif %}
+  </div>
+  {% endfor %}
+  <details style="margin-top:12px"><summary class="small" style="cursor:pointer;color:var(--accent2)">Text to paste into the report</summary>
+    <textarea readonly onclick="this.select()">{{ meta.text }}</textarea></details>
+  <h3 class="small" style="margin:14px 0 0;font:600 11px var(--mono);letter-spacing:.1em;color:var(--muted)">FOR THE TRADEMARK OWNER</h3>
+  {% if meta.level == 'suspicious_retailer' and not meta.social %}<p class="small" style="margin:6px 0 0;color:var(--high)">Conclusion: {{ meta.level_label }}. The trademark and counterfeit forms ask you to state that the goods infringe — use them once the conclusion is “Likely counterfeit seller” or “Confirmed counterfeit”. Until then, report the ads as <b>Scam or fraud</b>.</p>{% endif %}
+  <div class="forms">
+    {% for f in meta.forms %}<div class="f"><b><a href="{{ f.url }}" target="_blank" rel="noreferrer noopener">{{ f.name }} ↗</a></b><span>{{ f.note }}</span>
+      <div class="acts" style="margin-top:6px">{{ mark(f.key) }}</div></div>{% endfor %}
+  </div>
+</div>

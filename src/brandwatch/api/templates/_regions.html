@@ -1,0 +1,69 @@
+{# Regional campaigns of a global brand (detection/regions.py).
+   On a main brand: its regions, the country sites found on its official homepage (suggested, never added
+   silently) and a form to add one. On a region: where it comes from and "Update from the main brand".
+   Context: brand (incl. parent_id, parent_name, region, regions, country_sites), can_write, request. #}
+{% set done = request.query_params.get('region') if request else None %}
+<style>
+  #regions{scroll-margin-top:90px}
+  #regions .rrow{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1.2fr) auto auto;gap:6px 14px;align-items:center;padding:9px 0;border-top:1px solid var(--border)}
+  #regions .rrow:first-of-type{border-top:0}
+  #regions .found{border:1px dashed rgba(53,199,242,.55);border-radius:12px;padding:10px 12px;background:rgba(53,199,242,.04);margin-top:12px}
+  #regions .found .f{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:6px 0;border-top:1px solid var(--border)}
+  #regions .found .f:first-of-type{border-top:0}
+  #regions .found form{display:inline;margin:0}
+  #regions .add{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(190px,100%),1fr));gap:10px;margin-top:8px}
+  @media (max-width:700px){ #regions .rrow{grid-template-columns:minmax(0,1fr)} }
+</style>
+<div class="panel" style="margin-top:14px" id="regions">
+  {% if brand.parent_id %}
+  <h2>Regional campaign <span class="muted">· {{ brand.region }} — part of <a href="/ui/brands/{{ brand.parent_id }}">{{ brand.parent_name }}</a></span></h2>
+  {% if done == 'synced' %}<div class="small" style="color:var(--low);margin-bottom:6px">✓ Updated from {{ brand.parent_name }}</div>{% endif %}
+  <p class="small" style="margin:0">This campaign has its own domains, fingerprint, Google queries, prices, ad countries and schedule — a kit that copies the
+    {{ brand.region }} site is compared with the {{ brand.region }} site. The whole family protects each other: {{ brand.parent_name }} and its regions are never suspects of one another,
+    and one suspect becomes one finding, not one per region.</p>
+  {% if can_write %}
+  <form method="post" action="/ui/brands/{{ brand.id }}/regions/sync" style="margin-top:10px" data-confirm="Copy {{ brand.parent_name }}’s detection track, scoring, ad keywords and ad reach into this region? Its own domains, countries, language, approved queries and prices stay as they are." data-confirm-title="Copy from the main brand" data-confirm-ok="Copy">
+    <button type="submit">Update from {{ brand.parent_name }}</button>
+    <span class="small muted">— copies the main brand's track, scoring, keywords and ad reach; never the region's own domains, countries, queries or prices</span></form>
+  {% endif %}
+
+  {% else %}
+  <h2>Regional campaigns <span class="muted">· for a global brand with a site per country — one campaign per country, all protecting each other</span></h2>
+  {% if done == 'added' %}<div class="small" style="color:var(--low);margin-bottom:6px">✓ Added — protected in every campaign of {{ brand.name }}</div>{% endif %}
+  {% if brand.regions %}
+  <div>{% for r in brand.regions %}
+    <div class="rrow"><div><a href="/ui/brands/{{ r.id }}"><b>{{ r.region }}</b></a><div class="small muted">{{ r.name }}</div></div>
+      <div class="small mono" style="overflow-wrap:anywhere">{{ r.domains|join(' · ') }}{% if r.countries %} · {{ r.countries|join(', ') }}{% endif %}</div>
+      <div class="small">{% if r.open_findings %}<b style="color:var(--high)">{{ r.open_findings }}</b> open{% else %}<span class="muted">calm</span>{% endif %}</div>
+      <a class="small" href="/ui/brands/{{ r.id }}">open →</a></div>
+  {% endfor %}</div>
+  {% else %}<p class="small muted" style="margin:0">None yet. A small company with one multilingual site needs no regions — set several countries in the brand profile instead.</p>{% endif %}
+
+  {% if brand.country_sites %}
+  <div class="found"><b>Country sites found on {{ brand.domains[0] }}</b> <span class="muted small">· linked from its homepage — nothing is added until you choose</span>
+    {% for c in brand.country_sites %}
+    <div class="f"><span class="mono">{{ c.domain }}</span>
+      <span class="muted small">{{ c.hreflang or '' }}{{ ' · ' if c.hreflang and c.region }}{{ c.region or '' }}</span>
+      {% if can_write %}<span style="margin-left:auto;display:inline-flex;gap:6px;flex-wrap:wrap">
+        <form method="post" action="/ui/brands/{{ brand.id }}/country-sites"><input type="hidden" name="domain" value="{{ c.domain }}"><input type="hidden" name="region" value="{{ c.region or '' }}"><input type="hidden" name="countries" value="{{ c.country or '' }}"><button name="action" value="region" class="primary" title="its own campaign: fingerprint, queries, prices, schedule">Add as a region</button></form>
+        <form method="post" action="/ui/brands/{{ brand.id }}/country-sites"><input type="hidden" name="domain" value="{{ c.domain }}"><button name="action" value="domain" title="another official domain of this same campaign">Add as an official domain</button></form>
+        <form method="post" action="/ui/brands/{{ brand.id }}/country-sites"><input type="hidden" name="domain" value="{{ c.domain }}"><button name="action" value="ignore" class="ghost">Ignore</button></form></span>{% endif %}</div>
+    {% endfor %}</div>
+  {% endif %}
+
+  {% if can_write %}
+  <details style="margin-top:12px"{{ ' open' if not brand.regions and not brand.country_sites }}><summary style="cursor:pointer;color:var(--accent2)">+ Add a country site by hand</summary>
+    <form method="post" action="/ui/brands/{{ brand.id }}/regions" style="margin-top:8px">
+      <div class="add">
+        <div><label>Region name</label><input name="region" placeholder="Israel" required maxlength="60"></div>
+        <div><label>Domain(s) <span class="muted small">· comma or line</span></label><input name="domains" placeholder="{{ brand.domains[0].split('.')[0] if brand.domains else 'brand' }}.co.il" required></div>
+        <div><label>Country <span class="muted small">· ISO code</span></label><input name="countries" placeholder="IL" maxlength="20"></div>
+        <div><label>Language <span class="muted small">· optional</span></label><input name="search_lang" placeholder="he" maxlength="5"></div>
+      </div>
+      <p class="small muted" style="margin:8px 0 0">The new campaign starts from this brand's track, scoring, ad keywords and prices for that country, then has its own set-up page
+        (Google queries in its language, prices in its currency).</p>
+      <div style="margin-top:8px"><button type="submit" class="primary">Create the regional campaign</button></div>
+    </form></details>
+  {% endif %}
+  {% endif %}
+</div>

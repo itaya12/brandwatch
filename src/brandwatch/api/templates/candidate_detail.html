@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% set c = d.candidate %}
+{% block title %}{{ c.hostname }} timeline{% endblock %}
+{% block content %}
+{% set crumbs = [("Brands & Scans", "/ui/brands"), (c.brand_name, "/ui/brands/" ~ c.brand_id), ("Watchlist", "/ui/candidates?brand_id=" ~ c.brand_id), (c.hostname, none)] %}
+{% include "_crumbs.html" %}
+<div class="panel" style="display:flex;gap:18px;align-items:center;flex-wrap:wrap">
+  <div style="flex:1;min-width:min(280px,100%)">
+    <div><span class="badge state">{{ c.state }}</span> <span class="muted small">brand <a href="/ui/brands/{{ c.brand_id }}">{{ c.brand_name }}</a> · surface {{ c.surface }}</span></div>
+    <h1 class="mono" style="margin:6px 0 2px">{{ c.hostname }}</h1>
+    <div class="muted small mono">{{ c.canonical_url }} · first seen {{ c.first_seen[:16].replace('T',' ') }} · last seen {{ c.last_seen[:16].replace('T',' ') }} · scans {{ c.scan_count }} · next {{ c.next_scan_at[:16].replace('T',' ') if c.next_scan_at else '—' }}</div>
+    {% set open_f = d.findings|selectattr('state', 'equalto', 'open')|list %}
+    <div class="small" style="margin-top:8px;padding:8px 10px;border:1px solid var(--border);border-radius:10px;background:var(--panel2)">
+      {% if open_f %}<b>Next step:</b> it has an open <span class="badge sev-{{ open_f[0].severity }}">{{ open_f[0].severity }}</span> finding → <a href="/ui/findings/{{ open_f[0].id }}">open it and give a verdict</a>.
+      {% elif c.state == 'flagged' %}<b>Status:</b> flagged — see its finding below.
+      {% elif c.state == 'dismissed' %}<b>Status:</b> dismissed (dead, legitimate, whitelisted or closed by an analyst). Force a rescan to look again.
+      {% elif c.state in ('watching', 'long_watch', 'new') %}<b>Status:</b> {{ c.state|state_label }} — below the finding threshold, so it is watched, not reported. {% if c.next_scan_at %}Next check {{ c.next_scan_at[:16].replace('T',' ') }} UTC.{% endif %} If it grows a login form or changes, it jumps to the front.
+      {% endif %}</div>
+    <div class="small" style="margin-top:6px">found by {% for s in d.sources %}<span class="pill">{{ s.source|stream_label }}{% if s.pattern %} · {{ s.pattern }}{% endif %}</span> {% endfor %}</div>
+  </div>
+  <div>
+    {% if can_write %}
+    <form method="post" action="/ui/candidates/{{ c.id }}/rescan"><button class="primary" type="submit">Force rescan now</button></form>
+    {% if c.state != 'dismissed' %}
+    <form method="post" action="/ui/candidates/{{ c.id }}/dismiss" style="margin-top:8px;display:grid;gap:6px">
+      <input type="hidden" name="next" value="/ui/candidates?brand_id={{ c.brand_id }}">
+      <input name="reason" placeholder="why it is legitimate (optional)">
+      <label style="text-transform:none;letter-spacing:0;font-family:var(--sans);font-size:12px;display:flex;gap:6px;align-items:center;margin:0"><input type="checkbox" name="whitelist" checked style="width:auto"> whitelist the whole domain for this brand</label>
+      <button class="danger" type="submit">Known legit — remove from watchlist</button>
+    </form>
+    {% endif %}
+    {% else %}<p class="muted small">Viewer access.</p>{% endif %}
+    {% for f in d.findings %}<div class="small" style="margin-top:8px"><a href="/ui/findings/{{ f.id }}">finding</a> <span class="badge sev-{{ f.severity }}">{{ f.severity }}</span> <span class="badge state">{{ f.state }}</span></div>{% endfor %}
+  </div>
+</div>
+
+<div class="panel" style="margin-top:14px">
+  <h2>Evidence timeline <span class="muted">· {{ d.timeline|length }} observation(s), {{ d.evidence_count }} evidence row(s)</span></h2>
+  {% if d.timeline %}
+  <ul class="timeline">
+    {% for o in d.timeline %}
+    <li class="{{ 'changed' if o.hash_changed_since_previous }}">
+      <div style="display:flex;gap:14px;align-items:flex-start;flex-wrap:wrap">
+        {% if o.screenshot_url %}<a href="{{ o.screenshot_url }}" target="_blank"><img class="thumb" style="width:128px;height:80px" src="{{ o.screenshot_url }}" alt=""></a>{% endif %}
+        <div style="flex:1">
+          <div><span class="mono">{{ o.observed_at[:19].replace('T',' ') }}</span> · HTTP {{ o.http_status if o.http_status is not none else '—' }} · {{ o.scanner_profile }} · state {{ o.state_at_time }}
+            {% if o.hash_changed_since_previous %}· <span style="color:var(--high)">page content changed</span>{% elif loop.first %}· first observation{% else %}· unchanged{% endif %}
+            {% if o.content_hash %}· <span class="mono muted small">{{ o.content_hash[:12] }}</span>{% endif %}</div>
+          <div class="small" style="margin-top:4px">
+            {% for e in o.evidence %}<span class="pill">{{ e.type }}{% if e.artifact_url %} · <a href="{{ e.artifact_url }}" target="_blank">artifact</a>{% endif %}</span> {% endfor %}
+          </div>
+        </div>
+      </div>
+    </li>
+    {% endfor %}
+  </ul>
+  {% else %}<p class="muted">No observations yet.</p>{% endif %}
+</div>
+
+{% if d.score_history %}
+<div class="panel" style="margin-top:14px">
+  <h2>Score history</h2>
+  <table class="small"><tr><th>When</th><th class="right">Score</th><th>Severity</th><th class="right">Confidence</th><th></th></tr>
+    {% for h in d.score_history %}<tr><td class="mono">{{ h.created_at[:19].replace('T',' ') }}</td><td class="right mono">{{ h.score }}</td><td><span class="badge sev-{{ h.severity }}">{{ h.severity }}</span></td><td class="right mono">{{ h.confidence|round|int }}%</td><td>{% if h.is_current %}<span class="pill">current</span>{% endif %}</td></tr>{% endfor %}
+  </table>
+</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,388 @@
+{% extends "base.html" %}
+{% block title %}All confirmed sites · one map{% endblock %}
+{% block content %}
+<style>
+  line.flow{stroke-dasharray:7 5;animation:flow 1.1s linear infinite}
+  @keyframes flow{to{stroke-dashoffset:-24}}
+  circle.halo{animation:halo 1.8s ease-out infinite;transform-box:fill-box;transform-origin:center}
+  @keyframes halo{0%{opacity:.9;transform:scale(1)}100%{opacity:0;transform:scale(2.6)}}
+  #graph{background:radial-gradient(circle at 50% 45%,#0f1c30,#060910 70%)!important;cursor:grab;touch-action:none;display:block}
+  .legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:12px;margin:6px 0}
+  .legend b{display:inline-block;width:22px;height:0;border-top:3px solid;margin-right:5px;vertical-align:3px}
+  .gsel{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 8px;align-items:center}
+  .gsel button, .tool button{padding:4px 11px;font-size:12px}
+  .gsel button.on{background:rgba(53,199,242,.18);border-color:var(--cyan,#35c7f2);color:#fff}
+  .tool{display:flex;gap:6px;margin-left:auto;flex-wrap:wrap;align-items:center}
+  .tool label{font-size:12px;display:flex;gap:5px;align-items:center;cursor:pointer;color:var(--muted);text-transform:none;letter-spacing:0;white-space:nowrap}
+  .tool input[type=checkbox]{width:auto;margin:0}
+  .mapwrap{position:relative}
+  #drawer{position:absolute;top:10px;right:10px;width:310px;max-width:calc(100% - 20px);max-height:calc(100% - 20px);overflow:auto;background:rgba(10,16,26,.96);border:1px solid var(--border);border-radius:10px;padding:12px 14px;font-size:13px;box-shadow:0 8px 30px rgba(0,0,0,.5)}
+  #drawer[hidden]{display:none}
+  #drawer h3{margin:0 0 4px;font-size:14px;word-break:break-all}
+  #drawer .x{position:absolute;top:6px;right:8px;cursor:pointer;color:var(--muted);background:none;border:0;font-size:16px}
+  #drawer dl{margin:8px 0 0;display:grid;grid-template-columns:auto 1fr;gap:3px 10px}
+  #drawer dt{color:var(--muted)} #drawer dd{margin:0;word-break:break-all}
+  .vsw{display:flex;gap:0;border:1px solid var(--border);border-radius:8px;overflow:hidden}
+  .vsw button{border:0;border-radius:0;padding:5px 13px;font-size:12.5px;background:transparent;border-right:1px solid var(--border)}
+  .vsw button:last-child{border-right:0}
+  .vsw button.on{background:rgba(53,199,242,.2);color:#fff;font-weight:700}
+  .vw[hidden]{display:none}
+  details.sub{margin:6px 0 2px;border-left:2px solid var(--border);padding-left:10px}
+  details.sub>summary{cursor:pointer;font-size:12.5px}
+  .cnt{font-weight:400;font-size:11.5px;color:var(--muted);margin-left:6px;padding:0 7px;border:1px solid var(--border);border-radius:999px}
+  .because{display:flex;flex-wrap:wrap;gap:4px 6px;align-items:center;margin:10px 0 0}
+  .because .chip{margin:0;white-space:normal;max-width:100%;word-break:break-word}
+  .first{margin:8px 0 2px;padding:6px 10px;border-left:3px solid var(--c);background:rgba(255,255,255,.03);border-radius:0 6px 6px 0}
+  .ops{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(520px,100%),1fr));gap:14px}
+  .gcard{border:1px solid var(--border);border-radius:12px;padding:14px 16px;background:rgba(255,255,255,.018);border-top:3px solid var(--c,#35c7f2)}
+  .ophead{display:flex;gap:12px;align-items:center}
+  .opicon{flex:none;width:42px;height:42px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:18px;background:color-mix(in srgb,var(--c,#35c7f2) 18%,transparent);color:var(--c,#35c7f2);border:1px solid color-mix(in srgb,var(--c,#35c7f2) 50%,transparent)}
+  .opname{min-width:0;flex:1}
+  .opname .opt{font-weight:700;font-size:15px;word-break:break-word}
+  .conf{flex:none;text-align:right;min-width:92px}
+  .conf .bar{height:6px;border-radius:4px;background:rgba(255,255,255,.1);overflow:hidden;margin-bottom:3px}
+  .conf .bar i{display:block;height:100%;background:var(--c,#35c7f2)}
+  .story{font-size:13.5px;margin:10px 0 8px;line-height:1.5}
+  .chips{display:flex;flex-wrap:wrap;gap:5px;margin:6px 0}
+  .chip{font-size:11.5px;padding:2px 9px;border-radius:999px;border:1px solid var(--border);color:var(--muted);white-space:nowrap}
+  .chip b{color:var(--text);font-weight:600}
+  .opbtns{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}
+  .opbtns button{padding:3px 10px;font-size:11.5px}
+  details.sec{border-top:1px dashed var(--border);margin-top:8px;padding-top:6px}
+  details.sec>summary{cursor:pointer;font-size:12.5px;font-weight:600;color:var(--text)}
+  .step{padding:7px 0;border-top:1px dashed var(--border);font-size:13px}
+  .step:first-of-type{border-top:0}
+  .step .t{font-weight:600}
+  .link{display:flex;gap:10px;align-items:center;justify-content:space-between;padding:6px 0;border-top:1px dashed var(--border)}
+  .link .what{min-width:0;font-size:13px}
+  .link .dot{display:inline-block;width:22px;height:0;border-top:3px solid;margin-right:7px;vertical-align:3px}
+  .link .val{font-family:var(--mono);word-break:break-all}
+  .pct{font-size:11px;padding:0 6px;border-radius:5px;border:1px solid var(--border);color:var(--muted);margin-left:6px}
+  .nope{white-space:nowrap;padding:3px 10px;font-size:11.5px;border:1px solid rgba(255,77,77,.6);color:#ff8a8a;background:transparent;border-radius:6px;cursor:pointer}
+  .nope:hover{background:rgba(255,77,77,.12)}
+  .back{white-space:nowrap;padding:3px 10px;font-size:11.5px}
+  .cl{border:1px solid var(--border);border-left:3px solid color-mix(in srgb,var(--c,#35c7f2) calc(var(--w) * 100%),transparent);border-radius:8px;padding:7px 10px;margin:6px 0}
+  .cl .chip{margin:2px 4px 2px 0;display:inline-block;white-space:normal}
+  .cl .chip.hint{border-style:dashed}
+  table.grid{border-collapse:separate;border-spacing:2px;font-size:10.5px}
+  table.grid th.h{text-align:right;font-family:var(--mono);font-weight:500;padding-right:6px;white-space:nowrap}
+  table.grid th.v{height:96px;vertical-align:bottom}
+  table.grid th.v div{writing-mode:vertical-rl;transform:rotate(180deg);font-family:var(--mono);font-weight:500;white-space:nowrap}
+  table.grid td{width:26px;height:26px;text-align:center;border-radius:4px;background:color-mix(in srgb,var(--c,#35c7f2) calc(var(--a) * 85%),rgba(255,255,255,.04));color:#06121d;font-weight:700}
+  table.grid td.self{background:transparent}
+  table.shares{width:100%;font-size:12.5px;border-collapse:collapse}
+  table.shares td{padding:5px 8px;border-top:1px dashed var(--border);vertical-align:top}
+  table.shares td.val{font-family:var(--mono);white-space:nowrap;width:1%}
+  table.shares .dot{display:inline-block;width:18px;height:0;border-top:3px solid;margin-right:6px;vertical-align:3px}
+  table.sitetab td,table.sitetab th{text-align:left;vertical-align:top;font-family:inherit}
+  table.matrix{font-size:12px;border-collapse:collapse;width:100%}
+  table.matrix th,table.matrix td{padding:3px 8px;border-bottom:1px solid var(--border);text-align:center}
+  table.matrix td:first-child,table.matrix th:first-child{text-align:left;font-family:var(--mono)}
+  .done{border:1px solid rgba(46,204,113,.5);background:rgba(46,204,113,.07);border-radius:12px;padding:12px 16px;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+  .done.wait{border-color:rgba(245,197,24,.5);background:rgba(245,197,24,.06)}
+  .done .tick{width:30px;height:30px;border-radius:50%;background:#2ecc71;color:#06210f;display:flex;align-items:center;justify-content:center;font-weight:900}
+  .done.wait .tick{background:#f5c518;color:#2a2105}
+  .lane{display:grid;grid-template-columns:230px 1fr;gap:10px;align-items:center;padding:5px 0;border-top:1px dashed var(--border);font-size:12px}
+  .lane .track{position:relative;height:26px;border-radius:6px;background:rgba(255,255,255,.04)}
+  .lane .d{position:absolute;top:50%;width:11px;height:11px;margin:-5.5px 0 0 -5.5px;border-radius:50%;background:var(--c);border:2px solid #060910}
+  .lane .d.wave{box-shadow:0 0 0 3px color-mix(in srgb,var(--c) 45%,transparent)}
+  .ticks{position:relative;height:16px;margin-left:240px;font-size:10.5px;color:var(--muted)}
+  .ticks span{position:absolute;transform:translateX(-50%)}
+  @media(max-width:700px){.lane{grid-template-columns:1fr}.ticks{margin-left:0}.conf{min-width:70px}#drawer{position:static;width:auto;max-width:none;margin-top:8px}}
+  #analysing{position:fixed;inset:0;background:rgba(5,8,14,.72);display:none;align-items:center;justify-content:center;z-index:50}
+  #analysing div{background:#0f1722;border:1px solid var(--border);border-radius:12px;padding:22px 30px;text-align:center;font-size:15px}
+  #analysing small{display:block;margin-top:6px;color:var(--muted);font-size:12px}
+</style>
+{% set crumbs = [("Attack infrastructure", "/ui/campaigns" ~ ('?brand_id=' ~ brand_id if brand_id else '')), ("All confirmed sites", none)] %}
+{% set KC = {'ip':'#35C7F2','shared_ip':'#35C7F2','past_ip':'#35C7F2','certificate':'#F5C518','kit':'#F5C518','kit_look':'#F5C518','tracking_id':'#FF9F1C','registrant':'#FF4D4D','dns_token':'#FF4D4D','affiliate_id':'#FF4D4D','cf_ns_pair':'#8A97A8','tds_campaign':'#2ECC71','shared_tds':'#2ECC71','redirector':'#B388FF','data_sink':'#FF9F1C','favicon':'#2ECC71','registrar':'#8A97A8','nameserver':'#8A97A8','batch':'#8A97A8'} %}
+{% set GC = ['#35C7F2','#F5C518','#FF9F1C','#2ECC71','#B388FF','#FF6FA8','#4DD0C4','#9AA5B1'] %}
+{% include "_crumbs.html" %}
+<div id="analysing"><div><span class="radar"></span> <b>Analysing again…</b><small>leaving that link out and working out which sites are still connected</small></div></div>
+<h1>ALL CONFIRMED SITES <span class="muted">· one map: are they connected, and by what?</span></h1>
+{% set note = request.query_params.get('re') or '' %}
+{% if note %}{% set p = note.split(':') %}<div class="panel small" style="border-color:rgba(46,204,113,.5)"><b>Analysed again.</b>
+  {% if p[0] == 'out' %}Without “{{ p[5] if p|length > 5 else 'that link' }}”: <b>{{ p[1] }} → {{ p[2] }}</b> connected group(s), <b>{{ p[3] }} → {{ p[4] }}</b> site(s) in a group.{% else %}With “{{ p[5] if p|length > 5 else 'that link' }}” counted again: <b>{{ p[1] }} → {{ p[2] }}</b> group(s), <b>{{ p[3] }} → {{ p[4] }}</b> site(s) in a group.{% endif %}</div>{% endif %}
+
+{% if m.stats.sites %}
+{% set waiting = m.stats.not_investigated or m.stats.not_mapped %}
+<div class="done {{ 'wait' if waiting }}">
+  <div class="tick">{{ '…' if waiting else '✓' }}</div>
+  <div style="flex:1;min-width:240px"><b>{{ 'Analysis not finished' if waiting else 'Analysis complete' }}</b>
+    <span class="muted"> · {{ m.stats.sites }} site{{ '' if m.stats.sites == 1 else 's' }} · {{ m.stats.operations }} operation{{ '' if m.stats.operations == 1 else 's' }} · {{ m.stats.alone }} unattributed{% if m.stats.social %} · {{ m.stats.social }} social page{{ '' if m.stats.social == 1 else 's' }}{% endif %}</span>
+    <div class="small" style="margin-top:3px">{% if waiting %}{{ m.stats.not_investigated }} site(s) have no investigation and {{ m.stats.not_mapped }} no map yet: <a href="/ui/campaigns#confirmed">MAP ALL / INVESTIGATE ALL</a> fills in the servers, registrars and name servers, and the picture below gets sharper.{% else %}Every site was mapped and investigated. The ties below use all of it.{% endif %}</div></div>
+</div>
+{% endif %}
+{% set rr = request.query_params.get('reassessed') %}
+{% if rr %}<div class="panel small" style="border-color:rgba(46,204,113,.5)"><b>Re-assessed from the saved evidence.</b> {{ rr }} site{{ '' if rr == '1' else 's' }} got a new severity; nothing was fetched. The score history of each one keeps the old rating.</div>{% endif %}
+{% if m.stats.ends_on_brand and can_write %}<div class="panel small" style="border-color:rgba(245,197,24,.55);display:flex;gap:14px;align-items:center;flex-wrap:wrap">
+  <div style="flex:1;min-width:260px"><b>{{ m.stats.ends_on_brand }} site{{ '' if m.stats.ends_on_brand == 1 else 's' }} end{{ 's' if m.stats.ends_on_brand == 1 else '' }} on the brand's own site.</b> They are not phishing pages: the visitor lands on the real site, so nothing is stolen. They still are abuse when the link carries an affiliate id (the commission goes to a stranger) or goes through a redirect host that can send visitors elsewhere tomorrow.
+    {% if m.stats.ends_on_brand_unrated %}{{ m.stats.ends_on_brand_unrated }} of them {{ 'is' if m.stats.ends_on_brand_unrated == 1 else 'are' }} still rated as a copy of the brand.{% else %}They are rated for that already.{% endif %}</div>
+  <form method="post" action="/ui/campaigns/reassess-redirects"><input type="hidden" name="brand_id" value="{{ brand_id }}"><button type="submit" class="small" title="uses only the saved evidence: no scan, no provider call">Re-assess them from the saved evidence</button></form></div>{% endif %}
+<p class="intro" style="font-size:15px;color:var(--text);margin-top:12px">{{ m.headline }}</p>
+<div class="kpis">
+  <div class="kpi crit"><div class="v" data-count="{{ m.stats.sites }}">0</div><div class="l">confirmed sites</div></div>
+  <div class="kpi ok"><div class="v" data-count="{{ m.stats.groups }}">0</div><div class="l">connected groups</div></div>
+  <div class="kpi hi"><div class="v" data-count="{{ m.stats.linked_sites }}">0</div><div class="l">sites in a group</div></div>
+  <div class="kpi"><div class="v" data-count="{{ m.stats.alone }}">0</div><div class="l">no strong link</div></div>
+  <div class="kpi vi"><div class="v" data-count="{{ m.stats.strong_links }}">0</div><div class="l">strong links</div></div>
+  <div class="kpi med"><div class="v" data-count="{{ m.stats.weak_links }}">0</div><div class="l">hints &amp; common</div></div>
+</div>
+
+{% macro xform(kind, value, on, label, brand_id, name='') -%}
+  <form method="post" action="/ui/campaigns/map-exclude" style="display:inline" class="xf"><input type="hidden" name="kind" value="{{ kind }}"><input type="hidden" name="value" value="{{ value or '' }}"><input type="hidden" name="exclude" value="{{ 1 if on else 0 }}"><input type="hidden" name="brand_id" value="{{ brand_id }}"><input type="hidden" name="name" value="{{ name }}">
+    <button type="submit" class="{{ 'nope' if on else 'back' }}" title="{{ 'This is not evidence of a connection: take it out of the analysis and analyse again' if on else 'Count it again' }}">{{ label }}</button></form>
+{%- endmacro %}
+
+{% macro linkrow(l) -%}
+<div class="link">
+  <div class="what"><span class="dot" style="border-color:{{ KC.get(l.kind, '#888') }};{{ 'border-top-style:dashed' if l.level != 'solid' }}"></span><b>{{ l.label }}</b><span class="pct" title="how likely two sites that share this are one operation">{{ (l.weight * 100)|round|int }}%{{ ' · hint' if l.level == 'possible' }}</span><br><span class="val">{{ l.value|truncate(70) }}</span> <span class="muted">· {{ l.sites|length }} sites{% if l.network %} · {{ l.network }}{% elif l.class == 'unknown' %} · network unknown{% endif %}</span>
+    {% if l.searchable %}{% if can_write %}<form method="post" action="/ui/campaigns/reverse-search" style="display:inline;margin-left:6px"><input type="hidden" name="kind" value="{{ l.kind }}"><input type="hidden" name="value" value="{{ l.value }}"><input type="hidden" name="brand_id" value="{{ brand_id }}"><button type="submit" class="small" style="padding:2px 8px;font-size:11px" title="search urlscan.io for other sites with the same {{ {'tds_campaign': 'campaign number', 'data_sink': 'data destination', 'affiliate_id': 'affiliate id', 'redirector': 'redirect host'}.get(l.kind, 'link') }} (one search, only when you press it)">search for more ▶</button></form>{% endif %}
+      {% if l.found %}<div class="muted" style="margin:3px 0 4px"><b>{{ l.found.sites|length }}</b> other site(s) found{% if l.found.total and l.found.total > l.found.sites|length %} (of {{ l.found.total }} scans){% endif %} · {{ (l.found.fetched_at or '')[:10] }}{% if l.found.note %} · {{ l.found.note }}{% endif %}
+        <div class="mono" style="word-break:break-all">{% for x in l.found.sites[:12] %}<span style="{{ 'color:var(--crit);font-weight:700' if x.brand_related }}">{{ x.domain }}</span>{{ ', ' if not loop.last }}{% endfor %}{% if l.found.sites|length > 12 %} …{% endif %}</div>
+        {% set rel = l.found.sites|selectattr('brand_related')|map(attribute='domain')|list %}
+        {% if rel and can_write and brand_id %}<form method="post" action="/ui/brands/{{ brand_id }}/scan-urls" style="margin-top:4px"><input type="hidden" name="urls" value="{{ rel|join(',') }}"><button type="submit" class="small" style="padding:2px 8px;font-size:11px">scan the {{ rel|length }} that carry the brand's name ▶</button></form>{% endif %}
+        <div style="margin-top:3px">A campaign number can be shared by unrelated advertisers: a lead, not proof.</div></div>{% endif %}{% endif %}</div>
+  {% if can_write %}<div>{{ xform(l.kind, l.value, true, '✕ not evidence', brand_id, l.label) }}</div>{% endif %}
+</div>
+{%- endmacro %}
+
+<div class="panel" style="margin-top:14px" id="groups">
+  <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><h2 style="margin:0">Which sites are connected <span class="muted">· one card per operation (a group of sites that belong to one attacker)</span></h2>
+    {% if m.groups %}<span style="margin-left:auto;display:flex;gap:6px"><button type="button" class="small" id="expall">expand all</button><button type="button" class="small" id="colall">collapse all</button></span>{% endif %}</div>
+  {% if m.groups %}
+  <div class="ops">
+    {% for g in m.groups %}
+    <div class="gcard" id="group-{{ g.index }}" style="--c:{{ GC[(g.index - 1) % 8] }}">
+      <div class="ophead">
+        <div class="opicon" title="{{ g.behaviour.label }}">{{ g.behaviour.icon }}</div>
+        <div class="opname"><div class="opt">{{ g.name }}</div><div class="small muted">Group {{ g.index }} · {{ g.behaviour.label }} · {{ g.size }} sites{% if g.brands|length > 1 %} · <b style="color:var(--c)">{{ g.brands|length }} brands</b>{% endif %}</div></div>
+        <div class="conf" title="the weakest tie that holds this group together"><div class="bar"><i style="width:{{ (g.confidence * 100)|round|int }}%"></i></div><span class="small"><b>{{ g.level }}</b> · {{ (g.confidence * 100)|round|int }}%</span></div>
+      </div>
+      <div class="because small"><span class="muted">Because</span>
+        {% for b in g.basis %}<span class="chip {{ 'hint' if b.level != 'solid' }}" title="{{ b.label }}{{ ' · ' ~ b.n ~ ' of them' if b.n > 1 }}"><b>{{ b.short|truncate(24) }}</b> {{ b.value|truncate(26) }} <span class="muted">{{ (b.weight * 100)|round|int }}%</span></span>{% endfor %}</div>
+      <p class="story">{{ g.story }}</p>
+      <div class="mono small" style="word-break:break-all">{% for h in g.sites[:8] %}{% set s = (m.sites|selectattr('host', 'equalto', h)|list|first) %}<a href="/ui/findings/{{ s.id }}" class="badge sev-{{ s.severity }}" style="margin:1px 3px 1px 0">{{ h }}</a>{% endfor %}
+        {% if g.sites|length > 8 %}<details style="display:inline"><summary class="small muted" style="display:inline;cursor:pointer">+{{ g.sites|length - 8 }} more</summary>{% for h in g.sites[8:] %}{% set s = (m.sites|selectattr('host', 'equalto', h)|list|first) %}<a href="/ui/findings/{{ s.id }}" class="badge sev-{{ s.severity }}" style="margin:1px 3px 1px 0">{{ h }}</a>{% endfor %}</details>{% endif %}</div>
+      {% if g.stop %}<div class="first small"><b>First step:</b> {{ g.stop[0].title }}</div>{% endif %}
+      <div class="chips">
+        {% if g.brands|length > 1 %}{% for b in g.brands %}<span class="chip" style="border-color:var(--c)" title="brand targeted by this group">brand <b>{{ b.name }}</b> ×{{ b.count }}</span>{% endfor %}{% endif %}
+        {% for r in g.toolkit.registrars[:2] %}<span class="chip" title="registrar">registrar <b>{{ r.name }}</b> ×{{ r.count }}</span>{% endfor %}
+        {% for r in g.toolkit.hosting[:2] %}<span class="chip" title="hosting">hosting <b>{{ r.name }}</b></span>{% endfor %}
+        {% for r in g.toolkit.redirectors[:2] %}<span class="chip" title="redirect host">redirects via <b>{{ r.name }}</b> ×{{ r.count }}</span>{% endfor %}
+        {% if g.pattern.when %}<span class="chip" title="when the domains were registered">bought <b>{{ g.pattern.when.first }}{{ ' → ' ~ g.pattern.when.last if g.pattern.when.span_days }}</b>{{ ' · in waves' if g.pattern.when.batch }}</span>{% endif %}
+      </div>
+      <div class="opbtns">
+        <button type="button" class="small" onclick="pickGroup('{{ g.index }}')">show only this group on the map ↑</button>
+        <a class="btn small" style="padding:3px 10px;font-size:11.5px" href="/ui/campaigns/operation-report?group={{ g.index }}{{ '&brand_id=' ~ brand_id if brand_id }}" target="_blank" rel="noopener" title="the whole operation as a readable, printable page with every table">HTML report ↗</a>
+        <a class="btn small" style="padding:3px 10px;font-size:11.5px" href="/ui/campaigns/operation-report?group={{ g.index }}&download=1{{ '&brand_id=' ~ brand_id if brand_id }}" title="save it as a file you can send">download .html</a>
+        <button type="button" class="small" data-copy-from="rep-{{ g.index }}">copy report (text)</button>
+        <button type="button" class="small" data-toggle="#group-{{ g.index }}" title="open or close every section of this card">expand / collapse</button>
+      </div>
+      <textarea id="rep-{{ g.index }}" hidden>{{ g.report_md }}</textarea>
+      <details class="sec"><summary>How to stop it <span class="cnt">{{ g.stop|length }}</span></summary>
+        {% for st in g.stop %}<div class="step"><div class="t">{{ loop.index }}. {{ st.title }}</div><div class="small muted">{{ st.text }}</div>
+          <div class="small" style="margin-top:3px"><span class="mono" style="word-break:break-all">{{ st.targets|join(', ') }}</span> <button type="button" class="small" style="padding:1px 7px;font-size:11px" data-copy="{{ st.targets|join('
+') }}">copy domains</button></div></div>{% endfor %}
+      </details>
+      <details class="sec"><summary>Who is with whom <span class="cnt">{{ g.clusters|length }} cluster{{ '' if g.clusters|length == 1 else 's' }}</span></summary>
+        <p class="small muted" style="margin:6px 0">Sites that share exactly the same things are shown together, so many links with the same sites read as one line.</p>
+        {% for cl in g.clusters %}<div class="cl" style="--w:{{ cl.strength }}"><div class="clsites">{% for h in cl.sites %}<span class="badge" style="margin:1px 3px 1px 0">{{ h }}</span>{% endfor %}</div>
+          <div class="small"><b>{{ cl.sites|length }} sites</b> share:
+            {% for k in cl.by_kind %}<span class="chip {{ 'hint' if k.level != 'solid' }}" title="{{ k.vals|join(', ') }}{{ ' · ' ~ k.network if k.network }}"><b>{{ k.label }}{{ ' ×' ~ k.vals|length if k.vals|length > 1 }}</b> {{ k.vals[:3]|map('truncate', 22)|join(', ') }}{{ ' +' ~ (k.vals|length - 3) ~ ' more' if k.vals|length > 3 }} <span class="muted">{{ (k.weight * 100)|round|int }}%</span></span>{% endfor %}</div></div>{% endfor %}
+        <div class="small" style="margin:12px 0 4px"><b>Who against whom</b> <span class="muted">· how sure we are that two sites are one operation (hover a cell for what ties them)</span></div>
+        <div style="overflow:auto"><table class="grid"><tr><th></th>{% for h in g.grid.hosts %}<th class="v"><div>{{ h }}</div></th>{% endfor %}</tr>
+          {% for row in g.grid.cells %}{% set ri = loop.index0 %}<tr><th class="h">{{ g.grid.hosts[ri] }}</th>{% for c in row %}{% if c is none %}<td class="self"></td>{% else %}<td style="--a:{{ c.conf }}" class="{{ 'sure' if c.conf >= 0.75 }}" title="{{ g.grid.hosts[ri] }} ↔ {{ g.grid.hosts[loop.index0] }} · {{ (c.conf * 100)|round|int }}%{{ ' · ' ~ c.kinds|join(', ') if c.kinds }}">{{ (c.conf * 100)|round|int if c.conf >= 0.75 }}</td>{% endif %}{% endfor %}</tr>{% endfor %}</table></div>
+      </details>
+      <details class="sec"><summary>Who shares what <span class="cnt">{{ g.detail.summary }}</span></summary>
+        {% for sec in g.detail.sections %}<details class="sub"{{ ' open' if loop.first and sec.rows|length <= 8 }}><summary><b>{{ sec.title }}</b> <span class="cnt">{{ sec.rows|length }}</span></summary>
+          <table class="shares">{% for r in sec.rows %}<tr><td class="val"><span class="dot" style="border-color:{{ KC.get(sec.kind, '#888') }};{{ 'border-top-style:dashed' if r.level != 'solid' }}"></span>{{ r.value|truncate(48) }}{% if r.network %}<div class="muted" style="font-family:var(--font,inherit)">{{ r.network }}{{ ' · ' ~ r.class if r.class }}</div>{% endif %}</td>
+            <td><span class="muted">{{ r.sites|length }} site{{ '' if r.sites|length == 1 else 's' }}</span><div class="mono" style="word-break:break-all">{{ r.sites|join(', ') }}</div></td></tr>{% endfor %}</table></details>
+        {% endfor %}
+      </details>
+      <details class="sec"><summary>Site by site <span class="cnt">{{ g.detail.sites|length }}</span></summary>
+        <div style="overflow:auto"><table class="matrix sitetab"><tr><th>site</th><th>registered</th><th>registrar</th><th>server(s)</th><th>hosting</th><th>name servers</th><th>ends on</th></tr>
+          {% for s in g.detail.sites %}<tr><td>{{ s.host }}</td><td>{{ s.registered or '–' }}</td><td>{{ s.registrar or '–' }}</td><td class="mono">{{ s.ips|join(', ') or ('behind a CDN' if s.behind_cdn else '–') }}</td><td>{{ s.hosting|join(', ') or '–' }}</td><td class="mono">{{ s.nameservers|join(', ') or '–' }}</td><td class="mono">{{ s.ends_on or '–' }}</td></tr>{% endfor %}</table></div>
+      </details>
+      <details class="sec"><summary>What ties them together <span class="cnt">{{ g.links|length }}</span></summary>
+        {% for kind in g.matrix.kinds %}{% set rows = g.links|selectattr('kind', 'equalto', kind)|list %}
+          {% for l in rows[:4] %}{{ linkrow(l) }}{% endfor %}
+          {% if rows|length > 4 %}<details><summary class="small muted" style="cursor:pointer;padding:4px 0">+{{ rows|length - 4 }} more {{ rows[0].label }}</summary>{% for l in rows[4:] %}{{ linkrow(l) }}{% endfor %}</details>{% endif %}
+        {% endfor %}
+        {% if g.also %}<div class="small muted" style="margin:8px 0 2px">Also in common, but weak (they never group sites):</div>
+        {% for l in g.also %}<div class="link"><div class="what"><span class="dot" style="border-color:{{ KC.get(l.kind, '#888') }};border-top-style:dashed"></span>{{ l.label }}<br><span class="val muted">{{ l.value|truncate(60) }}</span></div>
+          {% if can_write %}<div>{{ xform(l.kind, l.value, true, '✕ not evidence', brand_id, l.label) }}</div>{% endif %}</div>{% endfor %}{% endif %}
+      </details>
+      <details class="sec"><summary>Evidence per site <span class="cnt">{{ g.matrix.rows|length }}</span></summary>
+        <div style="overflow:auto"><table class="matrix"><tr><th>site</th>{% for k in g.matrix.kinds %}<th title="{{ g.links|selectattr('kind', 'equalto', k)|map(attribute='label')|first }}">{{ k.replace('_', ' ') }}</th>{% endfor %}</tr>
+          {% for r in g.matrix.rows %}<tr><td>{{ r.host }}</td>{% for k in g.matrix.kinds %}<td title="{{ r.cells[k]|join(', ') }}">{{ ('●' ~ (r.cells[k]|length if r.cells[k]|length > 1 else '')) if r.cells[k] else '·' }}</td>{% endfor %}</tr>{% endfor %}</table></div>
+      </details>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}<p class="small muted">No two confirmed sites share a server, certificate, analytics ID or registrant.</p>{% endif %}
+  {% if m.alone %}<h3 class="muted" style="font-size:12px;letter-spacing:.14em;margin:14px 0 6px">NO STRONG LINK TO THE OTHERS · {{ m.alone|length }}</h3>
+    <div class="mono small" style="word-break:break-all;line-height:1.9">{% for h in m.alone %}<span style="white-space:nowrap;margin-right:12px"><a href="/ui/findings/{{ (m.sites|selectattr('host', 'equalto', h)|list|first).id }}">{{ h }}</a> <span class="muted">· {{ m.alone_info[h].label }}</span></span>{% endfor %}</div>{% endif %}
+  {% if m.social %}<h3 class="muted" style="font-size:12px;letter-spacing:.14em;margin:14px 0 6px">SOCIAL IMPERSONATION · {{ m.social|length }} <span style="text-transform:none;letter-spacing:0">(pages, not infrastructure: they have no server to compare)</span></h3>
+    <div class="mono small" style="word-break:break-all;line-height:1.9">{% for x in m.social %}<span style="white-space:nowrap;margin-right:12px"><a href="/ui/findings/{{ x.id }}">{{ x.host }}</a></span>{% endfor %}</div>{% endif %}
+</div>
+
+<div class="panel" style="margin-top:14px" id="mapviews">
+  <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+    <h2 style="margin:0">The map</h2>
+    {% if m.nodes %}<div class="vsw" id="vsw" title="the same data, drawn in different ways: pick what reads best for the number of sites">
+      <button type="button" class="on" data-v="graph" title="dots and lines: best up to about 25 sites">Graph</button><button type="button" data-v="connections" title="what is shared on the left, the sites on the right: best when there are many sites">Connections</button><button type="button" data-v="matrix" title="a row per site, a column per shared thing">Matrix</button><button type="button" data-v="flow" title="site → registrar → hosting → redirect host → operation">Flow</button><button type="button" data-v="timeline" title="when the domains were registered">Timeline</button></div>
+    <div class="tool">
+      <span id="hintbar" style="display:contents"><label id="lbl-hints" title="dashed lines: a real hint (a redirect host, an old server, a purchase day) that is not enough on its own"><input type="checkbox" id="t-hints"> show hints</label>
+      <label id="lbl-common" title="faint lines: a registrar, a name server, a favicon: many unrelated sites share them"><input type="checkbox" id="t-common"> show common things</label></span>
+      <span id="zoombar" style="display:contents"><button type="button" onclick="bwGraph.zoomBy(1.3)" title="zoom in">＋</button><button type="button" onclick="bwGraph.zoomBy(1/1.3)" title="zoom out">－</button><button type="button" onclick="bwGraph.reset()" title="back to the start (also releases pinned dots)">reset view</button></span></div>{% endif %}
+  </div>
+  {% if m.groups %}<div class="gsel" id="gsel" style="margin-top:8px"><span class="small muted">Show:</span>
+    <button type="button" class="on" data-g="all">everything</button>
+    {% for g in m.groups %}<button type="button" data-g="{{ g.index }}" title="{{ g.name }}">Group {{ g.index }} · {{ g.size }} sites</button>{% endfor %}
+    {% if m.alone %}<button type="button" data-g="0">no strong link · {{ m.alone|length }}</button>{% endif %}
+  </div>{% endif %}
+  {% if m.nodes %}
+  <div class="vw" id="view-graph">
+    <p class="small muted" style="margin:4px 0 8px">Big dot with a name = a site you confirmed (colour = severity) · small dot with a letter = something several sites have in common · line = “has that”, thicker = a stronger tie. Each operation sits in its own coloured area. <b>Point</b> at a dot to light up what it touches, <b>click</b> it for details. <b>Scroll</b> to zoom, <b>drag the background</b> to move the map, <b>drag a dot</b> to move it (double-click it to let go).</p>
+    <div class="mapwrap"><svg id="graph" width="100%" height="640" style="border:1px solid var(--border);border-radius:8px"></svg>
+      <aside id="drawer" hidden></aside></div>
+    <div class="legend">
+      <span><b style="border-color:#FF4D4D"></b>affiliate id · registrant · DNS token</span>
+      <span><b style="border-color:#35C7F2"></b>server</span>
+      <span><b style="border-color:#F5C518"></b>TLS certificate · page code</span>
+      <span><b style="border-color:#FF9F1C"></b>analytics ID · where the data goes</span>
+      <span><b style="border-color:#B388FF"></b>redirect host</span>
+      <span><b style="border-color:#2ECC71"></b>traffic campaign</span>
+      <span class="muted"><b style="border-color:#8A97A8;border-top-style:dashed"></b>dashed = a hint, not proof on its own</span>
+    </div>
+  </div>
+  <div class="vw" id="view-connections" hidden></div><div class="vw" id="view-matrix" hidden></div><div class="vw" id="view-flow" hidden></div><div class="vw" id="view-timeline" hidden></div>
+  {% else %}<p class="muted small">No confirmed phishing sites yet.</p>{% endif %}
+  {% if m.pending %}<p class="small muted" style="margin-bottom:0">{{ m.pending|length }} site(s) have no investigation yet, so only what their own evidence shows is used for them: <a href="/ui/campaigns#confirmed">Investigate all</a> fills in the servers, registrars and name servers.</p>{% endif %}
+</div>
+
+{% if m.overall %}<div class="panel" style="margin-top:14px">
+  <h2>The pattern <span class="muted">· what these attacks have in common</span></h2>
+  <p class="small" style="margin:0 0 6px">{{ m.overall.summary }}</p>
+  {% if m.overall.facts %}<ul class="small" style="margin:0 0 4px 18px">{% for f in m.overall.facts %}<li>{{ f }}</li>{% endfor %}</ul>{% endif %}
+  {% if m.overall.timeline %}<div class="small muted" style="margin-top:8px">Registered, oldest first:</div>
+  <div class="mono small" style="word-break:break-all;line-height:1.9">{% for t in m.overall.timeline %}<span style="white-space:nowrap;margin-right:10px"><span class="muted">{{ t.date }}</span> {{ t.host }}</span>{% endfor %}</div>{% endif %}
+</div>{% endif %}
+
+{% if m.kinds %}<div class="panel" style="margin-top:14px" id="kinds">
+  <h2>What counts as a connection <span class="muted">· switch a whole kind off if it proves nothing to you</span></h2>
+  <p class="small muted" style="margin:0 0 8px">For example the Cloudflare account or the registrar: many unrelated sites share them. Switching a kind off takes it out of the analysis and the map is analysed again. To leave out only <em>one</em> thing, use the red “not evidence” button next to it in the cards above.</p>
+  <div class="small" style="display:flex;flex-wrap:wrap;gap:6px 10px">
+    {% for k in m.kinds %}{% if can_write %}<form method="post" action="/ui/campaigns/map-exclude" class="xf" style="display:inline"><input type="hidden" name="kind" value="{{ k.kind }}"><input type="hidden" name="exclude" value="{{ 0 if k.excluded else 1 }}"><input type="hidden" name="brand_id" value="{{ brand_id }}"><input type="hidden" name="name" value="{{ k.label }}">
+      <button type="submit" class="small" style="padding:3px 10px;{{ 'text-decoration:line-through;opacity:.55' if k.excluded }}" title="{{ 'switched off: click to count it again' if k.excluded else 'click to switch this whole kind off' }}">{{ '✕ off' if k.excluded else '✓ on' }} · {{ k.label }} · {{ k.count }}{{ '' if k.strong else ' (' ~ k.strength ~ ')' }}</button></form>
+    {% else %}<span class="pill">{{ k.label }} · {{ k.count }}</span>{% endif %}{% endfor %}
+  </div>
+  {% if m.excluded %}<details style="margin-top:8px"><summary class="small" style="cursor:pointer">Left out: {{ m.excluded|length }} link(s)</summary>
+    <table class="small" style="margin-top:6px">{% for x in m.excluded %}<tr><td>{{ x.label }}</td><td class="mono" style="word-break:break-all">{{ x.value|truncate(60) }}</td><td class="muted">{{ x.sites|length }} sites</td>
+      <td>{% if can_write and x.by == 'item' %}{{ xform(x.kind, x.value, false, 'count it again', brand_id, x.label) }}{% elif x.by == 'kind' %}<span class="muted">the whole kind is switched off</span>{% endif %}</td></tr>{% endfor %}</table></details>{% endif %}
+</div>{% endif %}
+
+{% if m.nodes %}{% set graph_data = {"nodes": m.nodes, "edges": m.edges} %}
+<script>
+(function(){
+  const all = {{ graph_data|tojson }};
+  {% set names = {} %}{% for g in m.groups %}{% set _ = names.update({g.index|string: g.name}) %}{% endfor %}
+  const names = {{ names|tojson }};
+  const CAN_WRITE = {{ 'true' if can_write else 'false' }}, BRAND = {{ brand_id|tojson }};
+  const state = {g: 'all', hints: false, common: false};
+  const lvl = n => n.level || 'solid';
+  function visible(){
+    let nodes = all.nodes.filter(n => n.type === 'domain' || lvl(n) === 'solid' || (state.hints && lvl(n) === 'possible') || (state.common && lvl(n) === 'weak'));
+    if (state.g !== 'all') { const g = Number(state.g); nodes = nodes.filter(n => (n.groups || []).includes(g)); }
+    const ids = new Set(nodes.map(n => n.id));
+    return merge({nodes, edges: all.edges.filter(e => ids.has(e.source) && ids.has(e.target))});
+  }
+  // many things shared by exactly the same sites (ten servers, a registrar, a name server …) are drawn as ONE dot with ONE line per site
+  const rank = {solid: 3, possible: 2, weak: 1};
+  function merge(d){
+    const byId = Object.fromEntries(d.nodes.map(n => [n.id, n]));
+    const sitesOf = {};
+    d.edges.forEach(e => { const c = byId[e.target]; if (c && c.type !== 'domain') (sitesOf[c.id] = sitesOf[c.id] || []).push(e.source); });
+    const groups = {};
+    Object.keys(sitesOf).forEach(id => { const k = sitesOf[id].slice().sort().join('|'); (groups[k] = groups[k] || []).push(byId[id]); });
+    const drop = new Set(), nodes = [], edges = [];
+    Object.entries(groups).forEach(([k, items]) => {
+      if (items.length < 2) return;
+      items.sort((a, b) => (b.weight || 0) - (a.weight || 0));
+      const top = items[0], counts = {};
+      items.forEach(i => { const w = (i.label || '').split(':')[0]; counts[w] = (counts[w] || 0) + 1; });
+      const label = `${items.length} things: ` + Object.entries(counts).map(([w, c]) => c > 1 ? `${w} ×${c}` : w).join(', ');
+      const best = items.reduce((m, i) => Math.max(m, rank[lvl(i)] || 1), 0);
+      const merged = {id: 'merge:' + k, type: top.type, kind: top.kind, value: label, label, included: best === 3, level: best === 3 ? 'solid' : best === 2 ? 'possible' : 'weak',
+                      weight: top.weight, groups: [...new Set(items.flatMap(i => i.groups || []))], triage_reason: `${items.length} things shared by the same ${sitesOf[top.id].length} sites`,
+                      merged: items.map(i => ({kind: i.kind, value: i.value, label: i.label, level: lvl(i), weight: i.weight})), attrs: {}, finding: null};
+      items.forEach(i => drop.add(i.id)); nodes.push(merged);
+      sitesOf[top.id].forEach(s => { const e = d.edges.find(x => x.source === s && x.target === top.id); edges.push({...e, id: merged.id + '|' + s, target: merged.id, target_value: label, weight: top.weight, level: merged.level}); });
+    });
+    return {nodes: d.nodes.filter(n => !drop.has(n.id)).concat(nodes), edges: d.edges.filter(e => !drop.has(e.target)).concat(edges)};
+  }
+  const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'}[c]));
+  const drawer = document.getElementById('drawer');
+  function showDrawer(n, near){
+    if (!drawer) return;
+    if (!n) { drawer.hidden = true; return; }
+    let h = '<button class="x" type="button" title="close" onclick="document.getElementById(\'drawer\').hidden=true">×</button>';
+    if (n.type === 'domain') {
+      const d = n.detail || {};
+      h += `<h3>${esc(n.value)}</h3><div class="small muted">${esc(n.finding ? n.finding.severity : '')} · confirmed phishing</div><dl>`
+        + (d.does ? `<dt>does</dt><dd>${esc(d.does)}</dd>` : '') + (d.operation ? `<dt>operation</dt><dd>${esc(d.operation)}</dd>` : '<dt>operation</dt><dd class="muted">none: no strong link</dd>')
+        + (d.registered ? `<dt>registered</dt><dd>${esc(d.registered)}</dd>` : '') + (d.registrar ? `<dt>registrar</dt><dd>${esc(d.registrar)}</dd>` : '')
+        + ((d.hosting || []).length ? `<dt>hosting</dt><dd>${d.hosting.map(esc).join('<br>')}</dd>` : '')
+        + ((d.affiliate || []).length ? `<dt>affiliate</dt><dd>${d.affiliate.map(esc).join(', ')}</dd>` : '') + ((d.redirectors || []).length ? `<dt>redirects via</dt><dd>${d.redirectors.map(esc).join(', ')}</dd>` : '')
+        + (d.forwards_to_brand ? '<dt>ends on</dt><dd>the brand\'s own site</dd>' : '') + '</dl>'
+        + (n.finding ? `<p style="margin:10px 0 0"><a href="/ui/findings/${esc(n.finding.id)}">open the finding →</a></p>` : '');
+    } else if (n.merged) {
+      const sites = near.filter(x => x.type === 'domain');
+      h += `<h3>${esc(n.label)}</h3><div class="small muted">shared by the same ${sites.length} sites</div><dl><dt>sites</dt><dd>${sites.map(x => esc(x.value)).join('<br>')}</dd></dl>`
+        + '<div style="margin-top:8px">' + n.merged.map(i => `<div class="small" style="padding:4px 0;border-top:1px dashed var(--border)"><span class="muted">${esc(i.label.split(':')[0])}</span> <b class="mono" style="word-break:break-all">${esc(i.value)}</b> <span class="muted">${Math.round((i.weight || 0) * 100)}%</span>`
+          + (CAN_WRITE ? ` <form method="post" action="/ui/campaigns/map-exclude" class="xf2" style="display:inline"><input type="hidden" name="kind" value="${esc(i.kind)}"><input type="hidden" name="value" value="${esc(i.value)}"><input type="hidden" name="exclude" value="1"><input type="hidden" name="brand_id" value="${esc(BRAND)}"><input type="hidden" name="name" value="${esc(i.label)}"><button type="submit" class="nope" style="padding:1px 7px;font-size:11px">✕ not evidence</button></form>` : '') + '</div>').join('') + '</div>';
+    } else {
+      const sites = near.filter(x => x.type === 'domain');
+      h += `<h3>${esc(n.label || n.value)}</h3><div class="small muted">${esc(n.triage_reason)}</div><dl>`
+        + (n.weight != null ? `<dt>strength</dt><dd>${Math.round(n.weight * 100)}% that two sites sharing it are one operation</dd>` : '')
+        + `<dt>shared by</dt><dd>${sites.map(x => esc(x.value)).join('<br>')}</dd></dl>`;
+      if (CAN_WRITE) h += `<form method="post" action="/ui/campaigns/map-exclude" class="xf2" style="margin-top:10px"><input type="hidden" name="kind" value="${esc(n.kind)}"><input type="hidden" name="value" value="${esc(n.value)}"><input type="hidden" name="exclude" value="1"><input type="hidden" name="brand_id" value="${esc(BRAND)}"><input type="hidden" name="name" value="${esc(n.label || n.value)}"><button type="submit" class="nope">✕ not evidence</button></form>`;
+    }
+    drawer.innerHTML = h; drawer.hidden = false;
+    drawer.querySelectorAll('form').forEach(f => f.addEventListener('submit', () => { document.getElementById('analysing').style.display = 'flex'; }));
+  }
+  window.BW_GRAPH = {clusters: true, names: names, onSelect: showDrawer, filter: visible};
+  window.pickGroup = function(gid){
+    state.g = String(gid);
+    const sel = document.getElementById('gsel');
+    if (sel) sel.querySelectorAll('button').forEach(b => b.classList.toggle('on', b.dataset.g === state.g));
+    bwGraph.setData(all);
+    if (window.bwViews) bwViews.refresh();
+    if (drawer) drawer.hidden = true;
+    if (gid !== 'all') document.getElementById('graph').scrollIntoView({behavior: 'smooth', block: 'center'});
+  };
+  window.bwState = state;
+  window.BW_VIEWS = Object.assign({{ m.views|tojson }}, {swimlane: {{ m.swimlane|tojson }}});
+})();
+</script>
+{% include "_graph_js.html" %}
+{% include "_views_js.html" %}
+<script>
+(function(){
+  const sel = document.getElementById('gsel');
+  if (sel) sel.addEventListener('click', ev => { const b = ev.target.closest('button'); if (b) pickGroup(b.dataset.g); });
+  // the toggles change which kinds of line are drawn (the page's filter reads bwState)
+  [['t-hints', 'hints'], ['t-common', 'common']].forEach(([id, key]) => { const c = document.getElementById(id); if (c) c.addEventListener('change', () => { bwState[key] = c.checked; bwGraph.setData(null); if (window.bwViews) bwViews.refresh(); }); });
+  // every section of the cards is a drop-down: open or close them all, or the ones of one card
+  const setAll = (root, open) => root.querySelectorAll('details.sec, details.sub').forEach(d => { d.open = open; });
+  const ex = document.getElementById('expall'), co = document.getElementById('colall');
+  if (ex) ex.addEventListener('click', () => setAll(document.getElementById('groups'), true));
+  if (co) co.addEventListener('click', () => setAll(document.getElementById('groups'), false));
+  document.querySelectorAll('[data-toggle]').forEach(b => b.addEventListener('click', () => { const card = document.querySelector(b.dataset.toggle), secs = card.querySelectorAll('details.sec'); setAll(card, ![...secs].every(d => d.open)); }));
+  // taking a link out: say that the analysis is being done again (it takes a moment on a big map)
+  document.querySelectorAll('form.xf').forEach(f => f.addEventListener('submit', () => { document.getElementById('analysing').style.display = 'flex'; }));
+  document.querySelectorAll('[data-copy]').forEach(b => b.addEventListener('click', () => { navigator.clipboard && navigator.clipboard.writeText(b.dataset.copy).then(() => { const t = b.textContent; b.textContent = 'copied ✓'; setTimeout(() => { b.textContent = t; }, 1400); }); }));
+  document.querySelectorAll('[data-copy-from]').forEach(b => b.addEventListener('click', () => { const ta = document.getElementById(b.dataset.copyFrom); navigator.clipboard && navigator.clipboard.writeText(ta.value).then(() => { const t = b.textContent; b.textContent = 'copied ✓'; setTimeout(() => { b.textContent = t; }, 1400); }); }));
+})();
+</script>{% endif %}
+{% endblock %}

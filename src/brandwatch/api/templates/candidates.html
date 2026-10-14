@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+{% block title %}Watchlist{% endblock %}
+{% set w = stats %}
+{% block content %}
+{% import "_macros.html" as m %}
+<style>
+  .funnel{display:flex;height:34px;border-radius:8px;overflow:hidden;border:1px solid var(--border);background:#0b1220}
+  .funnel a{display:flex;align-items:center;justify-content:center;gap:6px;width:0;min-width:0;font-family:var(--mono);font-size:11px;color:#06101c;font-weight:600;
+    white-space:nowrap;overflow:hidden;transition:width 1.4s cubic-bezier(.2,.8,.2,1),filter .2s}
+  .funnel a:hover{filter:brightness(1.25)}
+  .funnel-legend{display:none;flex-wrap:wrap;gap:6px 14px;margin-top:10px;font-family:var(--mono);font-size:11px;color:var(--muted)}
+  .funnel-legend i{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:6px;vertical-align:-1px}.funnel-legend b{color:var(--text);font-weight:600}
+  @media (max-width:900px){.funnel a .lbl{display:none}.funnel-legend{display:flex}}
+  .upcoming li{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;padding:7px 0;border-bottom:1px dashed var(--border);animation:fadeUp .5s ease both;animation-delay:calc(var(--r,0)*60ms)}
+  .count{font-family:var(--display);font-size:18px;color:var(--accent2)}
+  .wrow td:first-child{box-shadow:inset 3px 0 0 var(--sc)}
+  .prio{display:inline-block;height:6px;border-radius:3px;background:var(--accent);vertical-align:middle;width:0;transition:width 1.2s}
+  button.small{padding:4px 9px;font-size:12px;white-space:nowrap}
+  td form{margin:0 4px 0 0}
+</style>
+<h1>WATCHLIST <span class="muted">· every domain the system is observing over time · {{ w.total }} total</span></h1>
+<p class="intro">{{ PAGE_INTROS.candidates }}</p>
+
+<div class="kpis">
+  {% for st, n in w.states.items() if st != 'analyzing' %}
+  <a class="kpi {{ 'on' if filters.state==st }}" href="/ui/candidates?state={{ st }}{% if filters.brand_id %}&brand_id={{ filters.brand_id }}{% endif %}" style="--glow:{{ w.state_colors[st] }}33">
+    <div class="v" data-count="{{ n }}" style="color:{{ w.state_colors[st] if st != 'dismissed' else 'var(--muted)' }}">0</div><div class="l" title="{{ STATE_HELP.get(st, '') }}">{{ st|state_label }}</div></a>
+  {% endfor %}
+  <div class="kpi cy"><div class="v" data-count="{{ w.scans_total }}">0</div><div class="l">observations made</div></div>
+  <div class="kpi hi"><div class="v" data-count="{{ w.changed_24h }}">0</div><div class="l">content changed (24h)</div></div>
+</div>
+
+<div class="panel" style="margin-top:14px">
+  <h2>Lifecycle funnel <span class="muted">· new → watching → flagged / long watch / dismissed</span></h2>
+  <p class="small muted" style="margin:0 0 8px"><b>new</b> just discovered · <b>watching</b> visited, below the finding threshold, re-checked on a schedule · <b>flagged</b> scored Medium+, there is a finding · <b>long watch</b> quiet for the whole watch window, checked less often · <b>dismissed</b> dead, legitimate or whitelisted.</p>
+  <div class="funnel">
+    {% for st, pct in w.state_pct.items() if w.states[st] and st != 'analyzing' %}
+    <a href="/ui/candidates?state={{ st }}{% if filters.brand_id %}&brand_id={{ filters.brand_id }}{% endif %}" data-w="{{ pct }}" style="background:{{ w.state_colors[st] }};{{ 'color:#cfd8e3' if st == 'dismissed' else '' }}" title="{{ st }}: {{ w.states[st] }} ({{ pct }}%)"><span class="lbl">{{ st.replace('_',' ') }} </span>{{ w.states[st] }}</a>
+    {% endfor %}
+  </div>
+  <div class="funnel-legend">{% for st, pct in w.state_pct.items() if w.states[st] %}<span><i style="background:{{ w.state_colors[st] }}"></i>{{ st.replace('_',' ') }} <b>{{ w.states[st] }}</b></span>{% endfor %}</div>
+</div>
+
+<div class="grid four" style="margin-top:14px">
+  <div class="panel">
+    <h2>Next re-scans <span class="muted">· 48h</span></h2>
+    <ul class="upcoming" style="list-style:none;padding:0;margin:0">
+      {% for u in w.upcoming %}
+      <li><span class="radar"></span><a class="mono small" href="/ui/candidates/{{ u.id }}">{{ u.hostname }}</a><span class="count" data-rel="{{ u.at }}" data-due="1"></span></li>
+      {% endfor %}
+    </ul>
+    {% if not w.upcoming %}<p class="muted small">Nothing due in the next 48 hours.</p>{% endif %}
+  </div>
+  <div class="panel">
+    <h2>Found by <span class="muted">· domains found by each discovery stream</span></h2>
+    <div class="donut-wrap"><svg class="donut" data-donut='{{ w.source_segments|tojson }}' data-center="sources"></svg>
+      <div class="legend">{% for seg in w.source_segments %}<div><i style="background:{{ seg.color }}"></i>{{ seg.label }}<b>{{ seg.value }}</b></div>{% endfor %}</div></div>
+  </div>
+  <div class="panel">
+    <h2>Priority</h2>
+    {% for k, v in w.priority.items() %}
+    <div style="display:grid;grid-template-columns:52px 1fr 40px;gap:10px;align-items:center;margin:9px 0">
+      <span class="mono small muted">{{ k }}</span><div class="bar"><i data-w="{{ (v / (w.priority_max or 1) * 100)|round|int }}" style="background:linear-gradient(90deg,var(--accent),{{ '#5FE3FF' if k == '20+' else ('#2386a6' if k == '10–19' else '#35C7F2') }})"></i></div><span class="mono small right">{{ v }}</span>
+    </div>
+    {% endfor %}
+    <p class="small muted">Triggers (a login form appeared, the site woke up, the favicon changed) raise priority so these are re-checked first.</p>
+  </div>
+  <div class="panel">
+    <h2>Discovered · 14 days</h2>
+    <svg class="spark" data-spark='{{ {"series": [{"values": w.discovered_per_day, "color": "#35C7F2"}]}|tojson }}'></svg>
+    <h2>Surface <span class="muted">· where the brand appears</span></h2>
+    <div class="donut-wrap" style="transform:scale(.85);transform-origin:left top"><svg class="donut" data-donut='{{ w.surface_segments|tojson }}' data-center="surface"></svg>
+      <div class="legend">{% for seg in w.surface_segments %}<div><i style="background:{{ seg.color }}"></i>{{ seg.label }}<b>{{ seg.value }}</b></div>{% endfor %}</div></div>
+  </div>
+</div>
+
+<div class="panel" style="margin-top:14px">
+  {% if brand_chips|length > 1 %}<div class="bchips" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px">
+    <a class="btn" style="padding:4px 12px;font-size:12.5px;{{ 'border-color:var(--accent);color:var(--accent2)' if not filters.brand_id }}" href="/ui/candidates?state={{ filters.state }}">All brands <b>{{ brand_total }}</b></a>
+    {% for b in brand_chips %}<a class="btn" style="padding:4px 12px;font-size:12.5px;{{ 'border-color:var(--accent);color:var(--accent2)' if filters.brand_id == b.id }}" href="/ui/candidates?state={{ filters.state }}&brand_id={{ b.id }}">{{ b.name }} <b>{{ b.count }}</b></a>{% endfor %}
+  </div>{% endif %}
+  <form method="get" action="/ui/candidates" class="actions" style="margin-bottom:8px">
+    <div><label>Brand</label><select name="brand_id" onchange="this.form.submit()"><option value="">all</option>{% for b in brands %}<option value="{{ b.id }}" {{ 'selected' if filters.brand_id==b.id }}>{{ b.name }}</option>{% endfor %}</select></div>
+    <div><label>State</label><select name="state" onchange="this.form.submit()"><option value="">all</option>{% for st in CandidateStates %}<option value="{{ st }}" {{ 'selected' if filters.state==st }}>{{ st }}</option>{% endfor %}</select></div>
+    <div><label>Search host</label><input id="q" placeholder="type to filter…" autocomplete="off"></div>
+    <div><button type="submit">Apply</button></div>
+    <div class="muted small" style="margin-left:auto">{{ candidates|length }} domain(s)</div>
+  </form>
+  {% set here = '/ui/candidates' ~ ('?state=' ~ filters.state if filters.state else '') ~ (('&' if filters.state else '?') ~ 'brand_id=' ~ filters.brand_id if filters.brand_id else '') %}
+  {% if not candidates %}<p class="muted">No domains match. {% if filters.state or filters.brand_id %}<a href="/ui/candidates">Clear the filters</a> or {% endif %}run a scan from <a href="/ui/brands">Brands &amp; Scans</a>.</p>{% endif %}
+  <table id="ctable">
+    <tr><th>Domain</th><th>Brand</th><th>Surface</th><th>State</th><th>Finding</th><th>Priority</th><th>First seen</th><th>Last seen</th><th>Next scan</th><th class="right">Scans</th>{% if can_write %}<th>Actions</th>{% endif %}</tr>
+    {% for c in candidates %}
+    <tr class="wrow" style="--sc:{{ w.state_colors.get(c.state, '#1E2A3D') }}" data-host="{{ c.hostname }}">
+      <td><a href="/ui/candidates/{{ c.id }}">{{ m.host(c.hostname, c.host_display, c.is_idn) }}</a></td>
+      <td class="small"><a href="/ui/brands/{{ c.brand_id }}">{{ c.brand_name or '—' }}</a></td><td class="small">{{ SURFACE_LABELS.get(c.surface, c.surface) }}</td>
+      <td><span class="badge state st-{{ c.state }}" title="{{ STATE_HELP.get(c.state, '') }}">{{ c.state|state_label }}</span></td>
+      <td>{% if c.finding %}<a href="/ui/findings/{{ c.finding.id }}" class="badge sev-{{ c.finding.severity }}" title="open the finding">{{ c.finding.severity }} · {{ c.finding.state }}</a>{% else %}<span class="muted small">—</span>{% endif %}</td>
+      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="{{ [c.priority * 3, 100]|min }}" style="max-width:60px"></span> {{ c.priority }}</td>
+      <td class="mono small muted" data-rel="{{ c.first_seen }}">{{ c.first_seen[:16].replace('T',' ') }}</td>
+      <td class="mono small muted" data-rel="{{ c.last_seen }}">{{ c.last_seen[:16].replace('T',' ') }}</td>
+      <td class="mono small" {% if c.next_scan_at %}data-rel="{{ c.next_scan_at }}" data-due="1" style="color:var(--accent2)"{% endif %}>{{ '—' if not c.next_scan_at else c.next_scan_at[:16].replace('T',' ') }}</td>
+      <td class="right mono">{{ c.scan_count }}</td>
+      {% if can_write %}
+      <td style="white-space:nowrap">
+        {% if c.state != 'dismissed' %}
+        <form method="post" action="/ui/candidates/{{ c.id }}/dismiss" style="display:inline"
+              data-confirm="Known legit: remove {{ c.hostname }} from the watchlist and whitelist its domain for {{ c.brand_name or 'this brand' }}?&#10;&#10;It (and its subdomains) will never be flagged again. You can undo this on the brand page → whitelist."
+              data-confirm-title="Known legitimate" data-confirm-ok="Whitelist it">
+          <input type="hidden" name="next" value="{{ here }}"><input type="hidden" name="whitelist" value="on"><input type="hidden" name="reason" value="known legitimate domain">
+          <button type="submit" class="small" title="I know this domain — it is legitimate. One click: off the watchlist and whitelisted for this brand">Known legit ✓</button>
+        </form>
+        {% endif %}
+        <form method="post" action="/ui/candidates/{{ c.id }}/rescan" style="display:inline"><button type="submit" class="small" title="fetch and score this site again now">Rescan</button></form>
+      </td>
+      {% endif %}
+    </tr>
+    {% endfor %}
+  </table>
+</div>
+<script>
+(function(){
+  const q = document.getElementById('q');
+  q && q.addEventListener('input', () => { const v = q.value.toLowerCase();
+    document.querySelectorAll('#ctable tr[data-host]').forEach(tr => tr.style.display = tr.dataset.host.includes(v) ? '' : 'none'); });
+  // funnel segments carry data-w and are grown by the shared motion layer in base.html
+})();
+</script>
+{% endblock %}

@@ -1,0 +1,11 @@
+{# Shared by the finding page's investigation tabs and the server (IP) page. #}
+{% macro det(p, t, big=False) -%}
+  {%- if t -%}<span class="det {{ 'bad' if p else 'ok' }}{{ ' big' if big }}"><b>{{ p }}</b><i>/ {{ t }}</i></span>
+  {%- else -%}<span class="det none">—</span>{%- endif -%}
+{%- endmacro %}
+{% macro vt_status(st) -%}
+  {%- if st and st.status == 'not_available' -%}<span class="pill warn" title="{{ st.error }}">not available on this VirusTotal plan</span>
+  {%- elif st and st.status == 'skipped' -%}<span class="pill muted" title="{{ st.error }}">skipped · shared Cloudflare address</span>
+  {%- elif st and st.status == 'error' -%}<span class="pill err" title="{{ st.error }}">lookup failed · {{ st.error|truncate(60) }}</span>
+  {%- elif not st or st.status == 'missing' -%}<span class="pill muted">not fetched yet</span>{%- endif -%}
+{%- endmacro %}

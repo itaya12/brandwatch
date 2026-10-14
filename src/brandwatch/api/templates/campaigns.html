@@ -1,0 +1,229 @@
+{% extends "base.html" %}
+{% block title %}Attack infrastructure{% endblock %}
+{% set k = stats %}
+{% block content %}
+<style>
+  .ccard{display:grid;grid-template-columns:220px 1fr;gap:16px;align-items:center;color:inherit;position:relative;overflow:hidden;
+    background:linear-gradient(160deg,rgba(18,26,43,.96),rgba(10,15,26,.96));border:1px solid var(--border);border-radius:12px;padding:14px;
+    animation:fadeUp .6s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(var(--i,0)*90ms);transition:transform .3s,border-color .3s,box-shadow .3s}
+  .ccard:hover{transform:translateY(-3px);border-color:var(--accent);box-shadow:0 0 0 1px var(--accent),0 14px 40px rgba(0,0,0,.45);color:inherit}
+  .ccard canvas{width:220px;height:150px;border-radius:8px;background:radial-gradient(circle at 50% 50%,#101b2e,#070b13);border:1px solid var(--border)}
+  .ccard .title{font-family:var(--display);font-size:21px;font-weight:700;letter-spacing:.03em}
+  .mini{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:10px 0}
+  .mini div{background:rgba(8,11,20,.55);border:1px solid var(--border);border-radius:8px;padding:6px;text-align:center}
+  .mini b{display:block;font-family:var(--display);font-size:20px;line-height:1}.mini span{font-size:10px;color:var(--muted);text-transform:uppercase}
+  @media (max-width:800px){.ccard{grid-template-columns:1fr}.ccard canvas{width:100%;height:auto;aspect-ratio:440/300}}
+  @media (max-width:420px){.mini{grid-template-columns:repeat(3,1fr)}}
+</style>
+<div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+  <h1 style="margin:0">ATTACK INFRASTRUCTURE <span class="muted">· one confirmed finding → the attacker's whole network of servers, certificates and sites</span></h1>
+  <form method="get" action="/ui/campaigns" style="margin-left:auto;display:flex;gap:8px;align-items:center">
+    <select name="brand_id" onchange="this.form.submit()"><option value="">all brands</option>{% for b in brands %}<option value="{{ b.id }}" {{ 'selected' if request.query_params.get('brand_id')==b.id }}>{{ b.name }}</option>{% endfor %}</select>
+  </form>
+</div>
+<p class="intro">{{ PAGE_INTROS.campaigns }}</p>
+
+<div class="kpis">
+  <div class="kpi mg"><div class="v" data-count="{{ k.campaigns }}">0</div><div class="l">infrastructure maps</div></div>
+  <div class="kpi cy"><div class="v" data-count="{{ k.nodes }}">0</div><div class="l">infrastructure nodes</div></div>
+  <div class="kpi ok"><div class="v" data-count="{{ k.included }}">0</div><div class="l">included after triage</div></div>
+  <div class="kpi"><div class="v" data-count="{{ k.excluded }}">0</div><div class="l">excluded (noise)</div></div>
+  <div class="kpi vi"><div class="v" data-count="{{ k.edges }}">0</div><div class="l">pivot edges</div></div>
+  <div class="kpi crit"><div class="v" data-count="{{ k.findings }}">0</div><div class="l">findings linked</div></div>
+  <div class="kpi hi"><div class="v" data-count="{{ k.servers|length }}">0</div><div class="l">kit servers</div></div>
+  <div class="kpi med"><div class="v" data-count="{{ k.iocs }}">0</div><div class="l">IOCs</div></div>
+</div>
+
+{% if k.other_brands %}
+<div class="panel" style="margin-top:14px;border-color:rgba(255,95,210,.35)">
+  <h2>Actor intel · other brands hit by the same infrastructure</h2>
+  <div>{% for o in k.other_brands %}<span class="badge" style="border:1px solid var(--magenta);color:var(--magenta);margin-right:6px">{{ o }}</span>{% endfor %}
+    <span class="small muted">— found by AI triage of co-hosted pages; shared with those brands' teams, never acted on.</span></div>
+</div>
+{% endif %}
+
+<div id="batch">{% if batch and batch.state in ('queued', 'running') %}
+  <div class="panel" style="margin-top:14px;border-color:rgba(53,199,242,.45)"><span class="radar"></span> <b>MAP ALL is running</b> — {{ batch.message or 'starting …' }}
+    <div class="small muted" style="margin:6px 0">one site after the other: {{ batch.current }} of {{ batch.total }} done · <a href="/ui/jobs/{{ batch.id }}">console</a></div>
+    <div style="height:8px;border-radius:6px;background:var(--panel2,#0f1722);overflow:hidden"><i style="display:block;height:8px;width:{{ (batch.current / batch.total * 100)|round if batch.total else 0 }}%;background:var(--cyan,#35c7f2)"></i></div></div>
+{% endif %}</div>
+{% set note = request.query_params.get('note') or '' %}
+{% if note %}<div class="panel small" style="margin-top:14px;border-color:rgba(46,204,113,.45)">
+  {% if note == 'mapping:0' %}Nothing to map: every confirmed site already has its map. (To map them all again, use <b>Re-map all</b>.)
+  {% elif note.startswith('mapping:') %}<b>MAP ALL started</b> — {{ note.split(':')[1] }} site(s), one after the other. Watch the <em>Infrastructure map</em> column below.
+  {% elif note == 'investigating:0' %}Nothing to investigate: every confirmed site already has its investigation.
+  {% elif note.startswith('investigating:') %}<b>INVESTIGATE ALL started</b> — {{ note.split(':')[1] }} site(s). Three run at a time and share VirusTotal's quota; watch the <em>Investigation</em> column below.{% endif %}
+</div>{% endif %}
+
+<style>
+  .allmap-cta{display:flex;align-items:center;gap:16px;margin:14px 0 12px;padding:16px 20px;border-radius:12px;text-decoration:none;color:var(--text);
+    border:1px solid var(--accent);background:linear-gradient(100deg,rgba(53,199,242,.18),rgba(53,199,242,.05) 60%,rgba(180,90,255,.10));
+    box-shadow:0 0 0 1px rgba(53,199,242,.15),0 0 26px rgba(53,199,242,.22);transition:transform .15s,box-shadow .15s;animation:allmap-glow 2.6s ease-in-out infinite}
+  .allmap-cta:hover{transform:translateY(-1px);box-shadow:0 0 0 1px rgba(53,199,242,.4),0 0 36px rgba(53,199,242,.4);text-decoration:none}
+  .allmap-cta .ico{flex:0 0 auto;width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;color:var(--accent2);background:rgba(53,199,242,.14);border:1px solid rgba(53,199,242,.4)}
+  .allmap-cta .txt{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+  .allmap-cta .txt b{font-size:17px;letter-spacing:.02em;color:var(--accent2)}
+  .allmap-cta .txt small{font-size:13px;color:var(--muted);line-height:1.4}
+  .allmap-cta .go{flex:0 0 auto;padding:10px 18px;border-radius:9px;background:var(--accent);color:#04121c;font-weight:700;font-size:14px;white-space:nowrap}
+  @keyframes allmap-glow{50%{box-shadow:0 0 0 1px rgba(53,199,242,.3),0 0 34px rgba(53,199,242,.35)}}
+  @media (prefers-reduced-motion:reduce){.allmap-cta{animation:none}}
+  @media (max-width:640px){.allmap-cta{flex-wrap:wrap}.allmap-cta .go{width:100%;text-align:center}}
+</style>
+<div class="panel" style="margin-top:14px" id="confirmed" data-active="{{ 1 if todo.active else 0 }}">
+  <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+    <h2 style="margin:0">Confirmed phishing sites <span class="muted">· {{ confirmed|length }} · what each one has been through</span></h2>
+    {% if can_write and confirmed %}
+    <span style="margin-left:auto;display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+      <form method="post" action="/ui/campaigns/map-all" style="display:inline"><input type="hidden" name="brand_id" value="{{ request.query_params.get('brand_id') or '' }}">
+        {% if todo.map %}<button class="primary" type="submit" title="the attack-infrastructure map of every site that has none, one after the other">MAP ALL <span class="muted">({{ todo.map }} left)</span></button>
+        {% else %}<input type="hidden" name="remap" value="on"><button type="submit" title="every site is mapped: map them all again (infrastructure changes)" data-confirm="Map every confirmed site again, one after the other?" data-confirm-title="Re-map all" data-confirm-ok="Re-map">RE-MAP ALL</button>{% endif %}</form>
+      <form method="post" action="/ui/campaigns/investigate-all" style="display:inline"><input type="hidden" name="brand_id" value="{{ request.query_params.get('brand_id') or '' }}">
+        {% if todo.investigate %}<button class="primary" type="submit" title="Investigate site and its network (the quick one) and build the evidence package, for every site that has no investigation yet">INVESTIGATE ALL <span class="muted">({{ todo.investigate }} left)</span></button>
+        {% else %}<button type="button" disabled title="every confirmed site has been investigated">ALL INVESTIGATED ✓</button>{% endif %}</form>
+    </span>{% endif %}
+  </div>
+  {% if confirmed %}
+  <a class="allmap-cta" href="/ui/campaigns/all{{ '?brand_id=' ~ request.query_params.get('brand_id') if request.query_params.get('brand_id') }}" title="all confirmed sites on one map: are they connected?">
+    <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="5" cy="6" r="2.4"/><circle cx="19" cy="5" r="2.4"/><circle cx="12" cy="13" r="2.8"/><circle cx="5" cy="19" r="2.4"/><circle cx="19" cy="19" r="2.4"/><path d="M7 7l3 4M17 6.5l-3.2 4.5M10 15l-3 2.5M14 15l3 2.5"/></svg></span>
+    <span class="txt"><b>One map of all sites</b>
+      <small>Who is behind the {{ confirmed|length }} confirmed site{{ '' if confirmed|length == 1 else 's' }}? Groups of attackers, shared servers and links, and how to stop each group.{% if todo.map %} Map them first (MAP ALL) for stronger links.{% endif %}</small></span>
+    <span class="go">Open the map →</span>
+  </a>
+  {% endif %}
+  {% if confirmed %}
+  <table>
+    <tr><th>Site</th><th>Brand</th><th>Severity</th><th>Confirmed</th><th>Infrastructure map</th><th>Investigation</th><th>Evidence package</th><th>Takedown</th></tr>
+    {% for x in confirmed %}
+    <tr>
+      <td><a class="mono" href="/ui/findings/{{ x.id }}">{{ x.hostname }}</a></td>
+      <td class="small"><a href="/ui/brands/{{ x.brand_id }}">{{ x.brand_name or '—' }}</a></td>
+      <td><span class="badge sev-{{ x.severity }}">{{ x.severity }}</span></td>
+      <td class="mono small muted" data-rel="{{ x.confirmed_at }}">{{ (x.confirmed_at or '')[:16].replace('T',' ') }}</td>
+      <td>{% if x.map_status == 'mapped' %}<a href="/ui/campaigns/{{ x.campaign_id }}" class="badge state" style="border-color:var(--low);color:var(--low)">mapped → open</a>
+          {% elif x.map_status == 'mapping' %}<span class="radar"></span> <a href="/ui/jobs/{{ x.map_job.id }}">mapping now…</a>{% if x.map_job.last %}<div class="small muted">{{ x.map_job.last }}</div>{% endif %}
+          {% elif x.batch_position %}<span class="badge state" style="border-color:var(--cyan,#35c7f2);color:var(--cyan,#35c7f2)">waiting · {{ x.batch_position }} of {{ batch.total }}</span>
+          {% else %}<span class="badge state" style="border-color:var(--high);color:var(--high)">{{ 'mapping failed' if x.map_status == 'failed' else 'not mapped' }}</span>
+            {% if can_write %}<form method="post" action="/ui/findings/{{ x.id }}/investigate" style="display:inline;margin-left:6px"><button type="submit" class="small" style="padding:4px 9px;font-size:12px">Map now ▶</button></form>{% endif %}{% endif %}</td>
+      <td class="small">{% if x.intel_job and x.intel_job.state == 'queued' %}<span class="badge state" style="border-color:var(--cyan,#35c7f2);color:var(--cyan,#35c7f2)">waiting for its turn</span>
+          {% elif x.intel_job and x.intel_job.state == 'running' %}<span class="radar"></span> <a href="/ui/jobs/{{ x.intel_job.id }}">investigating…</a>{% if x.intel_job.last %}<div class="muted">{{ x.intel_job.last }}</div>{% endif %}
+          {% elif x.intel_job and x.intel_job.state == 'done' %}<a href="/ui/findings/{{ x.id }}#reputation" class="badge state" style="border-color:var(--low);color:var(--low)" title="{{ 'a quick investigation: press Investigate on the finding for every lookup' if x.intel_job.light else 'the full investigation' }}">{{ 'quick' if x.intel_job.light else 'done' }} → open</a>
+          {% elif x.intel_job %}<span class="badge state" style="border-color:var(--high);color:var(--high)">failed</span>
+          {% else %}<span class="muted">not yet</span>{% endif %}</td>
+      <td class="small">{% if x.package_url %}<a href="{{ x.package_url }}" target="_blank">open ↗</a>{% elif x.intel_job and x.intel_job.state in ('queued', 'running') %}<span class="muted">after the investigation</span>{% else %}<span class="muted">—</span>{% endif %}</td>
+      <td class="small">{% if x.takedown %}<a href="/ui/takedowns/{{ x.takedown.id }}">{{ x.takedown_state|state_label }}</a>{% else %}<a href="/ui/takedowns?state=none" style="color:var(--crit)">none yet</a>{% endif %}</td>
+    </tr>
+    {% endfor %}
+  </table>
+  {% else %}<p class="muted small">No confirmed phishing yet — <a href="/ui/findings?state=open">review the open findings</a>.</p>{% endif %}
+</div>
+
+{% if glance.sites %}
+<div class="panel" style="margin-top:14px" id="glance">
+  <h2>Everyone at a glance <span class="muted">· {{ glance.investigated }} of {{ glance.sites }} confirmed sites investigated · what they share</span></h2>
+  <p class="small muted">Built from the investigations that follow every confirmation, so nothing has to be opened one by one. A server that carries several confirmed sites, the same registrar or the same name servers are the operator's fingerprints. Shared Cloudflare addresses carry thousands of unrelated sites and are not evidence of a link.</p>
+  {% if glance.servers %}
+  <h3 class="muted" style="font-size:12px;letter-spacing:.14em;margin:14px 0 6px">SERVERS</h3>
+  <table class="small">
+    <tr><th>Server</th><th>Where</th><th>Network</th><th>Engines</th><th>Abuse</th><th>Confirmed sites on it</th></tr>
+    {% for s in glance.servers %}<tr>
+      <td class="mono"><a href="/ui/intel/ip/{{ s.ip }}">{{ s.ip }}</a></td>
+      <td>{{ s.country or '—' }}</td>
+      <td>{% if s.asn %}AS{{ s.asn }} {% endif %}{{ s.owner or '' }}{% if s.shared %} <span class="pill muted" title="a Cloudflare address shared by a great many unrelated sites">shared CDN</span>{% endif %}</td>
+      <td>{{ s.detections if s.detections is not none else '—' }}</td><td>{{ s.abuse if s.abuse is not none else '—' }}</td>
+      <td>{% if s.sites|length > 1 and not s.shared %}<b style="color:var(--crit)">{{ s.sites|length }}</b> · {% endif %}{% for h in s.sites %}<span class="mono">{{ h }}</span>{{ ', ' if not loop.last }}{% endfor %}</td>
+    </tr>{% endfor %}
+  </table>
+  {% endif %}
+  <div class="cols" style="margin-top:12px">
+    <div>{% if glance.registrars %}<h3 class="muted" style="font-size:12px;letter-spacing:.14em;margin:14px 0 6px">REGISTRARS</h3><table class="small">{% for r in glance.registrars %}<tr><td>{{ r.name }}</td><td>{% if r.sites|length > 1 %}<b>{{ r.sites|length }}</b> · {% endif %}<span class="mono">{{ r.sites|join(', ') }}</span></td></tr>{% endfor %}</table>{% endif %}</div>
+    <div>{% if glance.nameservers %}<h3 class="muted" style="font-size:12px;letter-spacing:.14em;margin:14px 0 6px">NAME SERVERS</h3><table class="small">{% for r in glance.nameservers %}<tr><td class="mono">{{ r.name }}</td><td>{% if r.sites|length > 1 %}<b>{{ r.sites|length }}</b> · {% endif %}<span class="mono">{{ r.sites|join(', ') }}</span></td></tr>{% endfor %}</table>{% endif %}</div>
+  </div>
+  {% if glance.pending %}<p class="small muted" style="margin-top:10px">Not investigated yet: {% for p in glance.pending %}<a class="mono" href="/ui/findings/{{ p.id }}">{{ p.host }}</a> ({{ p.state }}){{ ', ' if not loop.last }}{% endfor %}.</p>{% endif %}
+</div>
+{% endif %}
+
+<script>
+// While anything is being mapped or investigated, the table follows it: the panels are re-read every 3 s (nothing else on the page moves).
+(function(){
+  let busy = false;
+  async function tick(){
+    const box = document.getElementById('confirmed');
+    if (!box || box.dataset.active !== '1' || busy) return;
+    busy = true;
+    try {
+      const r = await fetch(location.pathname + location.search, {credentials: 'same-origin'});
+      if (r.ok) {
+        const doc = new DOMParser().parseFromString(await r.text(), 'text/html');
+        for (const id of ['batch', 'confirmed', 'glance']) { const a = document.getElementById(id), b = doc.getElementById(id); if (a && b) a.innerHTML = b.innerHTML; }
+        const nb = doc.getElementById('confirmed'); if (nb) box.dataset.active = nb.dataset.active;
+      }
+    } catch (e) { /* the next tick tries again */ }
+    busy = false;
+  }
+  setInterval(tick, 3000);
+})();
+</script>
+<h2 style="margin-top:14px">Infrastructure maps <span class="muted">· {{ campaigns|length }}</span></h2>
+<div class="grid" style="margin-top:8px;grid-template-columns:repeat(auto-fill,minmax(min(560px,100%),1fr))">
+  {% for c in campaigns %}
+  <a class="ccard" href="/ui/campaigns/{{ c.id }}" style="--i:{{ loop.index0 }}">
+    <canvas class="constellation" width="440" height="300" data-n="{{ c.stats.included }}" data-x="{{ c.stats.excluded }}" data-f="{{ c.findings|length }}"></canvas>
+    <div>
+      <div class="title">{{ c.title or c.name }}</div>
+      {% if c.headline %}<div class="small" style="margin:2px 0 4px">{{ c.headline }}</div>{% endif %}
+      <div class="small muted">{% for b in brands if b.id == c.brand_id %}{{ b.name }} · {% endfor %}investigated <span data-rel="{{ c.created_at }}"></span></div>
+      <div class="mini">
+        <div><b data-count="{{ c.stats.nodes }}">0</b><span>nodes</span></div>
+        <div><b data-count="{{ c.stats.included }}">0</b><span>included</span></div>
+        <div><b data-count="{{ c.stats.edges }}">0</b><span>edges</span></div>
+        <div><b data-count="{{ c.findings|length }}">0</b><span>findings</span></div>
+        <div><b data-count="{{ c.iocs }}">0</b><span>IOCs</span></div>
+      </div>
+      <div class="stack" title="included vs excluded by co-hosted triage"><i data-w="{{ c.included_pct }}" style="background:var(--low)"></i><i data-w="{{ 100 - c.included_pct }}" style="background:#3a4658"></i></div>
+      <div class="small" style="margin-top:8px">
+        {% for f in c.findings[:4] %}<span class="badge sev-{{ f.severity }}" style="margin:2px">{{ f.hostname }}</span>{% endfor %}{% if c.findings|length > 4 %}<span class="muted">+{{ c.findings|length - 4 }}</span>{% endif %}
+      </div>
+      <div class="small muted mono" style="margin-top:6px">servers {{ (c.actor_profile.servers or [])|join(', ') or '—' }}{% if c.actor_profile.registrant_email %} · registrant {{ c.actor_profile.registrant_email }}{% endif %}</div>
+    </div>
+  </a>
+  {% endfor %}
+</div>
+{% if not campaigns %}<div class="panel" style="margin-top:14px"><p class="muted">No infrastructure maps yet. <a href="/ui/findings?state=confirmed">Confirm a finding</a>, then press <em>Map attack infrastructure</em> on it.</p></div>{% endif %}
+
+<script>
+(function(){
+  // a small, always-moving constellation per campaign: included nodes orbit, excluded drift faintly,
+  // red nodes are findings; links pulse towards the seed.
+  document.querySelectorAll('canvas.constellation').forEach((cv, ci) => {
+    const ctx = cv.getContext('2d'), W = cv.width, H = cv.height;
+    const inc = +cv.dataset.n || 1, exc = +cv.dataset.x || 0, fnd = Math.min(+cv.dataset.f || 0, inc);
+    const nodes = [];
+    for (let i = 0; i < inc; i++) nodes.push({r: 40 + (i % 3) * 32 + Math.random() * 14, a: Math.random() * 6.28, s: (0.002 + Math.random() * 0.004) * (i % 2 ? 1 : -1), inc: true, red: i < fnd});
+    for (let i = 0; i < exc; i++) nodes.push({r: 115 + Math.random() * 25, a: Math.random() * 6.28, s: 0.0012 * (i % 2 ? 1 : -1), inc: false});
+    let t = 0;
+    function frame(){
+      t += 1; ctx.clearRect(0, 0, W, H);
+      const cx = W / 2, cy = H / 2;
+      nodes.forEach(n => { n.a += n.s; n.x = cx + Math.cos(n.a) * n.r * 1.25; n.y = cy + Math.sin(n.a) * n.r * 0.78; });
+      nodes.forEach((n, i) => {
+        if (!n.inc) return;
+        const g = ctx.createLinearGradient(cx, cy, n.x, n.y); const ph = ((t * 0.02 + i * 0.37) % 1);
+        g.addColorStop(0, 'rgba(255,95,210,0.05)'); g.addColorStop(Math.max(0, ph - 0.1), 'rgba(255,95,210,0.08)');
+        g.addColorStop(ph, n.red ? 'rgba(255,77,77,0.9)' : 'rgba(53,199,242,0.85)'); g.addColorStop(Math.min(1, ph + 0.1), 'rgba(255,95,210,0.08)'); g.addColorStop(1, 'rgba(255,95,210,0.05)');
+        ctx.strokeStyle = g; ctx.lineWidth = 1.4; ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(n.x, n.y); ctx.stroke();
+      });
+      nodes.forEach(n => {
+        ctx.beginPath(); ctx.arc(n.x, n.y, n.inc ? (n.red ? 5 : 3.6) : 2.4, 0, 6.28);
+        ctx.fillStyle = n.inc ? (n.red ? '#FF4D4D' : '#5FE3FF') : 'rgba(138,151,168,.35)';
+        ctx.shadowColor = ctx.fillStyle; ctx.shadowBlur = n.inc ? 12 : 0; ctx.fill(); ctx.shadowBlur = 0;
+      });
+      const pr = 9 + Math.sin(t * 0.06) * 2;
+      ctx.beginPath(); ctx.arc(cx, cy, pr + 8, 0, 6.28); ctx.strokeStyle = 'rgba(255,95,210,.25)'; ctx.lineWidth = 1; ctx.stroke();
+      ctx.beginPath(); ctx.arc(cx, cy, pr, 0, 6.28); ctx.fillStyle = '#FF4D4D'; ctx.shadowColor = '#FF4D4D'; ctx.shadowBlur = 20; ctx.fill(); ctx.shadowBlur = 0;
+      requestAnimationFrame(frame);
+    }
+    setTimeout(frame, ci * 120);
+  });
+})();
+</script>
+{% endblock %}

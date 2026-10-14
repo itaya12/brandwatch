@@ -1,0 +1,102 @@
+{# A searchable picker for "where and in which languages to search Google": countries, each with one or more languages.
+   Needs: mk_list = [{"country": "us", "langs": ["en", "es"]}, ...], mk_disabled (bool), MARKET_DATA (global).
+   Writes three hidden inputs of the form it sits in: search_geo ("us,il"), search_lang (the first language) and search_markets (JSON). #}
+{% set mk_uid = 'mk' ~ range(100000, 999999)|random %}
+<div class="mkt" id="{{ mk_uid }}" data-markets='{{ mk_list|tojson }}' data-disabled="{{ 1 if mk_disabled else 0 }}">
+  <input type="hidden" name="search_geo" value="{{ mk_list|map(attribute='country')|join(',') or 'us' }}">
+  <input type="hidden" name="search_lang" value="{{ (mk_list[0].langs[0] if mk_list else 'en') }}">
+  <input type="hidden" name="search_markets" value='{{ mk_list|tojson }}'>
+  <div class="mkt-rows"></div>
+  {% if not mk_disabled %}<div class="mkt-add">
+    <input type="search" class="mkt-q" placeholder="Add a country: type to search (Israel, Italy, United States …)" autocomplete="off">
+    <div class="mkt-pop" hidden></div>
+  </div>{% endif %}
+  <div class="mkt-sum small muted"></div>
+</div>
+<style>
+  .mkt{display:flex;flex-direction:column;gap:8px;text-transform:none;letter-spacing:0}
+  .mkt-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;border:1px solid var(--border);border-radius:8px;padding:6px 8px;background:rgba(255,255,255,.02)}
+  .mkt-row .nm{font-weight:600;min-width:130px}
+  .mkt-row .flag{border-radius:2px;vertical-align:-3px;margin-right:6px}
+  .mkt-lang{display:inline-flex;align-items:center;gap:4px;border:1px solid var(--accent);color:var(--accent2);border-radius:999px;padding:1px 9px;font-size:12px}
+  .mkt-lang button{all:unset;cursor:pointer;opacity:.7;padding:0 2px}
+  .mkt-btn{padding:2px 9px;font-size:12px}
+  .mkt-del{margin-left:auto;padding:2px 8px;font-size:12px;color:#ff8a8a;border-color:rgba(255,77,77,.5)}
+  .mkt-add,.mkt-lp{position:relative}
+  .mkt-pop{position:absolute;z-index:30;left:0;right:0;max-height:260px;overflow:auto;background:#0f1722;border:1px solid var(--border);border-radius:8px;box-shadow:0 10px 30px rgba(0,0,0,.5);padding:4px}
+  .mkt-pop[hidden]{display:none}
+  .mkt-pop .it{display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;cursor:pointer;font-size:13px}
+  .mkt-pop .it:hover,.mkt-pop .it.hl{background:rgba(53,199,242,.15)}
+  .mkt-pop .it .cc{margin-left:auto;color:var(--muted);font-family:var(--mono);font-size:11px}
+  .mkt-pop .it input{width:auto;margin:0}
+  .mkt-pop .fq{width:100%;margin:2px 0 4px}
+</style>
+<script>
+(function(){
+  const root = document.getElementById('{{ mk_uid }}');
+  if (!root) return;
+  const D = {{ MARKET_DATA|tojson }};
+  const cname = Object.fromEntries(D.countries.map(c => [c.code, c.name])), lname = Object.fromEntries(D.languages.map(l => [l.code, l.name]));
+  const disabled = root.dataset.disabled === '1';
+  let markets = []; try { markets = JSON.parse(root.dataset.markets || '[]'); } catch (e) { markets = []; }
+  const rows = root.querySelector('.mkt-rows'), sum = root.querySelector('.mkt-sum'), q = root.querySelector('.mkt-q'), pop = root.querySelector('.mkt-pop');
+  const esc = s => String(s).replace(/[&<>"]/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'}[c]));
+  const flag = cc => `<img class="flag" src="https://flagcdn.com/w20/${cc}.png" width="20" height="15" alt="${cc.toUpperCase()}" onerror="this.replaceWith(document.createTextNode('${cc.toUpperCase()} '))">`;
+  const dflt = cc => D.defaults[cc] || 'en';
+  function sync(){
+    const geo = markets.map(m => m.country).join(',') || 'us', lang = (markets[0] && markets[0].langs[0]) || 'en';
+    root.querySelector('[name=search_geo]').value = geo; root.querySelector('[name=search_lang]').value = lang;
+    root.querySelector('[name=search_markets]').value = JSON.stringify(markets);
+    const n = markets.reduce((s, m) => s + m.langs.length, 0);
+    sum.textContent = markets.length ? `${markets.length} countr${markets.length === 1 ? 'y' : 'ies'} · ${n} language${n === 1 ? '' : 's'}: every approved query is searched ${n} time${n === 1 ? '' : 's'}` : 'no country chosen: the United States, in English';
+    root.dispatchEvent(new CustomEvent('markets', {bubbles: true, detail: {markets, searches: Math.max(n, 1)}}));
+  }
+  function draw(){
+    rows.innerHTML = markets.map((m, i) => `<div class="mkt-row" data-i="${i}"><span class="nm">${flag(m.country)}${esc(cname[m.country] || m.country.toUpperCase())}</span>`
+      + m.langs.map(l => `<span class="mkt-lang">${esc(lname[l] || l)}${disabled ? '' : `<button type="button" data-rm-lang="${l}" title="remove this language">×</button>`}</span>`).join('')
+      + (disabled ? '' : `<span class="mkt-lp"><button type="button" class="mkt-btn" data-langs>languages ▾</button><div class="mkt-pop" hidden></div></span><button type="button" class="mkt-del" data-del>remove</button>`) + '</div>').join('')
+      || '<div class="small muted">No country yet: searches run in the United States, in English.</div>';
+    sync();
+  }
+  function listCountries(filter){
+    const f = (filter || '').trim().toLowerCase(), have = new Set(markets.map(m => m.country));
+    const hits = D.countries.filter(c => !have.has(c.code) && (!f || c.name.toLowerCase().includes(f) || c.code.includes(f))).slice(0, 40);
+    pop.innerHTML = hits.map(c => `<div class="it" data-cc="${c.code}">${flag(c.code)}<span>${esc(c.name)}</span><span class="cc">${c.code.toUpperCase()} · ${esc(lname[dflt(c.code)] || '')}</span></div>`).join('') || '<div class="small muted" style="padding:6px 8px">no such country</div>';
+    pop.hidden = false;
+  }
+  function listLangs(i, lp, filter){
+    const f = (filter || '').trim().toLowerCase(), box = lp.querySelector('.mkt-pop'), keep = filter === undefined ? '' : filter;
+    box.innerHTML = `<input class="fq" type="search" placeholder="Search languages…" value="${esc(keep)}">` + D.languages.filter(l => !f || l.name.toLowerCase().includes(f) || l.code.includes(f))
+      .map(l => `<label class="it"><input type="checkbox" data-lang="${l.code}" ${markets[i].langs.includes(l.code) ? 'checked' : ''}><span>${esc(l.name)}</span><span class="cc">${l.code}</span></label>`).join('');
+    box.hidden = false;
+    const fq = box.querySelector('.fq'); fq.focus(); fq.setSelectionRange(fq.value.length, fq.value.length);
+  }
+  root.addEventListener('click', ev => {
+    if (disabled) return;
+    const row = ev.target.closest('.mkt-row'), i = row ? Number(row.dataset.i) : -1;
+    const cc = ev.target.closest('[data-cc]');
+    if (cc && pop.contains(cc)) { markets.push({country: cc.dataset.cc, langs: [dflt(cc.dataset.cc)]}); q.value = ''; pop.hidden = true; draw(); return; }
+    if (ev.target.closest('[data-del]')) { markets.splice(i, 1); draw(); return; }
+    const rm = ev.target.closest('[data-rm-lang]');
+    if (rm && markets[i].langs.length > 1) { markets[i].langs = markets[i].langs.filter(l => l !== rm.dataset.rmLang); draw(); return; }
+    if (ev.target.closest('[data-langs]')) { const lp = row.querySelector('.mkt-lp'), box = lp.querySelector('.mkt-pop'); const open = !box.hidden; root.querySelectorAll('.mkt-lp .mkt-pop').forEach(b => { b.hidden = true; }); if (!open) listLangs(i, lp); return; }
+  });
+  root.addEventListener('change', ev => {
+    const cb = ev.target.closest('[data-lang]'); if (!cb) return;
+    const row = cb.closest('.mkt-row'), i = Number(row.dataset.i), m = markets[i];
+    m.langs = cb.checked ? [...new Set([...m.langs, cb.dataset.lang])].slice(0, 4) : m.langs.filter(l => l !== cb.dataset.lang);
+    if (!m.langs.length) m.langs = [dflt(m.country)];
+    const lp = row.querySelector('.mkt-lp'), keep = lp.querySelector('.fq').value;
+    draw(); const r2 = root.querySelector(`.mkt-row[data-i="${i}"] .mkt-lp`); if (r2) listLangs(i, r2, keep);
+  });
+  root.addEventListener('input', ev => {
+    if (ev.target === q) listCountries(q.value);
+    else if (ev.target.classList.contains('fq')) { const row = ev.target.closest('.mkt-row'); listLangs(Number(row.dataset.i), row.querySelector('.mkt-lp'), ev.target.value); }
+  });
+  if (q) { q.addEventListener('focus', () => listCountries(q.value)); q.addEventListener('keydown', ev => { if (ev.key === 'Enter') { ev.preventDefault(); const first = pop.querySelector('[data-cc]'); if (first) first.click(); } }); }
+  document.addEventListener('click', ev => { if (!root.contains(ev.target)) { if (pop) pop.hidden = true; root.querySelectorAll('.mkt-lp .mkt-pop').forEach(b => { b.hidden = true; }); } });
+  // the add-brand form fills it from "copy the parameters of …"
+  root.setMarkets = list => { markets = (list || []).map(m => ({country: String(m.country).toLowerCase(), langs: (m.langs && m.langs.length ? m.langs : [dflt(String(m.country).toLowerCase())])})); draw(); };
+  draw();
+})();
+</script>

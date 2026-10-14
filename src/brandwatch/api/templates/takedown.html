@@ -1,0 +1,178 @@
+{% extends "base.html" %}
+{% block title %}Takedown {{ t.reference }}{% endblock %}
+{% block content %}
+{% from "_cap.html" import cap %}
+<style>
+  .chan{border:1px solid var(--border);border-radius:12px;padding:12px 14px;background:var(--panel2);margin-bottom:10px}
+  .chan h3{margin:0 0 6px;font:600 11px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--accent2);display:flex;gap:8px;align-items:center}
+  .chan h3 .ok{color:var(--low);font-family:var(--sans);letter-spacing:0;text-transform:none;font-weight:600}
+  .chan .row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:6px}
+  .chan input{flex:1;min-width:200px}
+  .mailbtn{display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border-radius:9px;border:1px solid var(--accent);color:var(--accent2);text-decoration:none;font-weight:600;font-size:12px}
+  .mailbtn:hover{background:rgba(53,199,242,.12)}
+  .portals{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(300px,100%),1fr));gap:8px}
+  .portal{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--border);border-radius:10px;padding:9px 11px;background:var(--panel2)}
+  .portal.done{border-color:rgba(46,204,113,.5);background:rgba(46,204,113,.06)}
+  .portal b{display:block;font-size:13px}.portal small{color:var(--muted);display:block;margin-top:2px}
+  .portal form{margin-left:auto}.portal button{padding:4px 9px;font-size:12px;white-space:nowrap}
+  .why{font-size:12px;color:var(--muted);margin:0 0 10px}
+</style>
+{% set crumbs = [("Takedowns", "/ui/takedowns")] + ([(brand_name, "/ui/brands/" ~ brand_id)] if brand_name else []) + [("Finding " ~ t.hostname, "/ui/findings/" ~ t.finding_id), (t.reference, none)] %}
+{% include "_crumbs.html" %}
+<h1>Takedown request <span class="mono">{{ t.reference }}</span> <span class="muted small">· <a href="/ui/findings/{{ t.finding_id }}" class="mono">{{ t.hostname }}</a></span></h1>
+<p class="intro" style="margin-top:-6px">Two jobs on this page: <a href="#channels">send the request</a> to the registrar, the hosting provider and the CDN, and <a href="#report">report the site to {{ portals|length }} blocklists, security vendors and national services ↓</a> ({{ portals|selectattr('key', 'in', reports)|list|length }} done so far).</p>
+<div class="kpis">
+  <div class="kpi"><div class="v" style="font-size:18px">{{ t.state|state_label }}</div><div class="l">state</div></div>
+  <div class="kpi"><div class="v" style="font-size:14px">{{ t.abuse_contact or '— unresolved —' }}</div><div class="l">abuse contact</div></div>
+  <div class="kpi"><div class="v" style="font-size:14px">{{ t.registrar or '—' }}</div><div class="l">registrar</div></div>
+  <div class="kpi"><div class="v" style="font-size:14px">{{ (t.sent_at or '—')[:16].replace('T',' ') }}</div><div class="l">sent</div></div>
+  <div class="kpi"><div class="v" style="font-size:14px">{{ (t.resolved_at or '—')[:16].replace('T',' ') }}</div><div class="l">resolved</div></div>
+</div>
+{% set flow = ['draft', 'review', 'approved', 'sent', 'acknowledged', 'in_progress', 'resolved'] %}
+{% set cur = flow.index(t.state) if t.state in flow else -1 %}
+<div class="steps" style="margin:10px 0 0;grid-template-columns:repeat(7,minmax(0,1fr))" aria-label="takedown progress">
+  {% for st in flow %}
+  <div class="step" style="{{ 'border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)' if loop.index0 == cur else ('opacity:.55' if loop.index0 > cur else '') }}" title="{{ STATE_HELP.get(st, '') }}">
+    <div class="n">{{ loop.index }} · {{ st|state_label }}</div>
+    <div class="d">{{ '✓ done' if loop.index0 < cur else ('← now' if loop.index0 == cur else '') }}</div></div>
+  {% endfor %}
+</div>
+{% if t.state in ('rejected', 'reopened') %}<p class="small" style="color:var(--high)">This request is <b>{{ t.state|state_label }}</b>.</p>{% endif %}
+{% if error %}<div class="error" style="margin-top:14px">{{ error }}</div>{% endif %}
+{% if shop_lvl %}<div class="lvl-note lvl-{{ shop_lvl.level }}" style="margin-top:12px;border:1px solid var(--border);border-radius:12px;padding:10px 14px;background:var(--panel2);font-size:13px">
+  Conclusion: <b>{{ shop_lvl.level_label }}</b> — the letter and the text for Meta claim only this.
+  {% if shop_lvl.level != 'confirmed_counterfeit' %}They do not say the goods are counterfeit as a fact.{% endif %}
+  <a href="/ui/findings/{{ t.finding_id }}#verdict">change it on the finding page →</a></div>{% endif %}
+{% set res = t.channels.resolved or {} %}
+{% set sent = t.channels.sent or {} %}
+{% set reports = t.channels.reports or {} %}
+<div class="panel" style="margin-top:14px" id="channels">
+  <h2>Where to send it <span class="muted">· three channels — the fastest one is often not the registrar</span></h2>
+  <p class="why">Send the request to <b>all three</b> that apply. The hosting provider can switch the server off; a CDN / DNS provider (e.g. Cloudflare) can disable the proxy or the zone even when the origin host ignores you; the registrar can suspend the domain itself. Each button opens a pre-filled mail in your own mail client — BrandWatch never sends anything — then press <em>✓ sent</em> to record it.</p>
+  <div class="grid three">
+    <div class="chan">
+      <h3>1 · Registrar {% if sent.registrar %}<span class="ok">✓ sent {{ (sent.registrar.at or '')[:16].replace('T',' ') }}</span>{% endif %}</h3>
+      <div class="small"><b>{{ res.registrar.name if res.registrar and res.registrar.name else (t.registrar or 'unknown registrar') }}</b>{% if res.registrar and res.registrar.source %} <span class="muted">· contact from {{ res.registrar.source }}</span>{% endif %}
+        {% if res.registrar and res.registrar.phone %}<div class="muted mono">{{ res.registrar.phone }}</div>{% endif %}</div>
+      <form method="post" action="/ui/takedowns/{{ t.id }}/channel" class="row">
+        <input type="hidden" name="channel" value="registrar">
+        <input name="contact" class="mono" value="{{ (res.registrar.email if res.registrar else none) or t.abuse_contact or '' }}" placeholder="abuse@registrar.example" {{ 'disabled' if not can_write }}>
+        {% if mail.registrar %}<a class="mailbtn" href="{{ mail.registrar }}">✉ open mail</a>{% endif %}
+        {% if res.registrar and res.registrar.form %}<a class="mailbtn" href="{{ res.registrar.form }}" target="_blank" rel="noreferrer noopener">abuse form ↗</a>{% endif %}
+        {% if can_write %}<button type="submit" name="mark" value="save">save</button><button type="submit" name="mark" value="sent" class="ok">✓ sent</button>{% endif %}
+      </form>
+    </div>
+    <div class="chan">
+      <h3>2 · Hosting provider{{ 's' if (res.hosting or [])|length > 1 }} {% for h in res.hosting or [] if sent.get('hosting:' ~ h.ip) %}<span class="ok">✓ {{ h.ip }}</span>{% endfor %}</h3>
+      {% for h in res.hosting or [] %}
+      <div class="small" style="margin-top:{{ '8px' if not loop.first else '0' }}"><span class="mono">{{ h.ip }}</span>{% if h.country %} · {{ h.country }}{% endif %} · <b>{{ h.desk or h.org or 'unknown owner' }}</b>{% if h.cdn %} <span class="pill" style="color:var(--high)">CDN edge, not the real host</span>{% endif %}{% if h.source %} <span class="muted">· contact from {{ h.source }}</span>{% endif %}</div>
+      <form method="post" action="/ui/takedowns/{{ t.id }}/channel" class="row">
+        <input type="hidden" name="channel" value="hosting:{{ h.ip }}">
+        <input name="contact" class="mono" value="{{ h.email or '' }}" placeholder="abuse@host.example" {{ 'disabled' if not can_write }}>
+        {% if mail.hosting.get(h.ip) %}<a class="mailbtn" href="{{ mail.hosting[h.ip] }}">✉ open mail</a>{% endif %}
+        {% if h.form %}<a class="mailbtn" href="{{ h.form }}" target="_blank" rel="noreferrer noopener">abuse form ↗</a>{% endif %}
+        <a class="mailbtn" href="/ui/intel/ip/{{ h.ip }}" title="IP WHOIS, owner and everything else on this server">IP intel</a>
+        {% if can_write %}<button type="submit" name="mark" value="save">save</button><button type="submit" name="mark" value="sent" class="ok">✓ sent</button>{% endif %}
+      </form>
+      {% else %}
+      <p class="small muted">No IP recorded yet — run the <a href="/ui/findings/{{ t.finding_id }}#network">site &amp; network investigation</a> on the finding, then reload this page.</p>
+      {% endfor %}
+    </div>
+    <div class="chan">
+      <h3>3 · CDN / DNS provider {% if sent.cdn %}<span class="ok">✓ sent {{ (sent.cdn.at or '')[:16].replace('T',' ') }}</span>{% endif %}</h3>
+      {% if res.cdn %}
+      <div class="small"><b>{{ res.cdn.name }}</b> <span class="muted">· {{ res.cdn.via }}</span>{% if res.cdn.note %}<div class="muted" style="margin-top:4px">{{ res.cdn.note }}</div>{% endif %}</div>
+      <form method="post" action="/ui/takedowns/{{ t.id }}/channel" class="row">
+        <input type="hidden" name="channel" value="cdn">
+        <input name="contact" class="mono" value="{{ res.cdn.email or '' }}" placeholder="abuse@cdn.example" {{ 'disabled' if not can_write }}>
+        {% if mail.cdn %}<a class="mailbtn" href="{{ mail.cdn }}">✉ open mail</a>{% endif %}
+        {% if res.cdn.form %}<a class="mailbtn" href="{{ res.cdn.form }}" target="_blank" rel="noreferrer noopener">abuse form ↗</a>{% endif %}
+        {% if can_write %}<button type="submit" name="mark" value="save">save</button><button type="submit" name="mark" value="sent" class="ok">✓ sent</button>{% endif %}
+      </form>
+      {% else %}
+      <p class="small muted">No CDN detected{% if res.nameservers %} — nameservers: <span class="mono">{{ res.nameservers|join(', ') }}</span>{% endif %}. If the DNS is hosted by a third party, add its abuse address:</p>
+      <form method="post" action="/ui/takedowns/{{ t.id }}/channel" class="row">
+        <input type="hidden" name="channel" value="cdn">
+        <input name="contact" class="mono" placeholder="abuse@dns-provider.example" {{ 'disabled' if not can_write }}>
+        {% if can_write %}<button type="submit" name="mark" value="save">save</button><button type="submit" name="mark" value="sent" class="ok">✓ sent</button>{% endif %}
+      </form>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<div class="cols" style="margin-top:14px">
+  <div class="panel" id="request">
+    <h2>Request <span class="muted">· editable while in draft / review / reopened</span></h2>
+    {% if shop_lvl and shop_lvl.stale %}<div class="small" style="border:1px solid rgba(255,159,28,.6);background:rgba(255,159,28,.07);border-radius:10px;padding:8px 12px;margin-bottom:10px">
+      This letter was written for a different conclusion than <b>{{ shop_lvl.level_label }}</b>.
+      {% if can_write and shop_lvl.editable %}<form method="post" action="/ui/takedowns/{{ t.id }}/rewrite" style="display:inline;margin-left:6px"
+        data-confirm="Replace the letter with one written for “{{ shop_lvl.level_label }}”? Your edits to the body are replaced." data-confirm-title="Replace the letter" data-confirm-ok="Replace">
+        <button type="submit">Rewrite the letter for “{{ shop_lvl.level_label }}”</button></form>
+      {% elif not shop_lvl.editable %}It is locked in this state — reopen the request to rewrite it.{% endif %}</div>{% endif %}
+    {% if not can_write %}<p class="muted small">Viewer access: the request text and its state are managed by analysts.</p>
+    <pre class="mono" style="white-space:pre-wrap;font-size:12px">{{ t.body }}</pre>
+    {% elif t.state not in ('draft', 'review', 'reopened') %}<p class="muted small">Locked in state <b>{{ t.state|state_label }}</b>.</p>
+    <pre class="mono" style="white-space:pre-wrap;font-size:12px">{{ t.body }}</pre>
+    {% else %}
+    <form method="post" action="/ui/takedowns/{{ t.id }}/edit">
+      <label>Abuse contact (resolution order: WHOIS abuse e-mail → registrar abuse → hosting abuse)</label>
+      <input name="abuse_contact" value="{{ t.abuse_contact or '' }}" placeholder="abuse@registrar.example">
+      <label>Body</label>
+      <textarea name="body" rows="26" class="mono" style="font-size:12px">{{ t.body }}</textarea>
+      <div style="margin-top:10px"><button type="submit">Save draft</button></div>
+    </form>
+    {% endif %}
+  </div>
+  <div class="panel">
+    <h2>Case management {{ cap('evidence', 'audited state machine', 'only the allowed transitions are possible; every one is written to the append-only audit log with its reason') }} <span class="muted">· review = a four-eyes check before anything is sent; sent = recorded after mailing it yourself</span></h2>
+    <p class="small muted">draft → review → approved → sent → acknowledged → in_progress → resolved (+ rejected / reopened).
+      BrandWatch never sends: an analyst sends the approved text from their own mailbox and then records <b>sent</b> here.</p>
+    {% if can_write %}
+    <form method="post" action="/ui/takedowns/{{ t.id }}/transition">
+      <label>Reason / note</label><input name="reason" placeholder="optional">
+      <div class="actions" style="margin-top:10px">
+        {% for to in t.allowed_transitions %}
+        <button type="submit" name="to" value="{{ to }}" class="{{ 'ok' if to in ('approved','resolved') else ('danger' if to=='rejected' else '') }}">→ {{ to }}</button>
+        {% endfor %}
+        {% if not t.allowed_transitions %}<span class="muted">no further transitions</span>{% endif %}
+      </div>
+    </form>
+    {% endif %}
+    <h2>Timestamps</h2>
+    <table class="small">
+      <tr><th>Created</th><td class="mono">{{ t.created_at[:19].replace('T',' ') }}</td></tr>
+      <tr><th>Updated</th><td class="mono">{{ t.updated_at[:19].replace('T',' ') }}</td></tr>
+      <tr><th>Sent</th><td class="mono">{{ (t.sent_at or '—')[:19].replace('T',' ') }}</td></tr>
+      <tr><th>Response</th><td class="mono">{{ (t.response_at or '—')[:19].replace('T',' ') }}</td></tr>
+      <tr><th>Resolved</th><td class="mono">{{ (t.resolved_at or '—')[:19].replace('T',' ') }}</td></tr>
+    </table>
+    <p class="small muted">Attach the <a href="/ui/findings/{{ t.finding_id }}">evidence package</a> (HTML / JSON) generated from the finding.</p>
+  </div>
+</div>
+
+{% if meta and meta.pages %}
+<div class="panel" style="margin-top:14px">
+  <h2>Report to Meta <span class="muted">· the Facebook / Instagram ads and pages that send buyers to this shop</span></h2>
+  {% set draft_id = t.id %}{% set reports = (t.channels or {}).get('reports') or {} %}
+  {% include "_meta_report.html" %}
+</div>
+{% endif %}
+
+<div class="panel" style="margin-top:14px" id="report">
+  <h2>Report the site everywhere <span class="muted">· {{ portals|selectattr('key', 'in', reports)|list|length }} of {{ portals|length }} done</span></h2>
+  <p class="why">Blocklists and anti-virus vendors flag the site for users world-wide within hours, long before a takedown lands. Every vendor that flags it also shows up on VirusTotal, which search engines and mail filters consult — so the site drops out of Google results too. Open each portal, report <span class="mono">{{ site_url }}</span>, then tick it.</p>
+  {% for gkey, glabel in groups.items() %}
+  <h3 class="muted small" style="margin:12px 0 6px;letter-spacing:.1em;text-transform:uppercase">{{ glabel }}</h3>
+  <div class="portals">
+    {% for p in portals if p.group == gkey %}
+    <div class="portal {{ 'done' if p.key in reports }}">
+      <div><b><a href="{{ p.link }}" target="_blank" rel="noreferrer noopener">{{ p.name }} ↗</a></b><small>{{ p.note }}{% if p.key in reports %} · reported {{ (reports[p.key].at or '')[:16].replace('T',' ') }}{% endif %}</small></div>
+      {% if can_write %}<form method="post" action="/ui/takedowns/{{ t.id }}/reported"><input type="hidden" name="portal" value="{{ p.key }}"><button type="submit" title="{{ 'untick' if p.key in reports else 'mark as reported' }}">{{ '✓ done' if p.key in reports else 'mark done' }}</button></form>{% endif %}
+    </div>
+    {% endfor %}
+  </div>
+  {% endfor %}
+</div>
+
+{% endblock %}

@@ -1,0 +1,38 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+build/
+dist/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# Secrets / local config
+.env
+*.local.env
+
+# Local databases and artifacts
+*.db
+*.sqlite
+*.sqlite3
+evidence_store/
+
+# OS / editors
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+evidence_live/
+
+# SQLite side files (the live ones hold real data)
+*.db-wal
+*.db-shm
+*.db-journal
+
+# Local tool state
+.claude/
+*.bak
+*.log

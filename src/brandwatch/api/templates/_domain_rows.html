@@ -1,0 +1,79 @@
+{# The official domains, one per line (instead of one box of comma-separated text): a row per domain, "+ Add a line",
+   ✕ to remove, paste a whole list and it is split into rows. The first domain is the primary. A link into an app
+   store is recognised and marked as an official app (it is saved as an app listing, never as a domain: a store is
+   not the brand's). Context: rows (the lines to start with). Submits every row as "entry". #}
+<style>
+  .drows .drow{display:flex;gap:8px;align-items:center;margin-top:6px}
+  .drows .drow:first-child{margin-top:0}
+  .drows .drow input{flex:1 1 auto;min-width:0}
+  .drows .dk{flex:none;font:600 10px var(--mono);letter-spacing:.08em;text-transform:uppercase;border:1px solid currentColor;border-radius:999px;padding:1px 8px;white-space:nowrap}
+  .drows .dk:empty{display:none}
+  .drows .dk.p{color:var(--accent2)}.drows .dk.a{color:var(--high)}.drows .dk.b{color:var(--crit)}
+  .drows .dadd{margin-top:8px}
+  .drows .dhint{font-size:11.5px;color:var(--muted);margin:6px 0 0}
+</style>
+<div class="drows" data-stores='{{ APP_STORE_HOSTS|tojson }}'>
+  <div class="dlist">
+    {% for r in rows or [''] %}<div class="drow"><input name="entry" value="{{ r }}" placeholder="{{ 'metamask.io' if loop.first else 'another domain, or an app-store link' }}" dir="ltr" autocomplete="off" {{ 'required' if loop.first }}><span class="dk"></span><button type="button" class="ghost ddel" title="remove this line">✕</button></div>{% endfor %}
+  </div>
+  <button type="button" class="ghost dadd">+ Add a line</button>
+  <p class="dhint">One official domain per line — the first is the primary. App-store links (App Store, Google Play, Chrome Web Store …) are kept as the brand's official apps, not as domains.</p>
+</div>
+<script>
+(function(){
+  document.querySelectorAll('.drows:not([data-ready])').forEach(box => {
+    box.dataset.ready = '1';
+    const stores = JSON.parse(box.dataset.stores || '[]'), list = box.querySelector('.dlist');
+    const parse = v => { v = (v || '').trim(); if (!v) return null; try { const u = new URL(v.includes('://') ? v : 'https://' + v); return {host: u.hostname.toLowerCase().replace(/^www\./, ''), path: u.pathname.replace(/\/+$/, '')}; } catch (e) { return {bad: true}; } };
+    const isStore = h => stores.some(s => h === s || h.endsWith('.' + s));
+    function kind(v){
+      const p = parse(v); if (!p) return '';
+      if (p.bad || !p.host.includes('.')) return 'bad';
+      if (isStore(p.host)) return p.path ? 'app' : 'store';
+      return 'domain';
+    }
+    function refresh(){
+      let primary = false;
+      list.querySelectorAll('.drow').forEach(row => {
+        const k = kind(row.querySelector('input').value), tag = row.querySelector('.dk');
+        tag.className = 'dk'; tag.textContent = '';
+        if (k === 'domain' && !primary) { primary = true; tag.classList.add('p'); tag.textContent = 'primary'; }
+        else if (k === 'domain') { tag.classList.add('p'); tag.textContent = 'domain'; }
+        else if (k === 'app') { tag.classList.add('a'); tag.textContent = 'official app'; }
+        else if (k === 'store') { tag.classList.add('b'); tag.textContent = 'paste the app link'; }
+        else if (k === 'bad') { tag.classList.add('b'); tag.textContent = 'not a domain'; }
+      });
+      list.querySelectorAll('.ddel').forEach(b => b.style.visibility = list.children.length > 1 ? '' : 'hidden');
+    }
+    function addRow(value, after){
+      const row = document.createElement('div'); row.className = 'drow';
+      const inp = document.createElement('input'); inp.name = 'entry'; inp.value = value || ''; inp.dir = 'ltr'; inp.autocomplete = 'off'; inp.placeholder = 'another domain, or an app-store link';
+      const tag = document.createElement('span'); tag.className = 'dk';
+      const del = document.createElement('button'); del.type = 'button'; del.className = 'ghost ddel'; del.title = 'remove this line'; del.textContent = '✕';
+      row.append(inp, tag, del);
+      after ? after.after(row) : list.append(row);
+      return inp;
+    }
+    box.addEventListener('input', refresh);
+    box.addEventListener('click', e => {
+      if (e.target.closest('.dadd')) { addRow('').focus(); refresh(); }
+      const del = e.target.closest('.ddel');
+      if (del && list.children.length > 1) { del.closest('.drow').remove(); refresh(); }
+    });
+    box.addEventListener('keydown', e => {   // Enter adds the next line instead of submitting the form half-filled
+      if (e.key === 'Enter' && e.target.matches('.drow input')) { e.preventDefault(); addRow('', e.target.closest('.drow')).focus(); refresh(); }
+    });
+    box.addEventListener('paste', e => {     // a pasted list (lines, commas, spaces) becomes one row each
+      if (!e.target.matches('.drow input')) return;
+      const text = (e.clipboardData || window.clipboardData).getData('text'), parts = text.split(/[\s,;]+/).filter(Boolean);
+      if (parts.length < 2) return;
+      e.preventDefault();
+      const here = e.target; here.value = parts[0];
+      let after = here.closest('.drow');
+      parts.slice(1).forEach(p => { const inp = addRow(p, after); after = inp.closest('.drow'); });
+      refresh();
+    });
+    refresh();
+  });
+})();
+</script>

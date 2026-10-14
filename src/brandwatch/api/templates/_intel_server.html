@@ -1,0 +1,52 @@
+{# One server card (the `ip` loop variable): detections, AbuseIPDB, sites hosted on it, files, IP WHOIS.
+   Used by the finding page's "Hosting & network" tab and by the server page. #}
+{% from "_intel_macros.html" import det, vt_status %}
+<div class="ipcard">
+  <div class="top">
+    <div class="ring" style="--p:{{ ((ip.positives / ip.total) * 100)|round|int if ip.total else 0 }};--c:{{ 'var(--crit)' if ip.positives else 'var(--low)' }}"><div>{{ ip.positives if ip.total else '—' }}</div></div>
+    <div style="flex:1;min-width:220px">
+      <h2 class="mono">{{ flag_img(ip.country, 26) }}{{ ip.ip }}</h2>
+      {% if ip.cdn %}<div class="small muted" title="A CDN answers every visitor with the node nearest to them, so its geolocation is where the one asking is, not where the site is hosted{{ ' (this edge is placed in ' ~ ip.edge.city ~ ', ' ~ ip.edge.country ~ ' for the scan)' if ip.edge and ip.edge.country }}">a CDN edge ({{ ip.cdn }}): the real server is hidden behind it, so no country is claimed{% if ip.asn %} · AS{{ ip.asn }}{% endif %}</div>
+      {% else %}<div class="small muted">{{ ip.country_name }}{% if ip.city %} · {{ ip.city }}{% endif %}{% if ip.asn %} · AS{{ ip.asn }}{% endif %}{% if ip.as_owner %} · {{ ip.as_owner }}{% endif %}{% if ip.network %} · {{ ip.network }}{% endif %}{% if ip.rir %} · {{ ip.rir }}{% endif %}</div>{% endif %}
+      <div class="small" style="margin-top:4px">{% if ip.total %}<b style="color:{{ 'var(--crit)' if ip.positives else 'var(--low)' }}">{{ ip.positives }}</b> of {{ ip.total }} engines flag this IP{% else %}{{ vt_status(ip.status.get('virustotal/report')) }}{% endif %}
+        {% if ip.shared %}· <span class="muted" title="{{ ip.shared_note }}">a Cloudflare address shared by a great many sites: the lists of sites, files and WHOIS history were skipped</span>
+        {% else %}· <b>{{ ip.hosted_count }}</b> site{{ 's' if ip.hosted_count != 1 }} hosted{% if ip.hosted_flagged %}, <b style="color:var(--crit)">{{ ip.hosted_flagged }}</b> flagged{% endif %} · <b>{{ ip.files_count }}</b> communicating file{{ 's' if ip.files_count != 1 }}{% endif %}</div>
+    </div>
+    <div class="links" style="margin:0">{% for name, href in ip.links.items() %}<a href="{{ href }}" target="_blank" rel="noreferrer noopener">{{ name }} ↗</a>{% endfor %}
+      {% if mode == 'finding' %}<a href="/ui/intel/ip/{{ ip.ip }}">open server page →</a>{% endif %}</div>
+  </div>
+  {% set ab = ip.abuse %}{% set abs_ = ip.status.get('abuseipdb/check') %}
+  <div class="card" style="margin-top:14px;display:flex;flex-wrap:wrap;gap:10px 22px;align-items:center">
+    <h3 style="margin:0;flex:0 0 100%">Abuse reports · AbuseIPDB <span style="text-transform:none;letter-spacing:0;font-family:var(--sans);font-weight:400"> — what other defenders reported about this server in the last 90 days</span></h3>
+    {% if ab %}
+      <div><span class="det {{ 'bad' if ab.abuse_score >= 25 else 'none' }} big"><b>{{ ab.abuse_score }}</b><i>/ 100</i></span></div>
+      <div class="small">{% if ab.total_reports %}<b>{{ ab.total_reports }}</b> report(s) from <b>{{ ab.distinct_users }}</b> reporter(s){% if ab.last_reported %} · last <span data-rel="{{ ab.last_reported }}">{{ ab.last_reported[:16].replace('T', ' ') }}</span>{% endif %}{% else %}No reports in the last 90 days{% endif %}
+        <div class="muted" style="margin-top:2px">{{ ab.usage_type or '' }}{% if ab.isp %} · {{ ab.isp }}{% endif %}{% if ab.is_tor %} · Tor exit node{% endif %}{% if ab.is_whitelisted %} · whitelisted by AbuseIPDB{% endif %}</div></div>
+      <div class="small muted" style="flex:1;min-width:220px">A score of 25 or more means several independent reporters saw abuse from this IP: phishing, scanning, spam or brute force. A fresh kit on a clean IP scores 0 — unknown, not clean.</div>
+    {% elif abs_ and abs_.status == 'not_available' %}<span class="small muted">{{ abs_.error }} · <a href="/ui/settings#keys">add a key</a></span>
+    {% elif abs_ and abs_.status == 'error' %}<span class="pill err" title="{{ abs_.error }}">lookup failed · {{ abs_.error|truncate(60) }}</span>
+    {% else %}<span class="small muted">not fetched yet</span>{% endif %}
+  </div>
+  <div class="cols" style="margin-top:14px">
+    <div style="min-width:0">
+      <h3 class="subh">SITES HOSTED ON THIS SERVER <span style="text-transform:none;letter-spacing:0;font-family:var(--sans);font-weight:400">(passive DNS, each with its own detections)</span> {{ vt_status(ip.status.get('virustotal/resolutions')) }}</h3>
+      {% if ip.hosted %}<div class="tw"><table class="compact"><tr><th>Last resolved</th><th>Detections</th><th>Domain</th><th></th></tr>
+        {% for h in ip.hosted %}<tr><td class="mono">{{ h.date or '—' }}</td><td>{{ det(h.positives, h.total) }}</td><td class="mono" style="word-break:break-all">{{ h.host }}</td>
+          <td class="small"><a href="https://www.virustotal.com/gui/domain/{{ h.host }}" target="_blank" rel="noreferrer noopener" title="VirusTotal">VT ↗</a> · <a href="https://urlscan.io/search/#page.domain:{{ h.host }}" target="_blank" rel="noreferrer noopener">urlscan ↗</a></td></tr>{% endfor %}</table></div>
+      {% elif ip.shared %}<p class="muted small" id="shared-cloudflare">{{ ip.shared_note }}.</p>
+      {% elif ip.status.get('virustotal/resolutions') and ip.status['virustotal/resolutions'].status == 'ok' %}<p class="muted small">No other sites recorded on this IP.</p>{% endif %}
+    </div>
+    <div style="min-width:0">
+      <h3 class="subh">COMMUNICATING FILES {{ vt_status(ip.status.get('virustotal/communicating_files')) }}</h3>
+      {% if ip.files %}<div class="tw"><table class="compact"><tr><th>Scanned</th><th>Detections</th><th>Type</th><th>Name</th></tr>
+        {% for f in ip.files %}<tr><td class="mono">{{ f.date or '—' }}</td><td>{{ det(f.positives, f.total) }}</td><td class="small">{{ f.type }}</td><td class="small" style="word-break:break-all"><a href="https://www.virustotal.com/gui/file/{{ f.sha256 }}" target="_blank" rel="noreferrer noopener">{{ f.name }}</a></td></tr>{% endfor %}</table></div>
+      {% elif ip.shared %}<p class="muted small">Skipped for the same reason: files that talked to a Cloudflare address are about Cloudflare's customers, not this site, and so is the WHOIS history of its address block.</p>
+      {% elif ip.status.get('virustotal/communicating_files') and ip.status['virustotal/communicating_files'].status == 'ok' %}<p class="muted small">No files recorded.</p>{% endif %}
+      {% if ip.historical_whois %}<h3 class="subh" style="margin-top:12px">HISTORICAL WHOIS (IP block)</h3>
+        {% for w in ip.historical_whois %}<div class="small"><b class="mono">{{ w.date or '—' }}</b> · {{ w.registrar or '' }} {% for k, val in w.map.items() if k in ('Organization','OrgName','org-name','abuse-mailbox','OrgAbuseEmail','Country','country') %}<span class="pill">{{ k }}: {{ val }}</span> {% endfor %}</div>{% endfor %}{% endif %}
+      {% if ip.whois %}<details><summary>IP WHOIS record</summary><div class="mono-block">{{ ip.whois }}</div></details>{% endif %}
+    </div>
+  </div>
+  {% if ip.engines %}<details><summary>engine verdicts for this IP ({{ ip.engines|length }})</summary><div class="tw"><table class="compact"><tr><th>Engine</th><th>Category</th><th>Result</th></tr>
+    {% for e in ip.engines %}<tr><td>{{ e.engine_name }}</td><td><span class="badge {{ 'sev-critical' if e.category == 'malicious' else ('sev-high' if e.category == 'suspicious' else 'state') }}">{{ e.category }}</span></td><td class="mono small">{{ e.result }}</td></tr>{% endfor %}</table></div></details>{% endif %}
+</div>

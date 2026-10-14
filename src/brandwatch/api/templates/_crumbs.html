@@ -1,0 +1,2 @@
+{# Context strip: {% set crumbs = [("Brands & Scans", "/ui/brands"), (brand.name, "/ui/brands/" ~ brand.id), ("Finding", none)] %} then {% include "_crumbs.html" %} #}
+{% if crumbs %}<div class="crumbs">{% for label, href in crumbs %}{% if not loop.first %}<span class="sep">›</span>{% endif %}{% if href %}<a href="{{ href }}">{{ label }}</a>{% else %}<span class="cur">{{ label }}</span>{% endif %}{% endfor %}{% if crumb_links %}<span class="side">{% for label, href in crumb_links %}<a href="{{ href }}">{{ label }}</a>{% endfor %}</span>{% endif %}</div>{% endif %}

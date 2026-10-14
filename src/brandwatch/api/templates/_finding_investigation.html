@@ -1,0 +1,230 @@
+{# The three investigation tabs of the finding page: Reputation · Domain & registration · Hosting & network.
+   Filled from the intel cache (detection/intel.py intel_view) — the Run/Refresh bar above the tabs fetches it. #}
+{% from "_intel_macros.html" import det, vt_status %}
+{% macro inv_empty(what, can_write) -%}
+<div class="panel inv-empty">
+  <h2 style="margin-top:0">Not investigated yet</h2>
+  <p class="small" style="margin:0">{{ what }}</p>
+  <p class="small muted" style="margin:8px 0 0">{% if can_write %}Press <b>Run investigation</b> above: one pass over the APIs, cached for 24 hours.{% else %}An analyst can run the investigation.{% endif %}</p>
+</div>
+{%- endmacro %}
+
+{# ================================================================ reputation #}
+<section class="tabpane" id="tab-reputation">
+  {% if has_intel %}{% set dt = v.detections %}
+  <div class="cards">
+    <div class="card" style="display:flex;gap:18px;align-items:center">
+      <div class="ring lg" style="--p:{{ ((dt.positives / dt.total) * 100)|round|int if dt.total else 0 }};--c:{{ 'var(--crit)' if dt.positives else 'var(--low)' }}"><div>{{ dt.positives if dt.available else '—' }}</div></div>
+      <div style="min-width:0">
+        <h3>VirusTotal · security vendors</h3>
+        {% if dt.available %}<div style="font-size:14px"><b style="color:{{ 'var(--crit)' if dt.positives else 'var(--low)' }}">{{ dt.positives }}</b> of {{ dt.total }} engines flag this domain</div>
+        <div class="small muted">malicious {{ dt.malicious }} · suspicious {{ dt.suspicious }}{% if dt.last_analysis %} · analysed {{ dt.last_analysis }}{% endif %}{% if dt.reputation is not none %} · community reputation {{ dt.reputation }}{% endif %}</div>
+        {% else %}{{ vt_status(dt.status) }}<div class="small muted" style="margin-top:6px">Add a VirusTotal key in <a href="/ui/settings#keys">Settings → API keys</a> for engine verdicts.</div>{% endif %}
+      </div>
+    </div>
+    <div class="card"><h3>Server reputation · AbuseIPDB</h3>
+      {% for ip in v.ips %}<div class="small" style="margin:5px 0;display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+        <a class="mono" href="#ips" data-goto="ips">{{ flag_img(ip.country, 16) }}{{ ip.ip }}</a>
+        {% if ip.abuse %}<span class="det {{ 'bad' if ip.abuse.abuse_score >= 25 else 'none' }}"><b>{{ ip.abuse.abuse_score }}</b><i>/ 100</i></span><span class="muted">{{ ip.abuse.total_reports }} report(s)</span>
+        {% else %}<span class="muted">no AbuseIPDB data</span>{% endif %}</div>
+      {% else %}<span class="muted small">no server known yet</span>{% endfor %}
+      <div class="small muted" style="margin-top:6px">25 or more = several defenders reported abuse from this server.</div>
+    </div>
+    <div class="card"><h3>Categories</h3>
+      {% if dt.categories %}{% for vendor, cat in dt.categories.items() %}<div class="small"><span class="pill">{{ cat }}</span> <span class="muted">{{ vendor }}</span></div>{% endfor %}{% else %}<span class="muted small">none recorded</span>{% endif %}
+      {% if dt.popularity %}<h3 style="margin-top:10px">Popularity ranks</h3>{% for src, r in dt.popularity.items() %}<div class="small">{{ src }}: <b class="mono">{{ r.rank if r is mapping else r }}</b></div>{% endfor %}{% endif %}
+      {% if v.jarm %}<h3 style="margin-top:10px">JARM</h3><div class="mono small" style="word-break:break-all">{{ v.jarm }}</div>{% endif %}
+    </div>
+  </div>
+  {% if dt.engines %}
+  <div class="panel" style="margin-top:12px"><h2>Engines <span class="muted small">flagged first</span></h2>
+    <div class="tw"><table class="compact"><tr><th>Engine</th><th>Category</th><th>Result</th><th>Method</th></tr>
+    {% for e in dt.engines %}<tr><td>{{ e.engine_name }}</td><td><span class="badge {{ 'sev-critical' if e.category == 'malicious' else ('sev-high' if e.category == 'suspicious' else 'state') }}">{{ e.category }}</span></td><td class="mono small">{{ e.result }}</td><td class="muted small">{{ e.method }}</td></tr>{% endfor %}
+    </table></div></div>
+  {% endif %}
+  {% else %}{{ inv_empty("VirusTotal's verdict from 70+ security vendors, every engine's result and category, and the AbuseIPDB abuse score of each server hosting the site. Google Safe Browsing and URLhaus are already in the header — the scan checks them.", can_write) }}{% endif %}
+  {% if v.links %}
+  <div class="panel" style="margin-top:12px"><h2>Look it up elsewhere</h2>
+    <p class="why">Each link opens the external service's own page for this site — nothing is sent from here beyond the name in the URL.</p>
+    <div class="links" style="margin-top:0">{% for name, href in v.links.items() %}<a href="{{ href }}" target="_blank" rel="noreferrer noopener" title="{{ href }}">{{ name }} ↗</a>{% endfor %}</div>
+  </div>
+  {% endif %}
+</section>
+
+{# ================================================================ domain & registration #}
+<section class="tabpane" id="tab-domain">
+  {% if has_intel %}
+  <div class="jump small">Jump to <a href="#registration" data-goto="registration">Registration</a><a href="#history" data-goto="history">WHOIS history</a><a href="#dns" data-goto="dns">DNS records</a><a href="#cert" data-goto="cert">Certificate</a></div>
+  {% set r = v.rdap %}
+  <div id="sec-registration" class="cards">
+    <div class="card"><h3>Registration data (RDAP) {% if not r.available %}{{ vt_status(v.status.get('rdap/report') if v.status else none) }}{% endif %}</h3>
+      <dl class="kv"><dt>Name</dt><dd class="mono">{{ r.name or v.registrable }}</dd>{% if r.handle %}<dt>Handle</dt><dd class="mono small">{{ r.handle }}</dd>{% endif %}
+        {% for e in r.events %}<dt>{{ e.action }}</dt><dd class="mono">{{ e.date }}</dd>{% endfor %}
+        {% if not r.events and r.registered_at %}<dt>registration</dt><dd class="mono">{{ r.registered_at }}</dd>{% endif %}
+        <dt>Status</dt><dd>{% for st in r.status %}<span class="pill small">{{ st }}</span> {% else %}—{% endfor %}</dd>
+        <dt>DNSSEC</dt><dd>{{ 'delegation signed' if r.dnssec else ('unsigned' if r.dnssec is not none else '—') }}</dd></dl></div>
+    <div class="card"><h3>Registrar &amp; abuse contact</h3>
+      <dl class="kv"><dt>Registrar</dt><dd><b>{{ r.registrar or '—' }}</b>{% if r.registrar_iana_id %} <span class="muted small">IANA {{ r.registrar_iana_id }}</span>{% endif %}</dd>
+        {% if r.registrar_url %}<dt>Website</dt><dd><a href="{{ r.registrar_url }}" target="_blank" rel="noreferrer noopener">{{ r.registrar_url }}</a></dd>{% endif %}
+        <dt>Abuse email</dt><dd>{% if r.abuse_email %}<a href="mailto:{{ r.abuse_email }}" class="mono">{{ r.abuse_email }}</a> <span class="muted small">← where a takedown request goes</span>{% else %}—{% endif %}</dd>
+        {% if r.abuse_phone %}<dt>Abuse phone</dt><dd class="mono">{{ r.abuse_phone }}</dd>{% endif %}
+        {% if r.registrant %}{% for k, val in r.registrant.items() if val %}<dt>registrant {{ k }}</dt><dd>{{ val }}</dd>{% endfor %}{% endif %}</dl></div>
+    <div class="card"><h3>Nameservers</h3>{% for ns in r.nameservers %}<div class="mono small">{{ ns }}</div>{% else %}<span class="muted small">—</span>{% endfor %}
+      {% if r.links %}<h3 style="margin-top:10px">RDAP links</h3>{% for l in r.links %}<div class="small" style="word-break:break-all"><a href="{{ l }}" target="_blank" rel="noreferrer noopener">{{ l }}</a></div>{% endfor %}{% endif %}</div>
+  </div>
+  {% if v.whois_text %}<div class="panel" style="margin-top:12px"><details><summary>Current WHOIS record{% if v.whois_date %} · {{ v.whois_date }}{% endif %} (VirusTotal)</summary><div class="mono-block">{{ v.whois_text }}</div></details></div>{% endif %}
+
+  {% set wh = v.whois_history %}{% set whs = v.whois_history_status or {} %}
+  <div class="panel" id="sec-history" style="margin-top:12px">
+    <h2>WHOIS history <span class="muted">· every WHOIS snapshot WhoisXML has recorded for {{ v.registrable }}</span></h2>
+    <p class="why">Who registered the domain, when, through which registrar, and every change since: transfers, new owners, re-registration after expiry, privacy switched on or off. Phishers often register with their real details and hide them a day later — that first snapshot is a lead.</p>
+    {% if wh %}{% set sm = wh.summary %}
+    <div class="wh-sum">
+      <div class="card"><h3>First registered</h3><div class="v mono">{{ sm.first_registered or '—' }}</div><div class="d">{% if sm.re_registrations %}current registration {{ sm.latest_registration }}{% else %}{{ wh.snapshots[0].registrar if wh.snapshots else '' }}{% endif %}</div></div>
+      <div class="card"><h3>Snapshots</h3><div class="v">{{ sm.records }}</div><div class="d">{{ wh.snapshots[0].seen if wh.snapshots else '—' }} → {{ wh.snapshots[-1].seen if wh.snapshots else '—' }}</div></div>
+      <div class="card"><h3>Owners seen</h3><div class="v">{{ wh.owners|length }} visible</div><div class="d">{{ sm.owner_changes }} owner change(s){{ ' · re-registered after expiry' if sm.re_registrations }}</div></div>
+      <div class="card"><h3>Registrars</h3><div class="v">{{ sm.registrars|length }}</div><div class="d">{{ sm.transfers }} transfer(s) · {{ sm.registrars[-1] if sm.registrars else '—' }}</div></div>
+      <div class="card"><h3>Owner details now</h3><div class="v">{{ 'Hidden' if sm.hidden_now else 'Visible' }}</div><div class="d">{% if sm.hidden_since %}privacy on since {{ sm.hidden_since }}{% elif sm.hidden_now %}privacy since registration{% else %}published in WHOIS{% endif %}</div></div>
+    </div>
+    {% if sm.leaked_owner %}{% set lo = sm.leaked_owner %}
+    <div class="leak">
+      <h3>Owner details visible before privacy was switched on</h3>
+      <p class="why">Seen {{ lo.first_seen }}{% if lo.last_seen != lo.first_seen %} – {{ lo.last_seen }}{% endif %}, hidden since {{ sm.hidden_since or '—' }}. Today's WHOIS shows only the privacy service; this is who registered it.</p>
+      <dl class="kv">{% for f in ('name', 'organization', 'email', 'telephone', 'street', 'city', 'state', 'country') if lo[f] %}<dt>{{ f }}</dt><dd class="{{ 'mono' if f in ('email', 'telephone') }}">{{ lo[f] }}</dd>{% endfor %}</dl>
+    </div>
+    {% endif %}
+    {% if wh.related %}
+    <div class="card" style="margin-bottom:14px"><h3>Same owner e-mail on other domains in this workspace</h3>
+      {% for rr in wh.related %}<div class="small" style="margin:4px 0"><span class="mono">{{ rr.email }}</span> → {% for dm in rr.domains %}<span class="pill mono">{{ dm }}</span> {% endfor %}</div>{% endfor %}
+      <p class="why" style="margin:6px 0 0">Found in other domains' WHOIS history and in the WHOIS evidence of your scans — no extra API call. One operator, several kits.</p></div>
+    {% endif %}
+    <div class="cols">
+      <div style="min-width:0"><h3 class="subh">TIMELINE</h3>
+        <ul class="wtl">{% for e in wh.events %}<li class="{{ 'key' if e.key }}"><div class="when">{{ e.date or '—' }}</div><div class="t">{{ e.title }}</div>{% if e.detail %}<div class="d">{{ e.detail }}</div>{% endif %}</li>{% endfor %}</ul></div>
+      <div style="min-width:0"><h3 class="subh">SNAPSHOTS · CHANGED FIELDS MARKED</h3>
+        <div class="tw"><table class="compact"><tr><th>Seen</th><th>Registrar</th><th>Registrant</th><th>Created · expires</th></tr>
+        {% for sn in wh.snapshots|reverse %}<tr>
+          <td class="mono small">{{ sn.seen or '—' }}</td>
+          <td class="small {{ 'chg' if 'registrar' in sn.changed }}">{{ sn.registrar or '—' }}</td>
+          <td class="small {{ 'chg' if 'registrant' in sn.changed or 'privacy' in sn.changed }}">{% if sn.registrant.hidden %}<span class="muted">hidden · {{ sn.registrant.privacy_service or 'privacy' }}</span>{% else %}{{ sn.registrant.visible.values()|join(' · ') }}{% endif %}{% if sn.registrant.country %} <span class="muted">({{ sn.registrant.country }})</span>{% endif %}</td>
+          <td class="mono small {{ 'chg' if 'created' in sn.changed or 'expires' in sn.changed }}">{{ sn.created or '—' }} · {{ sn.expires or '—' }}</td></tr>
+          {% if sn.raw_text %}<tr><td colspan="4" style="padding-top:0"><details><summary class="small">raw WHOIS · {{ sn.seen }}</summary><div class="mono-block">{{ sn.raw_text }}</div></details></td></tr>{% endif %}
+        {% endfor %}</table></div></div>
+    </div>
+    <p class="small muted" style="margin:10px 0 0">Source: WhoisXML WHOIS History API (whois-history.whoisxmlapi.com) · cached 24 h{% if wh.fetched_at %} · fetched <span data-rel="{{ wh.fetched_at }}"></span>{% endif %}.</p>
+    {% elif whs.status == 'not_available' %}
+    <p class="small">Not available: {{ whs.error }}. <a href="/ui/settings#keys">Settings → API keys</a></p>
+    {% elif whs.status == 'error' %}
+    <p class="small"><span class="pill err">lookup failed</span> {{ whs.error }}</p>
+    {% else %}
+    <p class="small muted">Not fetched yet — this investigation ran before WHOIS history was added. Press <b>Refresh</b> above.</p>
+    {% endif %}
+  </div>
+
+  <div class="cols" style="margin-top:12px">
+    <div class="panel" id="sec-dns"><h2>DNS records <span class="muted small">source: {{ 'VirusTotal' if v.dns.source == 'virustotal' else ('Python resolver (healthy public resolvers)' if v.dns.source else '—') }}</span></h2>
+      <p class="why">A records are the servers hosting the site — click one to see everything else hosted there. NS tells you who runs its DNS (Cloudflare nameservers hide the real origin).</p>
+      {% if v.dns.records %}
+      <div class="tw"><table class="compact"><tr><th>Type</th><th>TTL</th><th>Value</th></tr>
+        {% for rec in v.dns.records %}<tr><td class="mono"><b>{{ rec.type }}</b></td><td class="mono muted">{{ rec.ttl if rec.ttl is not none else '—' }}</td>
+          <td class="mono" style="word-break:break-all">{% if rec.type == 'A' %}<a href="/ui/intel/ip/{{ rec.value }}">{{ rec.value }}</a>{% else %}{{ rec.value }}{% endif %}{% if rec.priority is defined and rec.priority is not none %} <span class="muted small">prio {{ rec.priority }}</span>{% endif %}{% if rec.rname %} <span class="muted small">rname {{ rec.rname }} · serial {{ rec.serial }}</span>{% endif %}</td></tr>{% endfor %}
+      </table></div>{% else %}<p class="muted small">No records yet. {{ vt_status(v.status.get('dns/report') if v.status else none) }}</p>{% endif %}
+    </div>
+    {% set c = v.certificate %}
+    <div class="panel" id="sec-cert"><h2>HTTPS certificate <span class="muted small">{{ 'from VirusTotal' if c and c.source == 'virustotal' else ('live handshake' if c else '') }}{% if c and c.seen %} · seen {{ c.seen }}{% endif %}</span></h2>
+      {% if c %}
+      <dl class="kv"><dt>Common name</dt><dd class="mono">{{ c.subject_cn or '—' }}</dd>
+        <dt>Issuer</dt><dd>{{ c.issuer or '—' }}</dd>
+        <dt>Valid</dt><dd class="mono small">{{ c.not_before }} → {{ c.not_after }}{% if c.validity_pct is not none %}<div class="vbar"><i style="width:{{ c.validity_pct }}%"></i></div><span class="muted">{{ c.validity_pct }}% of the validity period elapsed</span>{% endif %}</dd>
+        <dt>Alt names ({{ c.sans|length }})</dt><dd>{% for sn in c.sans %}<span class="pill mono">{{ sn }}</span> {% else %}<span class="muted small">none</span>{% endfor %}</dd>
+        <dt>SHA-256</dt><dd class="mono small">{{ c.thumbprint_sha256 or '—' }}{% if c.thumbprint_sha256 %} · <a href="https://crt.sh/?sha256={{ c.thumbprint_sha256 }}" target="_blank" rel="noreferrer noopener">crt.sh ↗</a>{% endif %}</dd></dl>
+      <details><summary>serial, signature, key, TLS and the full certificate</summary>
+        <dl class="kv"><dt>Subject</dt><dd class="mono small">{{ c.subject or '—' }}</dd><dt>Serial</dt><dd class="mono small">{{ c.serial or '—' }}</dd>
+          <dt>Signature</dt><dd class="mono small">{{ c.signature_algorithm or '—' }}</dd><dt>Public key</dt><dd class="mono small">{{ c.public_key or '—' }}</dd>
+          {% if c.tls_version %}<dt>TLS</dt><dd class="mono small">{{ c.tls_version }} · {{ c.cipher }}</dd>{% endif %}
+          {% if c.thumbprint_sha1 %}<dt>SHA-1</dt><dd class="mono small">{{ c.thumbprint_sha1 }}</dd>{% endif %}</dl>
+        <div class="mono-block">{{ c.raw|tojson(indent=2) }}</div></details>
+      {% else %}<p class="muted small">No certificate captured. {{ vt_status(v.status.get('cert/report') if v.status else none) }}</p>{% endif %}
+    </div>
+  </div>
+  {% else %}{{ inv_empty("RDAP registration and the registrar's abuse contact, the full WHOIS history (every owner, transfer and privacy change — and owner details that were hidden later), DNS records and the HTTPS certificate.", can_write) }}{% endif %}
+</section>
+
+{# ================================================================ hosting & network #}
+<section class="tabpane" id="tab-network">
+  {% if has_intel %}{% set rel = v.relations %}
+  <div class="jump small">Jump to <a href="#ips" data-goto="ips">Servers</a><a href="#urlscan" data-goto="urlscan">urlscan &amp; similar sites</a><a href="#relations" data-goto="relations">Passive DNS &amp; relations</a></div>
+  <div id="sec-ips">
+    {% for ip in v.ips %}{% include "_intel_server.html" %}
+    {% else %}<div class="panel"><p class="muted" style="margin:0">No IP known yet — the DNS lookup fills this in.</p></div>{% endfor %}
+  </div>
+
+  {% set us = v.urlscan.scan %}{% set sim = v.urlscan.similar %}
+  <div class="cols" id="sec-urlscan">
+    <div class="panel"><h2>urlscan.io scan {{ vt_status(v.urlscan.status) if not us }}</h2>
+      {% if us %}
+      <div class="small" style="display:flex;flex-wrap:wrap;gap:8px 14px;margin-bottom:10px">
+        {% if us.verdict and us.verdict.malicious %}<span class="badge sev-critical">malicious · score {{ us.verdict.score }}</span>{% else %}<span class="badge state">not flagged by urlscan</span>{% endif %}
+        {% if us.verdict and us.verdict.categories %}{% for cg in us.verdict.categories %}<span class="pill">{{ cg }}</span>{% endfor %}{% endif %}
+        {% if us.country %}<span>{{ flag_img(us.country) }}{{ country_name(us.country) }}</span>{% endif %}
+        {% if us.ip %}<a class="mono" href="/ui/intel/ip/{{ us.ip }}">{{ us.ip }}</a>{% endif %}{% if us.asn %}<span class="mono">{{ us.asn }}{% if us.asnname %} {{ us.asnname }}{% endif %}</span>{% endif %}
+        {% if us.server %}<span>server {{ us.server }}</span>{% endif %}
+        <span>{{ us.requests or 0 }} requests · {{ us.domains|length }} domains · {{ us.ips|length }} IPs · {{ us.countries|length }} countries</span>
+        {% if us.time %}<span class="muted">scanned {{ us.time[:16].replace('T',' ') }}</span>{% endif %}
+      </div>
+      {% if us.title %}<div class="small" style="margin-bottom:8px">title: <b>{{ us.title }}</b></div>{% endif %}
+      {% if us.screenshot %}<a href="{{ us.result_url }}" target="_blank" rel="noreferrer noopener"><img class="shot-us" src="{{ us.screenshot }}" alt="urlscan screenshot" loading="lazy" onerror="this.style.display='none'"></a>{% endif %}
+      <div class="links">{% if us.result_url %}<a href="{{ us.result_url }}" target="_blank" rel="noreferrer noopener">full urlscan result ↗</a>{% endif %}<a href="https://urlscan.io/search/#page.domain:{{ v.host }}" target="_blank" rel="noreferrer noopener">all scans of {{ v.host }} ↗</a></div>
+      {% if us.domains %}<details><summary>domains contacted by the page ({{ us.domains|length }})</summary><div class="small mono" style="word-break:break-all">{{ us.domains|join(' · ') }}</div></details>{% endif %}
+      {% else %}<p class="muted small">No scan yet. With a urlscan API key in Settings the site is scanned live; without one the latest public scan is used.</p>{% endif %}
+    </div>
+    <div class="panel"><h2>Similar sites <span class="muted small">{{ (sim.by_hash|length + sim.by_ip|length + sim.by_brand|length) if sim else 0 }}</span></h2>
+      <p class="why">Other pages urlscan has seen that share this site's page hash (same kit), its server, or the brand name.</p>
+      {% if sim %}
+      {% for key, label, why in (('by_hash', 'Same page (identical document hash)', 'the same HTML served elsewhere — the same phishing kit'), ('by_ip', 'Same server', 'other pages scanned on the same IP'), ('by_brand', 'Same brand name', 'domains containing the brand name')) %}
+      {% set hits = sim[key] %}
+      <div class="sim-group"><h3 class="subh">{{ label }} <span class="n">{{ hits|length }}</span>{% if sim.queries and sim.queries.get(key) %}<span class="q">{{ sim.queries[key] }}</span>{% endif %}</h3>
+        <p class="why" style="margin:0 0 6px">{{ why }}</p>
+        {% if hits %}<div class="tw"><table class="compact"><tr><th>Seen</th><th>Verdict</th><th>Domain</th><th></th><th>Title</th></tr>
+          {% for h in hits[:25] %}<tr><td class="mono small">{{ (h.time or '')[:10] }}</td><td>{% if h.malicious %}<span class="badge sev-critical">malicious</span>{% else %}<span class="muted small">—</span>{% endif %}</td>
+            <td class="mono small" style="word-break:break-all">{{ flag_img(h.country, 16) if h.country }}{{ h.domain or h.url }}</td>
+            <td class="small">{% if h.task_id %}<a href="https://urlscan.io/result/{{ h.task_id }}/" target="_blank" rel="noreferrer noopener">urlscan ↗</a> · {% endif %}<a href="https://www.virustotal.com/gui/domain/{{ h.domain }}" target="_blank" rel="noreferrer noopener">VT ↗</a></td>
+            <td class="small muted">{{ (h.page_title or '')|truncate(60) }}</td></tr>{% endfor %}</table></div>{% else %}<span class="muted small">none</span>{% endif %}
+      </div>
+      {% endfor %}
+      {% endif %}
+    </div>
+  </div>
+
+  <div id="sec-relations">
+    <div class="panel" style="margin-top:12px"><h2>Passive DNS replication <span class="muted small">{{ rel.resolutions|length }}</span> {{ vt_status(rel.status.get('virustotal/resolutions')) }}</h2>
+      <p class="why">Every IP this domain has resolved to, with how many engines flag that IP. Click an IP to see the other sites on it.</p>
+      {% if rel.resolutions %}<div class="tw"><table class="compact"><tr><th>Date resolved</th><th>Detections (IP)</th><th>IP</th></tr>
+        {% for x in rel.resolutions %}<tr><td class="mono">{{ x.date or '—' }}</td><td>{{ det(x.positives, x.total) }}</td><td class="mono"><a href="/ui/intel/ip/{{ x.ip }}">{{ x.ip }}</a></td></tr>{% endfor %}</table></div>{% endif %}
+    </div>
+    <div class="cols" style="margin-top:12px">
+      <div class="panel"><h2>Subdomains <span class="muted small">{{ rel.subdomains|length }}</span> {{ vt_status(rel.status.get('virustotal/subdomains')) }}</h2>
+        {% if rel.subdomains %}<div class="tw"><table class="compact"><tr><th>Host</th><th>Detections</th></tr>{% for sd in rel.subdomains %}<tr><td class="mono">{{ sd.host }}</td><td>{{ det(sd.positives, sd.total) }}</td></tr>{% endfor %}</table></div>{% endif %}</div>
+      <div class="panel"><h2>Communicating files <span class="muted small">{{ rel.communicating_files|length }}</span> {{ vt_status(rel.status.get('virustotal/communicating_files')) }}</h2>
+        <p class="why">Malware samples that contacted this domain while being analysed.</p>
+        {% if rel.communicating_files %}<div class="tw"><table class="compact"><tr><th>Scanned</th><th>Detections</th><th>Type</th><th>Name</th></tr>
+          {% for f in rel.communicating_files %}<tr><td class="mono">{{ f.date or '—' }}</td><td>{{ det(f.positives, f.total) }}</td><td class="small">{{ f.type }}</td><td class="small" style="word-break:break-all"><a href="https://www.virustotal.com/gui/file/{{ f.sha256 }}" target="_blank" rel="noreferrer noopener">{{ f.name }}</a></td></tr>{% endfor %}</table></div>{% endif %}
+        {% if rel.referrer_files %}<h3 class="subh" style="margin-top:10px">FILES REFERRING</h3><div class="tw"><table class="compact"><tr><th>Scanned</th><th>Detections</th><th>Type</th><th>Name</th></tr>
+          {% for f in rel.referrer_files %}<tr><td class="mono">{{ f.date or '—' }}</td><td>{{ det(f.positives, f.total) }}</td><td class="small">{{ f.type }}</td><td class="small"><a href="https://www.virustotal.com/gui/file/{{ f.sha256 }}" target="_blank" rel="noreferrer noopener">{{ f.name }}</a></td></tr>{% endfor %}</table></div>{% endif %}
+      </div>
+    </div>
+    <div class="cols" style="margin-top:12px">
+      <div class="panel"><h2>Historical WHOIS · VirusTotal <span class="muted small">{{ rel.historical_whois|length }}</span> {{ vt_status(rel.status.get('virustotal/historical_whois')) }}</h2>
+        {% for w in rel.historical_whois %}<div class="card" style="margin-bottom:8px"><div class="small"><b class="mono">{{ w.date or '—' }}</b> · {{ w.registrar or '—' }}</div>
+          <dl class="kv small" style="margin-top:6px">{% for k, val in w.map.items() %}<dt>{{ k }}</dt><dd>{{ val }}</dd>{% endfor %}</dl></div>{% endfor %}</div>
+      <div class="panel"><h2>Historical certificates <span class="muted small">{{ rel.historical_ssl|length }} VT · {{ rel.ct|length }} CT</span> {{ vt_status(rel.status.get('virustotal/historical_ssl_certificates')) }}</h2>
+        {% if rel.historical_ssl %}<div class="tw"><table class="compact"><tr><th>First seen</th><th>Subject</th><th>Issuer</th><th>Thumbprint</th></tr>
+          {% for hc in rel.historical_ssl %}<tr><td class="mono">{{ hc.first_seen or '—' }}</td><td class="mono small">{{ hc.subject_cn }}</td><td class="small">{{ hc.issuer }}</td><td class="mono small" style="word-break:break-all">{{ hc.thumbprint[:24] }}…</td></tr>{% endfor %}</table></div>{% endif %}
+        {% if rel.ct %}<h3 class="subh" style="margin-top:10px">CERTIFICATE TRANSPARENCY (crt.sh / CertSpotter) — the registrable domain and its subdomains</h3>
+          <div class="tw"><table class="compact"><tr><th>Not before</th><th>Names</th><th>Issuer</th></tr>
+          {% for hc in rel.ct[:40] %}<tr><td class="mono">{{ hc.not_before or '—' }}</td><td class="mono small">{{ hc.sans|join(', ') }}</td><td class="small">{{ hc.issuer }}</td></tr>{% endfor %}</table></div>{% endif %}
+      </div>
+    </div>
+  </div>
+  {% else %}{{ inv_empty("Every server hosting the site with its AbuseIPDB score and every other site on it, the urlscan.io scan with pages that share the same kit, passive DNS, subdomains, historical certificates and malware that contacted the domain.", can_write) }}{% endif %}
+</section>

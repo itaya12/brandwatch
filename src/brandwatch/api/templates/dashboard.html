@@ -1,0 +1,873 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+{% import "_macros.html" as m %}
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  .dash{position:relative}
+  .dash::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
+    background:repeating-linear-gradient(0deg,rgba(53,199,242,.025) 0 1px,transparent 1px 3px),radial-gradient(ellipse at 50% 20%,rgba(53,199,242,.10),transparent 60%)}
+  .dash > *{position:relative;z-index:1}
+  .dash .num{font-family:Rajdhani,var(--mono);font-weight:700;letter-spacing:.02em}
+  .mid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px;align-items:stretch}
+  @media (max-width:1100px){.mid{grid-template-columns:minmax(0,1fr)}}
+  @media (max-width:1250px) and (min-width:901px){.hero2{grid-template-columns:minmax(0,1fr)}.globe-wrap{min-height:460px}}
+  /* hero */
+  .hero2{display:grid;grid-template-columns:minmax(0,1.08fr) minmax(0,1fr);gap:18px;align-items:center;margin-bottom:14px}
+  .hero2 .globe-wrap{height:560px;min-height:0}
+  .hero-text{display:flex;flex-direction:column;justify-content:center;padding:18px 6px 18px 4px}
+  .eyebrow{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;font:600 11px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+  .eyebrow .demo{font-size:10px;color:var(--accent2);border-color:var(--accent);letter-spacing:.06em}
+  .headline{font-family:Rajdhani,var(--display);font-size:clamp(30px,3.3vw,46px);line-height:1.08;letter-spacing:.01em;font-weight:700;margin:12px 0 10px;color:var(--text);text-transform:none;display:block}
+  .headline::before{display:none}
+  .headline .hl{background:linear-gradient(90deg,var(--accent2),var(--accent));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .sub{font-size:15px;line-height:1.55;color:#c9d3df;max-width:640px;margin:0 0 18px}
+  .flow{position:relative;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin-bottom:18px}
+  .fstep{position:relative;display:flex;flex-direction:column;gap:2px;padding:12px 12px 12px;border:1px solid var(--border);border-radius:12px;background:linear-gradient(180deg,rgba(18,26,43,.95),rgba(12,18,30,.95));color:var(--text);text-decoration:none;transition:border-color .2s,transform .2s}
+  .fstep:hover{border-color:var(--accent);transform:translateY(-2px)}
+  .fstep:not(:last-of-type)::after{content:"›";position:absolute;right:-9px;top:50%;transform:translateY(-50%);z-index:2;color:var(--accent);font:700 18px var(--mono);text-shadow:0 0 8px var(--bg)}
+  .fstep .fn{font:600 10px var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--accent2)}
+  .fstep b{font-size:30px;line-height:1.05;margin-top:2px}
+  .fstep .fl{font-size:12.5px;font-weight:600}
+  .fstep .fd{font-size:11px;color:var(--muted);line-height:1.35;margin-top:2px}
+  .flow .packet{position:absolute;left:0;bottom:-6px;width:60px;height:2px;border-radius:2px;background:linear-gradient(90deg,transparent,var(--accent2),transparent);animation:packet 3.6s linear infinite}
+  @keyframes packet{from{left:0}to{left:calc(100% - 60px)}}
+  .cta{display:flex;flex-wrap:wrap;gap:10px}
+  .btn.big{padding:11px 16px;font-size:14px;border-radius:10px}
+  .btn.primary{background:rgba(53,199,242,.16);border-color:var(--accent);color:var(--accent2);font-weight:600}
+  .btn.ghost{background:transparent}
+  /* caught in the act */
+  .cases{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(340px,100%),1fr));gap:12px}
+  .case{display:flex;flex-direction:column;border:1px solid var(--border);border-radius:12px;overflow:hidden;background:var(--panel2);color:var(--text);text-decoration:none;transition:border-color .2s,transform .2s}
+  .case:hover{border-color:var(--accent);transform:translateY(-2px)}
+  .pair{position:relative;display:grid;grid-template-columns:1fr 1fr;gap:2px;background:#000}
+  .pair figure{margin:0;position:relative}
+  .pair img{display:block;width:100%;aspect-ratio:16/10;object-fit:cover}
+  .pair figcaption{position:absolute;left:6px;bottom:6px;font:600 10px var(--mono);letter-spacing:.06em;padding:2px 6px;border-radius:6px;background:rgba(6,9,16,.82);color:var(--text);max-width:calc(100% - 12px);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .pair figure:first-child figcaption b{color:var(--crit)}.pair figure:last-child figcaption b{color:var(--low)}
+  .pair .sim{position:absolute;left:50%;top:8px;transform:translateX(-50%);font:700 11px var(--mono);padding:3px 9px;border-radius:999px;background:rgba(6,9,16,.85);border:1px solid var(--accent);color:var(--accent2)}
+  .cmeta{padding:12px 14px;display:flex;flex-direction:column;gap:6px}
+  .cmeta .badges{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+  .cmeta .host{font-size:15px}
+  .cmeta p{margin:0;font-size:12.5px;line-height:1.5;color:#c9d3df;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+  .cmeta .open{font-size:12px;color:var(--accent2);margin-top:auto}
+  .kpi{position:relative;overflow:hidden}
+  .kpi::after{content:"";position:absolute;right:-30px;top:-30px;width:90px;height:90px;border-radius:50%;background:radial-gradient(circle,rgba(53,199,242,.07),transparent 70%)}
+  .kpi .v{font-size:34px;line-height:1}
+  .kpi.crit .v{color:var(--crit)}
+  .kpi.hi .v{color:var(--high)}
+  .kpi.ok .v,.kpi.cy .v{color:var(--text)}
+  .globe-wrap{position:relative;background:radial-gradient(ellipse at center,#0b1626 0%,#060910 70%);border:1px solid var(--border);border-radius:10px;overflow:hidden;min-height:520px}
+  .globe-wrap canvas{display:block}
+  .globe-hud,.globe-legend{z-index:2;pointer-events:none}
+  .globe-hud{position:absolute;left:14px;top:12px;font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent2)}
+  .globe-hud b{display:block;font-size:18px;letter-spacing:.06em;color:var(--text);font-family:Rajdhani}
+  .globe-legend{position:absolute;right:14px;bottom:12px;font-family:var(--mono);font-size:11px;color:var(--muted);text-align:right}
+  .globe-legend i{display:inline-block;width:8px;height:8px;border-radius:50%;margin-left:6px;vertical-align:middle}
+  /* globe and flat map share the box; the switch picks one */
+  .globe-wrap .gview{position:absolute;inset:0}
+  .globe-wrap .gview[hidden]{display:none}
+  .gswitch{position:absolute;left:12px;bottom:12px;z-index:3;display:flex;border:1px solid rgba(53,199,242,.4);border-radius:999px;overflow:hidden;background:rgba(6,10,18,.85)}
+  .gswitch button{border:0;border-radius:0;background:transparent;padding:6px 14px;font:600 11px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);cursor:pointer;box-shadow:none}
+  .gswitch button:hover{color:var(--text)}
+  .gswitch button.on{background:rgba(53,199,242,.18);color:var(--accent2)}
+  .gzoom{position:absolute;right:12px;top:50%;transform:translateY(-50%);z-index:3;display:flex;flex-direction:column;border:1px solid rgba(53,199,242,.4);border-radius:10px;overflow:hidden;background:rgba(6,10,18,.85)}
+  .gzoom button{border:0;border-radius:0;background:transparent;width:34px;height:32px;padding:0;font:600 16px/1 var(--mono);color:var(--accent2);cursor:pointer;box-shadow:none}
+  .gzoom button+button{border-top:1px solid rgba(53,199,242,.25)}
+  .gzoom button:hover{background:rgba(53,199,242,.15);color:var(--text)}
+  /* hover card for one attack on the globe */
+  .globe-wrap .gtip{position:absolute;z-index:4;pointer-events:none;width:max-content;min-width:220px;max-width:min(300px,calc(100% - 16px));padding:10px 12px;border-radius:10px;border:1px solid rgba(53,199,242,.45);background:rgba(8,12,22,.95);box-shadow:0 10px 30px rgba(0,0,0,.45);font-size:12.5px;color:var(--text);animation:fadeUp .18s both}
+  .globe-wrap .gtip[hidden]{display:none}
+  .gtip .gt-h{display:flex;align-items:center;gap:8px;font:600 13px var(--mono);overflow-wrap:anywhere}
+  .gtip .dot{width:9px;height:9px;border-radius:50%;flex:0 0 auto;box-shadow:0 0 8px currentColor}
+  .gtip .gt-r{margin-top:6px}
+  .gtip .sev{font:700 10px var(--mono);letter-spacing:.08em;padding:1px 6px;border-radius:999px;border:1px solid currentColor;margin-right:4px}
+  .gtip .sev.critical{color:var(--crit)}.gtip .sev.high{color:var(--high)}.gtip .sev.medium{color:var(--med)}.gtip .sev.low{color:var(--low)}
+  .gtip .gt-m{color:var(--muted);margin-top:3px;overflow-wrap:anywhere}
+  .gtip .gt-go{display:block;margin-top:8px;color:var(--accent2);font-weight:600}
+  .gtip .gt-list{list-style:none;margin:6px 0 0;padding:0;display:grid;gap:4px}
+  .gtip .gt-list li{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:6px;align-items:center;font-size:12px}
+  .gtip .gt-list .mono{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .gtip .gt-list .sc{color:var(--muted);font:11px var(--mono)}
+  .globe-legend .hint{display:block;margin-top:6px;color:var(--accent2)}
+  .globe-legend .hint.tap{display:none}
+  @media (max-width:600px){.globe-legend .hint.mouse{display:none}}
+  @media (hover:none){.globe-wrap .gtip{pointer-events:auto}.globe-legend .hint.mouse{display:none}.globe-legend .hint.tap{display:block}}
+  .pulse{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--crit);box-shadow:0 0 0 0 rgba(255,77,77,.7);animation:pulse 1.6s infinite}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(255,77,77,.7)}70%{box-shadow:0 0 0 10px rgba(255,77,77,0)}100%{box-shadow:0 0 0 0 rgba(255,77,77,0)}}
+  .feed{font-family:var(--mono);font-size:11.5px;height:470px;overflow:hidden;position:relative;mask-image:linear-gradient(180deg,#000 85%,transparent)}
+  .feed div{padding:5px 0;border-bottom:1px solid rgba(30,42,61,.6);animation:slidein .4s ease}
+  @keyframes slidein{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+  .feed .t{color:var(--muted)}.feed .s{color:var(--accent)}.feed .warn{color:var(--high)}.feed .error{color:var(--crit)}.feed .done,.feed .running{color:#c9d3df}
+  .bars{display:grid;gap:8px}.bars .row{display:grid;grid-template-columns:90px 1fr 46px;align-items:center;gap:10px;font-size:12px}
+  .bars .bar{height:10px}.bars .bar>i{transition:width 1.2s ease}
+  .hist{display:flex;align-items:flex-end;gap:4px;height:90px}.hist i{flex:1;background:linear-gradient(180deg,var(--accent2),rgba(53,199,242,.25));border-radius:3px 3px 0 0;position:relative;min-height:2px;transition:height 1.2s ease}
+  .hist i span{position:absolute;bottom:-18px;left:0;right:0;text-align:center;font-size:10px;color:var(--muted);font-family:var(--mono)}
+  .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px}
+  .step{background:var(--panel2);border:1px solid var(--border);border-radius:8px;padding:10px;position:relative}
+  .step .n{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent)}
+  .step .v{font-family:Rajdhani;font-size:22px;font-weight:700}
+  .step .d{font-size:11px;color:var(--muted)}
+  .meter{height:12px;background:#1E2A3D;border-radius:6px;overflow:hidden}.meter>i{display:block;height:100%;background:linear-gradient(90deg,var(--low),var(--med),var(--crit))}
+  svg.spark{width:100%;height:70px}
+  .status-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--low);margin-right:6px;box-shadow:0 0 8px var(--low)}
+  .status-dot.off{background:var(--muted);box-shadow:none}
+  @media (max-width:900px){
+    .hero2{grid-template-columns:minmax(0,1fr)}
+    .hero-text{padding:6px 0 0}
+    .flow{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .fstep:not(:last-of-type)::after{display:none}
+    .flow .packet{display:none}
+    .fstep:last-of-type{grid-column:1/-1}
+    .hero2 .globe-wrap{height:400px}
+    .globe-hud{left:12px;top:10px;font-size:10px;letter-spacing:.1em;right:12px}.globe-hud b{font-size:16px}
+    .globe-legend{font-size:10px}
+    .feed{height:340px}
+    .bars .row{grid-template-columns:70px 1fr 40px;gap:8px}
+    .kpi .v{font-size:28px}
+  }
+</style>
+<div class="dash">
+<div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:12px">
+  <h1 style="margin:0;font-family:Rajdhani;font-size:26px;letter-spacing:.04em">DASHBOARD <span class="muted small" style="font-family:var(--sans)">· BRAND MONITOR · {{ d.brand.name if d.brand else 'all brands' }} · updated <span id="updated">{{ d.generated_at[11:19] }}</span> UTC</span></h1>
+  <form method="get" action="/ui/dashboard" style="margin-left:auto;display:flex;gap:8px;align-items:center">
+    <select name="brand_id" onchange="this.form.submit()"><option value="">all brands</option>{% for b in brands %}<option value="{{ b.id }}" {{ 'selected' if selected_brand==b.id }}>{{ b.name }}</option>{% endfor %}</select>
+  </form>
+</div>
+
+{% set bq0 = '?brand_id=' ~ selected_brand if selected_brand else '' %}
+{% set bq = '&brand_id=' ~ selected_brand if selected_brand else '' %}
+{% set k = d.kpis %}
+{# ================================================================ hero: what this is, in 5-10 seconds #}
+<section class="hero2" id="hero">
+  <div class="hero-text">
+    <div class="eyebrow">{% if d.system.demo_mode %}<span class="pill demo">DEMO · $0 · recorded scenarios</span>{% endif %}<span>Brand protection · phishing detection · takedown</span></div>
+    <h2 class="headline">Finds the fake {% if d.hero_brand %}<span class="hl">{{ d.hero_brand }}</span> sites{% else %}sites impersonating <span class="hl">your brands</span>{% endif %} — and gets them taken down.</h2>
+    <p class="sub">{{ PAGE_INTROS.dashboard }}</p>
+    <div class="flow" id="how-strip" aria-label="What BrandWatch has done so far">
+      <a class="fstep" href="/ui/candidates{{ bq0 }}"><span class="fn">1 · Find</span><b class="num" data-count="{{ k.candidates_total }}">0</b><span class="fl">look-alike domains found</span><span class="fd">typos · new certificates · new domains · Google · Facebook &amp; Instagram ads</span></a>
+      <a class="fstep" href="/ui/findings{{ bq0 }}"><span class="fn">2 · Prove</span><b class="num" data-count="{{ (k.findings_open or 0) + (k.findings_confirmed or 0) }}">0</b><span class="fl">scored as phishing risk</span><span class="fd">visited in a sandbox · 42 signals · evidence kept</span></a>
+      <a class="fstep" href="/ui/findings?state=confirmed{{ bq }}"><span class="fn">3 · Decide</span><b class="num" data-count="{{ k.findings_confirmed }}">0</b><span class="fl">confirmed phishing</span><span class="fd">an analyst decides, with the evidence</span></a>
+      <a class="fstep" href="/ui/campaigns{{ bq0 }}"><span class="fn">4 · Map</span><b class="num" data-count="{{ k.campaigns }}">0</b><span class="fl">attacker network{{ 's' if k.campaigns != 1 }} mapped</span><span class="fd">{{ k.iocs }} indicators to block</span></a>
+      <a class="fstep" href="/ui/takedowns{{ bq0 }}"><span class="fn">5 · Take down</span><b class="num" data-count="{{ k.takedowns_sent }}">0</b><span class="fl">takedown{{ 's' if k.takedowns_sent != 1 }} sent</span><span class="fd">registrar · host · CDN + {{ REPORT_PORTAL_COUNT }} blocklists</span></a>
+      <i class="packet" aria-hidden="true"></i>
+    </div>
+    <div class="cta">
+      {% if k.findings_open %}<a class="btn primary big" href="/ui/findings?state=open{{ bq }}">Review {{ k.findings_open }} finding{{ 's' if k.findings_open != 1 }} awaiting your verdict →</a>{% endif %}
+      <a class="btn big" href="/ui/brands">▶ Start a scan</a>
+      <a class="btn big ghost" href="/ui/how-it-works">How it works · 2 min</a>
+    </div>
+  </div>
+  <div class="globe-wrap" id="globe">
+    <div class="globe-hud">{% if d.system.demo_mode %}<span class="pill" style="font-size:10px;color:var(--accent2);border-color:var(--accent);margin-right:6px">DEMO · $0</span>{% endif %}BrandWatch · live infrastructure map<b>{{ d.geo.points|length }} impersonating hosts · {{ d.geo.countries|length }} countries{% if d.geo.cdn_hidden %} · {{ d.geo.cdn_hidden }} behind a CDN{% endif %}</b>
+      <span class="muted">{% if d.geo.home %}arcs from {{ d.geo.home.label }} to where the kits are hosted{% else %}where the kits are hosted{% endif %}{% if d.geo.cdn_hidden %} · {{ d.geo.cdn_hidden }} site{{ 's' if d.geo.cdn_hidden != 1 }} sit{{ '' if d.geo.cdn_hidden != 1 else 's' }} behind a CDN (Cloudflare, CloudFront …): their real location is hidden, so they are not placed on the globe{% endif %}</span></div>
+    <div class="globe-legend">critical<i style="background:var(--crit)"></i><br>high<i style="background:var(--high)"></i><br>medium<i style="background:var(--med)"></i><br>confirmed<i style="background:var(--accent2)"></i><span class="hint mouse">scroll to zoom · hover an attack · click to open it</span><span class="hint tap">tap an attack · + − to zoom</span></div>
+  </div>
+
+</section>
+
+{% set todo = (d.kpis.findings_open or 0) + (d.kpis.confirmed_no_takedown or 0) + (d.kpis.takedowns_draft or 0) + (d.kpis.confirmed_unmapped or 0) %}
+{% if todo %}
+<div class="panel" style="margin-bottom:12px;border-color:rgba(255,159,28,.55);box-shadow:0 0 24px rgba(255,159,28,.12)" id="action-required">
+  <h2 style="margin-top:0;color:var(--high)">Action required <span class="muted">· {{ todo }} item(s) waiting for an analyst</span></h2>
+  <div class="actions" style="gap:10px">
+    {% if d.kpis.findings_open %}<a class="btn" href="/ui/findings?state=open{{ '&brand_id=' ~ selected_brand if selected_brand else '' }}"><b>{{ d.kpis.findings_open }}</b> finding(s) awaiting your verdict →</a>{% endif %}
+    {% if d.kpis.confirmed_no_takedown %}<a class="btn" href="/ui/takedowns?state=none{{ '&brand_id=' ~ selected_brand if selected_brand else '' }}" style="border-color:var(--crit);color:var(--crit)"><b>{{ d.kpis.confirmed_no_takedown }}</b> confirmed phishing site(s) with no takedown request →</a>{% endif %}
+    {% if d.kpis.takedowns_draft %}<a class="btn" href="/ui/takedowns?state=unsent{{ '&brand_id=' ~ selected_brand if selected_brand else '' }}"><b>{{ d.kpis.takedowns_draft }}</b> takedown draft(s) not sent yet →</a>{% endif %}
+    {% if d.kpis.confirmed_unmapped %}<a class="btn" href="/ui/campaigns?x=1{{ '&brand_id=' ~ selected_brand if selected_brand else '' }}"><b>{{ d.kpis.confirmed_unmapped }}</b> confirmed site(s) whose infrastructure is not mapped →</a>{% endif %}
+  </div>
+</div>
+{% endif %}
+
+{# ================================================================ proof: the fakes next to the real site #}
+{% if d.showcase %}
+<section class="panel" id="showcase" style="margin-top:14px">
+  <h2 style="margin-top:0">Caught in the act <span class="muted">· fakes BrandWatch found, next to the real site they copy</span></h2>
+  <div class="cases">
+    {% for c in d.showcase %}
+    <a class="case" href="/ui/findings/{{ c.id }}">
+      <div class="pair">
+        <figure><img src="{{ c.suspect_url }}" alt="screenshot of {{ c.hostname }}" loading="lazy"><figcaption><b>FAKE</b> {{ c.host_display }}</figcaption></figure>
+        {% if c.baseline_url %}<figure><img src="{{ c.baseline_url }}" alt="screenshot of the real {{ c.brand }}" loading="lazy"><figcaption><b>REAL</b> {{ c.brand }}</figcaption></figure>{% endif %}
+        {% if c.similarity %}<span class="sim">{{ c.similarity }}% alike</span>{% endif %}
+      </div>
+      <div class="cmeta">
+        <div class="badges"><span class="badge sev-{{ c.severity }}">{{ c.severity }} · {{ c.score }}</span>{{ m.cloaked_badge(c.cloaked) }}<span class="badge state">{{ c.state|state_label }}</span></div>
+        <div class="host mono">{{ m.host(c.hostname, c.host_display, c.is_idn) }}</div>
+        <p>{{ c.summary }}</p>
+        <span class="open">Open the evidence →</span>
+      </div>
+    </a>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+
+{# ================================================================ today, in numbers #}
+<div class="kpis" id="kpis" style="margin-top:14px">
+  <a class="kpi lnk crit" href="/ui/findings?severity=critical{{ bq }}"><div class="v num" data-k="critical_open" data-count="{{ k.critical_open }}">0</div><div class="l"><span class="pulse"></span> critical open</div></a>
+  <a class="kpi lnk hi" href="/ui/findings?severity=high{{ bq }}"><div class="v num" data-k="high_open" data-count="{{ k.high_open }}">0</div><div class="l">high open</div></a>
+  <a class="kpi lnk" href="/ui/findings?state=open{{ bq }}"><div class="v num" data-k="findings_open" data-count="{{ k.findings_open }}">0</div><div class="l">awaiting verdict</div></a>
+  <a class="kpi lnk" href="/ui/candidates?state=watching{{ bq }}"><div class="v num" data-k="candidates_watching" data-count="{{ k.candidates_watching }}">0</div><div class="l">on the watchlist</div></a>
+  <div class="kpi"><div class="v num" data-k="scans_today" data-count="{{ k.scans_today }}">0</div><div class="l">scans today</div></div>
+  <div class="kpi"><div class="v num" data-k="candidates_scanned_today" data-count="{{ k.candidates_scanned_today }}">0</div><div class="l">domains checked today</div></div>
+</div>
+
+<div class="mid" style="margin-top:14px">
+  <div class="panel">
+    <h2 style="margin-top:0">Threat level</h2>
+    <div class="bars">
+      {% for sev in ['critical','high','medium','low'] %}
+      {% set n = d.severity_distribution[sev] %}
+      {% set total = d.kpis.findings_open or 1 %}
+      <div class="row"><span class="badge sev-{{ sev }}">{{ sev }}</span><div class="bar"><i style="width:{{ (n / total * 100)|round|int }}%;background:var(--{{ {'critical':'crit','high':'high','medium':'med','low':'low'}[sev] }})"></i></div><span class="mono right">{{ n }}</span></div>
+      {% endfor %}
+    </div>
+    <h2>Risk score distribution <span class="muted">· current scores</span></h2>
+    <div class="hist" style="margin-bottom:26px">
+      {% set mx = d.score_histogram|max or 1 %}
+      {% for n in d.score_histogram %}<i style="height:{{ (n / mx * 100)|round|int }}%" title="{{ loop.index0*10 }}–{{ loop.index0*10+9 }}: {{ n }}"><span>{{ loop.index0*10 }}</span></i>{% endfor %}
+    </div>
+    <h2>Activity · 14 days <span class="muted">· scans (cyan) and new findings (red)</span></h2>
+    <svg class="spark" viewBox="0 0 280 70" preserveAspectRatio="none" id="spark"></svg>
+    <h2>Discovery sources <span class="muted">· findings / domains found by each stream</span></h2>
+    <div class="bars">
+      {% for s in d.source_effectiveness %}
+      {% set mx = (d.source_effectiveness|map(attribute='candidates')|max) or 1 %}
+      <div class="row"><span class="small" title="{{ s.source }}">{{ s.source|stream_label }}</span><div class="bar"><i style="width:{{ (s.candidates / mx * 100)|round|int }}%"></i></div><span class="mono right small">{{ s.findings }}/{{ s.candidates }}</span></div>
+      {% endfor %}
+      {% if not d.source_effectiveness %}<span class="muted small">no scans yet</span>{% endif %}
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2 style="margin-top:0"><span class="status-dot"></span>Live feed</h2>
+    <div class="feed" id="feed"></div>
+    <h2>Recent criticals</h2>
+    {% for f in d.recent_criticals[:5] %}
+    <div class="small" style="padding:6px 0;border-bottom:1px solid var(--border)"><span class="badge sev-{{ f.severity }}">{{ f.severity }}</span> {{ m.cloaked_badge(f.cloaked) }} <a href="/ui/findings/{{ f.id }}">{{ m.host(f.hostname, f.host_display, f.is_idn) }}</a> <span class="muted">{{ f.score }} · {{ f.state|state_label }}</span>
+      {% if f.signal_items %}<div style="margin-top:3px">{{ m.pills(f.signal_items, 3) }}</div>{% endif %}</div>
+    {% endfor %}
+    {% if not d.recent_criticals %}<p class="muted small">No high/critical findings.</p>{% endif %}
+  </div>
+</div>
+
+<div class="panel" style="margin-top:14px">
+  <h2 style="margin-top:0">What the system does <span class="muted">· each stage in the order it runs, with its run statistics</span></h2>
+  <div class="steps">
+    {% set names = {'baseline':'Brand baseline','discovery':'Discovery','normalize_dedup_prefilter':'Normalize · dedup · pre-filter','enrichment_analysis_scoring':'Evidence · signals · scoring','investigation':'Infrastructure pivoting','noop':'Health check'} %}
+    {% set descs = {'baseline':'fingerprint the official site: favicon, screenshot, login form, keywords','discovery':'dnstwist permutations, certificate transparency, NRD feed, search, urlscan','normalize_dedup_prefilter':'one candidate per URL, N sources; whitelist drops own domains','enrichment_analysis_scoring':'DNS · HTTP · WHOIS · favicon · screenshot · reputation → 42 signals → risk + confidence','investigation':'reverse IP, certs, favicon hash, tracking ids → campaign graph with triage','noop':'job model self-test'} %}
+    {% for p in d.pipeline %}
+    <div class="step"><div class="n">{{ names.get(p.stage, p.stage) }}</div><div class="d" style="color:var(--text);margin:4px 0 6px">{{ descs.get(p.stage, '') }}</div>
+      <div class="d mono">{{ p.runs }} runs · {{ p.hits }} hits · {{ p.api_calls }} API calls · avg {{ p.avg_ms }} ms</div></div>
+    {% endfor %}
+    <div class="step"><div class="n">Cloaking probes</div><div class="d" style="color:var(--text);margin:4px 0 6px">kits that hide from scanners are fetched as a bot, a victim link, a search visitor and a home IP (Tier 3/4)</div></div>
+    <div class="step"><div class="n">Advisory AI &amp; classifier</div><div class="d" style="color:var(--text);margin:4px 0 6px">a second opinion on Medium+ findings and on co-hosted sites — shown for context, never part of the score</div></div>
+    <div class="step"><div class="n">Response</div><div class="d" style="color:var(--text);margin:4px 0 6px">evidence package, takedown to registrar · host · CDN, {{ REPORT_PORTAL_COUNT }} report portals, IOC export as STIX 2.1</div></div>
+    {% if not d.pipeline %}<div class="step"><div class="n">pipeline</div><div class="d">Run a scan from <a href="/ui/brands">Brands &amp; Scans</a> to light this up.</div></div>{% endif %}
+  </div>
+</div>
+
+<div class="grid two" style="margin-top:14px">
+  <div class="panel">
+    <h2 style="margin-top:0">Analyst metrics</h2>
+    <p class="small muted" style="margin:0 0 6px">From the verdicts analysts recorded here. Separately, the regression suite scores 1.00 / 1.00 / 0.00 (precision / recall / FP rate) on the recorded golden scenarios — <a href="/ui/settings#quality">detection quality</a>.</p>
+    <table class="small">
+      <tr><th>Labelled findings</th><td class="right mono">{{ d.metrics.labels }}</td></tr>
+      <tr><th>Precision <span class="muted">(from {{ d.metrics.labels }} analyst verdict{{ 's' if d.metrics.labels != 1 }})</span></th><td class="right mono">{{ d.metrics.precision if d.metrics.precision is not none else '—' }}</td></tr>
+      <tr><th>False-positive rate</th><td class="right mono">{{ d.metrics.fp_rate if d.metrics.fp_rate is not none else '—' }}</td></tr>
+      <tr><th title="mean time to detect">Time to detect <span class="muted">(hours after the domain was registered)</span></th><td class="right mono">{{ d.metrics.mttd_hours if d.metrics.mttd_hours is not none else '—' }}</td></tr>
+      <tr><th title="mean time to confirm">Time to confirm <span class="muted">(hours from finding to verdict)</span></th><td class="right mono">{{ d.metrics.mttc_hours if d.metrics.mttc_hours is not none else '—' }}</td></tr>
+    </table>
+  </div>
+  <div class="panel">
+    <h2 style="margin-top:0">Watchlist {{ term('candidate') }} <span class="muted">· domains being observed, by state</span></h2>
+    {% set wl = d.watchlist.items()|rejectattr('0', 'equalto', 'analyzing')|list %}{% set wmax = (wl|map(attribute='1')|max) if wl else 1 %}
+    {% for k, v in wl %}
+    <a href="/ui/candidates?state={{ k }}{{ '&brand_id=' ~ selected_brand if selected_brand else '' }}" title="{{ STATE_HELP.get(k, '') }}" style="display:grid;grid-template-columns:130px 1fr 40px;gap:10px;align-items:center;margin:8px 0;color:var(--text);font-size:13px">
+      <span>{{ k|state_label }}</span><span class="bar" style="height:6px"><i data-w="{{ ((v / (wmax or 1)) * 100)|round|int }}" style="{{ 'background:var(--muted)' if k == 'dismissed' else '' }}"></i></span><b class="mono" style="font-weight:400;color:var(--muted);text-align:right">{{ v }}</b></a>
+    {% endfor %}
+    <p class="small muted" style="margin-bottom:0">Domains below the finding threshold are re-checked on a schedule; a parked domain that grows a login form jumps to the front.</p>
+  </div>
+</div>
+<details class="panel" style="margin-top:14px" id="under-the-hood">
+  <summary style="cursor:pointer"><b>Under the hood</b> <span class="muted small">· mode, providers, queue, budget — and what each one means</span></summary>
+  <div class="grid three" style="margin-top:12px">
+  <div class="panel">
+    <h2 style="margin-top:0">System status</h2>
+    <table class="small">
+      <tr><th>Mode</th><td>{{ 'DEMO (recorded scenarios, $0)' if d.system.demo_mode else 'LIVE' }}<div class="muted" style="font-size:11px">{{ 'recorded scenarios, deterministic, $0; in live mode the same code calls VirusTotal, crt.sh, Google and a sandboxed Chromium' if d.system.demo_mode else 'real providers, paced and budgeted' }}</div></td></tr>
+      <tr><th>Queue</th><td class="mono">{{ d.system.queue_backend }}</td></tr>
+      <tr><th>Scheduler</th><td><span class="status-dot {{ '' if d.system.scheduler=='running' else 'off' }}"></span>{{ d.system.scheduler }}<div class="muted" style="font-size:11px">{{ 'off in demo; in production it re-checks the watchlist on cadence' if d.system.scheduler != 'running' else 're-checks the watchlist on cadence' }}</div></td></tr>
+      <tr><th>Notifications</th><td class="mono">{{ d.system.notify_channels|join(', ') }}</td></tr>
+      <tr><th>Browser worker</th><td class="mono">{{ d.system.providers.browser|join(' → ') }}</td></tr>
+      <tr><th>Reputation</th><td class="mono small">{{ d.system.providers.reputation|join(' → ') }}<div class="muted" style="font-size:11px;font-family:var(--sans)">fallback chain: if one fails after retries the next answers; unknown is never clean</div></td></tr>
+    </table>
+  </div>
+  <div class="panel">
+    <h2 style="margin-top:0">Budget meter</h2>
+    <p class="small muted" style="margin:0 0 8px">Checked before every provider call over the trailing 24 h: a scan stops spending, never overspends.</p>
+    {% set b = d.system.budget %}
+    <div class="small muted">Spend today</div>
+    <div class="meter"><i style="width:{{ ((b.spent_today / b.max_daily_spend * 100) if b.max_daily_spend else 0)|round|int }}%"></i></div>
+    <div class="mono small" style="margin:4px 0 12px">${{ '%.4f'|format(b.spent_today) }} / {{ ('$%.2f'|format(b.max_daily_spend)) if b.max_daily_spend else 'no daily cap set (0 = unlimited)' }}</div>
+    <div class="small muted">API calls today</div>
+    <div class="meter"><i style="width:{{ ((b.api_calls_today / b.max_api_calls * 100) if b.max_api_calls else 0)|round|int }}%"></i></div>
+    <div class="mono small" style="margin-top:4px">{{ b.api_calls_today }} / {{ b.max_api_calls }}</div>
+  </div>
+    <div class="panel">
+      <h2 style="margin-top:0">Evidence &amp; indicators</h2>
+      <div class="kpis" style="grid-template-columns:repeat(2,minmax(0,1fr))">
+        <div class="kpi"><div class="v num" data-count="{{ d.kpis.evidence_rows }}">0</div><div class="l">immutable evidence rows</div></div>
+        <div class="kpi"><div class="v num" data-count="{{ d.kpis.iocs }}">0</div><div class="l">IOCs extracted</div></div>
+      </div>
+      <p class="small muted">Evidence tables are append-only: the database rejects UPDATE and DELETE. IOCs export as CSV, JSON or STIX 2.1.</p>
+    </div>
+  </div>
+</details>
+</div>
+
+<script src="https://unpkg.com/globe.gl@2.33.2/dist/globe.gl.min.js" onerror="window.__globeFailed=true"></script>
+<script>
+(function(){
+  const data = {{ d.geo|tojson }};
+  const brandId = {{ (d.brand.id if d.brand else '')|tojson }};
+  const sevColor = {critical:'#FF4D4D', high:'#FF9F1C', medium:'#F5C518', low:'#2ECC71'};
+  const color = p => p.state === 'confirmed' ? '#5FE3FF' : (sevColor[p.severity] || '#35C7F2');
+
+  // count-up KPIs are handled by the shared motion layer in base.html
+
+  // ---- sparkline (scans + findings per day)
+  const days = {{ d.scans_per_day|tojson }};
+  const svg = document.getElementById('spark');
+  const mx = Math.max(1, ...days.map(x => Math.max(x.jobs, x.findings)));
+  const pts = key => days.map((x, i) => `${(i / (days.length - 1)) * 280},${68 - (x[key] / mx) * 60}`).join(' ');
+  svg.innerHTML = `<polyline fill="none" stroke="#35C7F2" stroke-width="2" points="${pts('jobs')}"/><polyline fill="none" stroke="#FF4D4D" stroke-width="2" points="${pts('findings')}"/>` +
+    days.map((x, i) => `<circle cx="${(i / (days.length - 1)) * 280}" cy="${68 - (x.jobs / mx) * 60}" r="2" fill="#5FE3FF"><title>${x.date}: ${x.jobs} scans, ${x.findings} findings</title></circle>`).join('');
+
+  // ---- live feed
+  const feed = document.getElementById('feed'); let lastKey = '';
+  const esc = s => String(s).replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+  async function pollFeed(){
+    try {
+      const r = await fetch(`/api/dashboard/feed?limit=24${brandId ? '&brand_id=' + brandId : ''}`, {credentials:'same-origin'});
+      if (r.ok) {
+        const rows = await r.json();
+        const key = rows.length ? rows[0].at + rows[0].message : '';
+        if (key !== lastKey) {
+          lastKey = key;
+          if (!rows.length) { feed.innerHTML = '<div class="t" style="white-space:normal">Nothing running. Press <b>START SCAN</b> on a brand to watch the pipeline think out loud.</div>'; }
+          else feed.innerHTML = rows.map(e => `<div class="${e.level === 'error' ? 'error' : (e.level === 'warn' ? 'warn' : e.status)}"><span class="t">${e.at.slice(11,19)}</span> <span class="s">${esc(e.brand || '')}·${esc(e.stage)}</span> ${esc(e.message)}</div>`).join('');
+        }
+      }
+    } catch (e) {}
+    setTimeout(pollFeed, 2500);
+  }
+  pollFeed();
+
+  // ---- globe (globe.gl if the CDN loaded, else a hand-drawn canvas globe)
+  const el = document.getElementById('globe');
+  // size from the real box (the hero grid stretches it to the tallest column), never from a breakpoint guess
+  const phone = window.matchMedia('(max-width: 900px)').matches;
+  const W = el.clientWidth || 700, H = phone ? 400 : Math.max(520, el.clientHeight || 520);
+  // camera altitude that makes the globe ~78% of the box's smaller side (globe.gl: 50° vertical fov)
+  const fitAltitude = (w, h) => { const f = Math.min(0.92, 0.78 * Math.min(w, h) / h); return 1 / Math.sin(Math.atan(f * Math.tan(25 * Math.PI / 180))) - 1; };
+  const points = data.points, home = data.home;
+
+  // Two views of the same attacks, one switch (the flat map by default):
+  //   map   — neon coastlines, routes from the brand's home with travelling packets, a hexagon where
+  //           each attack is hosted; nearby attacks merge into one marker with a count; wheel / buttons
+  //           zoom, drag moves the zoomed map.
+  //   globe — turns on its own; dragging turns it by hand; wheel / buttons zoom.
+  // Hover shows the attack (or the list behind a merged marker); a click opens it (or zooms in).
+  // Hostnames, cities and orgs come from attacker data: always escaped.
+  const h = v => String(v ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const rgba = (hex, a) => { const n = parseInt(String(hex).slice(1), 16); return `rgba(${n >> 16},${(n >> 8) & 255},${n & 255},${a})`; };
+  const KIND = {shop: 'Suspicious shop', phishing: 'Phishing site'};
+  const SEV = {critical: 3, high: 2, medium: 1, low: 0};
+  const sevTag = s => `<span class="sev ${h(s)}">${h(String(s || '').toUpperCase())}</span>`;
+  const touch = window.matchMedia('(hover: none)').matches;
+  const tip = document.createElement('div'); tip.className = 'gtip'; tip.hidden = true;
+  let hovered = null, mouse = {x: 0, y: 0}, refresh = () => {}, onHoverChange = () => {}, mode = 'map';
+  function placeTip(){
+    if (tip.hidden) return;
+    const r = el.getBoundingClientRect(), tw = tip.offsetWidth, th = tip.offsetHeight;
+    let x = mouse.x + 16, y = mouse.y + 16;
+    if (x + tw > r.width - 8) x = mouse.x - tw - 16;
+    if (y + th > r.height - 8) y = mouse.y - th - 16;
+    tip.style.left = Math.max(8, Math.min(x, r.width - tw - 8)) + 'px'; tip.style.top = Math.max(8, y) + 'px';
+  }
+  function showTip(p){
+    if (p === hovered) return;
+    hovered = p || null;
+    if (!p) { tip.hidden = true; el.style.cursor = ''; refresh(); onHoverChange(); return; }
+    if (p.cluster) {  // a merged marker: the attacks behind it
+      const rows = p.members.slice(0, 6).map(m => `<li>${sevTag(m.severity)}<span class="mono">${h(m.hostname)}</span><span class="sc">${h(m.score ?? '–')}</span></li>`).join('');
+      tip.innerHTML = `<div class="gt-h"><span class="dot" style="background:${p.col}"></span><b>${p.members.length} attacks in this area</b></div>
+        <ul class="gt-list">${rows}</ul>${p.members.length > 6 ? `<div class="gt-m">+ ${p.members.length - 6} more</div>` : ''}
+        <div class="gt-go">${touch ? 'tap again to zoom in' : 'click to zoom in and see each one →'}</div>`;
+      el.style.cursor = 'zoom-in';
+    } else {
+      const where = [p.city, p.country].filter(Boolean).join(', ') || 'location unknown';
+      tip.innerHTML = `<div class="gt-h"><span class="dot" style="background:${color(p)}"></span><b>${h(p.hostname)}</b></div>
+        <div class="gt-r">${sevTag(p.severity)} ${h(KIND[p.kind] || KIND.phishing)} · score ${h(p.score ?? '–')}${p.state === 'confirmed' ? ' · <span style="color:#5FE3FF">confirmed</span>' : ''}</div>
+        <div class="gt-m">${h(where)} · <span class="mono">${h(p.ip)}</span></div>${p.org ? `<div class="gt-m">hosted by ${h(p.org)}</div>` : ''}
+        ${p.finding_id ? `<a class="gt-go" href="/ui/findings/${h(p.finding_id)}">${touch ? 'open the finding →' : 'click to open the finding →'}</a>` : ''}`;
+      el.style.cursor = p.finding_id ? 'pointer' : '';
+    }
+    tip.hidden = false; placeTip(); refresh(); onHoverChange();
+  }
+  let zoomInto = null;
+  const open = (p, ev) => {
+    if (!p) return;
+    if (touch && hovered !== p) { showTip(p); return; }  // phones: first tap shows it, the second acts
+    if (p.cluster) { if (zoomInto) zoomInto(p); return; }
+    if (!p.finding_id) return;
+    const url = '/ui/findings/' + p.finding_id;
+    if (ev && (ev.ctrlKey || ev.metaKey)) window.open(url, '_blank', 'noopener'); else window.location = url;
+  };
+  // hover = the attack nearest the pointer on screen, else the globe arc under it; a short grace
+  // period stops the card flickering while the pointer crosses a gap
+  let nearest = () => null, nearHover = null, arcHover = null, hideTimer = null;
+  function syncHover(){
+    const p = nearHover || arcHover;
+    clearTimeout(hideTimer);
+    if (p) showTip(p); else hideTimer = setTimeout(() => { if (!(nearHover || arcHover)) showTip(null); }, 160);
+  }
+  el.addEventListener('mousemove', ev => {
+    const r = el.getBoundingClientRect(); mouse = {x: ev.clientX - r.left, y: ev.clientY - r.top};
+    if (ev.buttons) return;  // dragging the map / globe, not pointing at something
+    nearHover = nearest(mouse.x, mouse.y); syncHover(); placeTip();
+  });
+  el.addEventListener('mouseleave', () => { nearHover = arcHover = null; clearTimeout(hideTimer); showTip(null); });
+  let down = null;
+  el.addEventListener('pointerdown', ev => { down = {x: ev.clientX, y: ev.clientY}; });
+  el.addEventListener('click', ev => {
+    if (ev.target.closest && ev.target.closest('.gtip a')) return;  // the card's own link
+    if (down && Math.hypot(ev.clientX - down.x, ev.clientY - down.y) > 6) return;  // the end of a drag, not a click
+    const r = el.getBoundingClientRect();
+    open(hovered || nearest(ev.clientX - r.left, ev.clientY - r.top), ev);
+  });
+  const dim = p => hovered !== null && hovered !== p;
+
+  // ---------------------------------------------------------------------------------------- globe
+  let globeZoom = null;
+  function globeGl(){
+    const arcs = home ? points.flatMap((p, i) => [
+      {startLat: home.lat, startLng: home.lon, endLat: p.lat, endLng: p.lon, p, trace: 'line'},
+      {startLat: home.lat, startLng: home.lon, endLat: p.lat, endLng: p.lon, p, trace: 'pulse', phase: (i * 0.53) % 1.6},
+    ]) : [];
+    const arcColor = d => d.trace === 'pulse'
+      ? [rgba(color(d.p), dim(d.p) ? 0.05 : 0.55), rgba('#FFFFFF', dim(d.p) ? 0.1 : 1)]
+      : [rgba('#5FE3FF', dim(d.p) ? 0.04 : 0.28), rgba(color(d.p), dim(d.p) ? 0.08 : (hovered === d.p ? 1 : 0.7))];
+    const arcStroke = d => d.trace === 'pulse' ? 0.95 : 0.36;
+    const pointColor = d => d.p && dim(d.p) ? rgba(d.color, 0.3) : (d.p && hovered === d.p ? '#FFFFFF' : d.color);
+    const labelColor = d => dim(d.p) ? rgba(d.color, 0.25) : d.color;
+    const g = Globe()(view3d).width(W).height(H)
+      .globeImageUrl('https://unpkg.com/three-globe/example/img/earth-night.jpg')
+      .bumpImageUrl('https://unpkg.com/three-globe/example/img/earth-topology.png')
+      .backgroundColor('rgba(0,0,0,0)').showAtmosphere(true).atmosphereColor('#35C7F2').atmosphereAltitude(0.2)
+      .arcsData(arcs).arcColor(arcColor).arcStroke(arcStroke).arcAltitudeAutoScale(0.42)
+      .arcDashLength(d => d.trace === 'pulse' ? 0.1 : 1).arcDashGap(d => d.trace === 'pulse' ? 1.5 : 0)
+      .arcDashInitialGap(d => d.trace === 'pulse' ? d.phase : 0).arcDashAnimateTime(d => d.trace === 'pulse' ? 2800 : 0)
+      .arcLabel(() => '').onArcHover(d => { arcHover = d ? d.p : null; syncHover(); })
+      .pointsData([...(home ? [{lat: home.lat, lng: home.lon, color: '#5FE3FF', r: 0.55, p: null}] : []),
+                   ...points.map(p => ({lat: p.lat, lng: p.lon, color: color(p), r: p.severity === 'critical' ? 0.5 : 0.36, p}))])
+      .pointColor(pointColor).pointAltitude(0.012).pointRadius('r').pointLabel(() => '')
+      // where an attack lands: a ring in its severity colour (critical ones faster and wider)
+      .ringsData(points.map(p => ({lat: p.lat, lng: p.lon, p})))
+      .ringColor(d => t => rgba(color(d.p), (1 - t) * (dim(d.p) ? 0.15 : 0.85)))
+      .ringMaxRadius(d => d.p.severity === 'critical' ? 4.5 : 2.6).ringPropagationSpeed(d => d.p.severity === 'critical' ? 2.2 : 1.2)
+      .ringRepeatPeriod(d => d.p.severity === 'critical' ? 1100 : 2400)
+      .labelsData(points.slice(0, 12).map(p => ({lat: p.lat, lng: p.lon, text: p.hostname, color: color(p), p})))
+      .labelText('text').labelColor(labelColor).labelSize(0.9).labelDotRadius(0.25).labelAltitude(0.015).labelResolution(2)
+      .labelLabel(() => '');
+    refresh = () => { g.arcColor(d => arcColor(d)).pointColor(d => pointColor(d)).labelColor(d => labelColor(d)); };
+    nearest = (x, y) => {  // the closest attack on the side of the globe that faces the camera
+      const cam = g.camera().position, R2 = Math.pow(g.getGlobeRadius(), 2);
+      let best = null, bd = 16;
+      for (const p of points) {
+        const w = g.getCoords(p.lat, p.lon, 0.012);
+        if (w.x * cam.x + w.y * cam.y + w.z * cam.z <= R2) continue;
+        const sc = g.getScreenCoords(p.lat, p.lon, 0.012), d = Math.hypot(sc.x - x, sc.y - y);
+        if (d < bd) { bd = d; best = p; }
+      }
+      return best;
+    };
+    // it always turns on its own; it stops while you turn it by hand (and a moment after), and while
+    // the mouse is on an attack so the attack can be clicked
+    const ctl = g.controls(); ctl.autoRotateSpeed = 0.55; ctl.enableZoom = true; ctl.zoomSpeed = 0.8;
+    const fit = fitAltitude(W, H), R = g.getGlobeRadius();
+    ctl.minDistance = R * 1.35; ctl.maxDistance = R * (1 + fit * 1.9);
+    let handling = false, resume = null;
+    const setRot = () => { ctl.autoRotate = !handling && !(hovered && !hovered.cluster); };
+    ctl.addEventListener('start', () => { handling = true; clearTimeout(resume); setRot(); });
+    ctl.addEventListener('end', () => { clearTimeout(resume); resume = setTimeout(() => { handling = false; setRot(); }, 1500); });
+    onHoverChange = setRot; setRot();
+    // look at the middle of the action: between the home point and where the kits are hosted
+    const kitLon = points.length ? points.reduce((a, p) => a + p.lon, 0) / points.length : 0;
+    const viewLon = home ? (home.lon + kitLon) / 2 : kitLon;
+    g.pointOfView({lat: 30, lng: viewLon, altitude: fit}, 0);
+    globeZoom = {
+      zoom(f){ const pov = g.pointOfView(), lo = ctl.minDistance / R - 1, hi = ctl.maxDistance / R - 1;
+               g.pointOfView({...pov, altitude: Math.max(lo, Math.min(hi, pov.altitude / f))}, 350); },
+      reset(){ g.pointOfView({lat: 30, lng: viewLon, altitude: fitAltitude(el.clientWidth || W, el.clientHeight || H)}, 600); },
+    };
+    // keep filling the box when the window or the grid around it changes size
+    if (window.ResizeObserver) {
+      let last = W + 'x' + H;
+      new ResizeObserver(() => {
+        const w = el.clientWidth, hh = window.matchMedia('(max-width: 900px)').matches ? 400 : Math.max(520, el.clientHeight);
+        if (!w || !hh || last === w + 'x' + hh) return; last = w + 'x' + hh;
+        g.width(w).height(hh); g.pointOfView({altitude: fitAltitude(w, hh)}, 400);
+      }).observe(el);
+    }
+    el.__globe = g;
+    globeCtl = {pause: () => g.pauseAnimation(), resume: () => g.resumeAnimation()};
+  }
+
+  function canvasGlobe(){
+    const c = document.createElement('canvas'); c.width = W; c.height = H; view3d.appendChild(c);
+    const ctx = c.getContext('2d'), cx = W / 2, cy = H / 2; let rot = 0, z = 1;
+    const hits = [];
+    const R = () => Math.min(W, H) * 0.36 * z;
+    const proj = (lat, lon) => { const la = lat * Math.PI/180, lo = (lon + rot) * Math.PI/180; const x = Math.cos(la) * Math.sin(lo), y = Math.sin(la), zz = Math.cos(la) * Math.cos(lo); return {x: cx + R() * x, y: cy - R() * y, z: zz}; };
+    const at = (a, m, b, s) => ({x: (1-s)*(1-s)*a.x + 2*(1-s)*s*m.x + s*s*b.x, y: (1-s)*(1-s)*a.y + 2*(1-s)*s*m.y + s*s*b.y});
+    c.addEventListener('wheel', ev => { ev.preventDefault(); z = Math.max(0.7, Math.min(2.6, z * Math.exp(-ev.deltaY * 0.0015))); }, {passive: false});
+    globeZoom = {zoom(f){ z = Math.max(0.7, Math.min(2.6, z * f)); }, reset(){ z = 1; }};
+    nearest = (x, y) => {
+      const r = c.getBoundingClientRect(), sx = x * (c.width / r.width), sy = y * (c.height / r.height);
+      let best = null, bd = 16;
+      for (const t of hits) { const d = Math.hypot(t.x - sx, t.y - sy); if (d < bd) { bd = d; best = t.p; } }
+      return best;
+    };
+    function frame(now){
+      if (view3d.hidden) { requestAnimationFrame(frame); return; }  // the map is shown instead
+      if (!(hovered && !hovered.cluster)) rot += 0.25;  // turns on its own, except while an attack is pointed at
+      const RR = R();
+      ctx.clearRect(0, 0, W, H); hits.length = 0;
+      const grd = ctx.createRadialGradient(cx - RR*0.3, cy - RR*0.3, RR*0.2, cx, cy, RR*1.15); grd.addColorStop(0, '#0f2238'); grd.addColorStop(1, '#060910');
+      ctx.fillStyle = grd; ctx.beginPath(); ctx.arc(cx, cy, RR, 0, Math.PI*2); ctx.fill();
+      ctx.strokeStyle = 'rgba(53,199,242,.9)'; ctx.lineWidth = 1.2; ctx.shadowColor = '#35C7F2'; ctx.shadowBlur = 18; ctx.stroke(); ctx.shadowBlur = 0;
+      ctx.strokeStyle = 'rgba(53,199,242,.18)'; ctx.lineWidth = 1;
+      for (let lat = -60; lat <= 60; lat += 30) { ctx.beginPath(); for (let lon = -180; lon <= 180; lon += 4) { const p = proj(lat, lon); if (p.z < 0) { ctx.moveTo(p.x, p.y); continue; } ctx.lineTo(p.x, p.y); } ctx.stroke(); }
+      for (let lon = -180; lon < 180; lon += 30) { ctx.beginPath(); for (let lat = -90; lat <= 90; lat += 4) { const p = proj(lat, lon); if (p.z < 0) { ctx.moveTo(p.x, p.y); continue; } ctx.lineTo(p.x, p.y); } ctx.stroke(); }
+      const hp = home ? proj(home.lat, home.lon) : null;
+      points.forEach((p, i) => {
+        const t = proj(p.lat, p.lon), col = color(p), faded = dim(p);
+        ctx.globalAlpha = faded ? 0.18 : 1;
+        if (hp && !(hp.z < 0 && t.z < 0)) {
+          const m = {x: (hp.x + t.x) / 2 + (cy - (hp.y + t.y) / 2) * 0.35, y: (hp.y + t.y) / 2 - RR * 0.45};
+          const lg = ctx.createLinearGradient(hp.x, hp.y, t.x, t.y); lg.addColorStop(0, 'rgba(95,227,255,.25)'); lg.addColorStop(1, rgba(col, hovered === p ? 1 : 0.75));
+          ctx.strokeStyle = lg; ctx.lineWidth = hovered === p ? 2.4 : 1.3;
+          ctx.beginPath(); ctx.moveTo(hp.x, hp.y); ctx.quadraticCurveTo(m.x, m.y, t.x, t.y); ctx.stroke();
+          const s = ((now || 0) / 2800 + i * 0.53) % 1.6;
+          if (s <= 1) { const q = at(hp, m, t, s); ctx.fillStyle = '#fff'; ctx.shadowColor = col; ctx.shadowBlur = 12; ctx.beginPath(); ctx.arc(q.x, q.y, 2.4, 0, Math.PI*2); ctx.fill(); ctx.shadowBlur = 0; }
+        }
+        if (t.z >= 0) {
+          const ring = ((now || 0) / (p.severity === 'critical' ? 1100 : 2400) + i * 0.3) % 1;
+          ctx.strokeStyle = rgba(col, (1 - ring) * 0.8); ctx.lineWidth = 1.2; ctx.beginPath(); ctx.arc(t.x, t.y, 4 + ring * (p.severity === 'critical' ? 16 : 10), 0, Math.PI*2); ctx.stroke();
+          ctx.fillStyle = col; ctx.beginPath(); ctx.arc(t.x, t.y, (p.severity === 'critical' ? 4.5 : 3) * (hovered === p ? 1.6 : 1), 0, Math.PI*2); ctx.fill();
+          ctx.fillStyle = 'rgba(230,237,245,.85)'; ctx.font = '11px JetBrains Mono, monospace'; ctx.fillText(p.hostname, t.x + 7, t.y + 4);
+          hits.push({x: t.x, y: t.y, p});
+        }
+        ctx.globalAlpha = 1;
+      });
+      if (hp && hp.z >= 0) { ctx.fillStyle = '#5FE3FF'; ctx.beginPath(); ctx.arc(hp.x, hp.y, 5, 0, Math.PI*2); ctx.fill(); ctx.font = '11px JetBrains Mono, monospace'; ctx.fillText(home.label, hp.x + 8, hp.y - 6); }
+      requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
+  }
+
+  // ------------------------------------------------------------------------------------- flat map
+  function flatMap(box){
+    const c = document.createElement('canvas'); box.appendChild(c);
+    const ctx = c.getContext('2d'), base = document.createElement('canvas'), bctx = base.getContext('2d');
+    const GREEN = '#2EE6A6', LAT_TOP = 78, LAT_BOT = -56, KMAX = 8, MERGE = 24;
+    const miller = lat => 1.25 * Math.log(Math.tan(Math.PI / 4 + 0.4 * lat * Math.PI / 180));
+    let w = 0, hgt = 0, dpr = 1, proj = null, rings = null, coast = null, nodes = [], hqB = null, area = null;
+    let raf = 0, running = false, k = 1, tx = 0, ty = 0, dirty = true, anim = null, clusters = [], labels = [];
+    fetch('/ui/assets/world-land.json').then(r => r.ok ? r.json() : null).then(j => { if (j) { rings = j.rings; coast = null; dirty = true; } }).catch(() => {});
+    const S = (x, y) => [x * k + tx, y * k + ty];
+
+    function layout(){
+      w = el.clientWidth || W; hgt = el.clientHeight || H; dpr = Math.min(2, window.devicePixelRatio || 1);
+      c.width = base.width = Math.round(w * dpr); c.height = base.height = Math.round(hgt * dpr);
+      c.style.width = w + 'px'; c.style.height = hgt + 'px';
+      const yTop = miller(LAT_TOP), yBot = miller(LAT_BOT), mh = yTop - yBot, RAD = Math.PI / 180;
+      const padX = 16, padTop = phone ? 96 : 84, padBot = phone ? 92 : 64;
+      const aw = w - 2 * padX - 44, ah = hgt - padTop - padBot;  // 44 px on the right for the zoom buttons
+      // the longitudes to show: everything the attacks touch (±25°), widened to fill the box's height
+      const lons = [...points.map(p => p.lon), ...(home ? [home.lon] : [])];
+      const lo = lons.length ? Math.max(-180, Math.min(...lons) - 25) : -180, hi = lons.length ? Math.min(180, Math.max(...lons) + 25) : 180;
+      const fill = aw / (ah / mh) / RAD;
+      const span = Math.min(360, Math.max(hi - lo, fill));
+      const left = Math.max(-180, Math.min(180 - span, (lo + hi) / 2 - span / 2));
+      const s = Math.min(aw / (span * RAD), ah / mh);
+      const ox = padX + (aw - s * span * RAD) / 2, oy = padTop + (ah - s * mh) / 2;
+      area = {x: ox, y: oy, w: s * span * RAD, h: s * mh, left, span};
+      proj = (lat, lon) => [ox + (lon - left) * RAD * s, oy + (yTop - miller(Math.max(LAT_BOT - 6, Math.min(LAT_TOP + 6, lat)))) * s];
+      hqB = home ? proj(home.lat, home.lon) : null;
+      nodes = points.map((p, i) => { const [x, y] = proj(p.lat, p.lon); return {p, bx: x, by: y, col: color(p), ph: (i * 0.618) % 1}; });
+      coast = null; clampView(); dirty = true;
+    }
+    function clampView(){  // the map keeps covering the box it had before zooming
+      k = Math.max(1, Math.min(KMAX, k));
+      const minTx = (area.x + area.w) * (1 - k), maxTx = area.x * (1 - k), minTy = (area.y + area.h) * (1 - k), maxTy = area.y * (1 - k);
+      tx = Math.min(maxTx, Math.max(minTx, tx)); ty = Math.min(maxTy, Math.max(minTy, ty));
+    }
+    function zoomAt(sx, sy, f, animate){
+      const nk = Math.max(1, Math.min(KMAX, k * f));
+      if (Math.abs(nk - k) < 1e-3) return;
+      const to = {k: nk, tx: sx - (sx - tx) * (nk / k), ty: sy - (sy - ty) * (nk / k)};
+      if (animate) { anim = {from: {k, tx, ty}, to, t0: performance.now(), dur: 340}; return; }
+      k = to.k; tx = to.tx; ty = to.ty; clampView(); dirty = true;
+    }
+    // wheel zooms around the pointer; dragging moves the zoomed map; double-click zooms in
+    c.addEventListener('wheel', ev => { ev.preventDefault(); const r = c.getBoundingClientRect(); zoomAt(ev.clientX - r.left, ev.clientY - r.top, Math.exp(-ev.deltaY * 0.0016), false); }, {passive: false});
+    let drag = null;
+    c.addEventListener('pointerdown', ev => { if (k > 1.001) { drag = {x: ev.clientX, y: ev.clientY, tx, ty}; c.setPointerCapture(ev.pointerId); } });
+    c.addEventListener('pointermove', ev => {
+      if (!drag) { c.style.cursor = k > 1.001 && !hovered ? 'grab' : ''; return; }
+      tx = drag.tx + ev.clientX - drag.x; ty = drag.ty + ev.clientY - drag.y; clampView(); dirty = true; c.style.cursor = 'grabbing';
+    });
+    const endDrag = () => { drag = null; c.style.cursor = ''; };
+    c.addEventListener('pointerup', endDrag); c.addEventListener('pointercancel', endDrag);
+    c.addEventListener('dblclick', ev => { const r = c.getBoundingClientRect(); zoomAt(ev.clientX - r.left, ev.clientY - r.top, 2, true); });
+
+    function drawBase(){
+      bctx.setTransform(dpr, 0, 0, dpr, 0, 0); bctx.clearRect(0, 0, w, hgt);
+      bctx.save(); bctx.beginPath(); bctx.rect(area.x - 2, area.y - 6, area.w + 4, area.h + 12); bctx.clip();
+      bctx.setTransform(dpr * k, 0, 0, dpr * k, dpr * tx, dpr * ty);
+      // graticule every 20° and its crossing points
+      bctx.strokeStyle = 'rgba(53,199,242,.07)'; bctx.lineWidth = 1 / k;
+      const lonFrom = Math.ceil(area.left / 20) * 20, lonTo = area.left + area.span;
+      for (let lon = lonFrom; lon <= lonTo; lon += 20) { const [x] = proj(0, lon); bctx.beginPath(); bctx.moveTo(x, area.y); bctx.lineTo(x, area.y + area.h); bctx.stroke(); }
+      for (let lat = -40; lat <= 70; lat += 20) { const [, y] = proj(lat, 0); bctx.beginPath(); bctx.moveTo(area.x, y); bctx.lineTo(area.x + area.w, y); bctx.stroke(); }
+      bctx.fillStyle = 'rgba(95,227,255,.22)';
+      for (let lon = lonFrom; lon <= lonTo; lon += 20) for (let lat = -40; lat <= 70; lat += 20) { const [x, y] = proj(lat, lon); bctx.fillRect(x - 0.75 / k, y - 0.75 / k, 1.5 / k, 1.5 / k); }
+      if (rings && !coast) {
+        coast = new Path2D();
+        for (const r of rings) { let prev = null;
+          r.forEach(([lon, lat], i) => { const [x, y] = proj(lat, lon); if (i === 0 || (prev !== null && Math.abs(lon - prev) > 180)) coast.moveTo(x, y); else coast.lineTo(x, y); prev = lon; }); }
+      }
+      if (coast) {
+        bctx.fillStyle = 'rgba(18,42,84,.42)'; bctx.fill(coast, 'evenodd');
+        bctx.shadowColor = '#2F7BFF'; bctx.shadowBlur = 9; bctx.strokeStyle = 'rgba(72,142,255,.8)'; bctx.lineWidth = 1.05 / k; bctx.stroke(coast);
+        bctx.shadowBlur = 0; bctx.strokeStyle = 'rgba(178,214,255,.5)'; bctx.lineWidth = 0.5 / k; bctx.stroke(coast);
+      }
+      bctx.restore();
+      bctx.setTransform(dpr, 0, 0, dpr, 0, 0);  // HUD corner brackets, fixed to the frame
+      bctx.strokeStyle = 'rgba(95,227,255,.55)'; bctx.lineWidth = 1.2; const L = 14, a = area;
+      [[a.x, a.y, 1, 1], [a.x + a.w, a.y, -1, 1], [a.x, a.y + a.h, 1, -1], [a.x + a.w, a.y + a.h, -1, -1]].forEach(([x, y, sx, sy]) => {
+        bctx.beginPath(); bctx.moveTo(x, y + sy * L); bctx.lineTo(x, y); bctx.lineTo(x + sx * L, y); bctx.stroke(); });
+      if (k > 1.01) { bctx.font = '600 10px JetBrains Mono, monospace'; bctx.fillStyle = 'rgba(95,227,255,.75)'; bctx.textAlign = 'right'; bctx.fillText(`ZOOM ×${k.toFixed(1)} · drag to move`, a.x + a.w, a.y - 8); bctx.textAlign = 'start'; }
+    }
+
+    // attacks close together on screen merge into one marker (re-done on every zoom, so zooming splits them)
+    function cluster(){
+      let items = nodes.map(n => { const [x, y] = S(n.bx, n.by); return {n, x, y}; });
+      // kits in the same city sit on one spot, so zooming can never split them: once zoomed in, fan
+      // them out around their spot (far enough apart not to merge again) so each can be clicked
+      if (k >= 2.5) {
+        const spots = {};
+        items.forEach(it => { const key = Math.round(it.n.bx * 2) + ':' + Math.round(it.n.by * 2); (spots[key] = spots[key] || []).push(it); });
+        Object.values(spots).forEach(gr => {
+          if (gr.length < 2) return;
+          const cx = gr[0].x, cy = gr[0].y, R = Math.max(18, (MERGE / 2 + 3) / Math.sin(Math.PI / gr.length));
+          gr.forEach((it, i) => { const a = -Math.PI / 2 + i * 2 * Math.PI / gr.length; it.x = cx + R * Math.cos(a); it.y = cy + R * Math.sin(a); it.hub = [cx, cy]; });
+        });
+      }
+      items = items
+        .filter(it => it.x > area.x - 4 && it.x < area.x + area.w + 4 && it.y > area.y - 4 && it.y < area.y + area.h + 4)
+        .sort((a, b) => (SEV[b.n.p.severity] || 0) - (SEV[a.n.p.severity] || 0) || (b.n.p.score || 0) - (a.n.p.score || 0));
+      const out = [];
+      for (const it of items) {
+        const hit = out.find(g => Math.hypot(g.x - it.x, g.y - it.y) < MERGE);
+        if (hit) hit.items.push(it); else out.push({x: it.x, y: it.y, items: [it]});
+      }
+      out.forEach(g => {
+        g.members = g.items.map(it => it.n.p); g.col = g.items[0].n.col; g.ph = g.items[0].n.ph; g.hub = g.items.length === 1 ? g.items[0].hub : null;
+        g.cluster = g.members.length > 1; g.single = g.cluster ? null : g.members[0];
+        g.crit = g.members.some(m => m.severity === 'critical');
+        g.r = g.cluster ? Math.min(17, 10 + g.members.length) : (g.single.severity === 'critical' ? 7.5 : 6);
+        g.orgs = new Set(g.members.map(m => m.org).filter(Boolean));
+      });
+      // a hovered merged marker that no longer exists after a zoom: drop the card
+      if (hovered && hovered.cluster && !out.some(g => g.cluster && g.members.length === hovered.members.length && g.members[0] === hovered.members[0])) showTip(null);
+      else if (hovered && hovered.cluster) { const same = out.find(g => g.cluster && g.members[0] === hovered.members[0]); if (same) { hovered = same; } }
+      clusters = out;
+    }
+    const keyOf = g => g.cluster ? g : g.single;
+    const isOn = g => hovered !== null && (hovered === g || hovered === g.single);
+
+    function placeLabels(){
+      labels = [];
+      if (w < 520) return;  // small screens: the tap card is the label
+      const boxes = [{x: 0, y: 0, w: phone ? w : 380, h: phone ? 96 : 84}, {x: w - 170, y: hgt - 120, w: 170, h: 120},
+                     {x: 0, y: hgt - 50, w: 200, h: 50}, {x: w - 56, y: hgt / 2 - 64, w: 56, h: 128}];
+      clusters.forEach(g => boxes.push({x: g.x - g.r - 3, y: g.y - g.r - 3, w: 2 * g.r + 6, h: 2 * g.r + 6}));  // never cover a marker
+      if (hqB) { const [x, y] = S(hqB[0], hqB[1]); boxes.push({x: x - 10, y: y - 10, w: 150, h: 34}); }
+      const hit = b => boxes.some(o => b.x < o.x + o.w && b.x + b.w > o.x && b.y < o.y + o.h && b.y + b.h > o.y);
+      const top = [...clusters].sort((a, b) => (SEV[b.members[0].severity] || 0) - (SEV[a.members[0].severity] || 0) || b.members.length - a.members.length).slice(0, 6);
+      for (const g of top) {
+        const p = g.members[0];
+        const t1 = g.cluster ? `${g.members.length} attacks here` : (p.hostname.length > 24 ? p.hostname.slice(0, 23) + '…' : p.hostname);
+        const t2 = g.cluster ? `${String(p.severity).toUpperCase()} · ${[...new Set(g.members.map(m => m.country).filter(Boolean))].slice(0, 3).join(' · ')}`
+                             : `${String(p.severity || '').toUpperCase()} · ${p.score ?? '–'}${p.kind === 'shop' ? ' · SHOP' : ''}${p.country ? ' · ' + p.country : ''}`;
+        ctx.font = '600 10px JetBrains Mono, monospace'; const w1 = ctx.measureText(t1).width;
+        ctx.font = '600 9px JetBrains Mono, monospace'; const w2 = ctx.measureText(t2).width;
+        const bw = Math.max(w1, w2, 70) + 16, bh = 30, off = g.r + 10;
+        for (const [dx, dy] of [[off, -bh - 6], [off, 6], [-off - bw, -bh - 6], [-off - bw, 6], [-bw / 2, -off - bh - 4], [-bw / 2, off + 4]]) {
+          const b = {x: g.x + dx, y: g.y + dy, w: bw, h: bh};
+          if (b.x < area.x + 2 || b.y < area.y + 2 || b.x + bw > area.x + area.w - 2 || b.y + bh > area.y + area.h - 2 || hit(b)) continue;
+          boxes.push(b); labels.push({g, b, t1, t2}); break;
+        }
+      }
+    }
+    const ctrl = (a, b) => { const d = Math.hypot(b[0] - a[0], b[1] - a[1]); return [(a[0] + b[0]) / 2, Math.min(a[1], b[1]) - d * 0.28]; };
+    const qp = (a, m, b, t) => [(1 - t) * (1 - t) * a[0] + 2 * (1 - t) * t * m[0] + t * t * b[0], (1 - t) * (1 - t) * a[1] + 2 * (1 - t) * t * m[1] + t * t * b[1]];
+    function hex(x, y, r, rot){ ctx.beginPath(); for (let i = 0; i < 6; i++) { const a = rot + i * Math.PI / 3; ctx[i ? 'lineTo' : 'moveTo'](x + r * Math.cos(a), y + r * Math.sin(a)); } ctx.closePath(); }
+
+    function frame(t){
+      if (!running) return;
+      if (anim) {
+        const e = Math.min(1, (t - anim.t0) / anim.dur), q = 1 - Math.pow(1 - e, 3);
+        k = anim.from.k + (anim.to.k - anim.from.k) * q; tx = anim.from.tx + (anim.to.tx - anim.from.tx) * q; ty = anim.from.ty + (anim.to.ty - anim.from.ty) * q;
+        clampView(); dirty = true; if (e >= 1) anim = null;
+      }
+      if (dirty) { drawBase(); cluster(); placeLabels(); dirty = false; }
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, w, hgt);
+      ctx.drawImage(base, 0, 0, w, hgt);
+      ctx.save(); ctx.beginPath(); ctx.rect(area.x - 2, area.y - 2, area.w + 4, area.h + 4); ctx.clip();  // nothing spills over the title
+      // scan beam sweeping west → east, slightly slanted
+      const per = 7000, bx = area.x - 120 + ((t % per) / per) * (area.w + 240), sk = 40;
+      const bg = ctx.createLinearGradient(bx - 60, 0, bx + 60, 0);
+      bg.addColorStop(0, 'rgba(46,230,166,0)'); bg.addColorStop(0.5, 'rgba(46,230,166,.10)'); bg.addColorStop(1, 'rgba(46,230,166,0)');
+      ctx.fillStyle = bg; ctx.beginPath(); ctx.moveTo(bx - 60 + sk, area.y); ctx.lineTo(bx + 60 + sk, area.y); ctx.lineTo(bx + 60 - sk, area.y + area.h); ctx.lineTo(bx - 60 - sk, area.y + area.h); ctx.fill();
+      ctx.strokeStyle = 'rgba(46,230,166,.3)'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(bx + sk, area.y); ctx.lineTo(bx - sk, area.y + area.h); ctx.stroke();
+      const beamAt = y => bx + sk - 2 * sk * ((y - area.y) / area.h);
+      const hq = hqB ? S(hqB[0], hqB[1]) : null;
+      // the hovered attack's hosting company: the other kits it runs, linked
+      const focus = hovered ? clusters.find(isOn) : null;
+      if (focus && focus.orgs.size) {
+        ctx.strokeStyle = 'rgba(170,140,255,.55)'; ctx.lineWidth = 1;
+        for (const g of clusters) if (g !== focus && [...g.orgs].some(o => focus.orgs.has(o))) { ctx.beginPath(); ctx.moveTo(focus.x, focus.y); ctx.lineTo(g.x, g.y); ctx.stroke(); }
+      }
+      // routes from the brand's home to each marker, one packet travelling along each
+      if (hq) for (const g of clusters) {
+        const b = [g.x, g.y], m = ctrl(hq, b), on = isOn(g), faded = hovered !== null && !on;
+        const lg = ctx.createLinearGradient(hq[0], hq[1], b[0], b[1]);
+        lg.addColorStop(0, rgba(GREEN, faded ? 0.03 : 0.22)); lg.addColorStop(1, rgba(g.col, faded ? 0.05 : (on ? 1 : 0.45)));
+        ctx.strokeStyle = lg; ctx.lineWidth = on ? 2 : 1; ctx.beginPath(); ctx.moveTo(hq[0], hq[1]); ctx.quadraticCurveTo(m[0], m[1], b[0], b[1]); ctx.stroke();
+        const s = ((t / 3400) + g.ph) % 1.5;
+        if (s <= 1 && !faded) {
+          for (let i = 8; i >= 1; i--) { const q = qp(hq, m, b, Math.max(0, s - i * 0.012)); ctx.fillStyle = rgba(GREEN, (1 - i / 9) * 0.45); ctx.beginPath(); ctx.arc(q[0], q[1], 2 - i * 0.15, 0, Math.PI * 2); ctx.fill(); }
+          const q = qp(hq, m, b, s); ctx.shadowColor = GREEN; ctx.shadowBlur = 10; ctx.fillStyle = '#EFFFF9'; ctx.beginPath(); ctx.arc(q[0], q[1], 2.1, 0, Math.PI * 2); ctx.fill(); ctx.shadowBlur = 0;
+        }
+      }
+      // fanned-out kits: a spoke back to the spot they share
+      for (const g of clusters) if (g.hub) {
+        ctx.strokeStyle = rgba(g.col, hovered !== null && !isOn(g) ? 0.08 : 0.4); ctx.lineWidth = 1;
+        ctx.beginPath(); ctx.moveTo(g.hub[0], g.hub[1]); ctx.lineTo(g.x, g.y); ctx.stroke();
+        ctx.fillStyle = rgba(g.col, 0.7); ctx.beginPath(); ctx.arc(g.hub[0], g.hub[1], 2, 0, Math.PI * 2); ctx.fill();
+      }
+      // markers: one hexagon per attack, or a numbered one for several close together
+      for (const g of clusters) {
+        const on = isOn(g), faded = hovered !== null && !on, lit = on || Math.abs(beamAt(g.y) - g.x) < 18;
+        ctx.globalAlpha = faded ? 0.22 : 1;
+        const gl = ctx.createRadialGradient(g.x, g.y, 0, g.x, g.y, g.r * 2.3);
+        gl.addColorStop(0, rgba(g.col, lit ? 0.42 : 0.22)); gl.addColorStop(1, rgba(g.col, 0));
+        ctx.fillStyle = gl; ctx.beginPath(); ctx.arc(g.x, g.y, g.r * 2.3, 0, Math.PI * 2); ctx.fill();
+        if (g.crit) { const q = ((t / 1800) + g.ph) % 1; ctx.strokeStyle = rgba(g.col, (1 - q) * 0.5); ctx.lineWidth = 1; hex(g.x, g.y, g.r * (1 + q * 1.1), Math.PI / 6); ctx.stroke(); }
+        ctx.shadowColor = g.col; ctx.shadowBlur = on ? 12 : 6;
+        ctx.fillStyle = g.cluster ? 'rgba(8,12,22,.88)' : rgba(g.col, 0.18); ctx.strokeStyle = on ? '#FFFFFF' : g.col; ctx.lineWidth = on ? 1.8 : 1.3;
+        hex(g.x, g.y, g.r * (on ? 1.15 : 1), g.cluster ? Math.PI / 6 : t / 6000 + g.ph * 6); ctx.fill(); ctx.stroke(); ctx.shadowBlur = 0;
+        if (g.cluster) { ctx.font = '700 11px JetBrains Mono, monospace'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillStyle = '#FFFFFF'; ctx.fillText(String(g.members.length), g.x, g.y + 0.5); ctx.textAlign = 'start'; ctx.textBaseline = 'alphabetic'; }
+        else { ctx.fillStyle = on ? '#FFFFFF' : g.col; ctx.beginPath(); ctx.arc(g.x, g.y, 2.1, 0, Math.PI * 2); ctx.fill(); }
+        ctx.globalAlpha = 1;
+      }
+      if (hq) {  // the brand's home
+        const q = (t / 2200) % 1;
+        ctx.strokeStyle = rgba(GREEN, (1 - q) * 0.7); ctx.lineWidth = 1; ctx.beginPath(); ctx.arc(hq[0], hq[1], 6 + q * 14, 0, Math.PI * 2); ctx.stroke();
+        ctx.shadowColor = GREEN; ctx.shadowBlur = 10; ctx.strokeStyle = GREEN; ctx.lineWidth = 1.6; ctx.beginPath(); ctx.arc(hq[0], hq[1], 6, 0, Math.PI * 2); ctx.stroke(); ctx.shadowBlur = 0;
+        ctx.fillStyle = GREEN; ctx.beginPath(); ctx.arc(hq[0], hq[1], 2.4, 0, Math.PI * 2); ctx.fill();
+        ctx.font = '600 10px JetBrains Mono, monospace'; ctx.fillStyle = rgba(GREEN, 0.9); ctx.fillText(home.label.toUpperCase(), hq[0] + 11, hq[1] + 18);
+      }
+      for (const {g, b, t1, t2} of labels) {  // tags on the worst attacks
+        const faded = hovered !== null && !isOn(g); ctx.globalAlpha = faded ? 0.18 : 1;
+        const ax = b.x + b.w < g.x ? b.x + b.w : (b.x > g.x ? b.x : g.x), ay = b.y + b.h < g.y ? b.y + b.h : (b.y > g.y ? b.y : g.y);
+        ctx.strokeStyle = rgba(g.col, 0.55); ctx.lineWidth = 0.8; ctx.beginPath(); ctx.moveTo(g.x, g.y); ctx.lineTo(ax, ay); ctx.stroke();
+        ctx.fillStyle = 'rgba(6,10,18,.9)'; ctx.fillRect(b.x, b.y, b.w, b.h); ctx.strokeRect(b.x + 0.5, b.y + 0.5, b.w - 1, b.h - 1);
+        ctx.fillStyle = rgba(g.col, 0.9); ctx.fillRect(b.x, b.y, 2, b.h);
+        ctx.font = '600 10px JetBrains Mono, monospace'; ctx.fillStyle = '#E6EDF5'; ctx.fillText(t1, b.x + 8, b.y + 13);
+        ctx.font = '600 9px JetBrains Mono, monospace'; ctx.fillStyle = g.col; ctx.fillText(t2, b.x + 8, b.y + 24);
+        ctx.globalAlpha = 1;
+      }
+      ctx.restore();
+      raf = requestAnimationFrame(frame);
+    }
+    if (window.ResizeObserver) new ResizeObserver(() => { if (running && (el.clientWidth !== w || el.clientHeight !== hgt)) layout(); }).observe(el);
+    return {
+      start(){ if (running) return; running = true; layout(); raf = requestAnimationFrame(frame); },
+      stop(){ running = false; cancelAnimationFrame(raf); },
+      nearest(x, y){ let best = null, bd = Infinity; for (const g of clusters) { const d = Math.hypot(g.x - x, g.y - y); if (d < g.r + 7 && d < bd) { bd = d; best = keyOf(g); } } return best; },
+      zoom(f){ zoomAt(area.x + area.w / 2, area.y + area.h / 2, f, true); },
+      reset(){ anim = {from: {k, tx, ty}, to: {k: 1, tx: 0, ty: 0}, t0: performance.now(), dur: 420}; },
+      zoomInto(g){ showTip(null); zoomAt(g.x, g.y, Math.min(KMAX / k, 3), true); },
+      state(){ return {k, tx, ty, clusters: clusters.map(g => ({x: g.x, y: g.y, n: g.members.length, r: g.r}))}; },  // read-only, for tests
+    };
+  }
+
+  // ------------------------------------------------------------------- views, switch and zoom
+  const view3d = document.createElement('div'), view2d = document.createElement('div');
+  view3d.className = view2d.className = 'gview'; view3d.hidden = true;
+  el.prepend(view2d); el.prepend(view3d);
+  let globeCtl = {pause(){}, resume(){}}, globeNearest = () => null, globeRefresh = () => {}, globeHover = () => {}, mapView = null;
+  const overlays = [...el.querySelectorAll('.globe-hud,.globe-legend')];
+  try { if (window.Globe && !window.__globeFailed) globeGl(); else canvasGlobe(); } catch (e) { console.warn('globe.gl failed, using canvas', e); view3d.innerHTML = ''; canvasGlobe(); }
+  overlays.forEach(o => el.appendChild(o));
+  el.appendChild(tip);
+  globeNearest = nearest; globeRefresh = refresh; globeHover = onHoverChange;
+  const sw = document.createElement('div'); sw.className = 'gswitch'; sw.setAttribute('role', 'group'); sw.setAttribute('aria-label', 'Map style');
+  sw.innerHTML = '<button type="button" data-v="map">▭ Map</button><button type="button" data-v="globe">◍ Globe</button>';
+  const zc = document.createElement('div'); zc.className = 'gzoom'; zc.setAttribute('role', 'group'); zc.setAttribute('aria-label', 'Zoom');
+  zc.innerHTML = '<button type="button" data-z="in" title="zoom in (or scroll)" aria-label="Zoom in">+</button><button type="button" data-z="out" title="zoom out" aria-label="Zoom out">−</button><button type="button" data-z="reset" title="back to the whole view" aria-label="Reset the view">⟲</button>';
+  function setView(v){
+    mode = v;
+    sw.querySelectorAll('button').forEach(b => { b.classList.toggle('on', b.dataset.v === v); b.setAttribute('aria-pressed', String(b.dataset.v === v)); });
+    nearHover = arcHover = null; showTip(null);
+    if (v === 'map') {
+      view3d.hidden = true; globeCtl.pause(); view2d.hidden = false;
+      mapView = mapView || flatMap(view2d); mapView.start();
+      el.__map = mapView;
+      nearest = mapView.nearest; refresh = () => {}; onHoverChange = () => {}; zoomInto = mapView.zoomInto;
+    } else {
+      if (mapView) mapView.stop(); view2d.hidden = true; view3d.hidden = false; globeCtl.resume();
+      nearest = globeNearest; refresh = globeRefresh; onHoverChange = globeHover; zoomInto = null; onHoverChange();
+    }
+    try { localStorage.setItem('bw.geoView2', v); } catch (e) {}
+  }
+  sw.addEventListener('click', ev => { const b = ev.target.closest('button'); if (b) { ev.stopPropagation(); setView(b.dataset.v); } });
+  zc.addEventListener('click', ev => {
+    const b = ev.target.closest('button'); if (!b) return; ev.stopPropagation();
+    const v = mode === 'map' ? mapView : globeZoom; if (!v) return;
+    if (b.dataset.z === 'in') v.zoom(1.6); else if (b.dataset.z === 'out') v.zoom(1 / 1.6); else v.reset();
+  });
+  [sw, zc].forEach(x => { x.addEventListener('pointerdown', ev => ev.stopPropagation()); x.addEventListener('dblclick', ev => ev.stopPropagation()); el.appendChild(x); });
+  let savedView = new URLSearchParams(location.search).get('view');
+  if (!savedView) { try { savedView = localStorage.getItem('bw.geoView2'); } catch (e) {} }
+  setView(savedView === 'globe' ? 'globe' : 'map');  // the flat map unless you chose the globe
+
+  // ---- refresh KPIs every 20s without reloading the globe
+  setInterval(async () => {
+    try {
+      const r = await fetch(`/api/dashboard${brandId ? '?brand_id=' + brandId : ''}`, {credentials:'same-origin'});
+      if (!r.ok) return; const d = await r.json();
+      document.querySelectorAll('#kpis .v[data-k]').forEach(el => { const v = d.kpis[el.dataset.k]; if (v !== undefined && v !== null) el.textContent = Number(v).toLocaleString('en-US'); });
+      document.getElementById('updated').textContent = d.generated_at.slice(11, 19);
+    } catch (e) {}
+  }, 20000);
+})();
+</script>
+{% endblock %}

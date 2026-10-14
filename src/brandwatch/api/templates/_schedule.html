@@ -1,0 +1,70 @@
+{# Automatic scans: on / off, how often, at what local time, which tasks — with the last and next run
+   and what a run costs. Context: brand (incl. schedule), can_write, scheduler_on. #}
+{% set sc = brand.schedule %}
+<style>
+  #schedule{scroll-margin-top:90px}
+  #schedule .sw{display:flex;gap:12px;align-items:center;border:1px solid var(--border);border-radius:12px;padding:12px 14px;background:var(--panel2);cursor:pointer}
+  #schedule .sw,#schedule .sw *{text-transform:none;letter-spacing:0;font-family:var(--sans)}
+  #schedule .sw input{width:auto;transform:scale(1.25)}
+  #schedule .sw b{font-size:15px}#schedule .sw span{font-size:12.5px;color:var(--muted)}
+  #schedule .sw:has(input:checked){border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+  #schedule .when{display:grid;grid-template-columns:repeat(2,minmax(0,220px));gap:12px;margin-top:12px}
+  #schedule .tasks{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(250px,100%),1fr));gap:8px;margin-top:6px}
+  #schedule .task{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--border);border-radius:10px;padding:9px 11px;background:var(--panel);cursor:pointer}
+  #schedule .task,#schedule .task *{text-transform:none;letter-spacing:0;font-family:var(--sans)}
+  #schedule .task:has(input:checked){border-color:rgba(53,199,242,.6);background:rgba(53,199,242,.05)}
+  #schedule .task input{width:auto;margin-top:3px;flex:0 0 auto}
+  #schedule .task b{display:block;font-size:13.5px}#schedule .task span{font-size:12px;color:var(--muted)}
+  #schedule .task .warn{color:var(--high)}
+  #schedule .task.off{opacity:.55;cursor:not-allowed}
+  #schedule .stat{display:flex;flex-wrap:wrap;gap:8px 18px;font-size:13px;margin-top:12px;color:#c3cdd9}
+  #schedule .stat b{color:var(--text)}
+  #schedule .note{border:1px solid rgba(255,159,28,.6);background:rgba(255,159,28,.07);border-radius:12px;padding:10px 12px;font-size:13px;margin-bottom:10px}
+  @media (max-width:600px){ #schedule .when{grid-template-columns:minmax(0,1fr)} }
+</style>
+<div class="panel" style="margin-top:14px" id="schedule">
+  <h2>Automatic scans <span class="muted">· {{ brand.name }} is scanned again by itself, as often as you choose, doing only what you tick</span></h2>
+  {% if request and request.query_params.get('schedule') == 'saved' %}<div class="small" style="color:var(--low);margin-bottom:6px">✓ Saved{% if sc.enabled %} — next automatic scan {% if sc.next %}<span data-local="{{ sc.next }}"></span>{% endif %}{% else %} — automatic scans are off{% endif %}</div>{% endif %}
+  {% if not scheduler_on %}<div class="note"><b style="color:var(--high)">This server does not run automatic scans</b> — its scheduler is off (<span class="mono">SCHEDULER_ENABLED</span>). The live server's start script switches it on; what you set here is saved either way.</div>{% endif %}
+  <form method="post" action="/ui/brands/{{ brand.id }}/schedule" id="schform">
+    <input type="hidden" name="tz_offset" id="sch-tz" value="{{ sc.tz_offset }}">
+    <label class="sw"><input type="checkbox" name="enabled" {{ 'checked' if sc.enabled }} {{ 'disabled' if not can_write }}>
+      <div><b>Scan automatically</b><br><span>off = scans run only when someone presses Start scan · nothing paid runs until you switch this on</span></div></label>
+    <div class="when">
+      <div><label for="sch-every">How often</label>
+        <select id="sch-every" name="every_hours" {{ 'disabled' if not can_write }}>{% for h, lbl in sc.frequencies.items() %}<option value="{{ h }}" {{ 'selected' if sc.every_hours == h }}>{{ lbl }}</option>{% endfor %}</select></div>
+      <div><label for="sch-hour">At about <span class="muted small">· your local time</span></label>
+        <select id="sch-hour" name="hour" {{ 'disabled' if not can_write }}><option value="any" {{ 'selected' if sc.hour is none }}>any time</option>{% for h in range(24) %}<option value="{{ h }}" {{ 'selected' if sc.hour == h }}>{{ '%02d:00'|format(h) }}</option>{% endfor %}</select></div>
+    </div>
+    <label style="margin-top:12px">What to do on each run</label>
+    <div class="tasks">
+      {% for key, (name, desc) in sc.tasks_info.items() %}
+      {% set off = key == 'meta_ads' and not sc.retail %}
+      <label class="task {{ 'off' if off }}"><input type="checkbox" name="tasks" value="{{ key }}" {{ 'checked' if key in sc.tasks and not off }} {{ 'disabled' if off or not can_write }}>
+        <div><b>{{ name }}</b><span>{{ desc }}</span>
+          {% if key == 'search' and not sc.search_approved %}<br><span class="warn">skipped until you approve the Google queries ↑</span>{% endif %}
+          {% if off %}<br><span>only for brands whose products other shops sell — set in the brand profile ↓</span>{% endif %}
+          {% if key == 'fingerprint' %}<br><span>the AI then proposes Google queries again; the approved list stays until you approve a new one</span>{% endif %}
+        </div></label>
+      {% endfor %}
+    </div>
+    <div class="stat">
+      <span>last automatic scan: {% if sc.last %}<a href="/ui/jobs/{{ sc.last.id }}"><b data-local="{{ sc.last.at }}">{{ sc.last.at[:16].replace('T', ' ') }}</b></a> · {{ sc.last.state }}{% else %}<b>none yet</b>{% endif %}</span>
+      <span>next: {% if sc.enabled and sc.next %}<b data-local="{{ sc.next }}">{{ sc.next[:16].replace('T', ' ') }}</b> <span class="muted" data-rel="{{ sc.next }}"></span>{% else %}<b>—</b>{% endif %}</span>
+      <span title="{% for l in sc.cost.lines %}{{ l.task }} ≈ ${{ '%.2f'|format(l.usd) }}{{ ' · ' if not loop.last }}{% endfor %}">cost: up to <b>${{ '%.2f'|format(sc.cost.per_run) }}</b> a run · <b>${{ '%.2f'|format(sc.cost.per_month) }}</b> a month at this frequency{% if not sc.cost.lines %} (only free sources){% endif %}</span>
+    </div>
+    <p class="small muted" style="margin:6px 0 0">Paid calls (Google search, Facebook / Instagram ads and accounts) count against the workspace's daily spend limit; DNS, certificate logs, new domains and urlscan are free. Every automatic scan appears under “Recent scans” with its own console.</p>
+    {% if can_write %}<div class="actions" style="margin-top:12px"><button type="submit" class="primary">Save automatic scans</button></div>{% endif %}
+  </form>
+</div>
+<script>
+(function(){
+  const tz = document.getElementById('sch-tz'); if (tz) tz.value = new Date().getTimezoneOffset();
+  const fmt = new Intl.DateTimeFormat(undefined, {weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit'});
+  document.querySelectorAll('#schedule [data-local]').forEach(e => { const d = new Date(e.dataset.local); if (!isNaN(d)) e.textContent = fmt.format(d); });
+  document.querySelectorAll('#schedule span[data-rel]').forEach(e => {
+    const h = (new Date(e.dataset.rel) - Date.now()) / 36e5;
+    e.textContent = isNaN(h) ? '' : (h <= 0 ? '(due now)' : h < 1 ? `(in ${Math.round(h * 60)} min)` : h < 48 ? `(in ${Math.round(h)} h)` : `(in ${Math.round(h / 24)} days)`);
+  });
+})();
+</script>

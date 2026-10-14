@@ -1,0 +1,101 @@
+{# "Social account" tab of a fake-account finding: who the account is, what Meta's page history says,
+   every check with its result, the AI's reading of the content, the content itself, and Report to
+   Meta. Context: sa = the social record (score breakdown "social"); d, s, meta, takedowns, can_write. #}
+{% set why = sa.why or {} %}{% set info = sa.info or {} %}{% set ig = sa.ig or {} %}{% set page = sa.page or {} %}
+{% set pic = (d.evidence|selectattr('type', 'equalto', 'favicon')|list|first) %}
+<style>
+  .soc-grid{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:14px}
+  @media (max-width:900px){.soc-grid{grid-template-columns:minmax(0,1fr)}}
+  .soc-id{display:flex;gap:14px;align-items:center}
+  .soc-id img,.soc-id .ph{width:64px;height:64px;border-radius:50%;object-fit:cover;border:2px solid var(--border);background:var(--panel2);flex:0 0 auto}
+  .soc-id .ph{display:grid;place-items:center;font:700 22px var(--display);color:var(--muted)}
+  .soc-id b{font-size:17px}.soc-id .h{font:12px var(--mono);color:var(--muted);overflow-wrap:anywhere}
+  .soc-plat{display:inline-flex;align-items:center;gap:6px;font:600 11px var(--mono);letter-spacing:.06em;padding:2px 8px;border-radius:999px;color:#fff}
+  .soc-facts{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin-top:12px}
+  .soc-facts > div{border:1px solid var(--border);border-radius:10px;padding:8px 10px;background:var(--panel2)}
+  .soc-facts .k{font:600 10px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+  .soc-facts .v{font-size:13.5px;margin-top:3px}
+  .soc-facts .bad .v{color:var(--crit)}
+  .chk{display:grid;grid-template-columns:28px minmax(0,1fr);gap:4px 10px;padding:10px 0;border-top:1px solid var(--border)}
+  .chk:first-of-type{border-top:0}
+  .chk .ic{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font:700 13px var(--sans);border:1px solid var(--border)}
+  .chk .ic.bad{color:var(--crit);border-color:rgba(255,77,77,.6);background:rgba(255,77,77,.08)}
+  .chk .ic.ok{color:var(--low);border-color:rgba(46,204,113,.5)}
+  .chk b{font-size:13.5px}.chk .d{font-size:12.5px;color:#c3cdd9;margin-top:2px;overflow-wrap:anywhere}
+  .ai-soc{border:1px solid var(--border);border-radius:12px;padding:12px 14px;background:var(--panel2)}
+  .ai-soc .v{font:700 18px var(--display);letter-spacing:.03em}
+  .soc-text{white-space:pre-wrap;font-size:13px;line-height:1.5;color:#c3cdd9;border-left:2px solid var(--border);padding:2px 0 2px 10px;margin:4px 0 10px;overflow-wrap:anywhere}
+  .soc-posts{list-style:none;margin:6px 0 0;padding:0;display:grid;gap:6px}
+  .soc-posts li{border:1px solid var(--border);border-radius:8px;padding:7px 10px;font-size:12.5px;background:var(--panel)}
+  .soc-posts .m{font:11px var(--mono);color:var(--muted);margin-top:2px}
+</style>
+{% macro row(state, title, detail) -%}
+<div class="chk"><span class="ic {{ state }}">{{ {'bad': '✕', 'ok': '✓'}[state] }}</span><div><b>{{ title }}</b><div class="d" dir="auto">{{ detail }}</div></div></div>
+{%- endmacro %}
+<div class="soc-grid">
+  <div>
+    <div class="panel">
+      <div class="soc-id">
+        {% if pic and pic.artifact_url %}<img src="{{ pic.artifact_url }}" alt="profile picture">{% else %}<span class="ph">{{ (sa.name or sa.handle or '?')[:1]|upper }}</span>{% endif %}
+        <div style="min-width:0">
+          {% if sa.platform == 'facebook' %}<span class="soc-plat" style="background:#1877F2">f · Facebook page</span>{% else %}<span class="soc-plat" style="background:linear-gradient(45deg,#F58529,#DD2A7B,#8134AF)">◎ Instagram</span>{% endif %}
+          {% if sa.verified %}<span class="pill" style="color:var(--low)">✓ verified by Meta</span>{% else %}<span class="pill" style="color:var(--muted)">not verified</span>{% endif %}
+          <div><b dir="auto">{{ sa.name or sa.handle }}</b></div>
+          <div class="h"><a href="{{ sa.url }}" target="_blank" rel="noreferrer noopener">{{ sa.url }} ↗</a>{% if ig.username and sa.platform == 'facebook' %} · linked Instagram <a href="{{ ig.url }}" target="_blank" rel="noreferrer noopener">@{{ ig.username }} ↗</a>{% endif %}</div>
+        </div>
+      </div>
+      <div class="soc-facts">
+        {% if sa.platform == 'facebook' %}{# Meta's page transparency: Facebook pages only #}
+        <div class="{{ 'bad' if 'social_new_account' in why }}"><div class="k">Created</div><div class="v">{{ info.created or 'unknown' }}</div></div>
+        <div class="{{ 'bad' if 'social_renamed' in why }}"><div class="k">Name changes</div><div class="v">{{ (info.name_changes or [])|length }}{% if info.name_changes %} · last {{ info.name_changes[0].at or '?' }}{% endif %}</div></div>
+        <div class="{{ 'bad' if 'social_admins_abroad' in why }}"><div class="k">Admins in</div><div class="v">{{ (info.admin_countries or {}).keys()|list|join(', ') or 'unknown' }}</div></div>
+        {% else %}
+        <div><div class="k">Posts</div><div class="v">{{ ig.posts_count if ig.posts_count is not none else '—' }}</div></div>
+        {% endif %}
+        <div class="{{ 'bad' if 'social_small_audience' in why }}"><div class="k">Followers / likes</div><div class="v">{{ '{:,}'.format(sa.audience) if sa.audience is not none else 'unknown' }}</div></div>
+        <div><div class="k">Category</div><div class="v">{{ page.category or info.category or ('business account' if ig.business else '—') }}</div></div>
+        <div><div class="k">Found by</div><div class="v small">{{ (sa.found_by or [])|join(' · ') }}</div></div>
+      </div>
+    </div>
+
+    <div class="panel" style="margin-top:14px">
+      <h2 style="margin-top:0">Checks <span class="muted">· is this {{ d.brand.name }}? · a separate social score ({{ sa.scoring_version }}), never mixed with the phishing one</span></h2>
+      {% for k, v in why.items() %}{% if k.startswith('social_') and k not in ('social_verified', 'social_says_unofficial') %}{% set lbl = k|signal_label %}{{ row('bad', lbl[:1]|upper ~ lbl[1:], v) }}{% endif %}{% endfor %}
+      {% if 'social_verified' in why %}{{ row('ok', 'Verified by Meta', why.social_verified ~ ' — lowers the score') }}{% endif %}
+      {% if 'social_says_unofficial' in why %}{{ row('ok', 'Says it is unofficial', why.social_says_unofficial ~ ' — lowers the score') }}{% endif %}
+      {% if 'social_logo_match' not in why %}{{ row('ok', 'Profile picture', 'not the brand’s logo' if sa.avatar_phash else 'not compared — no picture') }}{% endif %}
+      {% if 'social_links_off_brand' not in why %}{{ row('ok', 'Links', 'no link to a site outside the brand’s' if sa.links else 'no links') }}{% endif %}
+    </div>
+  </div>
+
+  <div>
+    {% set ai = sa.ai %}
+    <div class="ai-soc">
+      <h2 style="margin-top:0">AI: does it pose as {{ d.brand.name }}? <span class="muted">· reads the content · at most 20 of 100 points</span></h2>
+      {% if ai %}
+        <div class="v" style="color:{{ {'impersonation': 'var(--crit)', 'fan_or_community': 'var(--med)', 'reseller_or_partner': 'var(--med)', 'unrelated': 'var(--low)'}.get(ai.verdict, 'var(--muted)') }}">{{ ai.verdict.replace('_', ' ')|upper }}</div>
+        <div class="small muted">{{ (ai.confidence * 100)|round|int }}% · {{ ai.model }}{% if ai.claims_to_be_brand %} · claims to be the brand{% endif %}</div>
+        {% if ai.summary %}<p class="small" style="margin:8px 0 0">{{ ai.summary }}</p>{% endif %}
+        {% if ai.asks_for %}<div class="small" style="margin-top:6px">asks for: {% for a in ai.asks_for %}<span class="pill" style="color:var(--crit)">{{ a }}</span> {% endfor %}</div>{% endif %}
+        {% if ai.reasons %}<ul class="small" style="margin:8px 0 0;padding-left:16px">{% for r in ai.reasons %}<li>{{ r }}</li>{% endfor %}</ul>{% endif %}
+      {% else %}<p class="small muted" style="margin:0">No AI reading — no AI model configured or it did not answer.</p>{% endif %}
+    </div>
+    <div class="panel" style="margin-top:14px">
+      <h2 style="margin-top:0">What the account says <span class="muted">· public content, as collected</span></h2>
+      {% if info.about %}<div class="small muted">About (Facebook)</div><div class="soc-text" dir="auto">{{ info.about }}</div>{% endif %}
+      {% if ig.bio %}<div class="small muted">Bio (Instagram @{{ ig.username }})</div><div class="soc-text" dir="auto">{{ ig.bio }}</div>{% endif %}
+      {% if sa.links %}<div class="small muted">Links</div>
+        <div style="margin:4px 0 10px">{% for l in sa.links %}<div class="mono small" style="overflow-wrap:anywhere">{{ l }}</div>{% endfor %}</div>{% endif %}
+      {% if ig.posts %}<div class="small muted">Recent posts</div>
+        <ul class="soc-posts">{% for p in ig.posts[:6] %}<li><div dir="auto">{{ p.caption|truncate(220) }}</div><div class="m">{{ p.date }}{% if p.permalink %} · <a href="{{ p.permalink }}" target="_blank" rel="noreferrer noopener">open ↗</a>{% endif %}</div></li>{% endfor %}</ul>{% endif %}
+      {% if not (info.about or ig.bio or ig.posts) %}<p class="small muted" style="margin:0">No public text was available.</p>{% endif %}
+    </div>
+  </div>
+</div>
+
+<div class="panel" style="margin-top:14px">
+  <h2 style="margin-top:0">Report to Meta <span class="muted">· the account{{ 's' if meta.pages|length > 1 }} and the impersonation forms</span></h2>
+  {% set draft_id = takedowns[0].id if takedowns else none %}
+  {% set reports = ((takedowns[0].channels or {}).get('reports') or {}) if takedowns else {} %}
+  {% include "_meta_report.html" %}
+</div>
