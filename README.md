@@ -14,6 +14,11 @@
 ### [▶ Open the live demo](https://brandwatch.itaya12.workers.dev/ui/dashboard/)
 <sub>A read-only copy of the app with fictional brands: click through every page, the attacker map and the findings. Nothing is sent anywhere.</sub>
 
+### [🎬 Watch a real case study](https://youtu.be/17dMOIzThgk)
+<sub>A live scan of a real crypto-trading brand: BrandWatch finds its look-alike domains, investigates them, and the map shows that eight typo domains are one operation, forwarding visitors to the real site with the same affiliate id.</sub>
+
+<a href="https://youtu.be/17dMOIzThgk"><img src="https://img.youtube.com/vi/17dMOIzThgk/maxresdefault.jpg" alt="Video: a real BrandWatch case study" width="70%"></a>
+
 <a href="https://brandwatch.itaya12.workers.dev/ui/dashboard/"><img src="docs/images/dashboard.png" alt="BrandWatch dashboard: the five-step pipeline and a live map of where the phishing kits are hosted" width="100%"></a>
 
 </div>
