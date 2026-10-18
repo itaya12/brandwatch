@@ -64,10 +64,12 @@ async def test_searchapi_ai_engines_are_asked_as_a_user_and_their_sources_kept()
     sent = dict(route.calls[-1].request.url.params)
     assert sent["engine"] == "chatgpt" and sent["web_search"] == "true" and route.calls[-1].request.headers["authorization"] == "Bearer k"
     await c.ask("google_ai_mode", "again", gl="il", hl="iw")
-    assert dict(route.calls[-1].request.url.params) | {} == {"engine": "google_ai_mode", "q": "again", "gl": "il", "hl": "iw"}
+    assert dict(route.calls[-1].request.url.params) == {"engine": "google_ai_mode", "q": "again", "gl": "il", "hl": "iw"}
     await c.ask("google_ai_mode", "proof?", conversation_token="tok")
     assert dict(route.calls[-1].request.url.params)["conversation_token"] == "tok" and "gl" not in dict(route.calls[-1].request.url.params)
-    with pytest.raises(Exception):
+    from brandwatch.providers.base import ProviderError
+
+    with pytest.raises(ProviderError, match="unknown AI engine"):
         await c.ask("claude", "x")
 
 
