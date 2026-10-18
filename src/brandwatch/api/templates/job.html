@@ -331,7 +331,7 @@
     if (a.kind !== 'fallback' && a.kind !== 'site') { alertCount++; $('k-alerts').textContent = alertCount; }
     $('alerts-empty').style.display = 'none';
     const d = document.createElement('div'); d.className = 'alert ' + ((a.kind === 'fallback' || a.kind === 'site') ? 'info' : (level === 'error' ? 'error' : 'warn'));
-    const link = (a.kind === 'auth' || a.kind === 'quota' || a.kind === 'not_configured') ? ` <a href="${esc(a.settings_url || '/ui/settings')}">Open settings →</a>`
+    const link = (a.kind === 'auth' || a.kind === 'quota' || a.kind === 'credits' || a.kind === 'not_configured') ? ` <a href="${esc(a.settings_url || '/ui/settings')}">Open settings →</a>`
       : (a.kind === 'approval' ? ` <a href="${esc(a.settings_url || '/ui/brands')}">Review the queries →</a>`
       : (a.kind === 'profile' ? ` <a href="${esc(a.settings_url || '/ui/brands')}">Open the brand profile →</a>`
       : (a.kind === 'baseline' ? ` <a href="${esc(a.settings_url || '/ui/brands')}">Fix it →</a>` : '')));

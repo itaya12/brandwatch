@@ -33,6 +33,29 @@ def _ipv4_transport() -> httpx.AsyncHTTPTransport:
     return httpx.AsyncHTTPTransport(local_address="0.0.0.0", retries=1)
 
 
+# a 429 that is not "slow down" but "the account is empty": no amount of waiting helps (SearchApi answers 429 when the
+# account has no credits left; others say quota / plan / limit reached)
+_OUT_OF_CREDITS = re.compile(r"credit|quota|run out|ran out|out of (searches|requests)|monthly|plan|upgrade|exhausted|insufficient|balance", re.I)
+
+
+def _too_many(name: str, r: httpx.Response) -> ProviderError:
+    """A 429: out of credits (final, said in the provider's own words) or a real rate limit (wait and retry)."""
+    said = ""
+    try:
+        body = r.json()
+        for key in ("error", "message", "msg", "detail", "error_message"):
+            found = _find_key(body, key)
+            if found:
+                said = str(found)[:160]
+                break
+    except ValueError:
+        said = r.text[:160]
+    if said and _OUT_OF_CREDITS.search(said):
+        return ProviderError(f"{name}: no_credits — the account has no requests left ({said})", retryable=False)
+    ra = r.headers.get("retry-after")
+    return RateLimited(retry_after=int(ra) if ra and ra.isdigit() else 60)
+
+
 def _error_hint(r: httpx.Response) -> str:
     """The provider's own explanation of a 401/403, when it gives one (JSON or XML)."""
     text = r.text[:2000]
@@ -98,8 +121,7 @@ class HttpClientMixin:
             raise ProviderError(f"{self.name}: {type(exc).__name__}: {exc}") from exc
         latency = int((time.monotonic() - started) * 1000)
         if r.status_code == 429:
-            ra = r.headers.get("retry-after")
-            raise RateLimited(retry_after=int(ra) if ra and ra.isdigit() else 60)
+            raise _too_many(self.name, r)
         if r.status_code in (401, 403):
             raise ProviderError(
                 f"{self.name}: HTTP {r.status_code} ({_error_hint(r)})", retryable=False
@@ -130,8 +152,7 @@ class HttpClientMixin:
             raise ProviderError(f"{self.name}: {type(exc).__name__}: {exc}") from exc
         latency = int((time.monotonic() - started) * 1000)
         if r.status_code == 429:
-            ra = r.headers.get("retry-after")
-            raise RateLimited(retry_after=int(ra) if ra and ra.isdigit() else 60)
+            raise _too_many(self.name, r)
         if r.status_code >= 500:
             raise ProviderError(f"{self.name}: HTTP {r.status_code}")
         if r.status_code in (
@@ -1094,8 +1115,7 @@ class UrlscanClient(HttpClientMixin):
         except httpx.HTTPError as exc:
             raise ProviderError(f"{self.name}: {type(exc).__name__}: {exc}") from exc
         if r.status_code == 429:
-            ra = r.headers.get("retry-after")
-            raise RateLimited(retry_after=int(ra) if ra and ra.isdigit() else 60)
+            raise _too_many(self.name, r)
         if r.status_code >= 500:
             raise ProviderError(f"{self.name}: HTTP {r.status_code}")
         return r.content if r.status_code == 200 and r.content else None

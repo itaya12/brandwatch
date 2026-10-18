@@ -239,6 +239,12 @@ ISSUE_HELP: dict[str, tuple[str, str]] = {
         "for the rest of today. Raise the limits under Settings → Workspace & budget, or run "
         "the scan again tomorrow.",
     ),
+    "credits": (
+        "{provider}: the account has no requests left",
+        "The provider answered that this account's requests are used up (a free trial ends after its first requests), so "
+        "{provider} is skipped. Top up or choose a plan on the provider's site; the key in Settings → API keys stays "
+        "the same. Waiting does not help. ({error})",
+    ),
     "rate_limit": ("{provider}: rate limit hit",
                    "The provider asked us to slow down{after}. Free plans allow only a few requests "
                    "per minute, so some candidates have no {provider} evidence. Re-run the scan "
@@ -310,7 +316,7 @@ def _flush_issues(
             "candidates": ", ".join(iss.get("candidates") or []) or "a supported provider",
         }
         title, fix = title.format(**fmt), fix.format(**fmt)
-        level: EventLevel = "error" if iss["kind"] in ("auth", "quota") else ("info" if iss["kind"] == "site" else "warn")
+        level: EventLevel = "error" if iss["kind"] in ("auth", "quota", "credits") else ("info" if iss["kind"] == "site" else "warn")
         em.emit("provider", prov, "skipped", f"{title} — {fix}", level=level,
                 data={"alert": {"kind": iss["kind"], "provider": prov, "title": title, "fix": fix,
                                 "error": fmt["error"], "retry_after": iss.get("retry_after"),

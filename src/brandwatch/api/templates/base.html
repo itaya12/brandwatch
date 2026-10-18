@@ -195,6 +195,16 @@ header nav{display:flex;align-items:center;min-width:0}
 {% block content %}{% endblock %}
 </main>
 <script>
+/* A scan form is sent once: a double click (or Enter twice) queued two identical scans, one of which never ran.
+   Only a submit that really went out counts — a confirm dialog cancels the first one and sends it again itself. */
+(function(){
+  const once = f => /\/(scan|scan-urls)$/.test(f.getAttribute('action') || '');
+  document.addEventListener('submit', e => { const f = e.target; if (once(f) && f.__sentAt && Date.now() - f.__sentAt < 4000) { e.preventDefault(); e.stopImmediatePropagation(); } }, true);
+  // read defaultPrevented after every listener ran (the confirm dialog's included), not before them
+  document.addEventListener('submit', e => { const f = e.target; if (once(f)) setTimeout(() => { if (!e.defaultPrevented) f.__sentAt = Date.now(); }, 0); });
+})();
+</script>
+<script>
 /* BrandWatch motion layer: count-ups, staggered entrances, animated bars / rings / histograms,
    and auto-drawn donut + sparkline charts from data-* attributes. */
 (function(){

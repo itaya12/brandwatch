@@ -266,6 +266,21 @@ class SearchApiAdsClient(AiAnswersMixin, SocialMixin, HttpClientMixin):
             "library_url": f"https://www.facebook.com/ads/library/?id={ad_id}" if ad_id else None,
         }  # fmt: skip
 
+    async def account(self) -> ProviderResult:
+        """The account behind the key (``/api/v1/me``, free — no search is spent): this month's use and what is left.
+        ``data.ok`` is False when nothing is left, so the Settings test says so instead of a misleading "rate limited"."""
+        if not self._api_key:
+            raise ProviderError("searchapi: no API key", retryable=False)
+        raw, latency = await self._get("https://www.searchapi.io/api/v1/me", params={"api_key": self._api_key})
+        acc = (raw or {}).get("account") or raw or {}
+        left, used, allowance = acc.get("remaining_credits"), acc.get("current_month_usage"), acc.get("monthly_allowance")
+        ok = bool(left)
+        summary = (f"key valid · {left} request(s) left" + (f" · {used} used this month of {allowance}" if allowance else "")
+                   if ok else "key valid, but the account has no requests left (remaining credits 0) — top up or choose a plan "
+                              "on searchapi.io; social media, ads and AI answers are skipped until then")  # fmt: skip
+        return self._result(ProviderStatus.POSITIVE if ok else ProviderStatus.NEGATIVE,
+                            {"ok": ok, "summary": summary, "remaining": left, "used": used, "allowance": allowance}, {}, latency)  # fmt: skip
+
     async def meta_ads(
         self, query: str, country: str, active_status: str = "active", next_page_token: str | None = None
     ) -> ProviderResult:

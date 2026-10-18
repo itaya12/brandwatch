@@ -382,11 +382,13 @@ class ResilientProvider:
             # such sites and skip the browser for every site after them (a scan of 53 sites made 3 browser calls and found nothing)
             self.breaker.record_failure()
         _trace_call(self.name, method, args, kwargs, None, error=last_error)
-        if classify_provider_error(last_error, last_retry_after) == "auth":
-            # the key is wrong or the plan is inactive: asking again for every candidate only
-            # adds latency; the fallback provider answers from now on
+        if classify_provider_error(last_error, last_retry_after) in ("auth", "credits"):
+            # the key is wrong, the plan is inactive or the account is empty: asking again for every
+            # candidate only adds latency; the fallback provider answers from now on
             self.disabled = (
-                f"{self.name}: skipped for this scan after the key was rejected ({last_error})"
+                f"{self.name}: skipped for this scan after the "
+                + ("account said it has no requests left" if "no_credits" in last_error else "key was rejected")
+                + f" ({last_error})"
             )
         self._issue(classify_provider_error(last_error, last_retry_after), method, last_error,
                     last_retry_after)  # fmt: skip
@@ -440,6 +442,8 @@ def classify_provider_error(error: str, retry_after: int | None = None) -> str:
     e = (error or "").lower()
     if "quota_exceeded" in e:
         return "quota"
+    if "no_credits" in e:  # the provider's account is empty (a 429 that says so): waiting does not help
+        return "credits"
     if retry_after is not None or "rate limit" in e or "429" in e:
         return "rate_limit"
     if (

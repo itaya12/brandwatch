@@ -290,7 +290,7 @@ _TEST_CALLS: dict[str, tuple[str, tuple]] = {
     "urlscan": ("search_pages", ("example", 1)),
     "serpapi": ("search", ("example",)),
     "scraperapi": ("search", ("example",)),
-    "searchapi": ("meta_ads", ("nike", "US")),
+    "searchapi": ("account", ()),  # free: is the key valid, and how many requests are left (a search would spend one)
     "companies_house": ("lookup", ("00000006", "GB")),
     "shodan": ("host", ("8.8.8.8",)),
     "whoisxml": ("balance", ()),  # free: is the key valid, and how many credits has each product (a WHOIS lookup would spend one)
