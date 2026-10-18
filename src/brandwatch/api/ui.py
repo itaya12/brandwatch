@@ -121,9 +121,45 @@ def render_error(request: Request, status_code: int, message: str) -> HTMLRespon
 def _render(request: Request, name: str, user: User | None, **ctx: Any) -> HTMLResponse:
     can_write = user is not None and user.role is not UserRole.VIEWER
     is_admin = user is not None and user.role is UserRole.ADMIN
+    nav = nav_counts(request, user) if user is not None else {}
     return templates.TemplateResponse(
-        request, name, {"user": user, "can_write": can_write, "is_admin": is_admin, **ctx}
+        request, name, {"user": user, "can_write": can_write, "is_admin": is_admin, "nav": nav, **ctx}
     )
+
+
+_NAV_CACHE: dict[uuid.UUID, tuple[float, dict[str, int]]] = {}
+NAV_TTL = 60.0  # seconds
+
+
+def nav_counts(request: Request, user: User) -> dict[str, int]:
+    """The numbers in the navigation bar: open findings, and confirmed sites whose takedown was not sent. One small query,
+    cached for a minute per workspace; a page that follows an action (?flash=, ?bulk=) recounts."""
+    import time
+
+    from brandwatch.db.models import TakedownDraft
+
+    now = time.monotonic()
+    hit = _NAV_CACHE.get(user.workspace_id)
+    fresh = not any(k in request.query_params for k in ("flash", "bulk", "saved"))
+    if hit and fresh and now - hit[0] < NAV_TTL:
+        return hit[1]
+    factory = getattr(request.app.state, "session_factory", None)
+    if factory is None:
+        return {}
+    with factory() as s:
+        ws = s.scalars(sa.select(Brand.id).where(Brand.workspace_id == user.workspace_id)).all()
+        if not ws:
+            out = {"findings": 0, "takedowns": 0}
+        else:
+            awake = sa.or_(Finding.snoozed_until.is_(None), Finding.snoozed_until <= datetime.now(UTC))  # a snoozed finding does not wait yet
+            open_n = s.scalar(sa.select(sa.func.count()).select_from(Finding).where(Finding.brand_id.in_(ws), Finding.state == FindingState.OPEN, awake)) or 0
+            confirmed = s.scalars(sa.select(Finding.id).where(Finding.brand_id.in_(ws), Finding.state == FindingState.CONFIRMED, Finding.kind != "ai_answer")).all()
+            sent = set(s.scalars(sa.select(TakedownDraft.finding_id).where(
+                TakedownDraft.finding_id.in_(confirmed) if confirmed else sa.false(),
+                TakedownDraft.state.notin_([TakedownState.DRAFT, TakedownState.REVIEW, TakedownState.APPROVED, TakedownState.REOPENED]))).all())  # fmt: skip
+            out = {"findings": int(open_n), "takedowns": sum(1 for f in confirmed if f not in sent)}
+    _NAV_CACHE[user.workspace_id] = (now, out)
+    return out
 
 
 def _uuid_or_none(value: str | None) -> uuid.UUID | None:
@@ -180,11 +216,15 @@ def login_submit(
     next: Annotated[str, Form()] = "",
 ):
     user = session.scalars(sa.select(User).where(User.email == email.strip())).first()
-    if user is None or not verify_password(user.password_hash, password) or not user.is_active:
+    ok = user is not None and verify_password(user.password_hash, password)
+    if not ok or not user.is_active:
         if user is not None:
             audit(session, workspace_id=user.workspace_id, actor_type="analyst", actor_id=user.id,
                   action="user.login_failed", object_type="user", object_id=user.id)  # fmt: skip
-        return _render(request, "login.html", None, error="Invalid credentials", next=next,
+        # a disabled account is told so, but only to someone who knows its password (no account probing)
+        msg = ("This account is disabled. An admin turns it back on in Settings → Team." if ok
+               else "Wrong username or password. Forgot it? An admin sets a new one in Settings → Team.")  # fmt: skip
+        return _render(request, "login.html", None, error=msg, next=next,
                        demo_mode=request.app.state.settings.demo_mode)  # fmt: skip
     audit(session, workspace_id=user.workspace_id, actor_type="analyst", actor_id=user.id,
           action="user.login", object_type="user", object_id=user.id)  # fmt: skip
@@ -228,7 +268,18 @@ def brands_page(
         copy_sources=_copy_sources(session, brands),
         PRESETS=presets_view(),
         active="brands",
+        **_add_form_ctx(request, session, user),
     )
+
+
+def _add_form_ctx(request: Request, session: Session, user: User) -> dict[str, Any]:
+    """What the add-brand form needs besides the tracks: the workspace's site cap (the Deep warning) and the
+    country-code → markets map (the countries follow the main domain as it is typed)."""
+    from brandwatch import tenancy
+    from brandwatch.detection import markets as markets_mod
+
+    cap = tenancy.workspace_limits(session, user.workspace_id, request.app.state.settings).max_candidate_count or 0
+    return {"ws_cap": int(cap), "cc_markets": markets_mod.tld_markets()}
 
 
 def _copy_sources(session: Session, brands: list[dict[str, Any]]) -> list[dict[str, Any]]:
@@ -263,6 +314,9 @@ async def brands_create(
     try:
         # "Customise parameters" on the form: the visible parameters are saved on top of the chosen track
         preset, detection, scoring, custom = brands_api.config_patch_from_form(form, default_mode="preset")
+        if form.get("markets_auto") == "1":  # the analyst did not touch the countries: the main domain decides (create_brand)
+            for k in ("search_markets", "search_geo", "search_lang"):
+                detection.pop(k, None)
         body = brands_api.BrandCreate(
             name=str(form.get("name") or ""),
             vertical=str(form.get("vertical") or "") or None,
@@ -285,6 +339,7 @@ async def brands_create(
             cards=ui_stats.brand_cards(session, user, listed),
             copy_sources=_copy_sources(session, listed),
             PRESETS=presets_view(),
+            **_add_form_ctx(request, session, user),
             prefill={"name": str(form.get("name") or ""), "entries": domain_list or [""]},
             active="brands",
             error=str(detail),
@@ -331,10 +386,33 @@ def brand_context(
         "PRESETS": presets_view(),
         "scheduler_on": bool(getattr(request.app.state.settings, "scheduler_enabled", False)),
         "setup_needed": _needs_setup(brand),
+        "setup_pending": _needs_setup_ignoring_skip(brand),
         # social media is searched through SearchApi: in live mode it needs that key
         "social_ready": keystore_mod.provider_ready(session, user.workspace_id, request.app.state.settings, "searchapi"),
+        "ready": part_readiness(request, session, user),
         "active": "brands",
     }
+
+
+def part_readiness(request: Request, session: Session, user: User) -> dict[str, bool]:
+    """Which parts of a scan can really run in this workspace: Google needs SerpApi or ScraperAPI, the AI second opinion
+    and "Suggest with AI" need OpenAI, the residential probe needs a proxy and a residential budget (demo: all)."""
+    from brandwatch import keys as keystore_mod
+    from brandwatch import tenancy
+
+    settings = request.app.state.settings
+    ready = lambda p: keystore_mod.provider_ready(session, user.workspace_id, settings, p)  # noqa: E731
+    proxy = tenancy.workspace_proxy_settings(session, user.workspace_id)
+    gb = tenancy.workspace_limits(session, user.workspace_id, settings).max_residential_gb or 0
+    return {"google": ready("serpapi") or ready("scraperapi"), "openai": ready("openai"), "searchapi": ready("searchapi"),
+            "residential": bool(settings.demo_mode or (proxy.get("mode") not in (None, "off") and gb > 0)),
+            "proxy": proxy.get("mode") not in (None, "off"), "residential_gb": gb > 0}  # fmt: skip
+
+
+def _needs_setup_ignoring_skip(brand: dict[str, Any]) -> bool:
+    from brandwatch.api.ui_settings import needs_setup
+
+    return needs_setup(brand, honour_skip=False)
 
 
 _WORLD_LAND = Path(__file__).parent / "assets" / "world-land-110m.json"
@@ -368,10 +446,16 @@ def brand_scan(
     max_names: Annotated[str, Form()] = "",
     rebuild_baseline: Annotated[str, Form()] = "",
     only: Annotated[str, Form()] = "",  # "scan now, only …": lookalike / search / social / ads
+    skip_setup: Annotated[str, Form()] = "",  # "start now without setting up": not asked again
 ):  # fmt: skip
     if user is None:
         return _login_redirect(request)
     cap = int(max_candidates) if max_candidates.strip().isdigit() else None
+    if skip_setup:
+        row = session.get(Brand, brand_id)
+        if row is not None and row.workspace_id == user.workspace_id:
+            row.profile = {**(row.profile or {}), "setup_skipped": True}
+            session.flush()
     try:
         out = brands_api.start_scan(
             brand_id,
@@ -480,20 +564,27 @@ def findings_page(
     since: str = "",
     sort: str = "severity",
     page: int = 1,
+    job_id: str = "",
+    fmt: str = "",
 ):
     if user is None:
         return _login_redirect(request)
     kind = kind if kind in ("phishing", "shop", "social", "ai_answer") else ""
-    # no state param at all → open findings (the work queue); state="" → the 'all' option
-    state = _enum_or_none(FindingState, "open" if state is None else state)
+    # no state param at all → open findings (the work queue); state="" → the 'all' option; "snoozed" → the ones put aside
+    snoozed = state == "snoozed"
+    state = _enum_or_none(FindingState, "open" if state is None or snoozed else state)
     brand_id = _uuid_or_none(brand_id)
+    job = _uuid_or_none(job_id)
     severity = _enum_or_none(Severity, severity)
     q = q.strip()[:120]
     since = since if since in findings_api.SINCE else ""
     sort = sort if sort in findings_api.SORTS else "severity"
     per_page = 50
     stmt = findings_api.findings_query(session, user, brand_id=brand_id, state=state, severity=severity, kind=kind or None,
-                                       q=q, since=since, sort=sort)  # fmt: skip
+                                       q=q, since=since, sort=sort, snoozed=snoozed, job_id=job)  # fmt: skip
+    if fmt in ("csv", "json"):  # the same filters, every row (at most 10,000), as a file
+        return _export(fmt, "findings", [findings_api.finding_row(session, f) for f in session.scalars(stmt.limit(10_000)).all()],
+                       ["id", "hostname", "brand_id", "kind", "severity", "score", "confidence", "state", "surface", "created_at", "snoozed_until"])  # fmt: skip
     total = findings_api.count_findings(session, stmt)
     pages = max(1, -(-total // per_page))
     page = max(1, min(page, pages))
@@ -512,13 +603,16 @@ def findings_page(
     counts = {str(b): n for b, n in session.execute(cq).all()}
     brand_chips = [{"id": str(b["id"]), "name": b["name"], "count": sum(counts.get(str(i), 0) for i in regions_mod.with_regions(session, uuid.UUID(str(b["id"]))))}
                    for b in brands]  # fmt: skip
-    filters = {"brand_id": str(brand_id) if brand_id else "", "state": state.value if state else "",
-               "severity": severity.value if severity else "", "kind": kind, "q": q, "since": since, "sort": sort}  # fmt: skip
+    filters = {"brand_id": str(brand_id) if brand_id else "", "state": "snoozed" if snoozed else (state.value if state else ""),
+               "severity": severity.value if severity else "", "kind": kind, "q": q, "since": since, "sort": sort,
+               "job_id": str(job) if job else ""}  # fmt: skip
+    snoozed_n = findings_api.count_findings(session, findings_api.findings_query(session, user, brand_id=brand_id, state=FindingState.OPEN, snoozed=True))
     base_qs = "&".join(f"{k}={v}" for k, v in filters.items() if v or k == "state")  # the filters without the page
     return _render(request, "findings.html", user, findings=rows, brands=brands, stats=stats, active="findings",
                    brand_chips=brand_chips, brand_total=sum(counts.values()), filters=filters,
                    total=total, page=page, pages=pages, per_page=per_page, base_qs=base_qs,
-                   SORTS=findings_api.SORTS, SINCE=findings_api.SINCE, last_visit=user.previous_login_at,
+                   SORTS=findings_api.SORTS, SINCE=findings_api.SINCE, last_visit=user.previous_login_at, snoozed_n=snoozed_n,
+                   scan_job=scans_api.get_job(job, session, user) if job else None,
                    has_shops=any(r.get("kind") in ("shop", "social", "ai_answer") for r in rows) or bool(kind))  # fmt: skip
 
 
@@ -657,6 +751,9 @@ def finding_context(session: Session, user: User, finding_id: uuid.UUID) -> dict
     return {
         "d": d,
         "nb": findings_api.neighbours(session, user, frow) if frow else {"prev": None, "next": None, "open_count": 0},
+        "notes": findings_api.list_notes(session, finding_id),
+        "snoozed_until": frow.snoozed_until.isoformat() if frow is not None and frow.snoozed_until else None,
+        "SNOOZE_DAYS": findings_api.SNOOZE_DAYS,
         "meta": meta,
         "shop_levels": shop_levels.LEVELS,
         "shop_proofs": shop_levels.PROOFS,
@@ -716,6 +813,60 @@ def finding_verdict(
         lst = next if next.startswith("/ui/findings?") else "/ui/findings"
         return RedirectResponse(lst + ("&" if "?" in lst else "?") + flash, status_code=303)
     return RedirectResponse(f"/ui/findings/{finding_id}?{flash}", status_code=303)  # opened directly: stay, with the note
+
+
+@router.post("/findings/{finding_id}/note")
+def finding_note(
+    finding_id: uuid.UUID, request: Request,
+    session: Annotated[Session, Depends(get_session, scope="function")], user: Annotated[User | None, Depends(ui_writer)],
+    text: Annotated[str, Form()] = "",
+):  # fmt: skip
+    if user is None:
+        return _login_redirect(request)
+    if text.strip():
+        findings_api.add_note(finding_id, findings_api.NoteRequest(text=text[:4000]), session, user)
+    return RedirectResponse(f"/ui/findings/{finding_id}?saved=note#notes", status_code=303)
+
+
+@router.post("/findings/{finding_id}/snooze")
+def finding_snooze(
+    finding_id: uuid.UUID, request: Request,
+    session: Annotated[Session, Depends(get_session, scope="function")], user: Annotated[User | None, Depends(ui_writer)],
+    days: Annotated[int, Form()] = 7, reason: Annotated[str, Form()] = "", next: Annotated[str, Form()] = "",
+):  # fmt: skip
+    """Put an open finding aside for N days (0 = back in the queue now); from the queue, on to the next open one."""
+    if user is None:
+        return _login_redirect(request)
+    from urllib.parse import quote
+
+    f = session.get(Finding, finding_id)
+    nb = findings_api.neighbours(session, user, f) if f else {"next": None}
+    try:
+        findings_api.snooze_finding(finding_id, findings_api.SnoozeRequest(days=max(0, min(days, 90)), reason=reason), session, user)
+    except HTTPException as exc:
+        return render_error(request, exc.status_code, str(exc.detail))
+    if days and next.startswith("/ui/findings") and nb.get("next") and nb["next"] != str(finding_id):
+        host = session.get(Candidate, f.candidate_id).hostname
+        return RedirectResponse(f"/ui/findings/{nb['next']}?flash=" + quote(f"snoozed:{host}:{finding_id}", safe=":"), status_code=303)
+    return RedirectResponse(f"/ui/findings/{finding_id}?saved={'snoozed' if days else 'woken'}", status_code=303)
+
+
+def _export(fmt: str, name: str, rows: list[dict[str, Any]], cols: list[str]) -> Response:
+    """A list page's rows as CSV (the chosen columns) or JSON (everything), with the page's filters."""
+    import csv
+    import io
+    import json as _json
+
+    if fmt == "json":
+        return Response(_json.dumps(rows, ensure_ascii=False, default=str, indent=1), media_type="application/json",
+                        headers={"Content-Disposition": f'attachment; filename="brandwatch-{name}.json"'})  # fmt: skip
+    buf = io.StringIO()
+    w = csv.writer(buf)
+    w.writerow(cols)
+    for r in rows:
+        w.writerow(["" if r.get(c) is None else (r[c] if isinstance(r.get(c), (str, int, float)) else _json.dumps(r[c], ensure_ascii=False, default=str)) for c in cols])
+    return Response("\ufeff" + buf.getvalue(), media_type="text/csv; charset=utf-8",
+                    headers={"Content-Disposition": f'attachment; filename="brandwatch-{name}.csv"'})  # fmt: skip
 
 
 @router.post("/findings/{finding_id}/reopen")
@@ -1432,6 +1583,7 @@ def candidates_page(
     state: str = "",
     q: str = "",
     page: int = 1,
+    fmt: str = "",
 ):
     if user is None:
         return _login_redirect(request)
@@ -1440,6 +1592,11 @@ def candidates_page(
     q = q.strip()[:120]
     per_page = 50
     stmt = findings_api.candidates_query(session, user, brand_id=brand_id, state=state, q=q)
+    if fmt in ("csv", "json"):
+        rows = findings_api.list_candidates(session, user, brand_id=brand_id, state=state, q=q, limit=5000)
+        for r in rows:
+            r["found_by"] = ", ".join(sorted({s["stream"] for s in r.get("sources") or []}))
+        return _export(fmt, "watchlist", rows, ["id", "hostname", "brand_name", "state", "surface", "priority", "found_by", "first_seen", "last_seen", "next_scan_at", "scan_count"])
     total = findings_api.count_findings(session, stmt)
     pages = max(1, -(-total // per_page))
     page = max(1, min(page, pages))
@@ -1526,7 +1683,7 @@ def og_image() -> Response:
 def takedowns_page(
     request: Request, session: Annotated[Session, Depends(get_session, scope="function")],
     user: Annotated[User | None, Depends(ui_user)],
-    brand_id: str = "", state: str = "",
+    brand_id: str = "", state: str = "", fmt: str = "",
 ):  # fmt: skip
     """Every confirmed phishing site and whether a takedown was requested — and how far it got."""
     if user is None:
@@ -1557,6 +1714,12 @@ def takedowns_page(
     else:
         rows = by_state(sites)
     counts["stale"] = sum(1 for x in sites if (x["waiting_days"] or 0) >= 7 and x["takedown_state"] in ("sent", "acknowledged"))
+    if fmt in ("csv", "json"):
+        flat = [{"hostname": x["hostname"], "brand_name": x["brand_name"], "severity": x["severity"], "confirmed_at": x["confirmed_at"],
+                 "takedown_state": x["takedown_state"], "reference": (x["takedown"] or {}).get("reference"), "abuse_contact": (x["takedown"] or {}).get("abuse_contact"),
+                 "sent_at": (x["takedown"] or {}).get("sent_at"), "waiting_days": x["waiting_days"], "reported_portals": (x["takedown"] or {}).get("reported_count"),
+                 "map_status": x["map_status"], "finding_id": x["id"]} for x in rows]  # fmt: skip
+        return _export(fmt, "takedowns", flat, list(flat[0]) if flat else ["hostname"])
     # a chip per brand with how many confirmed sites it has under the same takedown state: "all brands" or one brand in a click
     every = by_state(confirmed_sites(session, user, None, brands) if brand_id else sites)
     per = {}
@@ -1578,22 +1741,47 @@ def activity_page(
 ):
     if user is None:
         return _login_redirect(request)
-    from brandwatch.db.models import AuditEvent
+    f = _activity_filters(request)
+    per_page = 300
+    page = max(1, int(request.query_params.get("page") or 1) if str(request.query_params.get("page") or "1").isdigit() else 1)
+    stats = ui_stats.activity_stats(session, user, limit=per_page, offset=(page - 1) * per_page, **f)
+    users = session.scalars(sa.select(User.email).where(User.workspace_id == user.workspace_id).order_by(User.email)).all()
+    qs = "&".join(f"{k}={v}" for k, v in f.items() if v)
+    return _render(request, "activity.html", user, stats=stats, filters=f, page=page, per_page=per_page, users=users,
+                   base_qs=qs, active="activity")  # fmt: skip
 
-    rows = session.scalars(
-        sa.select(AuditEvent)
-        .where(AuditEvent.workspace_id == user.workspace_id)
-        .order_by(AuditEvent.at.desc())
-        .limit(200)
-    ).all()
-    return _render(
-        request,
-        "activity.html",
-        user,
-        events=rows,
-        stats=ui_stats.activity_stats(session, user),
-        active="activity",
-    )
+
+def _activity_filters(request: Request) -> dict[str, str]:
+    """?actor= (an e-mail or "system") · ?category= (finding, takedown, brand …) · ?object_id= · ?since= / ?until= (YYYY-MM-DD)."""
+    import re as _re
+
+    q = request.query_params
+    day = lambda v: v if _re.fullmatch(r"\d{4}-\d{2}-\d{2}", v or "") else ""  # noqa: E731
+    return {"actor": str(q.get("actor") or "")[:320], "category": _re.sub(r"[^a-z_]", "", str(q.get("category") or ""))[:40],
+            "object_id": str(_uuid_or_none(q.get("object_id")) or ""), "since": day(q.get("since")), "until": day(q.get("until"))}  # fmt: skip
+
+
+@router.get("/activity.csv")
+def activity_csv(
+    request: Request, session: Annotated[Session, Depends(get_session, scope="function")],
+    user: Annotated[User | None, Depends(ui_user)],
+):  # fmt: skip
+    """The activity log with the page's filters, as CSV (one row per event, nothing collapsed; at most 20,000 rows)."""
+    if user is None:
+        return _login_redirect(request)
+    import csv
+    import io
+    import json as _json
+
+    rows = ui_stats.activity_rows(session, user, limit=20_000, **_activity_filters(request))
+    buf = io.StringIO()
+    w = csv.writer(buf)
+    w.writerow(["at_utc", "actor", "actor_type", "action", "object_type", "object_id", "old", "new", "reason"])
+    for r in rows:
+        w.writerow([r["at"], r["actor"], r["actor_type"], r["action"], r["object_type"], r["object_id"] or "",
+                    _json.dumps(r["old"], ensure_ascii=False) if r["old"] else "", _json.dumps(r["new"], ensure_ascii=False) if r["new"] else "", r["reason"] or ""])  # fmt: skip
+    return Response("\ufeff" + buf.getvalue(), media_type="text/csv; charset=utf-8",
+                    headers={"Content-Disposition": 'attachment; filename="brandwatch-activity.csv"'})  # fmt: skip
 
 
 def jobs_for_nav(
@@ -1619,10 +1807,135 @@ def dashboard_page(
     brand_id = _uuid_or_none(brand_id)
     data = dashboard_api.dashboard(request, session, user, brand_id=brand_id)
     brands = brands_api.list_brands(session, user)
+    # a brand that was never scanned: the dashboard says so first, with the way to its first scan
+    scanned = set(session.scalars(sa.select(ScanJob.brand_id).where(ScanJob.workspace_id == user.workspace_id, ScanJob.kind == "brand_scan").distinct()).all())
+    unscanned = sorted((b for b in brands if uuid.UUID(str(b["id"])) not in scanned), key=lambda b: str(b.get("created_at") or ""), reverse=True)  # newest first
+    # new since yesterday: the open Critical / High ones that arrived in the last 24 hours, each a link
+    new_stmt = findings_api.findings_query(session, user, brand_id=brand_id, state=FindingState.OPEN, since="24h", sort="newest")
+    new_24h = [findings_api.finding_row(session, f) for f in session.scalars(
+        new_stmt.where(Finding.severity.in_([Severity.CRITICAL, Severity.HIGH])).limit(8)).all()]  # fmt: skip
     return _render(
         request, "dashboard.html", user, d=data, brands=brands, active="dashboard",
-        selected_brand=str(brand_id) if brand_id else "",
+        selected_brand=str(brand_id) if brand_id else "", unscanned=unscanned, new_24h=new_24h,
     )  # fmt: skip
+
+
+# --------------------------------------------------------------------------------------------
+# global search
+# --------------------------------------------------------------------------------------------
+@router.get("/search", response_class=HTMLResponse)
+def search_page(
+    request: Request, session: Annotated[Session, Depends(get_session, scope="function")],
+    user: Annotated[User | None, Depends(ui_user)], q: str = "",
+):  # fmt: skip
+    """One box for everything: a domain, an IP, a takedown reference or a brand name — findings (any state), the watchlist,
+    the allowlist, takedowns, indicators on the infrastructure maps and brands."""
+    if user is None:
+        return _login_redirect(request)
+    q = q.strip()[:120]
+    return _render(request, "search.html", user, q=q, results=global_search(session, user, q) if len(q) >= 2 else None, active="")
+
+
+def global_search(session: Session, user: User, q: str) -> dict[str, list[dict[str, Any]]]:
+    from brandwatch.db.models import BrandDomain, Ioc, TakedownDraft
+
+    like = f"%{q.lower()}%"
+    brand_rows = session.scalars(sa.select(Brand).where(Brand.workspace_id == user.workspace_id)).all()
+    bname = {b.id: b.name for b in brand_rows}
+    ids = list(bname)
+    if not ids:
+        return {"findings": [], "watchlist": [], "allowlist": [], "takedowns": [], "indicators": [], "brands": []}
+    findings = session.execute(
+        sa.select(Finding, Candidate.hostname).join(Candidate, Candidate.id == Finding.candidate_id)
+        .where(Finding.brand_id.in_(ids), sa.func.lower(Candidate.hostname).like(like)).order_by(Finding.created_at.desc()).limit(25)
+    ).all()  # fmt: skip
+    found_cands = {f.candidate_id for f, _ in findings}
+    cands = session.scalars(
+        sa.select(Candidate).where(Candidate.brand_id.in_(ids), sa.func.lower(Candidate.hostname).like(like)).order_by(Candidate.last_seen.desc()).limit(25)
+    ).all()  # fmt: skip
+    allow = session.scalars(sa.select(BrandDomain).where(BrandDomain.brand_id.in_(ids), sa.func.lower(BrandDomain.domain).like(like)).limit(25)).all()
+    tds = session.execute(
+        sa.select(TakedownDraft, Candidate.hostname).join(Finding, Finding.id == TakedownDraft.finding_id).join(Candidate, Candidate.id == Finding.candidate_id)
+        .where(Finding.brand_id.in_(ids), sa.or_(sa.func.lower(Candidate.hostname).like(like), sa.cast(TakedownDraft.id, sa.String).like(like),
+                                                 sa.func.lower(sa.func.coalesce(TakedownDraft.abuse_contact, "")).like(like)))
+        .order_by(TakedownDraft.updated_at.desc()).limit(25)
+    ).all()  # fmt: skip
+    iocs = session.scalars(sa.select(Ioc).where(Ioc.workspace_id == user.workspace_id, sa.func.lower(Ioc.value).like(like)).limit(25)).all()
+
+    return {
+        "findings": [{"id": str(f.id), "host": h, "severity": f.severity.value, "state": f.state.value, "brand": bname.get(f.brand_id), "kind": f.kind}
+                     for f, h in findings],
+        "watchlist": [{"id": str(c.id), "host": c.hostname, "state": c.state.value, "brand": bname.get(c.brand_id)} for c in cands if c.id not in found_cands],
+        "allowlist": [{"domain": d.domain, "kind": d.kind, "official": d.is_official, "brand": bname.get(d.brand_id), "brand_id": str(d.brand_id)} for d in allow],
+        "takedowns": [{"id": str(t.id), "reference": t.reference, "host": h, "state": t.state.value}
+                      for t, h in tds],
+        "indicators": [{"type": getattr(i.type, "value", str(i.type)), "value": i.value, "campaign_id": str(i.campaign_id) if getattr(i, "campaign_id", None) else None}
+                       for i in iocs],
+        "brands": [{"id": str(b.id), "name": b.name} for b in brand_rows if q.lower() in b.name.lower()],
+    }  # fmt: skip
+
+
+# --------------------------------------------------------------------------------------------
+# every scan of the workspace
+# --------------------------------------------------------------------------------------------
+JOB_KINDS = ("brand_scan", "url_scan", "investigate", "intel", "map_all")
+
+
+@router.get("/scans", response_class=HTMLResponse)
+def scans_page(
+    request: Request, session: Annotated[Session, Depends(get_session, scope="function")],
+    user: Annotated[User | None, Depends(ui_user)], brand_id: str = "", state: str = "", kind: str = "", page: int = 1,
+):  # fmt: skip
+    """Every scan, map and investigation of the workspace, newest first, with a Retry on the ones that failed."""
+    if user is None:
+        return _login_redirect(request)
+    from brandwatch.db.enums import JobState
+
+    bid = _uuid_or_none(brand_id)
+    stmt = sa.select(ScanJob).where(ScanJob.workspace_id == user.workspace_id)
+    if bid:
+        stmt = stmt.where(ScanJob.brand_id.in_(regions_mod.with_regions(session, bid)))
+    st = _enum_or_none(JobState, state)
+    if st:
+        stmt = stmt.where(ScanJob.state == st)
+    if kind in JOB_KINDS:
+        stmt = stmt.where(ScanJob.kind == kind)
+    per_page = 50
+    total = int(session.scalar(sa.select(sa.func.count()).select_from(stmt.subquery())) or 0)
+    pages = max(1, -(-total // per_page))
+    page = max(1, min(page, pages))
+    jobs = session.scalars(stmt.order_by(ScanJob.created_at.desc()).limit(per_page).offset((page - 1) * per_page)).all()
+    brands = brands_api.list_brands(session, user)
+    bname = {str(b["id"]): b["name"] for b in brands}
+    rows = [{**scans_api.job_out(session, j), "brand_name": bname.get(str(j.brand_id)),
+             "payload": {k: (j.payload or {}).get(k) for k in ("only", "retry_of")}} for j in jobs]  # fmt: skip
+    filters = {"brand_id": str(bid) if bid else "", "state": st.value if st else "", "kind": kind if kind in JOB_KINDS else ""}
+    base_qs = "&".join(f"{k}={v}" for k, v in filters.items() if v)
+    return _render(request, "scans.html", user, jobs=rows, brands=brands, filters=filters, total=total, page=page, pages=pages,
+                   per_page=per_page, base_qs=base_qs, JOB_KINDS=JOB_KINDS, JOB_STATES=[s.value for s in JobState], active="brands")  # fmt: skip
+
+
+@router.post("/jobs/{job_id}/retry")
+def job_retry(
+    job_id: uuid.UUID, request: Request,
+    session: Annotated[Session, Depends(get_session, scope="function")], user: Annotated[User | None, Depends(ui_writer)],
+):  # fmt: skip
+    """Run a failed or stopped scan again: the same kind, brand and parameters, as a new job (the old one stays on record)."""
+    if user is None:
+        return _login_redirect(request)
+    job = session.get(ScanJob, job_id)
+    if job is None or job.workspace_id != user.workspace_id:
+        raise HTTPException(404, "scan not found")
+    if job.state.value not in ("failed", "cancelled"):
+        return RedirectResponse(f"/ui/jobs/{job_id}", status_code=303)
+    payload = {k: v for k, v in (job.payload or {}).items() if k not in ("batch",)}
+    payload["requested_by"] = str(user.id)
+    payload["retry_of"] = str(job.id)
+    audit(session, workspace_id=user.workspace_id, actor_type="analyst", actor_id=user.id, action="scan.retried",
+          object_type="scan_job", object_id=job.id, new={"kind": job.kind})  # fmt: skip
+    session.commit()
+    new_id = request.app.state.queue.enqueue(job.kind, payload, workspace_id=user.workspace_id, brand_id=job.brand_id)
+    return RedirectResponse(f"/ui/jobs/{new_id}", status_code=303)
 
 
 @router.get("", include_in_schema=False)

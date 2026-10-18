@@ -219,6 +219,10 @@ def signal_items(ordered: list[tuple[str, Any]], details: dict[str, Any]) -> lis
     ]  # fmt: skip
 
 
+def _snooze_iso(f: Finding) -> str | None:
+    return f.snoozed_until.isoformat() if getattr(f, "snoozed_until", None) else None
+
+
 def finding_row(session: Session, f: Finding) -> dict[str, Any]:
     cand = session.get(Candidate, f.candidate_id)
     cur = f.current_score
@@ -253,6 +257,7 @@ def finding_row(session: Session, f: Finding) -> dict[str, Any]:
         "signals": [k for k, _ in ordered],
         "age_days": details.get("age_days"),
         "created_at": _iso(f.created_at),
+        "snoozed_until": _snooze_iso(f),
         "updated_at": _iso(f.updated_at),
         "thumbnail_url": _artifact_url(shot) if shot else None,
         "preview_note": None if shot else _no_picture_note(cur.signals if cur else None),
@@ -280,11 +285,13 @@ def _no_picture_note(signals: dict | None) -> str:
 SORTS: dict[str, str] = {"severity": "severity, then score", "score": "score", "newest": "newest first", "oldest": "oldest first",
                           "confidence": "confidence"}  # fmt: skip
 SINCE: dict[str, str] = {"24h": "last 24 hours", "7d": "last 7 days", "visit": "since my last visit"}
+SNOOZE_DAYS = (1, 3, 7, 14, 30)
 
 
 def findings_query(
     session: Session, user: User, *, brand_id: uuid.UUID | None = None, state: FindingState | None = None,
     severity: Severity | None = None, kind: str | None = None, q: str = "", since: str = "", sort: str = "severity",
+    snoozed: bool = False, job_id: uuid.UUID | None = None,
 ) -> Any:
     """The findings of the workspace, filtered and ordered: the queue the analyst works through. ``q`` is a
     host-name fragment, ``since`` one of SINCE (``visit`` = the user's previous sign-in), ``sort`` one of SORTS."""
@@ -307,6 +314,20 @@ def findings_query(
         stmt = stmt.where(Finding.kind == kind)
     if q:
         stmt = stmt.where(Candidate.hostname.ilike(f"%{q.strip().lower()}%"))
+    # snoozed: out of the open queue until the date passes; the "snoozed" view shows only them
+    now = datetime.now(UTC)
+    if snoozed:
+        stmt = stmt.where(Finding.snoozed_until.is_not(None), Finding.snoozed_until > now)
+    elif state is FindingState.OPEN:
+        stmt = stmt.where(sa.or_(Finding.snoozed_until.is_(None), Finding.snoozed_until <= now))
+    if job_id:  # what one scan found or re-scored: a score written while it ran
+        from brandwatch.db.models import ScanJob
+
+        job = session.get(ScanJob, job_id)
+        if job is None or job.workspace_id != user.workspace_id:
+            return stmt.where(sa.false())
+        start, end = job.started_at or job.created_at, job.finished_at or now
+        stmt = stmt.where(Finding.id.in_(sa.select(RiskScore.finding_id).where(RiskScore.created_at >= start, RiskScore.created_at <= end)))
     if since == "24h":
         stmt = stmt.where(Finding.created_at >= datetime.now(UTC) - timedelta(days=1))
     elif since == "7d":
@@ -1026,6 +1047,64 @@ def bulk_verdict(session: Session, user: User, body: BulkVerdictRequest) -> dict
         done.append(host)
     session.flush()
     return {"action": body.action, "changed": len(done), "hosts": done, "skipped": skipped}
+
+
+class SnoozeRequest(BaseModel):
+    days: int = Field(ge=0, le=90)  # 0 = wake it now
+    reason: str = Field(default="", max_length=2000)
+
+
+@router.post("/findings/{finding_id}/snooze")
+def snooze_finding(
+    finding_id: uuid.UUID, body: SnoozeRequest,
+    session: Annotated[Session, Depends(get_session, scope="function")], user: Annotated[User, Depends(require_analyst)],
+) -> dict[str, Any]:  # fmt: skip
+    """Out of the open queue for N days ("waiting for the registrar", "parked: look again next week"); 0 wakes it now."""
+    from datetime import UTC, datetime, timedelta
+
+    from brandwatch.api.auth import audit
+
+    f = _get_finding(session, user, finding_id)
+    if f.state is not FindingState.OPEN:
+        raise HTTPException(status.HTTP_409_CONFLICT, "only an open finding can be snoozed")
+    old = f.snoozed_until
+    f.snoozed_until = (datetime.now(UTC) + timedelta(days=body.days)) if body.days else None
+    audit(session, workspace_id=user.workspace_id, actor_type="analyst", actor_id=user.id,
+          action="finding.snoozed" if body.days else "finding.woken", object_type="finding", object_id=f.id,
+          old={"snoozed_until": old.isoformat() if old else None}, new={"snoozed_until": f.snoozed_until.isoformat() if f.snoozed_until else None},
+          reason=body.reason or None)  # fmt: skip
+    session.flush()
+    return {"id": str(f.id), "snoozed_until": f.snoozed_until.isoformat() if f.snoozed_until else None}
+
+
+class NoteRequest(BaseModel):
+    text: str = Field(min_length=1, max_length=4000)
+
+
+@router.post("/findings/{finding_id}/notes", status_code=status.HTTP_201_CREATED)
+def add_note(
+    finding_id: uuid.UUID, body: NoteRequest,
+    session: Annotated[Session, Depends(get_session, scope="function")], user: Annotated[User, Depends(require_analyst)],
+) -> dict[str, Any]:  # fmt: skip
+    """A working note on a finding (kept, never edited; also in Activity)."""
+    from brandwatch.api.auth import audit
+    from brandwatch.db.models import FindingNote
+
+    f = _get_finding(session, user, finding_id)
+    note = FindingNote(finding_id=f.id, author_id=user.id, text=body.text.strip())
+    session.add(note)
+    session.flush()
+    audit(session, workspace_id=user.workspace_id, actor_type="analyst", actor_id=user.id, action="finding.note_added",
+          object_type="finding", object_id=f.id, new={"note": note.text[:300]})  # fmt: skip
+    return {"id": str(note.id), "text": note.text, "created_at": note.created_at.isoformat() if note.created_at else None}
+
+
+def list_notes(session: Session, finding_id: uuid.UUID) -> list[dict[str, Any]]:
+    from brandwatch.db.models import FindingNote
+
+    emails = dict(session.execute(sa.select(User.id, User.email)).all())
+    return [{"id": str(n.id), "text": n.text, "by": emails.get(n.author_id) or "—", "at": n.created_at.isoformat() if n.created_at else None}
+            for n in session.scalars(sa.select(FindingNote).where(FindingNote.finding_id == finding_id).order_by(FindingNote.created_at.desc())).all()]  # fmt: skip
 
 
 @router.post("/findings/{finding_id}/reopen")

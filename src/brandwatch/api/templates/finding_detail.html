@@ -2,6 +2,7 @@
 {% block title %}{{ d.candidate.hostname }} · {{ d.brand.name }} · {{ d.finding.severity }}{% endblock %}
 {% set s = d.score %}
 {% set sevcolor = {'critical':'var(--crit)','high':'var(--high)','medium':'var(--med)','low':'var(--low)'}[d.finding.severity] %}
+{% block skip %}{% if d.finding.state == 'open' %}<a class="skip" href="#verdict">Skip to the verdict</a>{% endif %}{% endblock %}
 {% block content %}
 {% set is_shop = d.finding.kind == 'shop' %}
 {% set sl = d.finding.shop_level %}
@@ -156,7 +157,7 @@
 </div>
 
 {# ================================================================ next step: one place, no duplicates #}
-<div class="panel nextstep" id="verdict">
+<div class="panel nextstep" id="verdict" tabindex="-1">
   <h2 style="margin-top:0">What do I do <span class="muted">· {{ {'open': 'review the evidence below, then give a verdict', 'confirmed': 'get it taken down', 'dismissed': 'nothing — this finding is closed'}.get(d.finding.state, 'nothing to do') }}</span></h2>
   {% if can_write %}<form method="post" id="rescan" action="/ui/candidates/{{ d.candidate.id }}/rescan" hidden></form>{% endif %}
 
@@ -296,9 +297,35 @@
       {% if not off_site %}<button type="button" onclick="document.getElementById('rescan').submit()" title="visit the site again now">Re-scan now</button>{% endif %}
     {% endif %}
     <a class="small" href="/ui/candidates/{{ d.candidate.id }}" style="margin-left:4px">domain timeline</a>
-    {% if reports %}<span class="small muted" style="margin-left:6px">evidence packages:</span>{% for r in reports %}<a href="{{ r.url }}" target="_blank" class="pill">{{ r.format }} · {{ r.created_at[:16].replace('T',' ') }}</a>{% endfor %}{% endif %}
+    {% if reports %}<span class="small muted" style="margin-left:6px">evidence packages:</span>{% for r in reports %}<a href="{{ r.url }}" target="_blank" class="pill">{{ r.format }} · {{ r.created_at|ts }}</a>{% endfor %}{% endif %}
   </div>
+  {% if can_write and d.finding.state == 'open' %}
+  <form method="post" action="/ui/findings/{{ d.finding.id }}/snooze" class="snooze small" id="snooze">
+    <input type="hidden" name="next" value="{{ back or '' }}">
+    {% if snoozed_until %}<span>💤 Snoozed until <b>{{ snoozed_until|ts }}</b> — out of the queue until then.</span> <button type="submit" name="days" value="0" class="small">Back in the queue now</button>
+    {% else %}<label for="sz-days" style="margin:0;text-transform:none;letter-spacing:0;font-family:var(--sans);font-size:12.5px;color:var(--muted)">Not now — snooze it for</label>
+      <select id="sz-days" name="days" style="width:auto">{% for n in SNOOZE_DAYS %}<option value="{{ n }}" {{ 'selected' if n == 7 }}>{{ n }} day{{ 's' if n != 1 }}</option>{% endfor %}</select>
+      <input name="reason" placeholder="why (optional) — e.g. parked, look again" maxlength="300" style="width:260px">
+      <button type="submit" class="small" title="out of the open queue until then; it comes back by itself (and the daily digest says so)">💤 Snooze</button>{% endif %}
+  </form>
+  {% endif %}
 </div>
+
+{# ================================================================ working notes #}
+<div class="panel" id="notes" style="margin-top:12px">
+  <h2 style="margin-top:0">Notes <span class="muted">· for you and the next analyst — kept with the finding, never edited, also in Activity</span></h2>
+  {% if can_write %}<form method="post" action="/ui/findings/{{ d.finding.id }}/note" class="notef">
+    <textarea name="text" rows="2" maxlength="4000" placeholder="e.g. mailed the registrar on Monday, waiting · the same kit as shopn0va.com" dir="auto" aria-label="a new note"></textarea>
+    <button type="submit" class="small">Add note</button></form>{% endif %}
+  {% for n in notes %}<div class="note"><div class="small muted">{{ n.by }} · {{ n.at|ts }}</div><div dir="auto" style="white-space:pre-wrap">{{ n.text }}</div></div>{% endfor %}
+  {% if not notes %}<p class="muted small" style="margin:6px 0 0">No notes yet.</p>{% endif %}
+</div>
+<style>
+  .snooze{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:12px;padding-top:10px;border-top:1px dashed var(--border)}
+  .notef{display:flex;gap:8px;align-items:flex-start;margin-bottom:8px}.notef textarea{flex:1;min-width:0}
+  .note{padding:8px 0;border-top:1px solid var(--border);font-size:13.5px}
+  @media (max-width:700px){.notef{flex-direction:column}.snooze input[name=reason]{width:100%!important}}
+</style>
 
 {# ================================================================ details, in tabs #}
 {% set dt = v.detections %}{% set ipbad = v.ips|selectattr('positives')|list %}

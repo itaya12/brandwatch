@@ -39,13 +39,15 @@
   {% if search_on %}
   <div class="step" id="s-queries">
     <h2><span class="num">1</span> Google search queries</h2>
-    <p class="small muted" style="margin:0 0 8px">What BrandWatch types into Google to find sites that use {{ brand.name }}'s name. Write your own, or let the AI propose a list — then edit it.</p>
+    <p class="small muted" style="margin:0 0 8px">What BrandWatch types into Google to find sites that use <bdi>{{ brand.name }}</bdi>'s name. Write your own, or let the AI propose a list — then edit it.
+      <br><span style="color:#c3cdd9">The list below: {% if sq.approved %}approved{% if sq.approved_by %} by {{ sq.approved_by }}{% endif %}{% else %}{{ sq.proposal_source or 'a proposal' }} — nothing runs until you approve it{% endif %}.</span></p>
     <div id="qlist">
       {% for q in rows %}<div class="qrow{{ ' over' if loop.index > qmax }}"><input name="q" value="{{ q }}" maxlength="100" dir="auto"><button type="button" class="ghost qdel" title="remove">✕</button></div>{% endfor %}
     </div>
     <div class="actions" style="margin-top:10px">
       <button type="button" id="qadd">+ Add a query</button>
-      <button type="button" id="qai" title="the AI proposes a list from the brand's name, site and type — nothing is saved until you approve">✨ Suggest with AI</button>
+      {% if ai_ready %}<button type="button" id="qai" title="the AI proposes a list from the brand's name, site and type — nothing is saved until you approve">✨ Suggest with AI</button>
+      {% else %}<button type="button" id="qai" disabled title="needs an OpenAI key">✨ Suggest with AI</button> <span class="small muted">needs an OpenAI key — {% if user.role.value == 'admin' %}<a href="/ui/settings#keys">Settings → API keys</a>{% else %}ask an admin to add one{% endif %}</span>{% endif %}
       <span class="msg" id="qmsg"></span>
     </div>
     <p class="small muted" style="margin:10px 0 0">Each scan searches the first <b>{{ qmax }}</b> queries in <b>{% for g in mkpairs %}{{ g[0]|upper }} ({{ g[1] }}){{ ', ' if not loop.last }}{% endfor %}</b>:
@@ -59,7 +61,7 @@
     <p class="small muted" style="margin:0 0 8px">Scam shops advertise {{ brand.name }} on Facebook / Instagram country by country and sell at a fraction of the official price.
       The ads are searched in these countries; every shop found is compared with these prices.</p>
     <div class="actions" style="margin:0 0 10px">
-      <button type="button" id="psuggest" title="the AI answers from its own knowledge — check the prices before you approve">✨ Suggest with AI</button>
+      <button type="button" id="psuggest" title="the AI answers from its own knowledge — check the prices before you approve" {{ 'disabled' if not ai_ready }}>✨ Suggest with AI</button>{% if not ai_ready %} <span class="small muted">needs an OpenAI key</span>{% endif %}
       <span class="msg" id="pmsg"></span>
     </div>
     <div class="two">
@@ -120,7 +122,8 @@
   {% endif %}
 
   <div class="setup-actions">
-    <div class="grow">Approving saves {{ 'the queries' if search_on }}{{ ' and ' if search_on and retail }}{{ 'the profile' if retail }}; the scan then runs without stopping to ask.</div>
+    {% set parts = (['the Google queries'] if search_on else []) + (['the countries and prices'] if retail else []) + (['the questions for the AI assistants'] if AA.on else []) + ['the scan size'] %}
+    <div class="grow">Approving saves {{ parts[:-1]|join(', ') }}{{ ' and ' if parts|length > 1 }}{{ parts[-1] }}; the scan then runs from start to end without stopping to ask.</div>
     <button type="submit" name="action" value="save" class="ghost">Save, scan later</button>
     <button type="submit" name="action" value="scan" class="primary">✓ Approve &amp; start the scan</button>
   </div>
@@ -141,7 +144,7 @@
     list.addEventListener('input', mark);
     document.getElementById('qadd').addEventListener('click', () => { row('').querySelector('input').focus(); mark(); });
     const ai = document.getElementById('qai');
-    ai.addEventListener('click', async () => {
+    if (ai && !ai.disabled) ai.addEventListener('click', async () => {
       ai.disabled = true; msg.textContent = 'asking the AI…';
       try {
         const r = await fetch('/api/brands/{{ brand.id }}/search-queries/suggest', {method: 'POST', credentials: 'same-origin'});

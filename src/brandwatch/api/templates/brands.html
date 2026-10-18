@@ -18,25 +18,81 @@
   .bcard .nums span{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
   @media (max-width:420px){.bcard .nums{grid-template-columns:repeat(2,1fr)}.bcard .name{font-size:19px}}
   .live{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:11px;color:var(--accent2)}
+  #add .basics{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr);gap:12px 18px;align-items:start}
+  #add .tracks{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+  #add .tcard{display:flex;gap:8px;align-items:flex-start;border:1px solid var(--border);border-radius:10px;padding:9px 11px;background:var(--panel2);cursor:pointer;text-transform:none;letter-spacing:0;margin:0;font-family:var(--sans)}
+  #add .tcard input{width:auto;margin-top:3px}
+  #add .tcard b{display:block;font-size:13.5px;color:var(--text)}#add .tcard span{display:block;font-size:12px;color:var(--muted);line-height:1.4}
+  #add .tcard:has(input:checked){border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+  #add .kinds{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px}
+  #add details.more{margin-top:14px;border-top:1px solid var(--border);padding-top:10px}
+  #add details.more > summary{cursor:pointer;color:var(--accent2);font-size:13px}
+  #add details.more[open] > summary{margin-bottom:10px}
+  #add .more-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:12px}
+  #add .warnbox{font-size:12.5px;border:1px solid var(--high);border-radius:8px;padding:8px 12px;margin-top:8px}
+  @media (max-width:900px){ #add .basics,#add .tracks,#add .kinds{grid-template-columns:minmax(0,1fr)}}
 </style>
 {% set addform %}
 <div class="panel" style="margin-top:14px" id="add">
   <h2>Add brand <span class="muted">· the brand you are authorised to protect</span></h2>
-  <form method="post" action="/ui/brands" class="grid" style="grid-template-columns:1.4fr 1fr 1fr 1.4fr;align-items:end">
-    <div><label>Name</label><input name="name" placeholder="ShopNova" value="{{ prefill.name if prefill }}" required></div>
-    <div><label>Vertical</label>
-      <select name="vertical"><option value="">auto / unknown</option><option>ecommerce</option><option>saas</option><option>banking</option><option>crypto</option><option>delivery</option></select></div>
-    <div><label>Detection track</label>
-      <select name="preset"><option value="basic">Light · fast &amp; free</option><option value="standard" selected>Standard · recommended</option><option value="enterprise">Deep · every stream</option></select></div>
-    <div><label>Who sells its products?</label>
-      <select name="kind" title="if other shops resell the products, BrandWatch also hunts scam shops advertising them on Facebook / Instagram">
-        <option value="service">only the brand (a service, an app, a bank)</option>
-        <option value="retail">other shops too (shoes, clothing, electronics)</option></select></div>
-    <div style="grid-column:1/-1"><label>Official domains <span style="text-transform:none">· one per line</span></label>{% set rows = prefill.entries if prefill else [''] %}{% include "_domain_rows.html" %}</div>
-    {% include "_new_brand_params.html" %}
-    <div style="grid-column:1/-1"><button class="primary" type="submit">Create brand</button></div>
+  <form method="post" action="/ui/brands" id="addform">
+    <div class="basics">
+      <div><label for="nb-domain">Official domains <span style="text-transform:none">· one per line, the first is the main site</span></label>{% set rows = prefill.entries if prefill else [''] %}{% include "_domain_rows.html" %}</div>
+      <div><label for="nb-name">Name</label><input id="nb-name" name="name" placeholder="ShopNova" value="{{ prefill.name if prefill }}" required dir="auto" autocomplete="off">
+        <div class="small muted" style="margin-top:4px">Filled in from the first domain — change it to the brand's real name (it is what Google, the ads and the AI assistants are searched for).</div></div>
+    </div>
+    <label style="margin-top:12px">Detection track {{ term('tracks') }}</label>
+    <div class="tracks">
+      {% for key in ['basic', 'standard', 'enterprise'] %}{% set info = PRESETS[key] %}
+      <label class="tcard"><input type="radio" name="preset" value="{{ key }}" {{ 'checked' if key == 'standard' }}><div><b>{{ info.label }} <span style="display:inline;font-weight:400;color:var(--muted)">· {{ info.tagline }}</span></b><span>{{ info.blurb }}</span></div></label>
+      {% endfor %}
+    </div>
+    {% if ws_cap and PRESETS.enterprise.detection.max_candidates > ws_cap %}<div class="warnbox" id="nb-capwarn" style="display:none"><b style="color:var(--high)">Deep visits up to {{ PRESETS.enterprise.detection.max_candidates }} sites a scan, but the workspace limit is {{ ws_cap }}.</b> Scans stop at {{ ws_cap }} until {% if is_admin %}you raise it in <a href="/ui/settings#budget">Settings → Workspace &amp; budget</a>{% else %}an admin raises it in Settings → Workspace &amp; budget{% endif %}.</div>{% endif %}
+    <label style="margin-top:12px">Who sells its products?</label>
+    <div class="kinds">
+      <label class="tcard"><input type="radio" name="kind" value="service" checked><div><b>Only the brand</b><span>a service, an app, a bank — BrandWatch hunts phishing sites and fake accounts.</span></div></label>
+      <label class="tcard"><input type="radio" name="kind" value="retail"><div><b>Other shops too</b><span>shoes, clothing, electronics — also hunts scam shops that advertise the products on Facebook / Instagram (set countries and prices next).</span></div></label>
+    </div>
+    <details class="more" id="nb-more">
+      <summary>More options <span class="muted">· where its customers are, social media &amp; ads, AI answers, custom parameters — all can be set later on the brand page</span></summary>
+      <div class="more-grid">
+        <div class="cfgcard" id="nb-markets">
+          <h3>Where its customers are <span style="text-transform:none;letter-spacing:0;color:var(--muted);font-family:var(--sans)">· the countries and languages Google and the ads are searched in</span></h3>
+          <input type="hidden" name="markets_auto" id="nb-mauto" value="1">
+          {% set mk_list = search_markets(PRESETS['standard'].detection) %}{% set mk_disabled = false %}{% include "_markets_picker.html" %}
+          <div class="small muted" id="nb-mnote" style="margin-top:4px">Taken from the main domain when it has a country code (<span class="mono">.co.il</span> → Israel, Hebrew + English); otherwise the United States in English.</div>
+        </div>
+        {% include "_new_brand_params.html" %}
+      </div>
+    </details>
+    <div style="margin-top:14px;display:flex;gap:10px;align-items:center;flex-wrap:wrap"><button class="primary" type="submit">Create brand</button>
+      <span class="small muted">Next: the set-up page (Google queries{{ ', countries and prices for a brand other shops sell' }}), then the first scan. The official site is fingerprinted on that scan.</span></div>
   </form>
-  <p class="muted small" style="margin-top:10px">The attack-surface baseline (favicon, screenshot, login form, keywords of the official site) is built automatically on the first scan. You can change the track and every search rule on the brand page afterwards.</p>
+  <script>
+  (function(){
+    const form = document.getElementById('addform'); if (!form) return;
+    const name = document.getElementById('nb-name'), auto = document.getElementById('nb-mauto'), warn = document.getElementById('nb-capwarn');
+    let nameTouched = !!name.value;
+    name.addEventListener('input', () => { nameTouched = true; });
+    const first = () => { const i = form.querySelector('.dlist input[name=entry]'); return i ? i.value.trim() : ''; };
+    const host = v => { try { return new URL(v.includes('://') ? v : 'https://' + v).hostname.replace(/^www\./, ''); } catch (e) { return ''; } };
+    // the brand's name from its main domain: shopnova.co.il → Shopnova (only until the analyst types one)
+    const nameFrom = h => { const label = (h.split('.')[0] || '').replace(/[-_]+/g, ' '); return label ? label.replace(/\b\w/g, c => c.toUpperCase()) : ''; };
+    const CC = {{ cc_markets|tojson }};
+    const marketsFor = h => { const tld = (h.split('.').pop() || ''); return CC[tld] || null; };
+    const pk = form.querySelector('#nb-markets .mkt');
+    if (pk) pk.addEventListener('click', () => { auto.value = '0'; }, true);
+    if (pk) pk.addEventListener('keydown', () => { auto.value = '0'; }, true);
+    form.addEventListener('input', e => {
+      if (!e.target.matches('.dlist input[name=entry]')) return;
+      const h = host(first());
+      if (!nameTouched && h) name.value = nameFrom(h);
+      if (auto.value === '1' && pk && pk.setMarkets) { const m = marketsFor(h); if (m) pk.setMarkets(m); }
+    });
+    form.addEventListener('change', () => { if (warn) warn.style.display = (form.preset.value === 'enterprise') ? '' : 'none'; });
+  })();
+  </script>
+  <p class="muted small" style="margin-top:10px">You can change the track, the countries and every search rule on the brand page afterwards.</p>
 </div>
 {% endset %}
 <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
@@ -59,7 +115,7 @@
 {% endif %}
 
 {% set open_total = cards|sum(attribute='open_findings') %}
-<div class="kpis" style="margin-top:14px">
+{% if cards %}<div class="kpis" style="margin-top:14px">
   <div class="kpi cy"><div class="v" data-count="{{ cards|length }}">0</div><div class="l">brands</div></div>
   <div class="kpi"><div class="v" data-count="{{ cards|map(attribute='domains')|map('length')|sum }}">0</div><div class="l">official domains</div></div>
   <div class="kpi crit"><div class="v" data-count="{{ cards|map(attribute='sev')|map(attribute='critical')|sum }}">0</div><div class="l"><span class="pulse"></span> critical open</div></div>
@@ -68,7 +124,7 @@
   <div class="kpi ok"><div class="v" data-count="{{ cards|sum(attribute='confirmed') }}">0</div><div class="l">confirmed phishing</div></div>
   <div class="kpi"><div class="v" data-count="{{ cards|sum(attribute='scans') }}">0</div><div class="l">scans run</div></div>
   <div class="kpi mg"><div class="v" data-count="{{ cards|sum(attribute='scans_today') }}">0</div><div class="l">scans today</div></div>
-</div>
+</div>{% endif %}
 
 <div class="grid" style="grid-template-columns:minmax(0,1.6fr) minmax(320px,1fr);margin-top:14px;align-items:start">
 <div class="bcards" style="grid-template-columns:repeat(auto-fill,minmax(min(380px,100%),1fr))">
@@ -77,11 +133,11 @@
     <div class="top">
       {% if b.has_baseline %}<img class="fav" src="/api/brands/{{ b.id }}/baseline/favicon" alt="" onerror="this.style.visibility='hidden'">{% else %}<div class="fav"></div>{% endif %}
       <div style="flex:1;min-width:0">
-        <div class="name">{{ b.name }}</div>
+        <div class="name" dir="auto">{{ b.name }}</div>
         {% if b.parent_name %}<div class="small" style="color:var(--accent2)">regional campaign of {{ b.parent_name }}</div>
         {% elif b.regions %}<div class="small" style="color:var(--accent2)">{{ b.regions|length }} region{{ 's' if b.regions|length != 1 }}: {{ b.regions|map(attribute='region')|join(' · ') }} · {{ b.family_open_findings }} open in all</div>{% endif %}
         {% if b.baseline_blocked %}<div class="small" style="color:var(--crit)" title="{{ b.baseline_fetch.reason }}">⚠ official site blocks BrandWatch · HTTP {{ b.baseline_fetch.status or '—' }}{{ ' · ' ~ b.baseline_fetch.vendor if b.baseline_fetch.vendor }}{{ ' · urlscan.io snapshot in use' if b.baseline_fetch.source == 'urlscan' }}</div>{% endif %}
-        <div class="small muted mono" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ b.domains|join(' · ') }}{% if b.vertical %} · {{ b.vertical }}{% endif %}</div>
+        <div class="small muted mono" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis" dir="ltr">{{ b.domains|join(' · ') }}</div>{% if b.vertical %}<div class="small muted">{{ b.vertical }}</div>{% endif %}
       </div>
       <span class="badge sev-{{ b.threat }}">{{ b.threat if b.open_findings else 'calm' }}</span>
     </div>
@@ -102,10 +158,10 @@
     </div>
   </a>
   {% endfor %}
-  {% if not cards %}<div class="panel"><p class="muted">No brands yet — add the first one above.</p></div>{% endif %}
+  {% if not cards %}<div class="panel"><p class="muted">{% if can_write %}No brands yet — add the first one above: its official domain is enough to start.{% else %}No brands yet. An analyst or an admin adds them; you will see their findings here.{% endif %}</p></div>{% endif %}
 </div>
 <div class="panel">
-  <h2>Recent scans</h2>
+  <h2>Recent scans <a class="small" href="/ui/scans" style="text-transform:none;letter-spacing:0;font-family:var(--sans)">every scan →</a></h2>
   <table>
     {% for j in jobs or [] %}
     {% set icon = {'brand_scan':'◎','url_scan':'⌖','investigate':'⟁','intel':'◉','noop':'·'}.get(j.kind, '·') %}

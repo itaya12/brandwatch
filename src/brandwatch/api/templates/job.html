@@ -92,7 +92,7 @@
 <div class="kpis" id="kpis">
   <div class="kpi cy"><div class="v statebadge {{ job.state }}" id="k-state">{% if job.state in ('queued','running') %}<span class="radar"></span> {% endif %}{{ job.state }}</div><div class="l">state</div></div>
   <div class="kpi" title="raw discovery hits, before duplicates are merged and official / well-known sites are dropped — the pipeline below counts the sites actually visited"><div class="v" id="k-hits">{{ summary.hits if summary and summary.hits is not none else "—" }}</div><div class="l">discovered</div></div>
-  <div class="kpi hi"><div class="v" id="k-findings">{{ summary.findings if summary and summary.findings is not none else "—" }}</div><div class="l">findings</div></div>
+  <a class="kpi lnk hi" href="/ui/findings?state=&job_id={{ job.id }}" title="the findings this scan found or re-scored"><div class="v" id="k-findings">{{ summary.findings if summary and summary.findings is not none else "—" }}</div><div class="l">findings →</div></a>
   <div class="kpi crit"><div class="v" id="k-crit">{{ summary.criticals if summary and summary.criticals is not none else "—" }}</div><div class="l">critical</div></div>
   <div class="kpi vi"><div class="v" id="k-calls">{{ summary.api_calls if summary and summary.api_calls is not none else "—" }}</div><div class="l">API calls</div></div>
   <div class="kpi ok"><div class="v" id="k-cost">{{ "%.4f"|format(summary.cost_usd) if summary and summary.cost_usd is not none else "—" }}</div><div class="l">cost (USD)</div></div>
@@ -101,7 +101,7 @@
 
 <div class="grid" style="grid-template-columns:minmax(0,1.7fr) minmax(300px,1fr);margin-top:14px;align-items:start">
   <div>
-    <div class="now {{ 'failed' if job.state in ('failed','cancelled') else ('finished' if job.state == 'done' else '') }}" id="now">
+    <div class="now {{ 'failed' if job.state in ('failed','cancelled') else ('finished' if job.state == 'done' else '') }}" id="now" aria-live="polite">
       <div class="lbl"><span class="pulse cy" id="now-dot"></span><span id="now-word">right now</span><span class="stg" id="now-stage">{{ job.state }}</span>
         <span class="nav"><button type="button" id="now-prev" title="previous step">◀</button><span class="pos" id="now-pos">—</span><button type="button" id="now-next" title="next step">▶</button><button type="button" class="live" id="now-live" title="follow the scan live" style="display:none">● live</button><button type="button" id="now-hl" title="replay the key moments of this scan, 2.5 s each" style="display:none">▶ replay highlights</button><button type="button" id="now-end" title="jump to the final result" style="display:none">⏭ skip to end</button></span></div>
       <div class="body">
@@ -165,7 +165,8 @@
   <p class="muted small">Durable, ordered feed (<span class="mono">scan_events.seq</span>); a refresh replays from the last sequence number.</p>
   <div class="actions" style="margin-top:8px">
     <a class="btn" id="campaign-link" href="{{ '/ui/campaigns/' ~ job.campaign_id if job.campaign_id else '#' }}" style="border-color:var(--magenta);color:var(--magenta);{{ '' if job.campaign_id else 'display:none' }}">Open attack infrastructure map →</a>
-    {% if job.brand_id %}<a class="btn" href="/ui/findings?brand_id={{ job.brand_id }}">Findings for this brand →</a>
+    {% if job.brand_id %}<a class="btn" href="/ui/findings?state=&job_id={{ job.id }}">This scan's findings →</a><a class="btn" href="/ui/findings?brand_id={{ job.brand_id }}">Findings for this brand →</a>
+    {% if can_write and job.state in ('failed', 'cancelled') %}<form method="post" action="/ui/jobs/{{ job.id }}/retry" style="display:inline" data-busy="Starting…"><button type="submit" title="run it again with the same parameters, as a new scan">↻ Retry this scan</button></form>{% endif %}
     <a class="btn" href="/ui/candidates?brand_id={{ job.brand_id }}">Watchlist →</a>
     <a class="btn" href="/ui/brands/{{ job.brand_id }}">← Back to the brand</a>{% endif %}
   </div>

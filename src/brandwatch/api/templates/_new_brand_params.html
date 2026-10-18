@@ -66,8 +66,7 @@
         <label title="how many sites a scan opens in the browser and compares with the real one">Max sites to visit per scan</label><input name="max_candidates" type="number" min="1" max="5000" value="{{ d0.max_candidates }}">
         <label title="dnstwist look-alike names checked in DNS - keyword combinations, other TLDs and typos first">Max look-alike names to check</label><input name="max_names_checked" type="number" min="1" max="100000" value="{{ d0.max_names_checked }}">
         <label>Max Google queries per scan</label><input name="search_queries_max" value="{{ d0.search_queries_max or 10 }}">
-        <label>Search countries · languages <span style="text-transform:none">(pick a country, then tick its languages: e.g. United States · English, Spanish)</span></label>
-        {% set mk_list = search_markets(d0) %}{% set mk_disabled = false %}{% include "_markets_picker.html" %}
+        <div class="small muted" style="margin-top:6px;text-transform:none">Search countries and languages: “Where its customers are” above.</div>
       </div>
       <div class="cfgcard">
         <h3>Cadence</h3>
@@ -94,7 +93,7 @@
 </div>
 <script>
 (function(){
-  const form = document.querySelector('#add form'); if (!form) return;
+  const form = document.getElementById('addform'); if (!form) return;
   // the reach card: its cost, and the phishing-ads box only for a brand nobody else sells
   const reachCost = document.getElementById('nb-reach-cost'), pa = document.getElementById('nb-pa');
   function reach(){
@@ -117,9 +116,9 @@
   function fill(d, thresholds){
     form.querySelectorAll('input[name=streams]').forEach(c => c.checked = (d.streams || []).includes(c.value));
     ['tlds','max_candidates','max_names_checked','search_queries_max','watch_window_days','watch_cadence_hours','residential_probe'].forEach(k => set(k, d[k]));
-    const pk = form.querySelector('.mkt');
-    if (pk && pk.setMarkets) pk.setMarkets((d.search_markets && d.search_markets.length) ? d.search_markets
-      : String(d.search_geo || 'us').split(',').map(c => c.trim()).filter(Boolean).map(c => ({country: c, langs: [d.search_lang || 'en']})));
+    const pk = form.querySelector('.mkt'), auto = document.getElementById('nb-mauto');
+    if (pk && pk.setMarkets && d.search_markets && d.search_markets.length && thresholds) {  // copied from another brand: its countries too
+      pk.setMarkets(d.search_markets); if (auto) auto.value = '0'; }
     set('residential_country', d.residential_country || '');
     ['cloaking_probes','social_accounts','ai_second_opinion','auto_map_on_confirm','auto_investigate_on_confirm', 'phishing_ads'].forEach(k => chk(k, d[k]));
     if (d.social_accounts_max) set('social_accounts_max', d.social_accounts_max);
@@ -130,7 +129,8 @@
     note.textContent = on ? 'The values below are saved with the brand, on top of the chosen track. Change anything.' : "Off: the brand starts with exactly the chosen track. On: set streams, cadence, probes and thresholds yourself now.";
   }
   btn.addEventListener('click', () => { const on = box.classList.contains('hidden'); if (on && !copy?.value) fill((PRESETS[preset.value] || {}).detection || {}); open(on); });
-  preset.addEventListener('change', () => { if (mode.value === 'custom' && !copy?.value) fill((PRESETS[preset.value] || {}).detection || {}); });  // follows the track until a brand is copied
+  // the track is a set of radio cards: follow it until a brand is copied
+  form.addEventListener('change', e => { if (e.target.name === 'preset' && mode.value === 'custom' && !copy?.value) fill((PRESETS[preset.value] || {}).detection || {}); });
   copy?.addEventListener('change', () => {
     const s = SOURCES.find(x => x.id === copy.value);
     if (!s) { fill((PRESETS[preset.value] || {}).detection || {}); return; }

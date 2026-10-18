@@ -111,10 +111,11 @@ def test_the_add_form_fills_the_scan_size_from_the_track(engine, tmp_path, chrom
     errors: list[str] = []
     page.on("pageerror", lambda e: errors.append(str(e)))
     page.set_content(html, wait_until="domcontentloaded")
+    page.click("#nb-more > summary")  # the parameters are under "More options"
     page.click("#nb-btn")
-    page.select_option("#add select[name=preset]", "enterprise")
+    page.check("#add input[name=preset][value=enterprise]")  # the tracks are radio cards
     assert page.input_value("#add input[name=max_candidates]") == "1500" and page.input_value("#add input[name=max_names_checked]") == "20000"
-    page.select_option("#add select[name=preset]", "basic")
+    page.check("#add input[name=preset][value=basic]")
     assert page.input_value("#add input[name=max_candidates]") == "150" and page.input_value("#add input[name=max_names_checked]") == "1000"
     assert [e for e in errors if BROKEN.search(e)] == []
     page.close()

@@ -13,6 +13,7 @@
       {% if what == 'confirmed' %}<b class="mono" dir="ltr">{{ host }}</b> confirmed as phishing — it is now in <a href="/ui/campaigns#confirmed">Attack infrastructure</a>; the takedown can be drafted from <a href="/ui/findings/{{ fid }}">the finding</a>.
       {% elif what == 'dismissed' %}<b class="mono" dir="ltr">{{ host }}</b> dismissed — the verdict is kept and teaches the classifier.
       {% elif what == 'reopened' %}<b class="mono" dir="ltr">{{ host }}</b> is open again — it waits for a verdict in <a href="/ui/findings">the queue</a>.
+      {% elif what == 'snoozed' %}<b class="mono" dir="ltr">{{ host }}</b> snoozed — out of the queue for now; it comes back by itself. <a href="/ui/findings/{{ fid }}#snooze">change</a>
       {% elif what == 'rescan' %}Re-scan of <b class="mono" dir="ltr">{{ host }}</b> queued — <a href="/ui/jobs/{{ fid }}">watch the console</a>; the row updates when it ends.
       {% else %}{{ what }}{% endif %}
     </span>

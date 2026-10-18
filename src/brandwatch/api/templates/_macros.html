@@ -1,6 +1,6 @@
 {# Shared presentation macros: signal pills, host with homoglyph tag, VT pill, cloaked badge. #}
 {% macro host(h, display=none, idn=false) -%}
-  <span class="mono">{{ display or h }}</span>{% if idn %} <span class="pill" style="font-size:10px" title="written with look-alike Unicode characters; the real (punycode) name is {{ h }}">homoglyph</span>{% endif %}
+  <span class="mono" dir="ltr">{{ display or h }}</span>{% if idn %} <span class="pill" style="font-size:10px" title="written with look-alike Unicode characters; the real (punycode) name is {{ h }}">homoglyph</span>{% endif %}
 {%- endmacro %}
 {% macro pills(items, n=4, link=none) -%}
   {%- for it in items[:n] %}<span class="pill g-{{ it.group }}" title="{{ it.evidence }} · +{{ it.points|int }} pts">{{ it.label }}</span> {% endfor -%}

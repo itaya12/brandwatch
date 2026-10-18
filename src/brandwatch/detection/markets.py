@@ -96,6 +96,31 @@ def describe(prs: list[tuple[str, str]]) -> str:
     return " · ".join(f"{c.upper()} ({', '.join(ls)})" for c, ls in by.items())
 
 
+# a country-code TLD that is not its ISO code, and ccTLDs sold as generic names (.co, .io, .tv …: not a country)
+_CC_ALIAS = {"uk": "gb"}
+_NOT_A_COUNTRY = {"co", "io", "tv", "me", "ai", "fm", "ly", "to", "cc", "ws", "gg", "sh", "ac", "eu", "app", "dev"}
+
+
+def for_domain(domain: str) -> list[dict[str, Any]]:
+    """The markets an official domain points to: ``shopnova.co.il`` → Israel in Hebrew and English. A generic TLD (.com,
+    .net) or a ccTLD sold as a generic name (.io, .co) says nothing: empty."""
+    host = (domain or "").strip().lower().rstrip(".").split("/")[0]
+    tld = host.rsplit(".", 1)[-1] if "." in host else ""
+    if len(tld) != 2 or tld in _NOT_A_COUNTRY:
+        return []
+    cc = _CC_ALIAS.get(tld, tld)
+    if cc not in DEFAULT_LANG:
+        return []
+    lang = default_lang(cc)
+    return normalize([{"country": cc, "langs": [lang] + (["en"] if lang != "en" else [])}])
+
+
+def tld_markets() -> dict[str, list[dict[str, Any]]]:
+    """{"il": [{"country": "il", "langs": ["he", "en"]}], "uk": …} for every country-code TLD :func:`for_domain` knows."""
+    out = {tld: for_domain(f"x.{tld}") for tld in [*DEFAULT_LANG, *_CC_ALIAS]}
+    return {k: v for k, v in out.items() if v}
+
+
 def legacy(markets: list[dict[str, Any]]) -> tuple[str, str]:
     """The ``search_geo`` / ``search_lang`` a list of markets stands for: all the countries, and the language of the first."""
     if not markets:

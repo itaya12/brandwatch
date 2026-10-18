@@ -12,7 +12,7 @@ import sqlalchemy as sa
 from sqlalchemy.orm import Session
 
 from brandwatch.config.brand_config import SIGNAL_GROUPS
-from brandwatch.db.enums import CandidateState, FindingState, Severity
+from brandwatch.db.enums import CandidateState, FindingState, JobState, Severity
 from brandwatch.db.models import (
     AuditEvent,
     Brand,
@@ -187,70 +187,59 @@ def findings_stats(session: Session, user: User, brand_id: uuid.UUID | None) -> 
 
 # ------------------------------------------------------------------------------------------ brands
 def brand_cards(session: Session, user: User, brands: list[dict[str, Any]]) -> list[dict[str, Any]]:
-    out = []
+    """One card per brand. Eight grouped queries for all the brands together (it was seven per brand, and every job and
+    every finding was loaded into Python)."""
+    if not brands:
+        return []
     now = datetime.now(UTC)
-    for b in brands:
-        bid = uuid.UUID(b["id"])
-        sev = dict(
-            session.execute(
-                sa.select(Finding.severity, sa.func.count())
-                .where(Finding.brand_id == bid, Finding.state == FindingState.OPEN)
-                .group_by(Finding.severity)
-            ).all()
-        )
-        states = dict(
-            session.execute(
-                sa.select(Candidate.state, sa.func.count())
-                .where(Candidate.brand_id == bid)
-                .group_by(Candidate.state)
-            ).all()
-        )
-        confirmed = (
-            session.scalar(
-                sa.select(sa.func.count())
-                .select_from(Finding)
-                .where(Finding.brand_id == bid, Finding.state == FindingState.CONFIRMED)
-            )
-            or 0
-        )
-        campaigns = (
-            session.scalar(
-                sa.select(sa.func.count()).select_from(Campaign).where(Campaign.brand_id == bid)
-            )
-            or 0
-        )
-        jobs = session.scalars(
-            sa.select(ScanJob).where(ScanJob.brand_id == bid).order_by(ScanJob.created_at.desc())
-        ).all()
-        created = session.scalars(
-            sa.select(Finding.created_at).where(Finding.brand_id == bid)
-        ).all()
-        has_fp = (
-            session.scalar(
-                sa.select(sa.func.count())
-                .select_from(BrandFingerprint)
-                .where(BrandFingerprint.brand_id == bid)
-            )
-            or 0
-        )
-        last = jobs[0] if jobs else None
-        sevmap = {s.value: int(sev.get(s, 0)) for s in Severity}
+    ids = [uuid.UUID(str(b["id"])) for b in brands]
+    grouped = lambda stmt: session.execute(stmt).all()  # noqa: E731
+    sev: dict[uuid.UUID, dict[Any, int]] = {}
+    for bid, sv, n in grouped(sa.select(Finding.brand_id, Finding.severity, sa.func.count())
+                              .where(Finding.brand_id.in_(ids), Finding.state == FindingState.OPEN).group_by(Finding.brand_id, Finding.severity)):
+        sev.setdefault(bid, {})[sv] = int(n)
+    states: dict[uuid.UUID, dict[Any, int]] = {}
+    for bid, st, n in grouped(sa.select(Candidate.brand_id, Candidate.state, sa.func.count())
+                              .where(Candidate.brand_id.in_(ids)).group_by(Candidate.brand_id, Candidate.state)):
+        states.setdefault(bid, {})[st] = int(n)
+    confirmed = dict(grouped(sa.select(Finding.brand_id, sa.func.count()).where(Finding.brand_id.in_(ids), Finding.state == FindingState.CONFIRMED)
+                             .group_by(Finding.brand_id)))
+    campaigns = dict(grouped(sa.select(Campaign.brand_id, sa.func.count()).where(Campaign.brand_id.in_(ids)).group_by(Campaign.brand_id)))
+    day_ago = now - timedelta(days=1)
+    jobs = {bid: (int(n), int(today or 0), last) for bid, n, today, last in grouped(
+        sa.select(ScanJob.brand_id, sa.func.count(), sa.func.sum(sa.case((ScanJob.created_at >= day_ago, 1), else_=0)), sa.func.max(ScanJob.created_at))
+        .where(ScanJob.brand_id.in_(ids)).group_by(ScanJob.brand_id))}
+    newest = sa.select(ScanJob.brand_id, sa.func.max(ScanJob.created_at).label("m")).where(ScanJob.brand_id.in_(ids)).group_by(ScanJob.brand_id).subquery()
+    last_ids: dict[uuid.UUID, Any] = {}
+    for bid, jid in grouped(sa.select(ScanJob.brand_id, ScanJob.id).join(newest, sa.and_(ScanJob.brand_id == newest.c.brand_id, ScanJob.created_at == newest.c.m))):
+        last_ids.setdefault(bid, jid)
+    running = set(session.scalars(sa.select(ScanJob.brand_id).where(ScanJob.brand_id.in_(ids), ScanJob.state.in_([JobState.QUEUED, JobState.RUNNING])).distinct()).all())
+    created: dict[uuid.UUID, list[Any]] = {}
+    for bid, at in grouped(sa.select(Finding.brand_id, Finding.created_at).where(Finding.brand_id.in_(ids), Finding.created_at >= now - timedelta(days=15))):
+        created.setdefault(bid, []).append(at)
+    has_fp = set(session.scalars(sa.select(BrandFingerprint.brand_id).where(BrandFingerprint.brand_id.in_(ids)).distinct()).all())
+    out = []
+    for b, bid in zip(brands, ids, strict=True):
+        sv = sev.get(bid, {})
+        st = states.get(bid, {})
+        n_jobs, today, last_at = jobs.get(bid, (0, 0, None))
+        sevmap = {s.value: int(sv.get(s, 0)) for s in Severity}
         open_total = sum(sevmap.values())
         out.append({
             **b,
             "sev": sevmap,
             "sev_pct": {k: (round(v / open_total * 100) if open_total else 0) for k, v in sevmap.items()},
-            "candidates": sum(states.values()),
-            "watching": int(states.get(CandidateState.WATCHING, 0) + states.get(CandidateState.LONG_WATCH, 0)),
-            "confirmed": int(confirmed),
-            "campaigns": int(campaigns),
-            "scans": len(jobs),
-            "scans_today": sum(1 for j in jobs if _aware(j.created_at) >= now - timedelta(days=1)),
-            "running": any(j.state.value in ("queued", "running") for j in jobs[:5]),
-            "last_scan": _aware(last.created_at).isoformat() if last else None,
-            "last_job_id": str(last.id) if last else None,
-            "per_day": _per_day(list(created)),
-            "has_baseline": bool(has_fp),
+            "candidates": sum(st.values()),
+            "watching": int(st.get(CandidateState.WATCHING, 0) + st.get(CandidateState.LONG_WATCH, 0)),
+            "confirmed": int(confirmed.get(bid, 0)),
+            "campaigns": int(campaigns.get(bid, 0)),
+            "scans": n_jobs,
+            "scans_today": today,
+            "running": bid in running,
+            "last_scan": _aware(last_at).isoformat() if last_at else None,
+            "last_job_id": str(last_ids[bid]) if bid in last_ids else None,
+            "per_day": _per_day(created.get(bid, [])),
+            "has_baseline": bid in has_fp,
             "threat": "critical" if sevmap["critical"] else ("high" if sevmap["high"] else ("medium" if sevmap["medium"] else "low")),
         })  # fmt: skip
     return out
@@ -436,13 +425,38 @@ def _object_names(session: Session, events: list[Any]) -> dict[Any, str]:
     return out
 
 
-def activity_stats(session: Session, user: User, limit: int = 300) -> dict[str, Any]:
-    events = session.scalars(
-        sa.select(AuditEvent)
-        .where(AuditEvent.workspace_id == user.workspace_id)
-        .order_by(AuditEvent.at.desc())
-        .limit(limit)
-    ).all()
+def _activity_query(session: Session, user: User, *, actor: str = "", category: str = "", object_id: str = "", since: str = "",
+                    until: str = "") -> Any:  # fmt: skip
+    stmt = sa.select(AuditEvent).where(AuditEvent.workspace_id == user.workspace_id)
+    if actor == "system":
+        stmt = stmt.where(AuditEvent.actor_type == "system")
+    elif actor:
+        uid = session.scalar(sa.select(User.id).where(User.workspace_id == user.workspace_id, User.email == actor))
+        stmt = stmt.where(AuditEvent.actor_id == uid) if uid else stmt.where(sa.false())
+    if category:
+        stmt = stmt.where(AuditEvent.action.like(f"{category}.%"))
+    if object_id:
+        stmt = stmt.where(AuditEvent.object_id == uuid.UUID(object_id))
+    if since:
+        stmt = stmt.where(AuditEvent.at >= datetime.fromisoformat(since).replace(tzinfo=UTC))
+    if until:
+        stmt = stmt.where(AuditEvent.at < datetime.fromisoformat(until).replace(tzinfo=UTC) + timedelta(days=1))
+    return stmt.order_by(AuditEvent.at.desc())
+
+
+def activity_rows(session: Session, user: User, *, limit: int = 20_000, **filters: str) -> list[dict[str, Any]]:
+    """The raw events (nothing collapsed) for the CSV export."""
+    emails = dict(session.execute(sa.select(User.id, User.email).where(User.workspace_id == user.workspace_id)).all())
+    return [{"at": _aware(e.at).isoformat(), "actor": (emails.get(e.actor_id) if e.actor_id else None) or e.actor_type, "actor_type": e.actor_type,
+             "action": e.action, "object_type": e.object_type, "object_id": str(e.object_id) if e.object_id else None,
+             "old": e.old_value, "new": e.new_value, "reason": e.reason}
+            for e in session.scalars(_activity_query(session, user, **filters).limit(limit)).all()]  # fmt: skip
+
+
+def activity_stats(session: Session, user: User, limit: int = 300, offset: int = 0, **filters: str) -> dict[str, Any]:
+    stmt = _activity_query(session, user, **filters)
+    matching = int(session.scalar(sa.select(sa.func.count()).select_from(stmt.order_by(None).subquery())) or 0)
+    events = session.scalars(stmt.limit(limit).offset(offset)).all()
     emails = dict(
         session.execute(
             sa.select(User.id, User.email).where(User.workspace_id == user.workspace_id)
@@ -484,6 +498,8 @@ def activity_stats(session: Session, user: User, limit: int = 300) -> dict[str, 
     amx = top_actors[0][1] if top_actors else 1
     return {
         "events": rows,
+        "matching": matching,
+        "has_more": offset + limit < matching,
         "total": len(rows),
         "analyst": sum(1 for r in rows if r["actor_type"] == "analyst"),
         "system": sum(1 for r in rows if r["actor_type"] == "system"),

@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}Scans{% endblock %}
+{% block content %}
+<style>
+  .filters{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:8px 10px;align-items:end;margin-bottom:10px;max-width:900px}
+  .filters label{display:block;font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:3px}
+  .pager{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:10px}.pager .off{opacity:.4;pointer-events:none}
+  td form{margin:0}
+  @media (max-width:700px){ #jtable th:nth-child(4),#jtable td:nth-child(4){display:none}}
+</style>
+{% set crumbs = [("Brands & Scans", "/ui/brands"), ("Every scan", none)] %}
+{% include "_crumbs.html" %}
+<h1>SCANS <span class="muted">· every scan, map and investigation of the workspace · {{ total }} in all</span></h1>
+<form method="get" action="/ui/scans" class="filters">
+  <div><label for="j-brand">Brand</label><select id="j-brand" name="brand_id"><option value="">all</option>{% for b in brands %}<option value="{{ b.id }}" {{ 'selected' if filters.brand_id == b.id|string }}>{{ b.name }}</option>{% endfor %}</select></div>
+  <div><label for="j-kind">What</label><select id="j-kind" name="kind"><option value="">everything</option>{% for k in JOB_KINDS %}<option value="{{ k }}" {{ 'selected' if filters.kind == k }}>{{ k|job_label }}</option>{% endfor %}</select></div>
+  <div><label for="j-state">State</label><select id="j-state" name="state"><option value="">any</option>{% for s in JOB_STATES %}<option value="{{ s }}" {{ 'selected' if filters.state == s }}>{{ s|state_label }}</option>{% endfor %}</select></div>
+  <div><button type="submit" class="primary">Apply</button>{% if base_qs %} <a class="btn" href="/ui/scans">Reset</a>{% endif %}</div>
+</form>
+<div class="panel">
+  {% if jobs %}
+  <table id="jtable" class="rwd">
+    <thead><tr><th>What</th><th>Brand</th><th>State</th><th>Started</th><th>Took</th><th></th></tr></thead>
+    <tbody>
+    {% for j in jobs %}
+    <tr>
+      <td><a href="/ui/jobs/{{ j.id }}">{{ j.kind|job_label }}</a>{% if j.payload and j.payload.only %} <span class="pill">only {{ j.payload.only }}</span>{% endif %}{% if j.payload and j.payload.retry_of %} <span class="pill" title="a retry of an earlier scan">retry</span>{% endif %}</td>
+      <td class="small"><bdi>{{ j.brand_name or '—' }}</bdi></td>
+      <td>{% if j.state in ('queued', 'running') %}<span class="radar"></span> <span class="small" style="color:var(--accent2)">{{ j.state|state_label }}</span>{% elif j.state == 'done' %}<span class="badge sev-low">done</span>{% else %}<span class="badge sev-critical" title="{{ (j.error or '')[:300] }}">{{ j.state|state_label }}</span>{% endif %}</td>
+      <td class="mono small muted">{{ j.created_at|ts }}</td>
+      <td class="mono small muted">{% if j.finished_at and j.created_at %}<span data-took="{{ j.created_at }}|{{ j.finished_at }}"></span>{% else %}—{% endif %}</td>
+      <td>{% if can_write and j.state in ('failed', 'cancelled') %}<form method="post" action="/ui/jobs/{{ j.id }}/retry" data-busy="Starting…"><button type="submit" class="small" title="run it again with the same parameters, as a new scan">↻ Retry</button></form>{% endif %}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  {% include "_pager.html" %}
+  {% else %}<p class="muted">{% if base_qs %}No scan matches these filters. <a href="/ui/scans">Show every scan</a>.{% else %}No scans yet — start one from <a href="/ui/brands">Brands &amp; Scans</a>.{% endif %}</p>{% endif %}
+</div>
+<script>
+document.querySelectorAll('[data-took]').forEach(el => { const [a, b] = el.dataset.took.split('|'); const z = s => /[zZ]|[+-]\d\d:?\d\d$/.test(s) ? s : s + 'Z';
+  const sec = Math.max(0, (new Date(z(b)) - new Date(z(a))) / 1000); el.textContent = sec < 90 ? Math.round(sec) + ' s' : (sec < 5400 ? Math.round(sec / 60) + ' min' : (sec / 3600).toFixed(1) + ' h'); });
+</script>
+{% endblock %}

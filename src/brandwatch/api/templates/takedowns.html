@@ -40,7 +40,7 @@
   {% set bulk = request.query_params.get('bulk') or '' %}
   {% if bulk.startswith('drafted:') %}{% set bp = bulk.split(':') %}<div class="panel small" style="border-color:rgba(46,204,113,.5);margin-bottom:8px"><b>{{ bp[1] }} takedown request{{ '' if bp[1] == '1' else 's' }} drafted.</b> {% if bp|length > 2 and bp[2] != '0' %}{{ bp[2] }} skipped (not confirmed, or a contact rather than a site).{% endif %} Open each one, send it from your own mailbox and press ✓ sent.</div>{% endif %}
   {% if sites %}
-  <table>
+  <table class="rwd">
     <thead><tr><th>Phishing site</th><th>Brand</th><th>Severity</th><th>Confirmed</th><th>Takedown</th><th>Reference</th><th>Abuse contact</th><th>Sent</th><th>Waiting</th><th>Reported</th><th>Infrastructure</th></tr></thead>
     {% for x in sites %}
     <tr>
@@ -65,6 +65,7 @@
   {% else %}
   <p class="muted">{% if filters.state or filters.brand_id %}Nothing matches these filters. <a href="/ui/takedowns">Clear them</a>.{% else %}No confirmed phishing sites yet. A takedown starts from a <b>confirmed</b> finding: <a href="/ui/findings?state=open">open findings →</a>{% endif %}</p>
   {% endif %}
+  {% if sites %}<div class="small muted" style="margin:6px 0">Download this list: <a href="/ui/takedowns?state={{ filters.state }}&brand_id={{ filters.brand_id }}&fmt=csv">CSV</a> · <a href="/ui/takedowns?state={{ filters.state }}&brand_id={{ filters.brand_id }}&fmt=json">JSON</a></div>{% endif %}
   <p class="small muted">BrandWatch never sends a takedown itself: an analyst sends the approved text from their own mailbox and records <b>sent</b> on the request.</p>
 </div>
 {% endblock %}

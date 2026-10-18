@@ -78,6 +78,7 @@
   <a class="{{ 'on' if filters.since=='24h' }}" href="?state=open&since=24h{{ bq }}"><span class="v" data-count="{{ s.new_24h }}">0</span><span class="l">new in 24h</span></a>
   <a class="ok {{ 'on' if filters.state=='confirmed' }}" href="?state=confirmed{{ bq }}"><span class="v" data-count="{{ s.by_state.get('confirmed', 0) }}">0</span><span class="l">confirmed</span></a>
   <a class="{{ 'on' if filters.state=='dismissed' }}" href="?state=dismissed{{ bq }}"><span class="v" data-count="{{ s.by_state.get('dismissed', 0) }}">0</span><span class="l">dismissed</span></a>
+  {% if snoozed_n or filters.state == 'snoozed' %}<a class="{{ 'on' if filters.state=='snoozed' }}" href="?state=snoozed{{ bq }}" title="open findings put aside until a date; they come back by themselves"><span class="v" data-count="{{ snoozed_n }}">0</span><span class="l">snoozed</span></a>{% endif %}
 </div>
 
 <div class="ftable-wrap">
@@ -91,7 +92,8 @@
     <form method="get" action="/ui/findings" class="filters" id="filters">
       <input type="hidden" name="brand_id" value="{{ filters.brand_id }}">
       <div class="wide"><label for="q">Search host</label><input id="q" name="q" value="{{ filters.q }}" placeholder="part of a host name, e.g. login" autocomplete="off" maxlength="120"></div>
-      <div><label for="f-state">State</label><select id="f-state" name="state"><option value="">all</option>{% for st in FindingStates %}<option value="{{ st }}" {{ 'selected' if filters.state==st }}>{{ st|state_label }}</option>{% endfor %}</select></div>
+      <div><label for="f-state">State</label><select id="f-state" name="state"><option value="">all</option>{% for st in FindingStates %}<option value="{{ st }}" {{ 'selected' if filters.state==st }}>{{ st|state_label }}</option>{% endfor %}<option value="snoozed" {{ 'selected' if filters.state=='snoozed' }}>snoozed</option></select></div>
+      {% if filters.job_id %}<input type="hidden" name="job_id" value="{{ filters.job_id }}">{% endif %}
       <div><label for="f-sev">Severity</label><select id="f-sev" name="severity"><option value="">all</option>{% for sv in Severity %}<option value="{{ sv }}" {{ 'selected' if filters.severity==sv }}>{{ sv }}</option>{% endfor %}</select></div>
       <div><label for="f-kind">Kind</label><select id="f-kind" name="kind"><option value="">all</option><option value="phishing" {{ 'selected' if filters.kind=='phishing' }}>phishing</option><option value="shop" {{ 'selected' if filters.kind=='shop' }}>suspicious shop</option><option value="social" {{ 'selected' if filters.kind=='social' }}>fake social account</option><option value="ai_answer" {{ 'selected' if filters.kind=='ai_answer' }}>AI answer</option></select></div>
       <div><label for="f-since">Found</label><select id="f-since" name="since"><option value="">any time</option>{% for k, v in SINCE.items() %}<option value="{{ k }}" {{ 'selected' if filters.since==k }}>{{ v }}</option>{% endfor %}</select></div>
@@ -99,6 +101,7 @@
       <div class="go"><button type="submit" class="primary">Apply</button>{% if filters.q or filters.since or filters.severity or filters.kind or filters.sort != 'severity' or filters.state != 'open' %}<a class="btn" href="/ui/findings{{ '?brand_id=' ~ filters.brand_id if filters.brand_id }}" title="back to the open queue">Reset</a>{% endif %}</div>
       <div><label class="shotsw" title="a screenshot next to every site (off by default: the list stays short)"><input type="checkbox" id="t-shots"> show screenshots</label></div>
     </form>
+    {% if scan_job %}<div class="panel small" style="margin:0 0 8px;border-color:rgba(53,199,242,.5)">Only what one scan found or re-scored: <a href="/ui/jobs/{{ scan_job.id }}">{{ scan_job.kind|job_label }} of {{ scan_job.created_at|ts }}</a> · <a href="/ui/findings{{ '?brand_id=' ~ filters.brand_id if filters.brand_id }}">every finding</a></div>{% endif %}
     {% if filters.since == 'visit' %}<div class="small muted" style="margin:-2px 0 8px">{% if last_visit %}Since your previous sign-in, {{ last_visit|ts }}.{% else %}This is your first sign-in: every finding counts as new.{% endif %}</div>{% endif %}
     {% set bulk = request.query_params.get('bulk') or '' %}
     {% if bulk %}{% set bp = bulk.split(':') %}<div class="panel small" style="border-color:rgba(46,204,113,.5);margin-bottom:8px"><b>{{ bp[1] }} finding{{ '' if bp[1] == '1' else 's' }} {{ 'confirmed as phishing' if bp[0] == 'confirm' else 'dismissed as not phishing' }}.</b>
@@ -118,7 +121,7 @@
       </div>
     </form>{% endif %}
     {% if findings %}
-    <table id="ftable">
+    <table id="ftable" class="rwd">
       <thead><tr>{% if can_write %}<th class="selcol"><input type="checkbox" id="selall" aria-label="select every finding on this page" title="select every finding on this page"></th>{% endif %}<th class="shotcol">Screenshot</th><th>Severity</th><th>Host</th><th>Score</th><th>Conf.</th><th>Signals</th><th>State</th><th>Found</th></tr></thead>
       <tbody>
       {% for f in findings %}
@@ -138,6 +141,7 @@
       </tbody>
     </table>
     {% include "_pager.html" %}
+    <div class="small muted" style="margin-top:8px">Download these {{ total }}: <a href="/ui/findings?{{ base_qs }}&fmt=csv">CSV</a> · <a href="/ui/findings?{{ base_qs }}&fmt=json">JSON</a> <span>(the same filters, every page)</span></div>
     {% else %}
     {% if filters.q or filters.since or filters.severity or filters.kind or filters.state != 'open' %}
     <p class="muted">Nothing matches these filters. <a href="/ui/findings{{ '?brand_id=' ~ filters.brand_id if filters.brand_id }}">Back to the open queue</a>{% if s.open_total %} — {{ s.open_total }} finding{{ 's' if s.open_total != 1 }} wait{{ '' if s.open_total != 1 else 's' }} for a verdict{% endif %}.</p>

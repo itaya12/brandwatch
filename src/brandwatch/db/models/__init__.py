@@ -20,7 +20,7 @@ from brandwatch.db.models.evidence import (
     SslObservation,
     WhoisObservation,
 )
-from brandwatch.db.models.finding import AnalystLabel, Finding, FindingEvidence
+from brandwatch.db.models.finding import AnalystLabel, Finding, FindingEvidence, FindingNote
 from brandwatch.db.models.intel import IntelLookup
 from brandwatch.db.models.ioc import Ioc
 from brandwatch.db.models.jobs import ScanEventRecord, ScanJob, ScanStage
@@ -86,6 +86,7 @@ __all__ = [
     "AnalystLabel",
     "Finding",
     "FindingEvidence",
+    "FindingNote",
     "IntelLookup",
     "Ioc",
     "ScanEventRecord",

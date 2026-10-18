@@ -104,7 +104,7 @@
 {% set crumbs = [("Brands & Scans", "/ui/brands"), (brand.name, none)] %}
 {% set crumb_links = [("Findings", "/ui/findings?brand_id=" ~ brand.id), ("Watchlist", "/ui/candidates?brand_id=" ~ brand.id), ("Attack infrastructure", "/ui/campaigns?brand_id=" ~ brand.id), ("Takedowns", "/ui/takedowns?brand_id=" ~ brand.id)] %}
 {% include "_crumbs.html" %}
-<h1>{{ brand.name }} <span class="muted small">· {{ brand.vertical or 'vertical unknown' }} · {% for d in brand.domains[:2] %}<span class="mono">{{ d }}</span>{{ ' · ' if not loop.last }}{% endfor %}{% if brand.domains|length > 2 %} <a href="#edit" class="small" title="{{ brand.domains[2:]|join(', ') }}">+{{ brand.domains|length - 2 }} more</a>{% endif %} · <a href="#edit" class="mono">edit ›</a></span></h1>
+<h1><bdi dir="auto">{{ brand.name }}</bdi> <span class="muted small">· {{ brand.vertical or 'vertical unknown' }} · {% for d in brand.domains[:2] %}<span class="mono">{{ d }}</span>{{ ' · ' if not loop.last }}{% endfor %}{% if brand.domains|length > 2 %} <a href="#edit" class="small" title="{{ brand.domains[2:]|join(', ') }}">+{{ brand.domains|length - 2 }} more</a>{% endif %} · <a href="#edit" class="mono">edit ›</a></span></h1>
 {% if error %}<div class="error">{{ error }}</div>{% endif %}
 {% set bf = brand.baseline_fetch or {} %}{% if bf.source == 'urlscan' %}<div class="panel" style="border-color:rgba(255,159,28,.6);margin-top:8px"><b style="color:var(--high)">Fingerprint taken from a urlscan.io snapshot of {{ (bf.snapshot.time or '')[:10] }}</b> <span class="small">— {% if bf.ok %}the live site answers, but the snapshot was chosen{% else %}{{ bf.reason }}{% endif %}. <a href="#baseline">Options ↓</a></span></div>
 {% elif brand.baseline_blocked %}<div class="panel" style="border-color:rgba(255,77,77,.55);margin-top:8px"><b style="color:var(--crit)">The official site did not let BrandWatch in</b> <span class="small">— {{ bf.reason }}. The visual comparison with the real site is off until this is fixed. <a href="#baseline">What can I do ↓</a></span></div>{% endif %}
@@ -139,15 +139,15 @@
         <div class="pd">{{ dom|join(' · ') or 'no domain stream in the track' }} · TLDs {{ cfg.detection.tlds }} · up to {{ cfg.detection.max_candidates }} sites</div></div>
       {# Google #}
       {% if 'search' in cfg.detection.streams %}
-      <div class="part {{ 'on' if q_ok else 'warn' }}"><div class="ph"><i></i><b>Google search</b><span class="st">{{ 'on' if q_ok else 'waiting' }}</span></div>
-        <div class="pd">{% if q_ok %}{{ brand.search_queries.queries|length }} approved queries · <a href="#queries">edit</a>{% else %}skipped until you <a href="#queries">approve the {{ brand.search_queries.proposal|length }} proposed queries</a>{% endif %}</div></div>
+      <div class="part {{ 'on' if q_ok and ready.google else 'warn' }}"><div class="ph"><i></i><b>Google search</b><span class="st">{{ ('on' if ready.google else 'no key') if q_ok else 'waiting' }}</span></div>
+        <div class="pd">{% if q_ok and not ready.google %}skipped: needs a SerpApi or ScraperAPI key — {% if is_admin %}<a href="/ui/settings#keys">Settings → API keys</a>{% else %}ask an admin to add one{% endif %}{% elif q_ok %}{{ brand.search_queries.queries|length }} approved queries · <a href="#queries">edit</a>{% else %}skipped until you <a href="#queries">approve the {{ brand.search_queries.proposal|length }} proposed queries</a>{% endif %}</div></div>
       {% else %}
-      <div class="part off"><div class="ph"><i></i><b>Google search</b><span class="st">off</span></div><div class="pd">not in this track · <a href="#config">add the “search” stream</a></div></div>
+      <div class="part off"><div class="ph"><i></i><b>Google search</b><span class="st">off</span></div><div class="pd">not in this track · <a href="#config" data-open-custom title="opens Customise parameters, where the streams are ticked">add the “search” stream</a></div></div>
       {% endif %}
       {# social media #}
       {% set so = cfg.detection.social_accounts %}
       <div class="part {{ ('warn' if not social_ready else 'on') if so else 'off' }}"><div class="ph"><i></i><b>Social media</b><span class="st">{{ ('no key' if not social_ready else 'on') if so else 'off' }}</span></div>
-        <div class="pd">{% if so and not social_ready %}skipped: needs a SearchApi key — <a href="/ui/settings#keys">Settings → API keys</a>{% else %}Facebook pages · Instagram profiles · up to {{ cfg.detection.social_accounts_max }} a scan · <a href="#reach">how far</a>{% endif %}</div>
+        <div class="pd">{% if so and not social_ready %}skipped: needs a SearchApi key — {% if is_admin %}<a href="/ui/settings#keys">Settings → API keys</a>{% else %}ask an admin to add one{% endif %}{% else %}Facebook pages · Instagram profiles · up to {{ cfg.detection.social_accounts_max }} a scan · <a href="#reach">how far</a>{% endif %}</div>
         <div class="pa">{% if can_write %}<form method="post" action="/ui/brands/{{ brand.id }}/social" class="socsw"><input type="hidden" name="on" value="{{ '0' if so else '1' }}">
           <button type="submit" class="pill" title="Facebook pages / Instagram profiles under the brand's name — click to switch {{ 'off' if so else 'on' }} for every scan of this brand">social media {{ 'on' if so else 'off' }} · {{ 'turn off' if so else 'turn on' }}</button></form>
           {% else %}<span class="pill">social media {{ 'on' if so else 'off' }}</span>{% endif %}</div></div>
@@ -174,7 +174,8 @@
       <div class="part {{ 'on' if brand.schedule.enabled else 'off' }}"><div class="ph"><i></i><b>Automatic scans</b><span class="st">{{ 'on' if brand.schedule.enabled else 'off' }}</span></div>
         <div class="pd">{{ brand.schedule.label if brand.schedule.enabled else 'only when someone presses Start scan' }} · <a href="#schedule">set</a></div></div>
     </div>
-    <div class="small muted" style="margin-top:8px">Every scan: cloaking probes {{ 'on' if cfg.detection.cloaking_probes else 'off' }} · AI second opinion {{ 'on' if cfg.detection.ai_second_opinion else 'off' }} · re-check every {{ cfg.detection.watch_cadence_hours }}h · {% if brand.baseline %}fingerprint v{{ brand.baseline.version }}{% else %}the first scan fingerprints the official site{% endif %}</div>
+    <div class="small muted" style="margin-top:8px">Every scan: cloaking probes {{ 'on' if cfg.detection.cloaking_probes else 'off' }}{% if cfg.detection.cloaking_probes and cfg.detection.residential_probe != 'off' %} · home / mobile IP probe {% if ready.residential %}{{ cfg.detection.residential_probe }}{% else %}<span style="color:var(--high)" title="the probe from a home or mobile IP needs a proxy and a residential budget above 0 GB">off — needs {{ 'a proxy' if not ready.proxy }}{{ ' and ' if not ready.proxy and not ready.residential_gb }}{{ 'a residential GB budget' if not ready.residential_gb }}</span> (<a href="/ui/settings#proxy">Settings</a>){% endif %}{% endif %}
+      · AI second opinion {% if cfg.detection.ai_second_opinion %}{% if ready.openai %}on{% else %}<span style="color:var(--high)">on, but no OpenAI key — skipped</span>{% endif %}{% else %}off{% endif %} · re-check every {{ cfg.detection.watch_cadence_hours }}h · markets {{ search_pairs(cfg.detection)|map('join', ' ')|join(' · ')|upper }} · {% if brand.baseline %}fingerprint v{{ brand.baseline.version }}{% else %}the first scan fingerprints the official site{% endif %}</div>
     {% set sdone = request.query_params.get('social') if request else None %}
     {% if sdone %}<p class="small" style="margin:8px 0 0;color:var(--low)">✓ Social media scanning is {{ sdone }} for {{ brand.name }}{% if sdone == 'on' %} — every scan now also looks for fake Facebook pages and Instagram profiles{% endif %}.</p>{% endif %}
     {% set adone = request.query_params.get('ads') if request else None %}
@@ -193,7 +194,7 @@
       <a class="runlink" href="/ui/jobs/{{ running[0].id }}"><span class="radar"></span> SCAN RUNNING · open console</a>
     {% elif can_write and setup_needed %}
       <a class="startscan" href="/ui/brands/{{ brand.id }}/setup" style="display:inline-flex;text-decoration:none"><span class="ico">▶</span><span>Set up &amp; start the scan<small>Google queries{{ ' · countries & prices' if brand.kind == 'retail' }} — approve once, then it runs</small></span></a>
-      <form method="post" action="/ui/brands/{{ brand.id }}/scan" style="margin-top:8px"><button type="submit" class="ghost small" title="scan now without Google search{{ ' and with ads searched only in the search country' if brand.kind == 'retail' }}">or start now without setting up</button></form>
+      <form method="post" action="/ui/brands/{{ brand.id }}/scan" style="margin-top:8px"><input type="hidden" name="skip_setup" value="1"><button type="submit" class="ghost small" title="scan now without Google search{{ ' and with ads searched only in the search country' if brand.kind == 'retail' }} — this brand is not asked to set up again; the set-up page stays one click away">or start now without setting up</button></form>
     {% elif can_write %}
       {% set ws_cap = cfg.economic_limits.max_candidate_count or 0 %}
       {% set default_cap = cfg.detection.max_candidates %}
@@ -210,6 +211,7 @@
         <div style="margin-top:6px;display:flex;align-items:center;gap:8px;justify-content:center">
           <label for="rbl" style="margin:0;font-size:11px;text-transform:none;letter-spacing:0;display:inline-flex;gap:6px;align-items:center"><input id="rbl" name="rebuild_baseline" type="checkbox" style="width:auto" {{ 'checked' if not brand.baseline }}> include fingerprinting of the official site · ~2 s</label>
         </div>
+        {% if setup_pending %}<div class="small" style="margin-top:6px"><a href="/ui/brands/{{ brand.id }}/setup">finish the set-up →</a> <span class="muted">({{ 'Google queries waiting' if 'search' in cfg.detection.streams and not brand.search_queries.approved else 'the profile or the AI questions are not approved yet' }})</span></div>{% endif %}
         <div class="small muted" style="margin-top:4px">{% if ws_cap %}no scan visits more than <b>{{ ws_cap }}</b> sites — the workspace limit · <a href="/ui/settings#budget">change it in Settings → Workspace &amp; budget</a>{% else %}no workspace limit set{% endif %}</div>
         {% if ws_cap and default_cap > ws_cap %}<div class="small" style="margin-top:4px;color:var(--high)">your {{ default_cap }} is saved, but this scan visits {{ ws_cap }} — the workspace limit · <a href="/ui/brands/{{ brand.id }}/setup#s-size">raise it</a></div>{% endif %}
       </form>
@@ -357,6 +359,12 @@
       {% endfor %}
     </div>
 
+    <div class="cfgcard" id="markets" style="margin-top:12px">
+      <h3>Where its customers are <span style="text-transform:none;letter-spacing:0;color:var(--muted);font-family:var(--sans)">· the countries and languages Google, the ads and the AI assistants are searched in — the brand's, kept when the track changes</span></h3>
+      {% set mk_list = search_markets(cfg.detection) %}{% set mk_disabled = not can_write %}{% include "_markets_picker.html" %}
+      {% if can_write %}<div class="small muted" style="margin-top:6px">Saved with the button below.</div>{% endif %}
+    </div>
+
     <div class="customhd">
       <button type="button" class="toggle {{ 'on' if custom }}" id="customBtn"><span class="sw"></span> Customise parameters</button>
       <span class="small muted" id="customNote">{% if custom %}This brand deviates from its track. Switch off to go back to the pure track.{% else %}Switch on to change streams, cadence, probes, thresholds and signal weights.{% endif %}</span>
@@ -376,8 +384,7 @@
           <label>Google search queries</label>
           <div class="small" style="margin:2px 0 6px;text-transform:none">Edited and approved in <a href="#queries">Google search queries ↓</a> — {{ brand.search_queries.queries|length }} {{ 'approved' if brand.search_queries.approved else 'waiting for approval' }}.</div>
           <label>Max queries per scan</label><input name="search_queries_max" value="{{ cfg.detection.search_queries_max }}" {{ 'disabled' if not can_write }}>
-          <label>Search countries · languages <span style="text-transform:none">(each country, in one or more languages)</span></label>
-          {% set mk_list = search_markets(cfg.detection) %}{% set mk_disabled = not can_write %}{% include "_markets_picker.html" %}
+          <div class="small muted" style="margin-top:6px;text-transform:none">Search countries and languages: “Where its customers are”, above.</div>
         </div>
         <div class="cfgcard">
           <h3>Cadence</h3>
@@ -515,6 +522,14 @@
     return true;
   }
   tabs.forEach(t => t.addEventListener('click', () => { show(t.dataset.pane, true); setUrl(location.pathname + location.search); }));
+  // screen readers: each tab names its panel; ← → move between the tabs
+  panes.forEach(p => { if (!p.id) p.id = 'pane-' + p.dataset.pane; });
+  tabs.forEach(t => { t.setAttribute('aria-controls', 'pane-' + t.dataset.pane); });
+  document.getElementById('btabs').addEventListener('keydown', e => {
+    if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+    const i = tabs.findIndex(t => t.getAttribute('aria-selected') === 'true'), j = (i + (e.key === 'ArrowRight' ? 1 : -1) + tabs.length) % tabs.length;
+    tabs[j].click(); tabs[j].focus(); e.preventDefault();
+  });
   document.addEventListener('click', e => {
     const a = e.target.closest && e.target.closest('a[href^="#"]'); if (!a) return;
     const id = a.getAttribute('href').slice(1); const el = id && document.getElementById(id);
@@ -555,6 +570,8 @@
     }
     fill(c.dataset.key);  // the detailed fields mirror the chosen track until edited
   }));
+  document.querySelectorAll('[data-open-custom]').forEach(a => a.addEventListener('click', () => {
+    if (customBox && customBox.classList.contains('hidden') && customBtn) setTimeout(() => customBtn.click(), 60); }));
   customBtn && customBtn.addEventListener('click', async () => {
     if (!customBox.classList.contains('hidden') && !(await bwConfirm("When you save, the track's own profile replaces every parameter you changed.",
         {title: 'Switch off custom parameters?', ok: 'Switch off', cancel: 'Keep them'}))) return;

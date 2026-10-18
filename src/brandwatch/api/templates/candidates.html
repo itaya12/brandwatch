@@ -71,7 +71,7 @@
     <button type="button" id="bulkclear" class="small">clear</button>
   </form>{% endif %}
   {% if candidates %}
-  <table id="ctable">
+  <table id="ctable" class="rwd">
     <thead><tr>{% if can_write %}<th class="selcol"><input type="checkbox" id="selall" aria-label="select every domain on this page"></th>{% endif %}<th>Domain</th><th>Brand</th><th>Why it is here</th><th>State</th><th>Finding</th><th>Priority</th><th>First seen</th><th>Last seen</th><th>Next scan</th><th class="right">Scans</th>{% if can_write %}<th>Actions</th>{% endif %}</tr></thead>
     <tbody>
     {% for c in candidates %}
@@ -79,7 +79,7 @@
       {% if can_write %}<td class="selcol">{% if c.state != 'dismissed' %}<input type="checkbox" class="sel" name="ids" value="{{ c.id }}" form="bulkform" aria-label="select {{ c.hostname }}">{% endif %}</td>{% endif %}
       <td><a href="/ui/candidates/{{ c.id }}">{{ m.host(c.hostname, c.host_display, c.is_idn) }}</a><div class="small muted">{{ SURFACE_LABELS.get(c.surface, c.surface) }}</div></td>
       <td class="small"><a href="/ui/brands/{{ c.brand_id }}"><bdi>{{ c.brand_name or '—' }}</bdi></a></td>
-      <td class="why">{% for src in c.sources %}<b>{{ src.stream|stream_label }}</b>{% if src.pattern %} <span class="mono" dir="ltr">{{ src.pattern|truncate(40) }}</span>{% endif %}{{ ' · ' if not loop.last }}{% else %}<span class="muted">—</span>{% endfor %}</td>
+      <td class="why">{% for src in c.sources %}{% if src.stream == 'manual' and (src.pattern or '').startswith('pivot') %}<b>Infrastructure map</b> <span title="{{ src.pattern }}">{{ (src.pattern[6:].strip() if src.pattern.startswith('pivot:') else src.pattern)|truncate(70) }}</span>{% else %}<b>{{ src.stream|stream_label }}</b>{% if src.pattern %} <span class="mono" dir="ltr">{{ src.pattern|truncate(40) }}</span>{% endif %}{% endif %}{{ ' · ' if not loop.last }}{% else %}<span class="muted">—</span>{% endfor %}</td>
       <td><span class="badge state st-{{ c.state }}" title="{{ STATE_HELP.get(c.state, '') }}">{{ c.state|state_label }}</span></td>
       <td>{% if c.finding %}<a href="/ui/findings/{{ c.finding.id }}" class="badge sev-{{ c.finding.severity }}" title="open the finding">{{ c.finding.severity }} · {{ c.finding.state|state_label }}</a>{% else %}<span class="muted small">—</span>{% endif %}</td>
       <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="{{ [c.priority * 3, 100]|min }}" style="max-width:60px"></span> {{ c.priority }}</td>
@@ -105,6 +105,7 @@
     </tbody>
   </table>
   {% include "_pager.html" %}
+  <div class="small muted" style="margin-top:8px">Download these {{ total }}: <a href="/ui/candidates?{{ base_qs ~ '&' if base_qs }}fmt=csv">CSV</a> · <a href="/ui/candidates?{{ base_qs ~ '&' if base_qs }}fmt=json">JSON</a></div>
   {% endif %}
 </div>
 

@@ -125,6 +125,10 @@
     .kpi .v{font-size:28px}
   }
 </style>
+<style>
+  .maptog{display:flex;justify-content:flex-end;margin:4px 0 -6px}
+  .nomap #globe{display:none}.nomap .hero2{grid-template-columns:minmax(0,1fr)}
+</style>
 <div class="dash">
 <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:12px">
   <h1 style="margin:0;font-family:Rajdhani;font-size:26px;letter-spacing:.04em">DASHBOARD <span class="muted small" style="font-family:var(--sans)">· BRAND MONITOR · {{ d.brand.name if d.brand else 'all brands' }} · updated <span id="updated">{{ d.generated_at[11:19] }}</span> UTC</span></h1>
@@ -136,6 +140,43 @@
 {% set bq0 = '?brand_id=' ~ selected_brand if selected_brand else '' %}
 {% set bq = '&brand_id=' ~ selected_brand if selected_brand else '' %}
 {% set k = d.kpis %}
+{% set todo = (d.kpis.findings_open or 0) + (d.kpis.confirmed_no_takedown or 0) + (d.kpis.takedowns_draft or 0) + (d.kpis.confirmed_unmapped or 0) %}
+{% if unscanned and can_write %}
+<div class="panel" id="first-scan" style="margin-bottom:12px;border-color:rgba(53,199,242,.55)">
+  <h2 style="margin-top:0">Not scanned yet <span class="muted">· {{ unscanned|length }} brand{{ 's' if unscanned|length != 1 }} with no scan — nothing below covers {{ 'it' if unscanned|length == 1 else 'them' }}</span></h2>
+  <div style="display:flex;flex-wrap:wrap;gap:8px">{% for b in unscanned[:6] %}<a class="btn primary" href="/ui/brands/{{ b.id }}#scan">▶ <bdi>{{ b.name }}</bdi> — set up &amp; start the first scan</a>{% endfor %}</div>
+</div>
+{% endif %}
+{% if todo %}
+<div class="panel" style="margin-bottom:12px;border-color:rgba(255,159,28,.55);box-shadow:0 0 24px rgba(255,159,28,.12)" id="action-required">
+  <h2 style="margin-top:0;color:var(--high)">Action required <span class="muted">· {{ todo }} item(s) waiting for an analyst</span></h2>
+  <div class="actions" style="gap:10px">
+    {% if d.kpis.findings_open %}<a class="btn" href="/ui/findings?state=open{{ '&brand_id=' ~ selected_brand if selected_brand else '' }}"><b data-k="findings_open">{{ d.kpis.findings_open }}</b> finding(s) awaiting your verdict →</a>{% endif %}
+    {% if d.kpis.confirmed_no_takedown %}<a class="btn" href="/ui/takedowns?state=none{{ '&brand_id=' ~ selected_brand if selected_brand else '' }}" style="border-color:var(--crit);color:var(--crit)"><b data-k="confirmed_no_takedown">{{ d.kpis.confirmed_no_takedown }}</b> confirmed phishing site(s) with no takedown request →</a>{% endif %}
+    {% if d.kpis.takedowns_draft %}<a class="btn" href="/ui/takedowns?state=unsent{{ '&brand_id=' ~ selected_brand if selected_brand else '' }}"><b data-k="takedowns_draft">{{ d.kpis.takedowns_draft }}</b> takedown draft(s) not sent yet →</a>{% endif %}
+    {% if d.kpis.confirmed_unmapped %}<a class="btn" href="/ui/campaigns{{ '?brand_id=' ~ selected_brand if selected_brand else '' }}#confirmed"><b data-k="confirmed_unmapped">{{ d.kpis.confirmed_unmapped }}</b> confirmed site(s) whose infrastructure is not mapped →</a>{% endif %}
+  </div>
+</div>
+{% endif %}
+
+{% if new_24h %}
+<div class="panel" id="new-24h" style="margin-bottom:12px">
+  <h2 style="margin-top:0">New in the last 24 hours <span class="muted">· open Critical and High findings, newest first</span> <a class="small" href="/ui/findings?state=open&since=24h{{ bq }}" style="text-transform:none;letter-spacing:0;font-family:var(--sans)">all of them →</a></h2>
+  {% for f in new_24h %}<div class="small" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:5px 0;border-bottom:1px solid var(--border)"><span class="badge sev-{{ f.severity }}">{{ f.severity }}</span><a class="mono" href="/ui/findings/{{ f.id }}" dir="ltr">{{ f.hostname }}</a><span class="muted">{{ f.score if f.score is not none else '' }} · {{ f.created_at|ts }}</span></div>{% endfor %}
+</div>
+{% endif %}
+{# ================================================================ today, in numbers #}
+<div class="kpis" id="kpis" style="margin-top:14px">
+  <a class="kpi lnk crit" href="/ui/findings?severity=critical{{ bq }}"><div class="v num" data-k="critical_open" data-count="{{ k.critical_open }}">0</div><div class="l"><span class="pulse"></span> critical open</div></a>
+  <a class="kpi lnk hi" href="/ui/findings?severity=high{{ bq }}"><div class="v num" data-k="high_open" data-count="{{ k.high_open }}">0</div><div class="l">high open</div></a>
+  <a class="kpi lnk" href="/ui/findings?state=open{{ bq }}"><div class="v num" data-k="findings_open" data-count="{{ k.findings_open }}">0</div><div class="l">awaiting verdict</div></a>
+  <a class="kpi lnk" href="/ui/candidates?state=watching{{ bq }}"><div class="v num" data-k="candidates_watching" data-count="{{ k.candidates_watching }}">0</div><div class="l">on the watchlist</div></a>
+  <div class="kpi"><div class="v num" data-k="scans_today" data-count="{{ k.scans_today }}">0</div><div class="l">scans today</div></div>
+  <div class="kpi"><div class="v num" data-k="candidates_scanned_today" data-count="{{ k.candidates_scanned_today }}">0</div><div class="l">domains checked today</div></div>
+</div>
+
+<script>try { if (localStorage.getItem('bw-dash-map') === 'off') document.documentElement.classList.add('nomap'); } catch (e) { /* private window */ }</script>
+<div class="maptog"><button type="button" class="small ghost" id="maptog" aria-controls="globe"></button></div>
 {# ================================================================ hero: what this is, in 5-10 seconds #}
 <section class="hero2" id="hero">
   <div class="hero-text">
@@ -164,19 +205,6 @@
 
 </section>
 
-{% set todo = (d.kpis.findings_open or 0) + (d.kpis.confirmed_no_takedown or 0) + (d.kpis.takedowns_draft or 0) + (d.kpis.confirmed_unmapped or 0) %}
-{% if todo %}
-<div class="panel" style="margin-bottom:12px;border-color:rgba(255,159,28,.55);box-shadow:0 0 24px rgba(255,159,28,.12)" id="action-required">
-  <h2 style="margin-top:0;color:var(--high)">Action required <span class="muted">· {{ todo }} item(s) waiting for an analyst</span></h2>
-  <div class="actions" style="gap:10px">
-    {% if d.kpis.findings_open %}<a class="btn" href="/ui/findings?state=open{{ '&brand_id=' ~ selected_brand if selected_brand else '' }}"><b>{{ d.kpis.findings_open }}</b> finding(s) awaiting your verdict →</a>{% endif %}
-    {% if d.kpis.confirmed_no_takedown %}<a class="btn" href="/ui/takedowns?state=none{{ '&brand_id=' ~ selected_brand if selected_brand else '' }}" style="border-color:var(--crit);color:var(--crit)"><b>{{ d.kpis.confirmed_no_takedown }}</b> confirmed phishing site(s) with no takedown request →</a>{% endif %}
-    {% if d.kpis.takedowns_draft %}<a class="btn" href="/ui/takedowns?state=unsent{{ '&brand_id=' ~ selected_brand if selected_brand else '' }}"><b>{{ d.kpis.takedowns_draft }}</b> takedown draft(s) not sent yet →</a>{% endif %}
-    {% if d.kpis.confirmed_unmapped %}<a class="btn" href="/ui/campaigns{{ '?brand_id=' ~ selected_brand if selected_brand else '' }}#confirmed"><b>{{ d.kpis.confirmed_unmapped }}</b> confirmed site(s) whose infrastructure is not mapped →</a>{% endif %}
-  </div>
-</div>
-{% endif %}
-
 {# ================================================================ proof: the fakes next to the real site #}
 {% if d.showcase %}
 <section class="panel" id="showcase" style="margin-top:14px">
@@ -200,16 +228,6 @@
   </div>
 </section>
 {% endif %}
-
-{# ================================================================ today, in numbers #}
-<div class="kpis" id="kpis" style="margin-top:14px">
-  <a class="kpi lnk crit" href="/ui/findings?severity=critical{{ bq }}"><div class="v num" data-k="critical_open" data-count="{{ k.critical_open }}">0</div><div class="l"><span class="pulse"></span> critical open</div></a>
-  <a class="kpi lnk hi" href="/ui/findings?severity=high{{ bq }}"><div class="v num" data-k="high_open" data-count="{{ k.high_open }}">0</div><div class="l">high open</div></a>
-  <a class="kpi lnk" href="/ui/findings?state=open{{ bq }}"><div class="v num" data-k="findings_open" data-count="{{ k.findings_open }}">0</div><div class="l">awaiting verdict</div></a>
-  <a class="kpi lnk" href="/ui/candidates?state=watching{{ bq }}"><div class="v num" data-k="candidates_watching" data-count="{{ k.candidates_watching }}">0</div><div class="l">on the watchlist</div></a>
-  <div class="kpi"><div class="v num" data-k="scans_today" data-count="{{ k.scans_today }}">0</div><div class="l">scans today</div></div>
-  <div class="kpi"><div class="v num" data-k="candidates_scanned_today" data-count="{{ k.candidates_scanned_today }}">0</div><div class="l">domains checked today</div></div>
-</div>
 
 <div class="mid" style="margin-top:14px">
   <div class="panel">
@@ -364,6 +382,12 @@
   pollFeed();
 
   // ---- globe (globe.gl if the CDN loaded, else a hand-drawn canvas globe)
+  // the map can be hidden (remembered in this browser); hidden, it is not started at all
+  const tog = document.getElementById('maptog');
+  const hidden = document.documentElement.classList.contains('nomap');
+  if (tog) { tog.textContent = hidden ? 'show the attack map ▾' : 'hide the attack map ▴';
+    tog.addEventListener('click', () => { try { localStorage.setItem('bw-dash-map', hidden ? 'on' : 'off'); } catch (e) { /* ignore */ } location.reload(); }); }
+  if (hidden) return;
   const el = document.getElementById('globe');
   // size from the real box (the hero grid stretches it to the tallest column), never from a breakpoint guess
   const phone = window.matchMedia('(max-width: 900px)').matches;
@@ -498,7 +522,8 @@
     const fit = fitAltitude(W, H), R = g.getGlobeRadius();
     ctl.minDistance = R * 1.35; ctl.maxDistance = R * (1 + fit * 1.9);
     let handling = false, resume = null;
-    const setRot = () => { ctl.autoRotate = !handling && !(hovered && !hovered.cluster); };
+    const still = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const setRot = () => { ctl.autoRotate = !still && !handling && !(hovered && !hovered.cluster); };
     ctl.addEventListener('start', () => { handling = true; clearTimeout(resume); setRot(); });
     ctl.addEventListener('end', () => { clearTimeout(resume); resume = setTimeout(() => { handling = false; setRot(); }, 1500); });
     onHoverChange = setRot; setRot();
@@ -857,12 +882,18 @@
   if (!savedView) { try { savedView = localStorage.getItem('bw.geoView2'); } catch (e) {} }
   setView(savedView === 'globe' ? 'globe' : 'map');  // the flat map unless you chose the globe
 
-  // ---- refresh KPIs every 20s without reloading the globe
+})();
+</script>
+<script>
+(function(){
+  // ---- refresh the numbers every 20 s without reloading the map: the tiles and the "Action required" counts; paused in a hidden tab
+  const brandId = {{ (selected_brand or '')|tojson }};
   setInterval(async () => {
+    if (document.hidden) return;
     try {
       const r = await fetch(`/api/dashboard${brandId ? '?brand_id=' + brandId : ''}`, {credentials:'same-origin'});
       if (!r.ok) return; const d = await r.json();
-      document.querySelectorAll('#kpis .v[data-k]').forEach(el => { const v = d.kpis[el.dataset.k]; if (v !== undefined && v !== null) el.textContent = Number(v).toLocaleString('en-US'); });
+      document.querySelectorAll('#kpis .v[data-k], #action-required [data-k]').forEach(el => { const v = d.kpis[el.dataset.k]; if (v !== undefined && v !== null) el.textContent = Number(v).toLocaleString('en-US'); });
       document.getElementById('updated').textContent = d.generated_at.slice(11, 19);
     } catch (e) {}
   }, 20000);

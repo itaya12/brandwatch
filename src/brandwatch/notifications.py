@@ -235,11 +235,16 @@ class NotificationService:
             .order_by(Finding.severity.desc(), Finding.created_at.desc()).limit(20)
         ).all()  # fmt: skip
         lines = [f"  {sev.value.upper():8} {host} ({brand}) {self.link(f'/ui/findings/{fid}')}" for fid, sev, host, brand in top]
+        woke = session.scalar(
+            sa.select(sa.func.count()).select_from(Finding).join(Brand, Brand.id == Finding.brand_id)
+            .where(Brand.workspace_id == workspace_id, Finding.state == FindingState.OPEN, Finding.snoozed_until > since, Finding.snoozed_until <= now)
+        ) or 0  # fmt: skip
         subject = f"[BrandWatch] daily digest {now.date().isoformat()}: {sum(counts.values())} new finding(s), {open_count} open"
         body = (
             f"New findings (24h): critical {counts['critical']}, high {counts['high']}, medium {counts['medium']}, low {counts['low']}\n"
             f"Open findings awaiting a verdict: {open_count}\nScan jobs run (24h): {jobs}\n"
             + (("Waiting for a verdict:\n" + "\n".join(lines) + "\n") if lines else "")
+            + (f"Back from snooze today: {woke}\n" if woke else "")
             + f"Review queue: {self.link('/ui/findings?state=open')}"
         )
         return self._deliver(session, workspace_id, Message(subject, body), kind="digest", channels=prefs["channels"]) > 0

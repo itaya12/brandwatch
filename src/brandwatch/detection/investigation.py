@@ -591,6 +591,7 @@ def ensure_candidates(session: Session, brand: Brand, nodes: list[Node]) -> list
 
     protected = protected_set(session, brand.id)
     created: list[Candidate] = []
+    seed = next((n.value for n in nodes if n.type is NodeType.DOMAIN and n.depth == 0), "")
     for n in nodes:
         if n.type is not NodeType.DOMAIN or not n.included or n.depth == 0:
             continue
@@ -612,7 +613,7 @@ def ensure_candidates(session: Session, brand: Brand, nodes: list[Node]) -> list
             CandidateSource(
                 candidate_id=c.id,
                 source=DiscoverySource.MANUAL,
-                matched_pattern=f"pivot:{n.triage_reason}",
+                matched_pattern=f"pivot: the infrastructure map of {seed} — {n.triage_reason}"[:500] if seed else f"pivot:{n.triage_reason}",
             )
         )
         created.append(c)

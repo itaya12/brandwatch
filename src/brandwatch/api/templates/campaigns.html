@@ -22,9 +22,11 @@
   </form>
 </div>
 <p class="intro">{{ PAGE_INTROS.campaigns }}</p>
+<p class="small" style="margin:-6px 0 12px;color:#c3cdd9;max-width:980px">Two views of the same thing: an <b>infrastructure map</b> starts from <em>one</em> confirmed site and follows what it shares (below);
+  an <b>operation</b> groups <em>every</em> confirmed site that belongs to the same attacker — <a href="/ui/campaigns/all{{ '?brand_id=' ~ request.query_params.get('brand_id') if request.query_params.get('brand_id') }}">all sites on one map →</a>. Each map adds to the operations; an operation card drafts the takedowns of all its sites.</p>
 
 <div class="kpis">
-  <div class="kpi mg"><div class="v" data-count="{{ k.campaigns }}">0</div><div class="l">infrastructure maps</div></div>
+  <a class="kpi lnk mg" href="#maps"><div class="v" data-count="{{ k.campaigns }}">0</div><div class="l">infrastructure maps</div></a>
   <div class="kpi cy"><div class="v" data-count="{{ k.nodes }}">0</div><div class="l">infrastructure nodes</div></div>
   <div class="kpi ok"><div class="v" data-count="{{ k.included }}">0</div><div class="l">included after triage</div></div>
   <div class="kpi"><div class="v" data-count="{{ k.excluded }}">0</div><div class="l">excluded (noise)</div></div>
@@ -148,7 +150,7 @@
   let busy = false;
   async function tick(){
     const box = document.getElementById('confirmed');
-    if (!box || box.dataset.active !== '1' || busy) return;
+    if (!box || box.dataset.active !== '1' || busy || document.hidden) return;
     busy = true;
     try {
       const r = await fetch(location.pathname + location.search, {credentials: 'same-origin'});
@@ -163,7 +165,7 @@
   setInterval(tick, 3000);
 })();
 </script>
-<h2 style="margin-top:14px">Infrastructure maps <span class="muted">· {{ campaigns|length }}</span></h2>
+<h2 style="margin-top:14px" id="maps">Infrastructure maps <span class="muted">· {{ campaigns|length }}</span></h2>
 <div class="grid" style="margin-top:8px;grid-template-columns:repeat(auto-fill,minmax(min(560px,100%),1fr))">
   {% for c in campaigns %}
   <a class="ccard" href="/ui/campaigns/{{ c.id }}" style="--i:{{ loop.index0 }}">

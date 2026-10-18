@@ -136,7 +136,7 @@ async def test_investigation_builds_campaign_with_triage_and_iocs(session, tmp_p
             m.CandidateSource.candidate_id == new_cand.id
         )
     ).one()
-    assert pattern.startswith("pivot:")
+    assert pattern.startswith("pivot:") and "the infrastructure map of " in pattern  # the watchlist says which site's map found it
     # IOCs are normalised and traceable
     iocs = session.scalars(sa.select(m.Ioc).where(m.Ioc.campaign_id == camp.id)).all()
     types = {i.type for i in iocs}

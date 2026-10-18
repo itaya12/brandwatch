@@ -168,7 +168,7 @@ def brand_summary(session: Session, brand: Brand) -> dict[str, Any]:
         "name": brand.name,
         "vertical": brand.vertical,
         "kind": brand.kind or "service",
-        "profile": profile_view(brand),
+        "profile": {**profile_view(brand), "setup_skipped": bool((brand.profile or {}).get("setup_skipped"))},
         "domains": official_domains(session, brand.id),
         "fingerprint_version": fp_version or 0,
         "open_findings": open_findings or 0,
@@ -309,6 +309,12 @@ def create_brand(
                 kind="official" if i == 0 else "alias",
             )
         )
+    if not (body.detection or {}).get("search_markets"):  # nothing chosen: the official domain's country, when it has one
+        from brandwatch.detection import markets as markets_mod
+
+        inferred = markets_mod.for_domain(domains[0] if domains else "")
+        if inferred:
+            body.detection = {**(body.detection or {}), "search_markets": inferred}
     cfg = BrandConfig.for_preset(body.preset)
     session.add(
         Config(
@@ -1135,6 +1141,13 @@ async def suggest_search_queries(
         return {"available": False,
                 "reason": (issue.get("message") if isinstance(issue, dict) else None)
                 or "no AI model is configured (Settings → API keys → OpenAI)"}  # fmt: skip
+    if out.get("vertical") and not brand.vertical:  # the AI's word for the business is kept (it used to be thrown away)
+        from brandwatch.db.base import take_write_lock
+
+        take_write_lock(session)
+        brand = _get_brand(session, user, brand_id)
+        brand.vertical = str(out["vertical"])[:64]
+        session.commit()
     return {"available": True, "queries": out["search_queries"], "vertical": out.get("vertical"),
             "model": out.get("model")}  # fmt: skip
 

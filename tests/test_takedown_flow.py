@@ -90,7 +90,7 @@ def test_confirm_auto_maps_and_cta_and_dashboard_panel(engine, tmp_path):
         r = ui.post(f"/ui/findings/{f['id']}/takedown", follow_redirects=False)
         tid = r.headers["location"].rsplit("/", 1)[-1]
         td = ui.get(f"/ui/takedowns?brand_id={brand['id']}").text
-        assert "draft → open" in td and "no takedown yet" not in td.split("<table>")[1]
+        assert "draft → open" in td and "no takedown yet" not in td.split('<table class="rwd">')[1]
         assert (
             c.get("/api/dashboard", params={"brand_id": brand["id"]}).json()["kpis"][
                 "confirmed_no_takedown"

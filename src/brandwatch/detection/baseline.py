@@ -502,6 +502,8 @@ async def build_baseline(
         languages={"detected": ["en"]},
         llm_analysis=llm_profile,
     )
+    if isinstance(llm_profile, dict) and llm_profile.get("vertical") and not brand.vertical:
+        brand.vertical = str(llm_profile["vertical"])[:64]  # what the AI read the business to be
     session.add(fp)
     session.flush()
     return BaselineReport(

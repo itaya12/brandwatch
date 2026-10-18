@@ -31,12 +31,28 @@
   <div class="kpi"><div class="v" data-count="{{ a.logins_24h }}">0</div><div class="l">logins (24h)</div></div>
 </div>
 
-<div class="grid" style="grid-template-columns:2.2fr 1fr;margin-top:14px">
+<form method="get" action="/ui/activity" class="afilters" style="margin-top:14px">
+  <div><label for="a-actor">Who</label><select id="a-actor" name="actor"><option value="">anyone</option><option value="system" {{ 'selected' if filters.actor == 'system' }}>the system</option>{% for u in users %}<option value="{{ u }}" {{ 'selected' if filters.actor == u }}>{{ u }}</option>{% endfor %}</select></div>
+  <div><label for="a-cat">What</label><select id="a-cat" name="category"><option value="">everything</option>{% for c in ['finding', 'takedown', 'brand', 'candidate', 'scan', 'campaign', 'intel', 'user', 'workspace', 'notification', 'report'] %}<option value="{{ c }}" {{ 'selected' if filters.category == c }}>{{ c }}</option>{% endfor %}</select></div>
+  <div><label for="a-since">From</label><input id="a-since" type="date" name="since" value="{{ filters.since }}"></div>
+  <div><label for="a-until">To</label><input id="a-until" type="date" name="until" value="{{ filters.until }}"></div>
+  {% if filters.object_id %}<input type="hidden" name="object_id" value="{{ filters.object_id }}">{% endif %}
+  <div class="go"><button type="submit" class="primary">Apply</button>{% if base_qs %} <a class="btn" href="/ui/activity">Reset</a>{% endif %}
+    <a class="btn" href="/ui/activity.csv{{ '?' ~ base_qs if base_qs }}" title="the events these filters keep, one row each, as a spreadsheet">⤓ CSV</a></div>
+</form>
+{% if filters.object_id %}<p class="small muted" style="margin:6px 0 0">Only the events about one object · <a href="/ui/activity">show everything</a></p>{% endif %}
+<style>.afilters{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px 10px;align-items:end}
+  .afilters label{display:block;font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:3px}
+  .afilters .go{display:flex;gap:6px;flex-wrap:wrap}
+  @media (max-width:700px){.grid.actg{grid-template-columns:1fr!important}}</style>
+
+<div class="grid actg" style="grid-template-columns:2.2fr 1fr;margin-top:14px">
   <div class="panel">
+    <div class="small muted" style="margin-bottom:6px">{{ a.matching }} event{{ 's' if a.matching != 1 }}{{ ' match' if base_qs }}{% if page > 1 %} · page {{ page }}{% endif %}</div>
     <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px" id="chips">
-      <span class="chip on" data-cat="notable" title="everything except sign-ins">notable</span>
-      <span class="chip" data-cat="*">all</span>
-      {% for c in a.categories %}<span class="chip" data-cat="{{ c }}">{{ c.replace('_', ' ') }}</span>{% endfor %}
+      <button type="button" class="chip on" data-cat="notable" title="everything except sign-ins" aria-pressed="true">notable</button>
+      <button type="button" class="chip" data-cat="*" aria-pressed="false">all</button>
+      {% for c in a.categories %}<button type="button" class="chip" data-cat="{{ c }}" aria-pressed="false">{{ c.replace('_', ' ') }}</button>{% endfor %}
     </div>
     <div class="feed" id="feed">
       {% set ns = namespace(day='') %}
@@ -54,12 +70,14 @@
             {% if e.reason %}<div style="color:var(--text);opacity:.8;margin-top:2px">“{{ e.reason }}”</div>{% endif %}</div>
           {% endif %}
         </div>
-        <div class="when" data-rel="{{ e.at }}" title="{{ e.at }}">{{ e.at[:19].replace('T',' ') }}</div>
+        <div class="when">{{ e.at|ts }}<div><a class="small" href="/ui/activity?object_id={{ e.object_id }}" title="every event about this {{ e.object_type.replace('_', ' ') }}">{{ 'history' if e.object_id else '' }}</a></div></div>
       </div>
       {% endfor %}
       {% if not a.events %}<p class="muted">No activity yet.</p>{% endif %}
     </div>
-    <div class="more"><button type="button" id="more" style="display:none">Show older events</button></div>
+    <div class="more"><button type="button" id="more" style="display:none">Show older events</button>
+      {% if page > 1 %}<a class="btn small" href="/ui/activity?{{ base_qs ~ '&' if base_qs }}page={{ page - 1 }}">← newer</a>{% endif %}
+      {% if a.has_more %}<a class="btn small" href="/ui/activity?{{ base_qs ~ '&' if base_qs }}page={{ page + 1 }}" title="the next {{ per_page }} events from the server">older page →</a>{% endif %}</div>
   </div>
   <div>
     <div class="panel">
@@ -107,7 +125,7 @@
     more.style.display = total > shown ? '' : 'none';
     more.textContent = `Show older events (${total - shown} more)`;
   }
-  chips.forEach(ch => ch.addEventListener('click', () => { chips.forEach(c => c.classList.toggle('on', c === ch)); cat = ch.dataset.cat; limit = PAGE; render(); }));
+  chips.forEach(ch => ch.addEventListener('click', () => { chips.forEach(c => { c.classList.toggle('on', c === ch); c.setAttribute('aria-pressed', String(c === ch)); }); cat = ch.dataset.cat; limit = PAGE; render(); }));
   more.addEventListener('click', () => { limit += PAGE; render(); });
   render();
 })();

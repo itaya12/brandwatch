@@ -35,8 +35,10 @@ def test_nav_order_and_labels(engine, tmp_path):
     with TestClient(app):
         ui = _ui(app)
         page = ui.get("/ui/findings").text
-        labels = ["Dashboard", "Brands &amp; Scans", "Findings", "Watchlist", "Attack infrastructure", "Takedowns", "Activity", "Settings"]  # fmt: skip
-        positions = [page.index(f">{lbl}</a>") for lbl in labels]
+        # the work in its order: the queue first, the set-up (brands) after the takedowns
+        labels = ["Dashboard", "Findings", "Watchlist", "Attack infrastructure", "Takedowns", "Brands &amp; Scans", "Activity", "Settings", "How it works"]  # fmt: skip
+        nav = page.split('<nav aria-label="Main">')[1].split("</nav>")[0]
+        positions = [nav.index(f">{lbl}") for lbl in labels]
         assert positions == sorted(positions), "nav must follow the analyst lifecycle"
         assert ">Campaigns</a>" not in page  # the attacker graph is no longer called a campaign
         assert "Phase 1" not in ui.get("/ui/logout", follow_redirects=True).text
@@ -306,4 +308,5 @@ def test_whitelisting_a_flagged_host_closes_its_open_finding_and_activity_links_
         act = _ui(app).get("/ui/activity").text
         assert f'href="/ui/jobs/{job}"' in act
         dash = _ui(app).get("/ui/dashboard").text
-        assert dash.count('data-k="') == 6  # the 20 s refresh updates tiles by key, not position
+        tiles = dash.split('id="kpis"')[1].split('<div class="maptog"')[0]
+        assert tiles.count('data-k="') == 6  # the 20 s refresh updates tiles by key, not position

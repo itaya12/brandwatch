@@ -23,6 +23,7 @@ from brandwatch.api import tokens as tokens_api
 from brandwatch.api.auth import audit
 from brandwatch.api.deps import get_session
 from brandwatch.api.ui import _login_redirect, _render, router, ui_user, ui_writer
+from brandwatch.config.brand_config import BRAND_SWITCHES, PRESET_PROFILES
 from brandwatch.db.base import take_write_lock
 from brandwatch.db.enums import UserRole
 from brandwatch.db.models import User, Workspace
@@ -49,11 +50,13 @@ def _settings_ctx(request: Request, session: Session, user: User) -> dict[str, A
         "notify": tenancy.workspace_notify(session, user.workspace_id, request.app.state.settings),
         "notify_brands": brands_api.list_brands(session, user),
         "facts": _facts(request),
+        "PRESET_DEEP_SITES": PRESET_PROFILES["enterprise"]["max_candidates"],
     }
     if user.role is UserRole.ADMIN:
         ctx["ws"] = admin_api.get_workspace(request, session, user)
         ctx["users"] = admin_api.list_users(session, user)
         ctx["api_keys"] = admin_api.list_api_keys(session, user, request)
+        ctx["start_here"] = start_here(ctx["api_keys"], ctx["ws"]["economic_limits"])
         if ctx["ws"]["is_platform_workspace"]:
             ctx["workspaces"] = admin_api.list_workspaces(session, user)
     else:
@@ -61,6 +64,23 @@ def _settings_ctx(request: Request, session: Session, user: User) -> dict[str, A
         limits = tenancy.workspace_limits(session, ws.id, request.app.state.settings)
         ctx["ws"] = {"id": str(ws.id), "name": ws.name, "economic_limits": limits.model_dump()}
     return ctx
+
+
+def start_here(api_keys: list[dict[str, Any]], limits: dict[str, Any]) -> list[dict[str, Any]]:
+    """The "Start here" checklist of a live workspace, each step with ``ok``: all its keys set (or any one, for a
+    step with ``any``), or a daily spend cap above 0."""
+    from brandwatch.api.labels import START_HERE
+
+    have = {k["provider"] for k in api_keys if k.get("configured")}
+    out = []
+    for step in START_HERE:
+        if step.get("budget"):
+            ok = float(limits.get("max_daily_spend") or 0) > 0
+        else:
+            keys = step["keys"]
+            ok = any(k in have for k in keys) if step.get("any") else all(k in have for k in keys)
+        out.append({**step, "ok": ok})
+    return out
 
 
 def _settings_page(request: Request, session: Session, user: User, **extra: Any) -> HTMLResponse:
@@ -299,6 +319,7 @@ def settings_patch_user(
     user: Annotated[User | None, Depends(ui_writer)],
     role: Annotated[str, Form()] = "",
     is_active: Annotated[str, Form()] = "",
+    password: Annotated[str, Form()] = "",
 ):
     if user is None:
         return _login_redirect(request)
@@ -307,6 +328,7 @@ def settings_patch_user(
         patch = admin_api.UserPatch(
             role=UserRole(role) if role else None,
             is_active=None if not is_active else is_active == "true",
+            password=password or None,  # "set a new password" (a forgotten one is reset here)
         )
         admin_api.patch_user(user_id, patch, session, user)
     except (ValueError, HTTPException) as exc:
@@ -525,9 +547,12 @@ def profile_body(form: Any, kind: str, *, keep: dict[str, Any] | None = None) ->
 # ------------------------------------------------------------------------------------------
 # Set-up before the first scan: the Google queries and (retail) the profile, approved together
 # ------------------------------------------------------------------------------------------
-def needs_setup(brand: dict[str, Any]) -> bool:
+def needs_setup(brand: dict[str, Any], honour_skip: bool = True) -> bool:
     """A brand whose first scan would skip Google (queries not approved) or search ads blind
-    (a retail brand without countries)."""
+    (a retail brand without countries). ``honour_skip``: an analyst who chose "start now without setting up" is not asked
+    again (the brand page then shows the normal Start scan and a "finish set-up" link)."""
+    if honour_skip and (brand.get("profile") or {}).get("setup_skipped"):
+        return False
     cfg = brand.get("config") or {}
     search_on = "search" in ((cfg.get("detection") or {}).get("streams") or [])
     pending = search_on and not (brand.get("search_queries") or {}).get("approved")
@@ -537,11 +562,16 @@ def needs_setup(brand: dict[str, Any]) -> bool:
     return bool(pending or retail_blind or ai_pending)
 
 
-def _setup_context(session: Session, user: User, brand_id: uuid.UUID, error: str | None = None) -> dict[str, Any]:
+def _setup_context(request: Request, session: Session, user: User, brand_id: uuid.UUID, error: str | None = None) -> dict[str, Any]:
+    from brandwatch import keys as keystore
+
     brand = brands_api.get_brand(brand_id, session, user)
     cfg = brand.get("config") or {}
+    settings = request.app.state.settings
     return {"brand": brand, "search_on": "search" in ((cfg.get("detection") or {}).get("streams") or []),
-            "retail": brand.get("kind") == "retail", "error": error, "active": "brands"}  # fmt: skip
+            "retail": brand.get("kind") == "retail", "error": error, "active": "brands",
+            # "Suggest with AI" needs a model: say so instead of a button that fails
+            "ai_ready": keystore.provider_ready(session, user.workspace_id, settings, "openai")}  # fmt: skip
 
 
 @router.get("/brands/{brand_id}/setup", response_class=HTMLResponse)
@@ -553,7 +583,7 @@ def brand_setup_page(
 ):
     if user is None:
         return _login_redirect(request)
-    return _render(request, "brand_setup.html", user, **_setup_context(session, user, brand_id))
+    return _render(request, "brand_setup.html", user, **_setup_context(request, session, user, brand_id))
 
 
 @router.post("/brands/{brand_id}/setup")
@@ -567,7 +597,7 @@ async def brand_setup_save(
     if user is None:
         return _login_redirect(request)
     form = await request.form()
-    ctx = _setup_context(session, user, brand_id)
+    ctx = _setup_context(request, session, user, brand_id)
     brand = ctx["brand"]
     try:
         if ctx["retail"]:
@@ -603,7 +633,7 @@ async def brand_setup_save(
     except (ValueError, HTTPException) as exc:
         session.rollback()
         msg = exc.detail if isinstance(exc, HTTPException) else str(exc)
-        return _render(request, "brand_setup.html", user, **_setup_context(session, user, brand_id, error=str(msg)))
+        return _render(request, "brand_setup.html", user, **_setup_context(request, session, user, brand_id, error=str(msg)))
     return RedirectResponse(f"/ui/brands/{brand_id}?setup=saved", status_code=303)
 
 
@@ -932,7 +962,9 @@ async def brand_config_save(
         brands_api.patch_config(
             brand_id,
             brands_api.ConfigPatch(
-                preset=preset, detection=detection if custom else None, scoring=scoring or None
+                # in track mode the brand's own switches on the form (the countries it is searched in) still count
+                preset=preset, detection=detection if custom else ({k: detection[k] for k in BRAND_SWITCHES if k in detection} or None),
+                scoring=scoring or None
             ),
             session, user, apply_rescore=form.get("apply_rescore") == "on",
         )  # fmt: skip

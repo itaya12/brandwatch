@@ -117,7 +117,7 @@ def test_the_brand_page_and_the_add_brand_form_have_a_searchable_country_and_lan
         c.patch(f"/api/brands/{b['id']}/config", json={"detection": {"search_markets": [{"country": "us", "langs": ["en"]}, {"country": "il", "langs": ["he"]}]}})
         page = ui.get(f"/ui/brands/{b['id']}").text
         form = ui.get("/ui/brands").text
-    assert 'class="mkt"' in page and "Search countries · languages" in page and 'name="search_markets"' in page and "Add a country" in page
+    assert 'class="mkt"' in page and "Where its customers are" in page and 'name="search_markets"' in page and "Add a country" in page
     assert 'class="mkt"' in form and 'name="search_markets"' in form
     with sync.sync_playwright() as pw:
         try:

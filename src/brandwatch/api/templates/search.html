@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Search{% endblock %}
+{% block content %}
+<style>
+  .sres h2{margin:18px 0 8px}
+  .sres .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:7px 0;border-bottom:1px solid var(--border);font-size:13px}
+  .sres .row .mono{word-break:break-all}
+  .sbox{display:flex;gap:8px;max-width:640px}
+</style>
+<h1>SEARCH <span class="muted">· a domain, an IP address, a takedown reference, an e-mail or a brand name</span></h1>
+<form method="get" action="/ui/search" class="sbox" role="search">
+  <input name="q" id="q" value="{{ q }}" placeholder="e.g. shopn0va, 203.0.113.66, BW-570AE512" autofocus maxlength="120" aria-label="search" dir="auto">
+  <button type="submit" class="primary">Search</button>
+</form>
+{% if results is none %}
+<p class="muted small" style="margin-top:12px">Type at least two characters. Findings in every state, the watchlist, the allowlist, takedowns, the indicators on the infrastructure maps and brands are searched. <kbd>/</kbd> opens this box from any page.</p>
+{% else %}
+{% set n = results.values()|map('length')|sum %}
+<p class="small muted" style="margin-top:10px">{{ n }} result{{ 's' if n != 1 }} for <b class="mono" dir="auto">{{ q }}</b>{% if not n %} — try part of the name only (“shopn” instead of “shopn0va-login.com”).{% endif %}</p>
+<div class="sres">
+  {% if results.findings %}<h2>Findings <span class="muted">· {{ results.findings|length }}</span></h2>
+  {% for f in results.findings %}<div class="row"><span class="badge sev-{{ f.severity }}">{{ f.severity }}</span><a class="mono" href="/ui/findings/{{ f.id }}" dir="ltr">{{ f.host }}</a><span class="badge state st-{{ f.state }}">{{ f.state|state_label }}</span><span class="muted small"><bdi>{{ f.brand }}</bdi>{% if f.kind and f.kind != 'phishing' %} · {{ f.kind|replace('_', ' ') }}{% endif %}</span></div>{% endfor %}{% endif %}
+  {% if results.takedowns %}<h2>Takedowns <span class="muted">· {{ results.takedowns|length }}</span></h2>
+  {% for t in results.takedowns %}<div class="row"><a class="mono" href="/ui/takedowns/{{ t.id }}">{{ t.reference }}</a><span class="mono" dir="ltr">{{ t.host }}</span><span class="badge state">{{ t.state|state_label }}</span></div>{% endfor %}{% endif %}
+  {% if results.watchlist %}<h2>Watchlist <span class="muted">· {{ results.watchlist|length }} · domains with no finding</span></h2>
+  {% for c in results.watchlist %}<div class="row"><a class="mono" href="/ui/candidates/{{ c.id }}" dir="ltr">{{ c.host }}</a><span class="badge state st-{{ c.state }}">{{ c.state|state_label }}</span><span class="muted small"><bdi>{{ c.brand }}</bdi></span></div>{% endfor %}{% endif %}
+  {% if results.indicators %}<h2>Indicators on the infrastructure maps <span class="muted">· {{ results.indicators|length }}</span></h2>
+  {% for i in results.indicators %}<div class="row"><span class="pill">{{ i.type }}</span><span class="mono" dir="ltr">{{ i.value }}</span>{% if i.campaign_id %}<a class="small" href="/ui/campaigns/{{ i.campaign_id }}">open the map →</a>{% endif %}</div>{% endfor %}{% endif %}
+  {% if results.allowlist %}<h2>Official and allowlisted domains <span class="muted">· {{ results.allowlist|length }} · never flagged</span></h2>
+  {% for d in results.allowlist %}<div class="row"><span class="mono" dir="ltr">{{ d.domain }}</span><span class="pill">{{ 'official' if d.official else (d.kind or 'allowlisted')|replace('_', ' ') }}</span><a class="small" href="/ui/brands/{{ d.brand_id }}#whitelist"><bdi>{{ d.brand }}</bdi> →</a></div>{% endfor %}{% endif %}
+  {% if results.brands %}<h2>Brands <span class="muted">· {{ results.brands|length }}</span></h2>
+  {% for b in results.brands %}<div class="row"><a href="/ui/brands/{{ b.id }}" dir="auto">{{ b.name }}</a></div>{% endfor %}{% endif %}
+</div>
+{% endif %}
+{% endblock %}

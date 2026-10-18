@@ -226,13 +226,34 @@ SURFACE_LABELS: dict[str, str] = {"name": "domain name", "subdomain": "subdomain
 JOB_LABELS: dict[str, str] = {"brand_scan": "brand scan", "url_scan": "URL scan",
                               "investigate": "infrastructure map", "intel": "site intel", "map_all": "map all"}  # fmt: skip
 
+# which part of BrandWatch each key feeds (the tags on Settings → API keys, and the "Start here" checklist)
+KEY_USED_BY: dict[str, list[str]] = {
+    "virustotal": ["every track", "the site investigation"], "urlhaus": ["every track"], "safebrowsing": ["every track"],
+    "abuseipdb": ["the site investigation"], "serpapi": ["Google search"], "scraperapi": ["Google search (fallback)"],
+    "urlscan": ["Standard · Deep", "the site investigation"], "shodan": ["the infrastructure map"],
+    "whoisxml": ["WHOIS history", "WHOIS by service"], "searchapi": ["social media", "ads", "AI answers"],
+    "companies_house": ["scam-shop checks (UK)"], "opencorporates": ["scam-shop checks"],
+    "openai": ["AI second opinion", "Suggest with AI", "ad relevance"],
+}
+# the "Start here" checklist: free keys first, then the budget, then a key per feature
+START_HERE: list[dict[str, Any]] = [
+    {"keys": ["virustotal", "urlscan", "safebrowsing"], "title": "Free reputation keys", "why": "VirusTotal, urlscan.io and Google Safe Browsing: free keys that every scan uses to see whether a site is already known as bad."},
+    {"budget": True, "title": "A daily spend cap", "why": "Every paid call is checked against it; a scan stops spending instead of overspending."},
+    {"keys": ["serpapi", "scraperapi"], "any": True, "title": "Google search", "why": "SerpApi (or ScraperAPI as a fallback) for the Google search stream — sites that rank for the brand's name."},
+    {"keys": ["searchapi"], "title": "Social media, ads and AI answers", "why": "One SearchApi.io key: fake Facebook / Instagram accounts, the Meta Ad Library, and what ChatGPT / Gemini tell users."},
+    {"keys": ["openai"], "title": "AI", "why": "OpenAI: the advisory second opinion, \"Suggest with AI\" for queries and prices, and the ad-relevance check."},
+]
+
 # the analyst's reason for dismissing, in words (the enum values are what the API takes)
 VERDICT_LABELS: dict[str, str] = {"legitimate": "a legitimate site", "suspicious": "suspicious, but not phishing",
                                   "unknown": "cannot tell"}  # fmt: skip
 # the kinds of message a page shows after a form was saved (?saved=<key>)
 SAVED_TEXT: dict[str, str] = {"config": "Detection track and search rules saved.", "allowlist": "Allowlist updated.",
                               "baseline": "Baseline rebuilt from the official site.", "brand": "Brand updated.",
-                              "map_deleted": "The infrastructure map was deleted.", "notify": "Notification settings saved."}  # fmt: skip
+                              "map_deleted": "The infrastructure map was deleted.", "notify": "Notification settings saved.",
+                              "note": "Note added — it is kept with the finding and in Activity.",
+                              "snoozed": "Snoozed — it is out of the queue until the date below, then it comes back by itself.",
+                              "woken": "Back in the queue."}  # fmt: skip
 
 STAGE_LABELS: dict[str, tuple[str, str]] = {
     "baseline": ("Learn the real site", "favicon, screenshot, login form, keywords"),
@@ -344,6 +365,17 @@ GLOSSARY: list[tuple[str, str, str]] = [
     ("ioc", "IOC", "Indicator of compromise: a domain, IP, certificate hash or tracking ID a firewall / SIEM can block. Exported as CSV, JSON or STIX 2.1."),
     ("takedown", "Takedown", "The request to remove a site. Draft → review → approved → sent → taken down; sent to the registrar, the hosting provider and the CDN, and reported to blocklists."),
     ("evidence", "Evidence", "Every screenshot, HTML page, DNS / WHOIS answer and reputation lookup, stored append-only with its SHA-256 — the database rejects edits and deletes."),
+    ("stream", "Discovery stream", "One way of finding look-alikes: look-alike names (dnstwist), new certificates (CT), newly registered domains (NRD), Google search, the urlscan.io archive, social media, ads. A track decides which streams run."),
+    ("dnstwist", "dnstwist", "Generates the names a phisher would register — typos, swapped letters, other TLDs, look-alike Unicode — and checks in DNS which of them exist."),
+    ("ct", "Certificate transparency (CT)", "Every HTTPS certificate is published in public logs within minutes; a new certificate carrying the brand's name is often the first sign of a kit."),
+    ("nrd", "Newly registered domains (NRD)", "Yesterday's list of every newly registered domain (about 70,000 a day), searched for the brand's name."),
+    ("urlscan", "urlscan.io", "A public archive of scanned web pages: past scans that mention the brand, and a screenshot of a site that blocks BrandWatch."),
+    ("residential", "Home / mobile IP probe", "A visit through a home (residential) or 4G/5G address, for kits that show the real page only to people, never to a datacentre. Needs a proxy and a GB budget."),
+    ("stix", "STIX 2.1", "The standard file format security tools exchange threat indicators in; the infrastructure map's indicators can be exported as STIX for a SIEM or a firewall."),
+    ("golden", "Golden dataset", "Recorded, hand-labelled scenarios (phishing, cloaked kits, scam shops, legitimate sites) the real pipeline is run on in every build; precision and recall are measured on them."),
+    ("tld-set", "TLD set", "Which top-level domains dnstwist tries: common (.com .net …), popular (about 100) or all (about 1,280)."),
+    ("vertical", "Vertical", "The kind of business (\"footwear and apparel\", \"crypto exchange\") — read by the AI from the official site, used to pick the right Google queries."),
+    ("kind", "Who sells it", "Only the brand (a service, an app, a bank) or other shops too: then scam shops advertising its products are hunted as well."),
     ("demo", "Demo mode", "Recorded scenarios replace every external service: the full pipeline runs deterministically, offline, at $0."),
 ]  # fmt: skip
 
@@ -427,4 +459,5 @@ def register(templates: Any) -> None:
         "STREAM_LABELS": STREAM_LABELS, "SURFACE_LABELS": SURFACE_LABELS,
         "PROVIDER_GROUPS": PROVIDER_GROUPS, "PROVIDER_INFO": PROVIDER_INFO, "KEYLESS_SOURCES": KEYLESS_SOURCES,
         "VERDICT_LABELS": VERDICT_LABELS, "SAVED_TEXT": SAVED_TEXT, "SIGNAL_COUNT": N_SIGNALS,
+        "KEY_USED_BY": KEY_USED_BY, "START_HERE": START_HERE,
     })  # fmt: skip

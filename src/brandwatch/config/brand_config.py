@@ -485,7 +485,8 @@ def detection_for_preset(preset: str) -> DetectionConfig:
 
 
 # switches of the brand itself, not of its track: changing them is not "custom", changing the track keeps them
-BRAND_SWITCHES = ("social_accounts", "social_accounts_max", "phishing_ads", "ai_answers", "ai_engines", "ai_prompts_max", "contacts_pages_max")
+BRAND_SWITCHES = ("social_accounts", "social_accounts_max", "phishing_ads", "ai_answers", "ai_engines", "ai_prompts_max", "contacts_pages_max",
+                  "search_geo", "search_lang", "search_markets")
 
 
 def is_custom_detection(preset: str, detection: DetectionConfig) -> bool:

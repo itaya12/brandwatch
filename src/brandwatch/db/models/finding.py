@@ -56,6 +56,8 @@ class Finding(Base):
     # suspicious shops: the analyst's conclusion {level, proof, note, system_level, by, at} —
     # detection/shop_levels.py; null until a shop finding is confirmed
     conclusion: Mapped[dict[str, Any] | None] = mapped_column(JSONB, nullable=True)
+    # "snooze until": out of the open queue until then (it comes back by itself)
+    snoozed_until: Mapped[datetime | None] = mapped_column(TZDateTime, nullable=True)
     created_at: Mapped[datetime] = created_at()
     updated_at: Mapped[datetime] = mapped_column(
         TZDateTime, nullable=False, default=utcnow, onupdate=utcnow
@@ -72,6 +74,19 @@ class Finding(Base):
     )
     evidence_links: Mapped[list[FindingEvidence]] = relationship(back_populates="finding")
     labels: Mapped[list[AnalystLabel]] = relationship(back_populates="finding")
+
+
+class FindingNote(Base):
+    """An analyst's working note on a finding ("asked the registrar on Monday"). Kept, never edited; shown in the
+    finding's History and in Activity."""
+
+    __tablename__ = "finding_notes"
+
+    id: Mapped[uuid.UUID] = uuid_pk()
+    finding_id: Mapped[uuid.UUID] = fk("findings.id", index=True)
+    author_id: Mapped[uuid.UUID | None] = fk("users.id", nullable=True)
+    text: Mapped[str] = mapped_column(sa.Text, nullable=False)
+    created_at: Mapped[datetime] = created_at()
 
 
 class FindingEvidence(Base):

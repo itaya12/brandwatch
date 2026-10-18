@@ -2,6 +2,7 @@
 {% block title %}Settings{% endblock %}
 {% block content %}
 <style>
+  .sec .hint{font-size:11.5px;color:var(--muted);margin-top:3px;line-height:1.4}
   .set-layout{display:grid;grid-template-columns:210px minmax(0,1fr);gap:18px;align-items:start;margin-top:14px}
   .set-layout>*{min-width:0}
   .set-nav{position:sticky;top:64px;display:grid;gap:2px}
@@ -64,6 +65,25 @@
   {% if is_admin %}<a href="#team"><div class="k">Team</div><div class="v">{{ users|length }} user(s)</div><div class="d">{{ users|selectattr('role', 'equalto', 'admin')|list|length }} admin · {{ tokens|rejectattr('revoked')|list|length }} API token(s)</div></a>{% endif %}
 </div>
 
+{% if is_admin and not settings.demo_mode %}
+{% set keymap0 = {} %}{% for k in api_keys %}{% set _ = keymap0.update({k.provider: k.configured}) %}{% endfor %}
+{% set done = start_here|selectattr('ok')|list|length %}
+{% if done < start_here|length %}
+<details class="panel starthere" id="start-here" open>
+  <summary><b>Start here</b> <span class="muted small">· {{ done }} of {{ start_here|length }} done · what a live workspace needs, in order — every step is optional, a missing key only skips that part</span></summary>
+  <ol>
+    {% for step in start_here %}{% set ok = step.ok %}
+    <li class="{{ 'ok' if ok }}"><span class="mk">{{ '✓' if ok else loop.index }}</span><div><b>{{ step.title }}</b> <span class="muted">— {{ step.why }}</span>
+      <div class="small">{% if step.budget %}<a href="#budget">Workspace &amp; budget</a> · now ${{ ws.economic_limits.max_daily_spend }} a day{{ ' (no cap)' if not ws.economic_limits.max_daily_spend }}{% else %}{% for p in step.get('keys') %}<a href="#key-{{ p }}">{{ PROVIDER_INFO[p].name if p in PROVIDER_INFO else p }}</a> {{ '✓' if keymap0.get(p) else '· not set' }}{{ ' · ' if not loop.last }}{% endfor %}{% endif %}</div></div></li>
+    {% endfor %}
+  </ol>
+</details>
+<style>.starthere{margin:0 0 14px;border-color:rgba(53,199,242,.45)}.starthere summary{cursor:pointer}.starthere ol{list-style:none;margin:10px 0 0;padding:0;display:grid;gap:8px}
+  .starthere li{display:flex;gap:10px;align-items:flex-start}.starthere .mk{flex:none;width:24px;height:24px;border-radius:50%;border:1px solid var(--accent);display:inline-grid;place-items:center;font:700 12px var(--mono);color:var(--accent2)}
+  .starthere li.ok .mk{border-color:var(--low);color:var(--low)}.starthere li.ok b{color:var(--muted)}</style>
+{% endif %}
+{% endif %}
+
 <div class="set-layout">
   <nav class="set-nav" id="setnav" aria-label="Settings sections">
     <div class="grp">Data sources</div>
@@ -91,9 +111,9 @@
     {% for gkey, gname, gdesc in PROVIDER_GROUPS %}
     <div class="keygrp">{{ gname }} <span>· {{ gdesc }}</span></div>
     {% for pname, info in PROVIDER_INFO.items() if info.group == gkey and pname in keymap %}{% set k = keymap[pname] %}
-    <div class="krow">
+    <div class="krow" id="key-{{ pname }}">
       <div>
-        <div class="nm">{{ info.name }}{% if info.recommended %}<span class="tag rec">recommended</span>{% endif %}{% if info.built is sameas false %}<span class="tag" title="the key is stored, but the connector is not written yet: this source is skipped">connector not built yet</span>{% endif %}<a href="{{ info.url }}" target="_blank" rel="noreferrer noopener">get a key ↗</a></div>
+        <div class="nm">{{ info.name }}{% if info.recommended %}<span class="tag rec">recommended</span>{% endif %}{% for u in KEY_USED_BY.get(pname, []) %}<span class="tag" title="this key is used by {{ u }}">{{ u }}</span>{% endfor %}{% if info.built is sameas false %}<span class="tag" title="the key is stored, but the connector is not written yet: this source is skipped">connector not built yet</span>{% endif %}<a href="{{ info.url }}" target="_blank" rel="noreferrer noopener">get a key ↗</a></div>
         <div class="ds">{{ info.does }}{% if info.plan %} · <span class="mono">{{ info.plan }}</span>{% endif %}</div>
       </div>
       <div>
@@ -167,8 +187,10 @@
         <div><label>Username</label><input name="username" value="{{ px.username }}" autocomplete="off" {{ 'disabled' if not is_admin }}></div>
         <div><label>Password <span style="text-transform:none">(manual; blank keeps it)</span></label><input name="password" type="password" autocomplete="off" {{ 'disabled' if not is_admin }}></div>
       </div>
-      <label>Webshare API token <span style="text-transform:none">(blank keeps the stored one)</span></label>
-      <input name="webshare_token" type="password" autocomplete="off" placeholder="webshare.io → API" {{ 'disabled' if not is_admin }}>
+      <div id="ws-token" {{ '' if px.mode == 'webshare' else 'hidden' }}><label for="ws-tok">Webshare API token <span style="text-transform:none">(blank keeps the stored one)</span></label>
+      <input id="ws-tok" name="webshare_token" type="password" autocomplete="off" placeholder="webshare.io → API" {{ 'disabled' if not is_admin }}></div>
+      <script>(function(){const f=document.getElementById('proxy-form'),w=document.getElementById('ws-token');if(!f||!w)return;const d=f.querySelector('details');
+        f.addEventListener('change',e=>{if(e.target.name!=='mode')return;w.hidden=e.target.value!=='webshare';if(d&&e.target.value!=='off')d.open=true;});})();</script>
       <label class="opt" style="margin-top:8px"><input type="checkbox" name="rotating" {{ 'checked' if px.rotating }} {{ 'disabled' if not is_admin }}> rotate to a new IP on every request (Webshare)</label>
       </details>
       <h3 class="subh" style="margin-top:14px">MOBILE PROXY</h3>
@@ -196,11 +218,11 @@
     <form method="post" action="/ui/settings/workspace">
       <label>Workspace name</label><input name="name" value="{{ ws.name }}" {{ 'disabled' if not is_admin }} style="max-width:420px">
       <div class="grid three" style="margin-top:4px">
-        <div><label>Max daily spend (USD)</label><input name="max_daily_spend" value="{{ ws.economic_limits.max_daily_spend }}" {{ 'disabled' if not is_admin }}></div>
-        <div><label>Max API calls / day</label><input name="max_api_calls" value="{{ ws.economic_limits.max_api_calls }}" {{ 'disabled' if not is_admin }}></div>
-        <div><label title="the highest 'Max sites to visit' that any scan or brand can use, whatever the track or the START SCAN field says">Max sites visited per scan (hard cap)</label><input name="max_candidate_count" value="{{ ws.economic_limits.max_candidate_count }}" {{ 'disabled' if not is_admin }}></div>
-        <div><label>Max residential GB / day</label><input name="max_residential_gb" value="{{ ws.economic_limits.max_residential_gb }}" {{ 'disabled' if not is_admin }}></div>
-        <div><label>Max investigation cost (USD)</label><input name="max_investigation_cost" value="{{ ws.economic_limits.max_investigation_cost }}" {{ 'disabled' if not is_admin }}></div>
+        <div><label for="b-spend">Max daily spend (USD)</label><input id="b-spend" name="max_daily_spend" value="{{ ws.economic_limits.max_daily_spend }}" {{ 'disabled' if not is_admin }}><div class="hint">paid calls over 24 h · <b>0 = no cap</b></div></div>
+        <div><label for="b-calls">Max API calls / day</label><input id="b-calls" name="max_api_calls" value="{{ ws.economic_limits.max_api_calls }}" {{ 'disabled' if not is_admin }}><div class="hint">paid calls only (free ones are not counted)</div></div>
+        <div><label for="b-sites" title="the highest 'Max sites to visit' that any scan or brand can use, whatever the track or the START SCAN field says">Max sites visited per scan (hard cap)</label><input id="b-sites" name="max_candidate_count" value="{{ ws.economic_limits.max_candidate_count }}" {{ 'disabled' if not is_admin }}><div class="hint">no track or brand visits more · Deep asks for {{ PRESET_DEEP_SITES }}</div></div>
+        <div><label for="b-gb">Max residential GB / day</label><input id="b-gb" name="max_residential_gb" value="{{ ws.economic_limits.max_residential_gb }}" {{ 'disabled' if not is_admin }}><div class="hint"><b>0 = the home / mobile IP probe is off</b>{% if proxy.mode != 'off' and not ws.economic_limits.max_residential_gb %} — <span style="color:var(--high)">a proxy is saved but cannot be used until this is above 0 (1 GB is plenty for a day)</span>{% endif %}</div></div>
+        <div><label for="b-inv">Max investigation cost (USD)</label><input id="b-inv" name="max_investigation_cost" value="{{ ws.economic_limits.max_investigation_cost }}" {{ 'disabled' if not is_admin }}><div class="hint">one infrastructure map · 0 = the default $1</div></div>
       </div>
       {% if is_admin %}<div style="margin-top:10px"><button class="primary" type="submit">Save budget</button></div>{% endif %}
     </form>
@@ -219,11 +241,12 @@
         <td>
           <form method="post" action="/ui/settings/users/{{ u.id }}" class="actions" style="gap:6px;align-items:center">
             <select name="role" style="width:auto">{% for r in ['admin','analyst','viewer'] %}<option {{ 'selected' if u.role==r }}>{{ r }}</option>{% endfor %}</select>
-            <select name="is_active" style="width:auto"><option value="true" {{ 'selected' if u.is_active }}>active</option><option value="false" {{ 'selected' if not u.is_active }}>disabled</option></select>
+            <select name="is_active" style="width:auto" aria-label="status of {{ u.email }}"><option value="true" {{ 'selected' if u.is_active }}>active</option><option value="false" {{ 'selected' if not u.is_active }}>disabled</option></select>
+            <input name="password" type="password" minlength="10" autocomplete="new-password" placeholder="new password (optional)" aria-label="new password for {{ u.email }}" style="width:200px">
             <button type="submit">Save</button>
           </form>
         </td>
-        <td class="mono small muted">{{ (u.last_login_at or '—')[:16].replace('T',' ') }}</td>
+        <td class="mono small muted">{{ u.last_login_at|ts if u.last_login_at else '—' }}</td>
       </tr>
       {% endfor %}
     </table>
@@ -234,7 +257,7 @@
       <div><label>Role</label><select name="role"><option>analyst</option><option>viewer</option><option>admin</option></select></div>
       <div><button class="primary" type="submit">Add user</button></div>
     </form></details>
-    <p class="small muted" style="margin-bottom:0">admin: everything · analyst: scans, verdicts, reports, takedowns, investigations · viewer: read-only.</p>
+    <p class="small muted" style="margin-bottom:0">admin: everything · analyst: scans, verdicts, reports, takedowns, investigations · viewer: read-only. A forgotten password: type a new one on the user's row and press Save (at least 10 characters; tell the user yourself).</p>
   </section>
   {% endif %}
 
@@ -338,7 +361,7 @@ curl -N -H "Authorization: Bearer $TOKEN" {{ request.base_url }}api/jobs/&lt;job
         <p class="small" style="margin-top:0"><span class="pill">{{ ml.model.version }}</span> trained on {{ ml.model.n_samples }} labelled candidates ({{ ml.model.positives }} phishing) from <b>{{ ml.model.source }}</b> labels ·
           accuracy {{ (ml.model.metrics.accuracy * 100)|round|int }}% · precision {{ (ml.model.metrics.precision * 100)|round|int }}% · recall {{ (ml.model.metrics.recall * 100)|round|int }}% ({{ ml.model.metrics.folds }}-fold CV)</p>
         <p class="small muted">Top features: {% for f in ml.model.top_features[:5] %}<span class="pill">{{ f.feature }} {{ '%+.2f'|format(f.weight) }}</span> {% endfor %}</p>
-        {% else %}<p class="small muted" style="margin-top:0">No model yet. Labelled candidates: analyst {{ ml.labelled_candidates.analyst }}, golden {{ ml.labelled_candidates.golden }} (minimum {{ ml.min_samples }}).</p>{% endif %}
+        {% else %}<p class="small muted" style="margin-top:0">No model yet. It learns from analyst verdicts: it needs at least <b style="color:var(--text)">{{ ml.min_samples }}</b>, you have <b style="color:var(--text)">{{ ml.labelled_candidates.analyst }}</b>{% if ml.labelled_candidates.analyst < ml.min_samples %} — {{ ml.min_samples - ml.labelled_candidates.analyst }} more confirm / dismiss decisions{% endif %}.{% if settings.demo_mode %} The demo can also train on the {{ ml.labelled_candidates.golden }} golden scenarios.{% endif %}</p>{% endif %}
         {% if can_write %}
         <form method="post" action="/ui/settings/ml/train" class="actions">
           <select name="source" style="width:auto"><option value="analyst">analyst verdicts</option>{% if settings.demo_mode %}<option value="golden">golden dataset (demo)</option><option value="both">both</option>{% endif %}</select>
