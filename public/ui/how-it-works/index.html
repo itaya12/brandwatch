@@ -1,9 +1,18 @@
 <!doctype html>
 <html lang="en">
-<head><script>window.__BW_GITHUB="https://github.com/itaya12/brandwatch"</script><script src="/_demo/map.js"></script><script src="/_demo/shim.js"></script>
+<head><script>window.__BW_GITHUB=""</script><script src="/_demo/map.js"></script><script src="/_demo/shim.js"></script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>How it works · BrandWatch</title>
+
+<meta name="description" content="Someone fakes a brand's site. BrandWatch finds it, proves it with tamper-proof evidence, maps the attacker and drafts the takedown — the whole product in one picture and six short steps.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="BrandWatch">
+<meta property="og:title" content="How it works · BrandWatch">
+<meta property="og:description" content="Someone fakes a brand's site. BrandWatch finds it, proves it with tamper-proof evidence, maps the attacker and drafts the takedown — the whole product in one picture and six short steps.">
+<meta property="og:image" content="https://brandwatch.itaya12.workers.dev/og-how-it-works.png">
+<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=JetBrains+Mono:wght@400;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -192,7 +201,7 @@ header nav{display:flex;align-items:center;min-width:0}
   /* ------------------------------------------------------------------ shell */
   .sx{--ink:#E6EDF5;--line:#1E2A3D;--card:rgba(18,26,43,.92)}
   .sx.js .rv{opacity:0}
-  .sx.js .ch.live .rv,.sx.js .on-view.live .rv{animation:rvIn .6s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(var(--t,0)*1ms)}
+  .sx.js .ch.live .rv,.sx.js .on-view.live .rv{animation:rvIn .6s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(var(--t,0)*var(--speed,1)*1ms)}
   @keyframes rvIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
   .sx svg .rv{transform-box:fill-box;transform-origin:center}
   .sx.js .ch.live svg g.rv{animation-name:popIn}
@@ -203,18 +212,12 @@ header nav{display:flex;align-items:center;min-width:0}
   @media (prefers-reduced-motion:reduce){.sx.js .rv{opacity:1;transform:none}}
 
   /* ------------------------------------------------------------------ hero */
-  .sx-hero{position:relative;padding:34px 0 26px;display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:34px;align-items:center}
-  .sx-hero h1{font-size:13px;letter-spacing:.2em;margin:0 0 14px;font-family:var(--mono);-webkit-text-fill-color:var(--accent2)}
+  .sx-hero{position:relative;padding:22px 0 16px}
+  .sx-hero h1{font-size:13px;letter-spacing:.2em;margin:0 0 10px;font-family:var(--mono);-webkit-text-fill-color:var(--accent2)}
   .sx-hero h1 span{-webkit-text-fill-color:var(--muted);letter-spacing:.06em}
-  .sx-head{font:700 clamp(30px,4.4vw,54px)/1.04 var(--display);letter-spacing:.01em;margin:0}
+  .sx-head{font:700 clamp(30px,3.3vw,46px)/1.04 var(--display);letter-spacing:.01em;margin:0;max-width:1180px}
   .sx-head em{font-style:normal;color:var(--accent2)}
-  .sx-social{display:flex;gap:12px;align-items:flex-start;margin:16px 0 0;padding:12px 14px;border:1px solid rgba(53,199,242,.45);border-radius:14px;background:linear-gradient(90deg,rgba(53,199,242,.10),rgba(53,199,242,.02))}
-  .sx-social .ic{flex:0 0 auto;display:flex;gap:4px}
-  .sx-social .ic span{width:26px;height:26px;border-radius:7px;display:grid;place-items:center;font:700 13px var(--sans);color:#fff}
-  .sx-social b.t{display:block;font-size:14.5px;color:var(--ink)}
-  .sx-social p b{color:var(--ink)}
-  .sx-social p{margin:2px 0 0;font-size:13px;line-height:1.5;color:#c3cdd9}
-  .sx-sub{font-size:16px;line-height:1.55;color:#c3cdd9;margin:16px 0 22px;max-width:620px}
+  .sx-sub{font-size:16px;line-height:1.55;color:#c3cdd9;margin:14px 0 18px;max-width:720px}
   .sx-cta{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
   .btn-play{display:inline-flex;align-items:center;gap:12px;padding:14px 22px;border-radius:999px;border:1px solid var(--accent);background:rgba(53,199,242,.12);
     color:var(--accent2);font:700 15px var(--sans);letter-spacing:.02em;cursor:pointer;transition:transform .2s,background .2s}
@@ -223,15 +226,22 @@ header nav{display:flex;align-items:center;min-width:0}
   @keyframes ping{0%{box-shadow:0 0 0 0 rgba(53,199,242,.5)}70%{box-shadow:0 0 0 14px rgba(53,199,242,0)}100%{box-shadow:0 0 0 0 rgba(53,199,242,0)}}
   .sx-cta .alt{font-size:13px;color:var(--muted)}
   .illus{display:inline-block;font:600 10px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--high);border:1px solid rgba(255,159,28,.5);border-radius:999px;padding:2px 8px;margin-left:6px;vertical-align:middle}
-  /* hero map of the six chapters */
-  .sx-map{position:relative;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
-  .sx-map a{position:relative;display:block;padding:14px 14px 12px;border:1px solid var(--line);border-radius:14px;background:var(--card);color:var(--ink);text-decoration:none;transition:border-color .2s,transform .2s}
-  .sx-map a:hover{border-color:var(--accent);transform:translateY(-2px)}
-  .sx-map .ic{font-size:22px;line-height:1;color:var(--accent2)}
-  .sx-map .k{display:block;font:600 10px var(--mono);letter-spacing:.14em;color:var(--muted);margin-top:10px}
-  .sx-map b{display:block;font:700 17px var(--display);letter-spacing:.03em;margin-top:2px}
-  .sx-map a::after{content:"";position:absolute;left:14px;right:14px;bottom:0;height:2px;border-radius:2px;background:var(--accent);transform:scaleX(0);transform-origin:left;animation:mapfill 6s calc(var(--n)*1s) infinite}
-  @keyframes mapfill{0%{transform:scaleX(0);opacity:1}14%{transform:scaleX(1);opacity:1}30%,100%{transform:scaleX(1);opacity:0}}
+  /* under the picture: four numbers read from the code, and who built it */
+  .sx-proof{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 10px}
+  .sx-proof a{display:inline-flex;align-items:baseline;gap:6px;padding:7px 13px;border:1px solid var(--line);border-radius:999px;background:var(--card);color:var(--ink);text-decoration:none;font-size:13px;transition:border-color .2s}
+  .sx-proof a:hover{border-color:var(--accent)}
+  .sx-proof b{font:700 18px/1 var(--display);color:var(--accent2)}
+  .sx-author{display:flex;flex-wrap:wrap;align-items:center;gap:10px 18px;padding:12px 16px;border:1px solid rgba(53,199,242,.35);border-radius:14px;background:linear-gradient(90deg,rgba(53,199,242,.08),rgba(53,199,242,.02));margin:0 0 6px}
+  .sx-author .by{font:700 16px var(--display);letter-spacing:.03em;color:var(--ink)}
+  .sx-author .by span{font:500 13px var(--sans);letter-spacing:0;color:var(--muted);margin-left:8px}
+  .sx-author .tech{font-size:13px;color:#c3cdd9}
+  .sx-author .lk{margin-left:auto;display:flex;flex-wrap:wrap;gap:8px}
+  .sx-author .lk a{display:inline-block;padding:6px 12px;border:1px solid var(--accent);border-radius:999px;color:var(--accent2);text-decoration:none;font-size:13px;font-weight:600}
+  .sx-author .lk a:hover{background:rgba(53,199,242,.12)}
+  /* short bullets inside a chapter's text */
+  .ch-text .pts{margin:0 0 12px;padding-left:18px;font-size:14.5px;line-height:1.6;color:#c3cdd9}
+  .ch-text .pts li{margin:2px 0}
+  .ch-text .pts b{color:var(--ink)}
 
   /* ------------------------------------------------------------------ chapter rail */
   .sx-rail{position:sticky;top:64px;z-index:15;display:flex;align-items:center;gap:10px;margin:0 -20px;padding:9px 20px;border-bottom:1px solid var(--line);
@@ -272,7 +282,7 @@ header nav{display:flex;align-items:center;min-width:0}
   .browser .vp .mock{position:absolute;inset:0;padding:18px;display:grid;gap:10px;align-content:start}
   .browser .vp .mock span{display:block;height:12px;border-radius:4px;background:#1a2438}
   .scan{position:absolute;left:0;right:0;top:-30%;height:30%;background:linear-gradient(180deg,transparent,rgba(53,199,242,.28),transparent);pointer-events:none;opacity:0}
-  .sx.js .ch.live .scan{animation:scanY 2.6s .3s ease-in-out both}
+  .sx.js .ch.live .scan{animation:scanY calc(2.6s*var(--speed,1)) calc(.3s*var(--speed,1)) ease-in-out both}
   @keyframes scanY{0%{top:-30%;opacity:1}100%{top:100%;opacity:1}}
   .fp{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:12px}
   .fp .c{border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--panel)}
@@ -304,7 +314,7 @@ header nav{display:flex;align-items:center;min-width:0}
   .view .ip{font:11px var(--mono);color:var(--muted);margin:2px 0 8px 34px}
   .loadbar{height:3px;border-radius:3px;background:var(--line);overflow:hidden;margin-bottom:8px}
   .loadbar i{display:block;height:100%;width:0;background:var(--accent)}
-  .sx.js .ch.live .loadbar i{animation:load 1s ease-out both;animation-delay:calc(var(--t,0)*1ms)}
+  .sx.js .ch.live .loadbar i{animation:load 1s ease-out both;animation-delay:calc(var(--t,0)*var(--speed,1)*1ms)}
   .sx:not(.js) .loadbar i{width:100%}
   @keyframes load{to{width:100%}}
   .view .shot{position:relative;aspect-ratio:16/10;border-radius:8px;overflow:hidden;background:#05080f;border:1px solid var(--line)}
@@ -342,10 +352,10 @@ header nav{display:flex;align-items:center;min-width:0}
   .cbtn > span{grid-area:1/1;padding:8px 14px;border-radius:8px;white-space:nowrap}
   .cbtn .a{border:1px solid var(--low);color:var(--low)}
   .cbtn .b{border:1px solid var(--low);background:rgba(46,204,113,.15);color:var(--low)}
-  .sx.js .ch.live .cbtn .a{animation:fadeOut .3s both;animation-delay:calc(var(--t,0)*1ms)}
+  .sx.js .ch.live .cbtn .a{animation:fadeOut .3s both;animation-delay:calc(var(--t,0)*var(--speed,1)*1ms)}
   @keyframes fadeOut{to{opacity:0}}
   .cursor{position:absolute;right:-6px;bottom:-14px;font-size:20px;filter:drop-shadow(0 2px 4px rgba(0,0,0,.6));opacity:0}
-  .sx.js .ch.live .cursor{animation:cur 1.4s both;animation-delay:calc(var(--t,0)*1ms)}
+  .sx.js .ch.live .cursor{animation:cur 1.4s both;animation-delay:calc(var(--t,0)*var(--speed,1)*1ms)}
   @keyframes cur{0%{opacity:0;transform:translate(60px,40px)}40%{opacity:1;transform:none}55%{transform:scale(.8)}70%{transform:none;opacity:1}100%{opacity:0}}
   .graph{width:100%;height:auto;display:block}
   .graph line{stroke:#2c3d57;stroke-width:1.4}
@@ -378,7 +388,7 @@ header nav{display:flex;align-items:center;min-width:0}
   .chan .to{font:11px var(--mono);color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .portals{display:flex;flex-wrap:wrap;gap:5px;margin-top:12px}
   .portals span{font-size:11px;border:1px solid var(--line);border-radius:6px;padding:2px 7px;color:var(--muted);background:var(--panel)}
-  .sx.js .ch.live .portals span{animation:lit .5s both;animation-delay:calc(var(--t,0)*1ms)}
+  .sx.js .ch.live .portals span{animation:lit .5s both;animation-delay:calc(var(--t,0)*var(--speed,1)*1ms)}
   @keyframes lit{0%{opacity:0}60%{opacity:1;border-color:var(--accent);color:var(--ink)}100%{opacity:1;border-color:rgba(53,199,242,.4);color:#c3cdd9}}
   .human{display:flex;gap:12px;align-items:center;margin-top:14px;padding:12px 14px;border-radius:12px;border:1px solid rgba(46,204,113,.45);background:rgba(46,204,113,.06);font-size:13.5px}
   .human .ico{font-size:22px}
@@ -424,11 +434,19 @@ header nav{display:flex;align-items:center;min-width:0}
   .mi{position:relative;display:inline-block}
   .mi-btn{font:600 11px var(--mono);letter-spacing:.06em;padding:3px 9px;border-radius:999px;color:var(--muted);background:transparent}
   .mi:hover .mi-btn,.mi.open .mi-btn{color:var(--text);border-color:var(--accent)}
-  .deep{display:none;position:absolute;left:0;top:calc(100% + 8px);z-index:60;width:min(660px,calc(100vw - 32px));max-height:72vh;overflow:auto;
-    padding:14px 16px;border:1px solid var(--accent);border-radius:12px;background:#0b1220;box-shadow:0 18px 50px rgba(0,0,0,.6);text-align:left;cursor:auto}
-  .deep::before{content:"";position:absolute;left:0;right:0;top:-10px;height:10px}
-  .mi.r .deep{left:auto;right:0}
-  .mi:hover .deep,.mi.open .deep,.mi:focus-within .deep{display:block}
+  .deep{display:none;position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:90;width:min(760px,calc(100vw - 32px));max-height:84vh;overflow:auto;
+    padding:18px 20px;border:1px solid var(--accent);border-radius:14px;background:#0b1220;box-shadow:0 24px 70px rgba(0,0,0,.7);text-align:left;cursor:auto}
+  .deep.on{display:block;animation:miIn .18s ease-out}
+  @keyframes miIn{from{opacity:0;transform:translate(-50%,-47%)}to{opacity:1;transform:translate(-50%,-50%)}}
+  #mi-back{display:none;position:fixed;inset:0;z-index:89;background:rgba(3,6,12,.66);backdrop-filter:blur(2px)}
+  body.mi-on #mi-back{display:block}
+  .mi-x{position:absolute;right:12px;top:10px;padding:2px 9px;font-size:14px}
+  .deep .short{margin:4px 0 6px;padding-left:18px;font-size:14px;line-height:1.7}
+  .deep .short b{display:inline;font:inherit;font-weight:700;letter-spacing:0;margin:0;color:var(--text)}
+  .deep .short .hl{color:var(--accent2)}
+  .deep details.all{margin-top:10px;border-top:1px solid var(--border);padding-top:8px}
+  .deep details.all > summary{cursor:pointer;color:var(--accent2);font-size:13px;list-style:none}
+  .deep details.all > summary::-webkit-details-marker{display:none}
   .deep h4{margin:0 0 2px;font:600 15px var(--sans)}.deep .sub{color:var(--muted);font-size:12px;margin-bottom:10px}
   .deep h5{margin:12px 0 6px;font:600 10px var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
   .deep .api{border:1px solid var(--border);border-radius:8px;padding:8px 10px;margin:6px 0;background:var(--panel)}
@@ -441,9 +459,10 @@ header nav{display:flex;align-items:center;min-width:0}
 
   /* ------------------------------------------------------------------ phone */
   @media (max-width:900px){
-    .sx-hero,.ch{grid-template-columns:minmax(0,1fr);gap:22px}
-    .ch{min-height:0;padding:40px 0}
-    .sx-map{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .ch{grid-template-columns:minmax(0,1fr);gap:22px;min-height:0;padding:40px 0}
+    .sx-hero{padding-top:14px}
+    .btn-play{width:100%;justify-content:center}
+    .sx-author .lk{margin-left:0;width:100%}
     .sx-rail{margin:0 -12px;padding:8px 12px}
     .sx-rail .segs{display:flex;overflow-x:auto;scrollbar-width:none;gap:10px}
     .sx-rail .segs::-webkit-scrollbar{display:none}
@@ -453,11 +472,12 @@ header nav{display:flex;align-items:center;min-width:0}
   @media (max-width:700px){
     .stage{padding:40px 14px 14px;min-height:0}
     .views,.chans,.fp{grid-template-columns:minmax(0,1fr)}
+    .found .src{display:none}  /* the domain is what matters on a phone */
     .score{grid-template-columns:minmax(0,1fr);justify-items:center}
     .score .sigs,.score > div{width:100%}
     .gl{grid-template-columns:1fr}.gl dd{margin-bottom:8px}
-    .deep{position:static;width:auto;max-width:100%;max-height:none;margin-top:8px;padding:12px}.deep .two{grid-template-columns:1fr}.deep::before{display:none}
-    .hiw-foot{flex-wrap:wrap}.mi.open{flex:1 0 100%;text-align:right}.mi:hover .deep{display:none}.mi.open .deep{display:block}
+    .deep{padding:14px 14px 12px;max-height:86vh}.deep .two{grid-template-columns:1fr}
+    .hiw-foot{flex-wrap:wrap}
     .deep .api .tg{white-space:normal;display:inline-block;margin:2px 4px 0 0}
   }
 </style>
@@ -472,26 +492,541 @@ header nav{display:flex;align-items:center;min-width:0}
 
 <section class="sx-hero">
   <div>
-    <h1>HOW IT WORKS <span>· the product in two minutes</span></h1>
-    <p class="sx-head">Someone copies ShopNova's website to steal passwords. <em>BrandWatch finds it, proves it and gets it taken down.</em></p>
-    <div class="sx-social" id="social">
-      <div class="ic" aria-hidden="true"><span style="background:#1877F2">f</span><span style="background:linear-gradient(45deg,#F58529,#DD2A7B,#8134AF)">◎</span><span style="background:#10A37F">AI</span></div>
-      <div><b class="t">Websites, new domains, social media — and AI assistants too.</b>
-        <p>It hunts <b>look-alike domains</b> (typos and look-alike letters on more than a thousand domain endings) and <b>newly registered domains</b> from yesterday's registrations, every day.
-          It searches <b>Facebook and Instagram</b> for impostors: pages and profiles that use the brand's name — an AI reads what they post and say — and ads that sell fakes of its products. Each fake account, ad and page gets a ready report to Meta.</p>
-        <p style="margin-top:6px">And it asks <b>ChatGPT, Gemini and Google AI Mode</b> what they tell customers about the brand's phone, e-mail and login — every contact they give is checked against the brand's own website, and a made-up or scam number becomes a finding.</p></div>
-    </div>
-    <p class="sx-sub">Six steps, shown on this workspace&#39;s real data: ShopNova, its look-alikes, a real cloaked kit and the attacker behind it. Press play and watch, or scroll at your own pace.</p>
+    <h1>HOW IT WORKS <span>· the product in one minute</span></h1>
+    <p class="sx-head">Someone fakes ShopNova's site. <em>BrandWatch finds it, proves it, takes it down.</em></p>
+    <p class="sx-sub">Six steps, shown on this workspace&#39;s real data: ShopNova, its look-alikes, a cloaked kit and the attacker behind it. Press play, or scroll.</p>
     <div class="sx-cta">
-      <button type="button" class="btn-play" id="play"><span class="tri">▶</span><span>Play the story <span class="muted" style="font-weight:500">· 1:22</span></span></button>
+      <button type="button" class="btn-play" id="play"><span class="tri">▶</span><span>Play the story <span class="muted" style="font-weight:500">· 0:54</span></span></button>
       <a class="alt" href="#ch-learn" data-jump="0">or scroll ↓</a>
       <a class="alt" href="#deeper">skip to the details</a>
     </div>
   </div>
-  <div class="sx-map" aria-label="The six steps">
-    <a href="#ch-learn" data-jump="0" style="--n:0"><span class="ic">◎</span><span class="k">STEP 1</span><b>Learn</b><span class="small muted">the real site</span></a><a href="#ch-find" data-jump="1" style="--n:1"><span class="ic">⌕</span><span class="k">STEP 2</span><b>Find</b><span class="small muted">the look-alikes</span></a><a href="#ch-visit" data-jump="2" style="--n:2"><span class="ic">⧉</span><span class="k">STEP 3</span><b>Visit</b><span class="small muted">like a victim</span></a><a href="#ch-score" data-jump="3" style="--n:3"><span class="ic">◔</span><span class="k">STEP 4</span><b>Score</b><span class="small muted">and explain</span></a><a href="#ch-map" data-jump="4" style="--n:4"><span class="ic">⟁</span><span class="k">STEP 5</span><b>Map</b><span class="small muted">the attacker</span></a><a href="#ch-takedown" data-jump="5" style="--n:5"><span class="ic">✉</span><span class="k">STEP 6</span><b>Take down</b><span class="small muted">the site</span></a>
-  </div>
 </section>
+
+
+
+
+
+
+
+
+
+
+
+<style>
+  .sx-flow{position:relative;margin:4px 0 14px;border:1px solid var(--line);border-radius:18px;background:radial-gradient(ellipse at 45% 50%,rgba(53,199,242,.08),transparent 60%),rgba(10,15,26,.55);padding:8px 6px 2px;overflow:hidden}
+  .sx-flow svg{display:block;width:100%;height:auto}
+  .sx-flow text{font-family:var(--sans);fill:#C9D3DF}
+  .sx-flow .lbl{font-size:14px;font-weight:600;fill:#E6EDF5}
+  .sx-flow .sub{font-size:12px;fill:#8A97A8}
+  .sx-flow .cap{font:700 13px var(--mono);letter-spacing:.14em}
+  .sx-flow .glyph{font:800 15px var(--mono);text-anchor:middle;dominant-baseline:central}
+  .sx-flow .badge rect{fill:#0B1220;stroke-width:1.2}
+  .sx-flow .badge text{font:700 11px var(--mono);text-anchor:middle;dominant-baseline:central}
+  .sx-flow a{cursor:pointer}
+  .sx-flow a .ring{transition:stroke-width .2s,filter .2s}
+  .sx-flow-h a:hover .ring{stroke-width:3.5;filter:url(#fx-glow)}
+  .sx-flow-v a:hover .ring{stroke-width:3.5;filter:url(#fv-glow)}
+  .sx-flow .core-ring{animation:corePulse 3.2s ease-in-out infinite;transform-origin:620px 285px}
+  .sx-flow-v .core-ring{transform-origin:210px 430px}
+  @keyframes corePulse{50%{opacity:.55;transform:scale(1.06)}}
+  .sx-flow .dash{stroke-dasharray:4 6}
+  .sx-flow .hint{position:absolute;right:16px;bottom:10px;font-size:12px;color:var(--muted)}
+  /* the tall drawing: smaller type, the same classes */
+  .sx-flow-h{max-width:1240px;margin-left:auto;margin-right:auto}  /* the picture and the headline fit one 1440×900 screen */
+  .sx-flow-v{display:none;padding:10px 4px 4px;margin:4px 0 10px}
+  .sx-flow-v .lbl{font-size:10.5px;letter-spacing:.04em}
+  .sx-flow-v .sub{font-size:9.5px}
+  .sx-flow-v .cap{font-size:11px;letter-spacing:.1em}
+  .sx-flow-v .glyph{font-size:12px}
+  .sx-flow-v .badge text{font-size:10px}
+  @media (max-width:900px){ .sx-flow-h{display:none} .sx-flow-v{display:block} }
+  @media (prefers-reduced-motion:reduce){ .sx-flow .core-ring{animation:none} }
+</style>
+
+
+<div class="sx-flow sx-flow-h" aria-label="How BrandWatch works, in one picture">
+<svg viewBox="0 0 1400 560" role="img" aria-labelledby="fx-title">
+  <title id="fx-title">The brand's fingerprint, where impostors hide, BrandWatch in the middle, then the attacker's footprint, the takedown and the reports, and the brand protected</title>
+  <defs>
+    <filter id="fx-glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <radialGradient id="fx-core" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#35C7F2" stop-opacity=".45"/><stop offset="1" stop-color="#35C7F2" stop-opacity="0"/></radialGradient>
+    <radialGradient id="fx-green" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#2ECC71" stop-opacity=".35"/><stop offset="1" stop-color="#2ECC71" stop-opacity="0"/></radialGradient>
+  </defs>
+
+  
+  <rect x="300" y="52" width="640" height="468" rx="34" fill="rgba(255,159,28,.025)" stroke="#8A7A55" stroke-opacity=".55" stroke-width="1.5" class="dash"/>
+  <rect x="482" y="38" width="276" height="28" rx="6" fill="#0B1220" stroke="#8A7A55" stroke-opacity=".55"/>
+  <text x="620" y="57" text-anchor="middle" class="cap" style="fill:#F5C518">WHERE IMPOSTORS HIDE</text>
+
+  
+  
+    
+    <path id="fx-s1" d="M407.8,205.0 L620,285" stroke="#FF9F1C" stroke-opacity=".35" stroke-width="1.6" class="dash" fill="none"/>
+  
+    
+    <path id="fx-s2" d="M536.2,134.6 L620,285" stroke="#FF9F1C" stroke-opacity=".35" stroke-width="1.6" class="dash" fill="none"/>
+  
+    
+    <path id="fx-s3" d="M703.8,134.6 L620,285" stroke="#FF9F1C" stroke-opacity=".35" stroke-width="1.6" class="dash" fill="none"/>
+  
+    
+    <path id="fx-s4" d="M832.2,205.0 L620,285" stroke="#FF9F1C" stroke-opacity=".35" stroke-width="1.6" class="dash" fill="none"/>
+  
+    
+    <path id="fx-s5" d="M832.2,365.0 L620,285" stroke="#B48CFF" stroke-opacity=".35" stroke-width="1.6" class="dash" fill="none"/>
+  
+    
+    <path id="fx-s6" d="M703.8,435.4 L620,285" stroke="#FF4D4D" stroke-opacity=".35" stroke-width="1.6" class="dash" fill="none"/>
+  
+    
+    <path id="fx-s7" d="M536.2,435.4 L620,285" stroke="#FF4D4D" stroke-opacity=".35" stroke-width="1.6" class="dash" fill="none"/>
+  
+    
+    <path id="fx-s8" d="M407.8,365.0 L620,285" stroke="#FF9F1C" stroke-opacity=".35" stroke-width="1.6" class="dash" fill="none"/>
+  
+  <path id="fx-brand" d="M180,285 L548,285" stroke="#35C7F2" stroke-opacity=".7" stroke-width="2.2" fill="none"/>
+  <path id="fx-fp" d="M120,345 C140,540 560,560 600,356" stroke="#35C7F2" stroke-opacity=".28" stroke-width="1.4" class="dash" fill="none"/>
+  <path id="fx-o1" d="M692,285 C900,285 950,150 1052,150" stroke="#35C7F2" stroke-opacity=".55" stroke-width="2" fill="none"/>
+  <path id="fx-o2" d="M692,285 L1052,285" stroke="#2ECC71" stroke-opacity=".55" stroke-width="2" fill="none"/>
+  <path id="fx-o3" d="M692,285 C900,285 950,420 1052,420" stroke="#2ECC71" stroke-opacity=".55" stroke-width="2" fill="none"/>
+  <path id="fx-p1" d="M1128,150 C1200,150 1220,250 1240,262" stroke="#2ECC71" stroke-opacity=".45" stroke-width="2" fill="none"/>
+  <path id="fx-p2" d="M1128,285 L1236,285" stroke="#2ECC71" stroke-opacity=".45" stroke-width="2" fill="none"/>
+  <path id="fx-p3" d="M1128,420 C1200,420 1220,320 1240,308" stroke="#2ECC71" stroke-opacity=".45" stroke-width="2" fill="none"/>
+  <text x="300" y="548" class="sub" style="fill:#5FA9C2">the fingerprint every suspect is compared with</text>
+
+  <g class="packets">
+    <circle r="4" visibility="hidden" fill="#FF9F1C"><set attributeName="visibility" to="visible" begin="0.45s"/><animateMotion dur="2.6s" begin="0.45s" repeatCount="indefinite"><mpath href="#fx-s1"/></animateMotion></circle><circle r="4" visibility="hidden" fill="#FF9F1C"><set attributeName="visibility" to="visible" begin="0.9s"/><animateMotion dur="2.6s" begin="0.9s" repeatCount="indefinite"><mpath href="#fx-s2"/></animateMotion></circle><circle r="4" visibility="hidden" fill="#FF9F1C"><set attributeName="visibility" to="visible" begin="1.35s"/><animateMotion dur="2.6s" begin="1.35s" repeatCount="indefinite"><mpath href="#fx-s3"/></animateMotion></circle><circle r="4" visibility="hidden" fill="#FF9F1C"><set attributeName="visibility" to="visible" begin="1.8s"/><animateMotion dur="2.6s" begin="1.8s" repeatCount="indefinite"><mpath href="#fx-s4"/></animateMotion></circle><circle r="4" visibility="hidden" fill="#B48CFF"><set attributeName="visibility" to="visible" begin="2.25s"/><animateMotion dur="2.6s" begin="2.25s" repeatCount="indefinite"><mpath href="#fx-s5"/></animateMotion></circle><circle r="4" visibility="hidden" fill="#FF4D4D"><set attributeName="visibility" to="visible" begin="2.7s"/><animateMotion dur="2.6s" begin="2.7s" repeatCount="indefinite"><mpath href="#fx-s6"/></animateMotion></circle><circle r="4" visibility="hidden" fill="#FF4D4D"><set attributeName="visibility" to="visible" begin="3.15s"/><animateMotion dur="2.6s" begin="3.15s" repeatCount="indefinite"><mpath href="#fx-s7"/></animateMotion></circle><circle r="4" visibility="hidden" fill="#FF9F1C"><set attributeName="visibility" to="visible" begin="3.6s"/><animateMotion dur="2.6s" begin="3.6s" repeatCount="indefinite"><mpath href="#fx-s8"/></animateMotion></circle>
+    <circle r="5" fill="#35C7F2"><animateMotion dur="2.2s" repeatCount="indefinite"><mpath href="#fx-brand"/></animateMotion></circle>
+    
+    <circle r="4.5" visibility="hidden" fill="#35C7F2"><set attributeName="visibility" to="visible" begin="0.3s"/><animateMotion dur="2.4s" begin="0.3s" repeatCount="indefinite"><mpath href="#fx-o1"/></animateMotion></circle>
+    <circle r="4.5" visibility="hidden" fill="#2ECC71"><set attributeName="visibility" to="visible" begin="0.9s"/><animateMotion dur="2.4s" begin="0.9s" repeatCount="indefinite"><mpath href="#fx-o2"/></animateMotion></circle>
+    <circle r="4.5" visibility="hidden" fill="#2ECC71"><set attributeName="visibility" to="visible" begin="1.5s"/><animateMotion dur="2.4s" begin="1.5s" repeatCount="indefinite"><mpath href="#fx-o3"/></animateMotion></circle>
+    <circle r="4.5" visibility="hidden" fill="#2ECC71"><set attributeName="visibility" to="visible" begin="1.2s"/><animateMotion dur="2.4s" begin="1.2s" repeatCount="indefinite"><mpath href="#fx-p1"/></animateMotion></circle>
+    <circle r="4.5" visibility="hidden" fill="#2ECC71"><set attributeName="visibility" to="visible" begin="1.8s"/><animateMotion dur="2.4s" begin="1.8s" repeatCount="indefinite"><mpath href="#fx-p2"/></animateMotion></circle>
+    <circle r="4.5" visibility="hidden" fill="#2ECC71"><set attributeName="visibility" to="visible" begin="2.4s"/><animateMotion dur="2.4s" begin="2.4s" repeatCount="indefinite"><mpath href="#fx-p3"/></animateMotion></circle>
+  </g>
+
+  
+  <a href="#ch-learn" data-jump="0"><title>Step 1 · learn the real site</title>
+    <circle cx="120" cy="285" r="78" fill="url(#fx-core)"/>
+    <circle cx="120" cy="285" r="58" fill="#0E1A2B" stroke="#35C7F2" stroke-width="2.4" class="ring"/>
+    <path d="M100,270 h40 v30 h-40 z M106,278 h28 M106,286 h20 M106,294 h24" stroke="#35C7F2" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+    <text x="120" y="376" text-anchor="middle" class="cap" style="fill:#E6EDF5">SHOPNOVA</text>
+    <text x="120" y="396" text-anchor="middle" class="sub">fingerprint: logo · colours</text>
+    <text x="120" y="412" text-anchor="middle" class="sub">login page · keywords</text>
+  </a>
+
+  
+  
+    
+    
+    
+    <a href="#ch-find" data-jump="1"><title>Step 2 · find: Look-alike domains</title>
+      <circle cx="407.8" cy="205.0" r="32" fill="#141A28" stroke="#FF9F1C" stroke-width="2.2" class="ring"/>
+      <text x="407.8" y="205.0" class="glyph" style="fill:#FF9F1C">Aa</text>
+      <text x="407.8" y="153.0" text-anchor="middle" class="lbl">Look-alike domains</text>
+      <text x="407.8" y="169.0" text-anchor="middle" class="sub">typos · 1,000+ endings</text>
+      
+      
+      <g class="badge"><rect x="425.8" y="171.0" width="58" height="20" rx="10" style="stroke:#FF9F1C"/>
+        <text x="454.8" y="181.0" style="fill:#FF9F1C">1,213</text></g>
+    </a>
+  
+    
+    
+    
+    <a href="#ch-find" data-jump="1"><title>Step 2 · find: New domains</title>
+      <circle cx="536.2" cy="134.6" r="32" fill="#141A28" stroke="#FF9F1C" stroke-width="2.2" class="ring"/>
+      <text x="536.2" y="134.6" class="glyph" style="fill:#FF9F1C">NEW</text>
+      <text x="536.2" y="82.6" text-anchor="middle" class="lbl">New domains</text>
+      <text x="536.2" y="98.6" text-anchor="middle" class="sub">yesterday&#39;s registrations</text>
+      
+      
+      
+    </a>
+  
+    
+    
+    
+    <a href="#ch-find" data-jump="1"><title>Step 2 · find: New certificates</title>
+      <circle cx="703.8" cy="134.6" r="32" fill="#141A28" stroke="#FF9F1C" stroke-width="2.2" class="ring"/>
+      <text x="703.8" y="134.6" class="glyph" style="fill:#FF9F1C">SSL</text>
+      <text x="703.8" y="82.6" text-anchor="middle" class="lbl">New certificates</text>
+      <text x="703.8" y="98.6" text-anchor="middle" class="sub">HTTPS, as issued</text>
+      
+      
+      
+    </a>
+  
+    
+    
+    
+    <a href="#ch-find" data-jump="1"><title>Step 2 · find: Google &amp; urlscan</title>
+      <circle cx="832.2" cy="205.0" r="32" fill="#141A28" stroke="#FF9F1C" stroke-width="2.2" class="ring"/>
+      <text x="832.2" y="205.0" class="glyph" style="fill:#FF9F1C">G</text>
+      <text x="832.2" y="153.0" text-anchor="middle" class="lbl">Google &amp; urlscan</text>
+      <text x="832.2" y="169.0" text-anchor="middle" class="sub">search results</text>
+      
+      
+      
+    </a>
+  
+    
+    
+    
+    <a href="#ch-find" data-jump="1"><title>Step 2 · find: ChatGPT · Gemini</title>
+      <circle cx="832.2" cy="365.0" r="32" fill="#141A28" stroke="#B48CFF" stroke-width="2.2" class="ring"/>
+      <text x="832.2" y="365.0" class="glyph" style="fill:#B48CFF">AI</text>
+      <text x="832.2" y="419.0" text-anchor="middle" class="lbl">ChatGPT · Gemini</text>
+      <text x="832.2" y="435.0" text-anchor="middle" class="sub">AI answers</text>
+      
+      
+      <g class="badge"><rect x="850.2" y="379.0" width="26" height="20" rx="10" style="stroke:#B48CFF"/>
+        <text x="863.2" y="389.0" style="fill:#B48CFF">3</text></g>
+    </a>
+  
+    
+    
+    
+    <a href="#ch-find" data-jump="1"><title>Step 2 · find: Ads</title>
+      <circle cx="703.8" cy="435.4" r="32" fill="#141A28" stroke="#FF4D4D" stroke-width="2.2" class="ring"/>
+      <text x="703.8" y="435.4" class="glyph" style="fill:#FF4D4D">AD</text>
+      <text x="703.8" y="489.4" text-anchor="middle" class="lbl">Ads</text>
+      <text x="703.8" y="505.4" text-anchor="middle" class="sub">selling fakes</text>
+      
+      
+      
+    </a>
+  
+    
+    
+    
+    <a href="#ch-find" data-jump="1"><title>Step 2 · find: Facebook &amp; Instagram</title>
+      <circle cx="536.2" cy="435.4" r="32" fill="#141A28" stroke="#FF4D4D" stroke-width="2.2" class="ring"/>
+      <text x="536.2" y="435.4" class="glyph" style="fill:#FF4D4D">f</text>
+      <text x="536.2" y="489.4" text-anchor="middle" class="lbl">Facebook &amp; Instagram</text>
+      <text x="536.2" y="505.4" text-anchor="middle" class="sub">fake pages &amp; profiles</text>
+      
+      
+      <g class="badge"><rect x="554.2" y="449.4" width="26" height="20" rx="10" style="stroke:#FF4D4D"/>
+        <text x="567.2" y="459.4" style="fill:#FF4D4D">4</text></g>
+    </a>
+  
+    
+    
+    
+    <a href="#ch-find" data-jump="1"><title>Step 2 · find: Redirects &amp; bio links</title>
+      <circle cx="407.8" cy="365.0" r="32" fill="#141A28" stroke="#FF9F1C" stroke-width="2.2" class="ring"/>
+      <text x="407.8" y="365.0" class="glyph" style="fill:#FF9F1C">↪</text>
+      <text x="407.8" y="419.0" text-anchor="middle" class="lbl">Redirects &amp; bio links</text>
+      <text x="407.8" y="435.0" text-anchor="middle" class="sub">where fakes send people</text>
+      
+      
+      
+    </a>
+  
+
+  
+  <circle cx="620" cy="285" r="104" fill="url(#fx-core)" class="core-ring"/>
+  <a href="#ch-visit" data-jump="2"><title>Steps 3–4 · visit like a victim, score and explain</title>
+    <circle cx="620" cy="285" r="70" fill="#0E1A2B" stroke="#35C7F2" stroke-width="3" class="ring" filter="url(#fx-glow)"/>
+    <circle cx="620" cy="285" r="56" fill="none" stroke="#35C7F2" stroke-opacity=".35" stroke-width="1.2" class="dash"/>
+    <text x="620" y="277" text-anchor="middle" class="cap" style="fill:#5FE3FF;font-size:15px">BRAND</text>
+    <text x="620" y="297" text-anchor="middle" class="cap" style="fill:#5FE3FF;font-size:15px">WATCH</text>
+  </a>
+  <a href="#ch-visit" data-jump="2"><text x="620" y="381" text-anchor="middle" class="lbl">visit like a victim</text></a>
+  <a href="#ch-score" data-jump="3"><text x="620" y="399" text-anchor="middle" class="sub" style="fill:#9FB6C8">score 50 signals · explain every point</text></a>
+  <g class="badge"><rect x="664" y="203" width="98" height="22" rx="11" style="stroke:#35C7F2"/>
+    <text x="713" y="214" style="fill:#5FE3FF">49 suspects</text></g>
+
+  
+  
+  <a href="#ch-map" data-jump="4"><title>Attacker footprint</title>
+    <circle cx="1090" cy="150" r="38" fill="#0E1A22" stroke="#35C7F2" stroke-width="2.4" class="ring"/>
+    <g stroke="#35C7F2" stroke-width="2" fill="none"><circle cx="1078" cy="142" r="5"/><circle cx="1104" cy="144" r="5"/><circle cx="1090" cy="162" r="5"/><path d="M1082,145 L1088,157 M1100,148 L1093,158 M1083,142 L1099,144"/></g>
+    
+    <text x="1090" y="208" text-anchor="middle" class="lbl">Attacker footprint</text>
+    <text x="1090" y="224" text-anchor="middle" class="sub">servers · certificates · owners</text>
+    <g class="badge"><rect x="1110" y="106" width="101.4" height="20" rx="10" style="stroke:#35C7F2"/>
+      <text x="1160.7" y="116" style="fill:#35C7F2">23 networks</text></g>
+  </a>
+  
+  <a href="#ch-takedown" data-jump="5"><title>Takedown</title>
+    <circle cx="1090" cy="285" r="38" fill="#0E1A22" stroke="#2ECC71" stroke-width="2.4" class="ring"/>
+    <path d="M1074,275 h32 v22 h-32 z M1074,275 l16,13 l16,-13" stroke="#2ECC71" stroke-width="2.2" fill="none" stroke-linejoin="round"/>
+    
+    <text x="1090" y="343" text-anchor="middle" class="lbl">Takedown</text>
+    <text x="1090" y="359" text-anchor="middle" class="sub">registrar · host · CDN</text>
+    <g class="badge"><rect x="1110" y="241" width="64.4" height="20" rx="10" style="stroke:#2ECC71"/>
+      <text x="1142.2" y="251" style="fill:#2ECC71">1 sent</text></g>
+  </a>
+  
+  <a href="#ch-takedown" data-jump="5"><title>Reports</title>
+    <circle cx="1090" cy="420" r="38" fill="#0E1A22" stroke="#2ECC71" stroke-width="2.4" class="ring"/>
+    <path d="M1078,406 v28 M1078,406 h22 l-5,7 l5,7 h-22" stroke="#2ECC71" stroke-width="2.2" fill="none" stroke-linejoin="round"/>
+    <text x="1090" y="478" text-anchor="middle" class="lbl">Reports</text>
+    <text x="1090" y="494" text-anchor="middle" class="sub">Meta · AI vendors · 26 blocklists</text>
+    
+  </a>
+  
+
+  
+  <a href="#ch-takedown" data-jump="5"><title>The brand, protected</title>
+    <circle cx="1290" cy="285" r="76" fill="url(#fx-green)"/>
+    <circle cx="1290" cy="285" r="52" fill="#0B1A16" stroke="#2ECC71" stroke-width="2.6" class="ring"/>
+    <path d="M1290,258 l22,8 v14 c0,15 -10,24 -22,29 c-12,-5 -22,-14 -22,-29 v-14 z M1280,284 l7,7 l13,-14" stroke="#2ECC71" stroke-width="2.6" fill="none" stroke-linejoin="round" stroke-linecap="round"/>
+    <text x="1290" y="368" text-anchor="middle" class="cap" style="fill:#E6EDF5">PROTECTED</text>
+    <text x="1290" y="388" text-anchor="middle" class="sub">39 fakes confirmed</text>
+  </a>
+</svg>
+<span class="hint">click any step to see it on real data ↓</span>
+</div>
+
+
+
+<div class="sx-flow sx-flow-v" aria-label="How BrandWatch works, in one picture">
+<svg viewBox="0 0 420 1180" role="img" aria-labelledby="fv-title">
+  <title id="fv-title">The brand's fingerprint, where impostors hide, BrandWatch in the middle, then the attacker's footprint, the takedown and the reports, and the brand protected</title>
+  <defs>
+    <filter id="fv-glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <radialGradient id="fv-core" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#35C7F2" stop-opacity=".45"/><stop offset="1" stop-color="#35C7F2" stop-opacity="0"/></radialGradient>
+    <radialGradient id="fv-green" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#2ECC71" stop-opacity=".35"/><stop offset="1" stop-color="#2ECC71" stop-opacity="0"/></radialGradient>
+  </defs>
+
+  
+  <rect x="10" y="176" width="400" height="560" rx="24" fill="rgba(255,159,28,.025)" stroke="#8A7A55" stroke-opacity=".55" stroke-width="1.5" class="dash"/>
+  <rect x="22" y="164" width="176" height="24" rx="6" fill="#0B1220" stroke="#8A7A55" stroke-opacity=".55"/>
+  <text x="110" y="180" text-anchor="middle" class="cap" style="fill:#F5C518">WHERE IMPOSTORS HIDE</text>
+
+  
+  <path id="fv-brand" d="M210,116 L210,376" stroke="#35C7F2" stroke-opacity=".7" stroke-width="2" fill="none"/>
+  
+    
+    <path id="fv-s1" d="M94,240 L210,430" stroke="#FF9F1C" stroke-opacity=".35" stroke-width="1.4" class="dash" fill="none"/>
+  
+    
+    <path id="fv-s2" d="M326,240 L210,430" stroke="#FF9F1C" stroke-opacity=".35" stroke-width="1.4" class="dash" fill="none"/>
+  
+    
+    <path id="fv-s3" d="M94,330 L210,430" stroke="#FF9F1C" stroke-opacity=".35" stroke-width="1.4" class="dash" fill="none"/>
+  
+    
+    <path id="fv-s4" d="M326,330 L210,430" stroke="#FF9F1C" stroke-opacity=".35" stroke-width="1.4" class="dash" fill="none"/>
+  
+    
+    <path id="fv-s5" d="M94,560 L210,430" stroke="#B48CFF" stroke-opacity=".35" stroke-width="1.4" class="dash" fill="none"/>
+  
+    
+    <path id="fv-s6" d="M326,560 L210,430" stroke="#FF4D4D" stroke-opacity=".35" stroke-width="1.4" class="dash" fill="none"/>
+  
+    
+    <path id="fv-s7" d="M94,650 L210,430" stroke="#FF4D4D" stroke-opacity=".35" stroke-width="1.4" class="dash" fill="none"/>
+  
+    
+    <path id="fv-s8" d="M326,650 L210,430" stroke="#FF9F1C" stroke-opacity=".35" stroke-width="1.4" class="dash" fill="none"/>
+  
+  <path id="fv-o1" d="M210,484 C210,730 88,750 88,808" stroke="#35C7F2" stroke-opacity=".55" stroke-width="2" fill="none"/>
+  <path id="fv-o2" d="M210,484 L210,808" stroke="#2ECC71" stroke-opacity=".55" stroke-width="2" fill="none"/>
+  <path id="fv-o3" d="M210,484 C210,730 332,750 332,808" stroke="#2ECC71" stroke-opacity=".55" stroke-width="2" fill="none"/>
+  <path id="fv-p1" d="M88,872 C88,960 190,970 198,996" stroke="#2ECC71" stroke-opacity=".45" stroke-width="2" fill="none"/>
+  <path id="fv-p2" d="M210,872 L210,996" stroke="#2ECC71" stroke-opacity=".45" stroke-width="2" fill="none"/>
+  <path id="fv-p3" d="M332,872 C332,960 230,970 222,996" stroke="#2ECC71" stroke-opacity=".45" stroke-width="2" fill="none"/>
+
+  <g class="packets">
+    <circle r="3.5" visibility="hidden" fill="#FF9F1C"><set attributeName="visibility" to="visible" begin="0.45s"/><animateMotion dur="2.6s" begin="0.45s" repeatCount="indefinite"><mpath href="#fv-s1"/></animateMotion></circle><circle r="3.5" visibility="hidden" fill="#FF9F1C"><set attributeName="visibility" to="visible" begin="0.9s"/><animateMotion dur="2.6s" begin="0.9s" repeatCount="indefinite"><mpath href="#fv-s2"/></animateMotion></circle><circle r="3.5" visibility="hidden" fill="#FF9F1C"><set attributeName="visibility" to="visible" begin="1.35s"/><animateMotion dur="2.6s" begin="1.35s" repeatCount="indefinite"><mpath href="#fv-s3"/></animateMotion></circle><circle r="3.5" visibility="hidden" fill="#FF9F1C"><set attributeName="visibility" to="visible" begin="1.8s"/><animateMotion dur="2.6s" begin="1.8s" repeatCount="indefinite"><mpath href="#fv-s4"/></animateMotion></circle><circle r="3.5" visibility="hidden" fill="#B48CFF"><set attributeName="visibility" to="visible" begin="2.25s"/><animateMotion dur="2.6s" begin="2.25s" repeatCount="indefinite"><mpath href="#fv-s5"/></animateMotion></circle><circle r="3.5" visibility="hidden" fill="#FF4D4D"><set attributeName="visibility" to="visible" begin="2.7s"/><animateMotion dur="2.6s" begin="2.7s" repeatCount="indefinite"><mpath href="#fv-s6"/></animateMotion></circle><circle r="3.5" visibility="hidden" fill="#FF4D4D"><set attributeName="visibility" to="visible" begin="3.15s"/><animateMotion dur="2.6s" begin="3.15s" repeatCount="indefinite"><mpath href="#fv-s7"/></animateMotion></circle><circle r="3.5" visibility="hidden" fill="#FF9F1C"><set attributeName="visibility" to="visible" begin="3.6s"/><animateMotion dur="2.6s" begin="3.6s" repeatCount="indefinite"><mpath href="#fv-s8"/></animateMotion></circle>
+    <circle r="4.5" fill="#35C7F2"><animateMotion dur="2.2s" repeatCount="indefinite"><mpath href="#fv-brand"/></animateMotion></circle>
+    
+    <circle r="4" visibility="hidden" fill="#35C7F2"><set attributeName="visibility" to="visible" begin="0.3s"/><animateMotion dur="2.4s" begin="0.3s" repeatCount="indefinite"><mpath href="#fv-o1"/></animateMotion></circle>
+    <circle r="4" visibility="hidden" fill="#2ECC71"><set attributeName="visibility" to="visible" begin="0.9s"/><animateMotion dur="2.4s" begin="0.9s" repeatCount="indefinite"><mpath href="#fv-o2"/></animateMotion></circle>
+    <circle r="4" visibility="hidden" fill="#2ECC71"><set attributeName="visibility" to="visible" begin="1.5s"/><animateMotion dur="2.4s" begin="1.5s" repeatCount="indefinite"><mpath href="#fv-o3"/></animateMotion></circle>
+    <circle r="4" visibility="hidden" fill="#2ECC71"><set attributeName="visibility" to="visible" begin="1.2s"/><animateMotion dur="2.4s" begin="1.2s" repeatCount="indefinite"><mpath href="#fv-p1"/></animateMotion></circle>
+    <circle r="4" visibility="hidden" fill="#2ECC71"><set attributeName="visibility" to="visible" begin="1.8s"/><animateMotion dur="2.4s" begin="1.8s" repeatCount="indefinite"><mpath href="#fv-p2"/></animateMotion></circle>
+    <circle r="4" visibility="hidden" fill="#2ECC71"><set attributeName="visibility" to="visible" begin="2.4s"/><animateMotion dur="2.4s" begin="2.4s" repeatCount="indefinite"><mpath href="#fv-p3"/></animateMotion></circle>
+  </g>
+
+  
+  <a href="#ch-learn" data-jump="0"><title>Step 1 · learn the real site</title>
+    <circle cx="210" cy="70" r="62" fill="url(#fv-core)"/>
+    <circle cx="210" cy="70" r="44" fill="#0E1A2B" stroke="#35C7F2" stroke-width="2.2" class="ring"/>
+    <path d="M194,58 h32 v24 h-32 z M199,65 h22 M199,71 h16 M199,77 h19" stroke="#35C7F2" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+    <text x="300" y="66" text-anchor="start" class="cap" style="fill:#E6EDF5;font-size:12px">SHOPNOVA</text>
+    <text x="300" y="82" text-anchor="start" class="sub">fingerprint: logo · colours</text>
+    <text x="300" y="95" text-anchor="start" class="sub">login page · keywords</text>
+  </a>
+
+  
+  
+    
+    
+    <a href="#ch-find" data-jump="1"><title>Step 2 · find: Look-alike domains</title>
+      <circle cx="94" cy="240" r="26" fill="#141A28" stroke="#FF9F1C" stroke-width="2" class="ring"/>
+      <text x="94" y="240" class="glyph" style="fill:#FF9F1C">Aa</text>
+      <text x="94" y="282" text-anchor="middle" class="lbl">Look-alike domains</text>
+      <text x="94" y="296" text-anchor="middle" class="sub">typos · 1,000+ endings</text>
+      
+      <g class="badge"><rect x="108" y="202" width="51" height="18" rx="9" style="stroke:#FF9F1C"/>
+        <text x="133.5" y="211" style="fill:#FF9F1C">1,213</text></g>
+    </a>
+  
+    
+    
+    <a href="#ch-find" data-jump="1"><title>Step 2 · find: New domains</title>
+      <circle cx="326" cy="240" r="26" fill="#141A28" stroke="#FF9F1C" stroke-width="2" class="ring"/>
+      <text x="326" y="240" class="glyph" style="fill:#FF9F1C">NEW</text>
+      <text x="326" y="282" text-anchor="middle" class="lbl">New domains</text>
+      <text x="326" y="296" text-anchor="middle" class="sub">yesterday&#39;s registrations</text>
+      
+      
+    </a>
+  
+    
+    
+    <a href="#ch-find" data-jump="1"><title>Step 2 · find: New certificates</title>
+      <circle cx="94" cy="330" r="26" fill="#141A28" stroke="#FF9F1C" stroke-width="2" class="ring"/>
+      <text x="94" y="330" class="glyph" style="fill:#FF9F1C">SSL</text>
+      <text x="94" y="372" text-anchor="middle" class="lbl">New certificates</text>
+      <text x="94" y="386" text-anchor="middle" class="sub">HTTPS, as issued</text>
+      
+      
+    </a>
+  
+    
+    
+    <a href="#ch-find" data-jump="1"><title>Step 2 · find: Google &amp; urlscan</title>
+      <circle cx="326" cy="330" r="26" fill="#141A28" stroke="#FF9F1C" stroke-width="2" class="ring"/>
+      <text x="326" y="330" class="glyph" style="fill:#FF9F1C">G</text>
+      <text x="326" y="372" text-anchor="middle" class="lbl">Google &amp; urlscan</text>
+      <text x="326" y="386" text-anchor="middle" class="sub">search results</text>
+      
+      
+    </a>
+  
+    
+    
+    <a href="#ch-find" data-jump="1"><title>Step 2 · find: ChatGPT · Gemini</title>
+      <circle cx="94" cy="560" r="26" fill="#141A28" stroke="#B48CFF" stroke-width="2" class="ring"/>
+      <text x="94" y="560" class="glyph" style="fill:#B48CFF">AI</text>
+      <text x="94" y="602" text-anchor="middle" class="lbl">ChatGPT · Gemini</text>
+      <text x="94" y="616" text-anchor="middle" class="sub">AI answers</text>
+      
+      <g class="badge"><rect x="108" y="574" width="23" height="18" rx="9" style="stroke:#B48CFF"/>
+        <text x="119.5" y="583" style="fill:#B48CFF">3</text></g>
+    </a>
+  
+    
+    
+    <a href="#ch-find" data-jump="1"><title>Step 2 · find: Ads</title>
+      <circle cx="326" cy="560" r="26" fill="#141A28" stroke="#FF4D4D" stroke-width="2" class="ring"/>
+      <text x="326" y="560" class="glyph" style="fill:#FF4D4D">AD</text>
+      <text x="326" y="602" text-anchor="middle" class="lbl">Ads</text>
+      <text x="326" y="616" text-anchor="middle" class="sub">selling fakes</text>
+      
+      
+    </a>
+  
+    
+    
+    <a href="#ch-find" data-jump="1"><title>Step 2 · find: Facebook &amp; Instagram</title>
+      <circle cx="94" cy="650" r="26" fill="#141A28" stroke="#FF4D4D" stroke-width="2" class="ring"/>
+      <text x="94" y="650" class="glyph" style="fill:#FF4D4D">f</text>
+      <text x="94" y="692" text-anchor="middle" class="lbl">Facebook &amp; Instagram</text>
+      <text x="94" y="706" text-anchor="middle" class="sub">fake pages &amp; profiles</text>
+      
+      <g class="badge"><rect x="108" y="664" width="23" height="18" rx="9" style="stroke:#FF4D4D"/>
+        <text x="119.5" y="673" style="fill:#FF4D4D">4</text></g>
+    </a>
+  
+    
+    
+    <a href="#ch-find" data-jump="1"><title>Step 2 · find: Redirects &amp; bio links</title>
+      <circle cx="326" cy="650" r="26" fill="#141A28" stroke="#FF9F1C" stroke-width="2" class="ring"/>
+      <text x="326" y="650" class="glyph" style="fill:#FF9F1C">↪</text>
+      <text x="326" y="692" text-anchor="middle" class="lbl">Redirects &amp; bio links</text>
+      <text x="326" y="706" text-anchor="middle" class="sub">where fakes send people</text>
+      
+      
+    </a>
+  
+
+  
+  <circle cx="210" cy="430" r="80" fill="url(#fv-core)" class="core-ring"/>
+  <a href="#ch-visit" data-jump="2"><title>Steps 3–4 · visit like a victim, score and explain</title>
+    <circle cx="210" cy="430" r="54" fill="#0E1A2B" stroke="#35C7F2" stroke-width="2.6" class="ring" filter="url(#fv-glow)"/>
+    <circle cx="210" cy="430" r="43" fill="none" stroke="#35C7F2" stroke-opacity=".35" stroke-width="1.2" class="dash"/>
+    <text x="210" y="424" text-anchor="middle" class="cap" style="fill:#5FE3FF;font-size:12px">BRAND</text>
+    <text x="210" y="440" text-anchor="middle" class="cap" style="fill:#5FE3FF;font-size:12px">WATCH</text>
+  </a>
+  <rect x="106" y="490" width="208" height="32" rx="8" fill="#0B1220" fill-opacity=".9"/>
+  <a href="#ch-visit" data-jump="2"><text x="210" y="503" text-anchor="middle" class="lbl">visit like a victim</text></a>
+  <a href="#ch-score" data-jump="3"><text x="210" y="517" text-anchor="middle" class="sub" style="fill:#9FB6C8">score 50 signals · explain every point</text></a>
+  <g class="badge"><rect x="168.0" y="348" width="84" height="18" rx="9" style="stroke:#35C7F2"/>
+    <text x="210" y="357" style="fill:#5FE3FF">49 suspects</text></g>
+
+  
+  
+  
+  <a href="#ch-map" data-jump="4"><title>Attacker footprint</title>
+    <circle cx="88" cy="840" r="32" fill="#0E1A22" stroke="#35C7F2" stroke-width="2.2" class="ring"/>
+    <g stroke="#35C7F2" stroke-width="1.8" fill="none"><circle cx="78" cy="833" r="4.2"/><circle cx="100" cy="835" r="4.2"/><circle cx="88" cy="850" r="4.2"/><path d="M81,836 L86,846 M97,838 L91,847 M82,833 L96,835"/></g>
+    
+    <text x="88" y="890" text-anchor="middle" class="lbl">Attacker footprint</text>
+    <text x="88" y="904" text-anchor="middle" class="sub">servers · certs · owners</text>
+    <g class="badge"><rect x="40.6" y="784" width="94.8" height="18" rx="9" style="stroke:#35C7F2"/>
+      <text x="88" y="793" style="fill:#35C7F2">23 networks</text></g>
+  </a>
+  
+  
+  <a href="#ch-takedown" data-jump="5"><title>Takedown</title>
+    <circle cx="210" cy="840" r="32" fill="#0E1A22" stroke="#2ECC71" stroke-width="2.2" class="ring"/>
+    <path d="M197,832 h26 v18 h-26 z M197,832 l13,11 l13,-11" stroke="#2ECC71" stroke-width="2" fill="none" stroke-linejoin="round"/>
+    
+    <text x="210" y="890" text-anchor="middle" class="lbl">Takedown</text>
+    <text x="210" y="904" text-anchor="middle" class="sub">registrar · host · CDN</text>
+    <g class="badge"><rect x="179.6" y="784" width="60.8" height="18" rx="9" style="stroke:#2ECC71"/>
+      <text x="210" y="793" style="fill:#2ECC71">1 sent</text></g>
+  </a>
+  
+  
+  <a href="#ch-takedown" data-jump="5"><title>Reports</title>
+    <circle cx="332" cy="840" r="32" fill="#0E1A22" stroke="#2ECC71" stroke-width="2.2" class="ring"/>
+    <path d="M322,828 v24 M322,828 h18 l-4,6 l4,6 h-18" stroke="#2ECC71" stroke-width="2" fill="none" stroke-linejoin="round"/>
+    <text x="332" y="890" text-anchor="middle" class="lbl">Reports</text>
+    <text x="332" y="904" text-anchor="middle" class="sub">Meta · 26 blocklists</text>
+    
+  </a>
+  
+
+  
+  <a href="#ch-takedown" data-jump="5"><title>The brand, protected</title>
+    <circle cx="210" cy="1040" r="62" fill="url(#fv-green)"/>
+    <circle cx="210" cy="1040" r="44" fill="#0B1A16" stroke="#2ECC71" stroke-width="2.4" class="ring"/>
+    <path d="M210,1018 l18,7 v12 c0,13 -8,20 -18,24 c-10,-4 -18,-11 -18,-24 v-12 z M202,1040 l6,6 l11,-12" stroke="#2ECC71" stroke-width="2.4" fill="none" stroke-linejoin="round" stroke-linecap="round"/>
+    <text x="210" y="1108" text-anchor="middle" class="cap" style="fill:#E6EDF5">PROTECTED</text>
+    <text x="210" y="1124" text-anchor="middle" class="sub">39 fakes confirmed</text>
+  </a>
+  <text x="210" y="1166" text-anchor="middle" class="sub">tap any step to see it on real data ↓</text>
+</svg>
+</div>
+<script>
+(function () {
+  if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    document.querySelectorAll('.sx-flow animateMotion').forEach(a => a.parentNode.remove());
+  }
+})();
+</script>
+<div class="sx-proof" aria-label="Numbers read from the code">
+  <a href="#about"><b>50</b> signals in 7 groups</a>
+  <a href="#about"><b>26</b> data providers</a>
+  <a href="#about"><b>599</b> automated tests</a>
+  <a href="#ch-takedown"><b>26</b> report portals</a>
+  <a href="#about"><b>$0</b> demo · no API keys</a>
+</div>
+<div class="sx-author" id="author">
+  <span class="by">Built by Itay Azulay <span>· a solo project</span></span>
+  <span class="tech">Python · FastAPI · SQLAlchemy · Playwright · CI on SQLite &amp; PostgreSQL</span>
+  <span class="lk"><a href="https://nbse3h.s.gy/sSLDpR" target="_blank" rel="noopener">▶ A real case study</a></span>
+</div>
 
 
 <nav class="sx-rail" id="rail" aria-label="Chapters">
@@ -500,12 +1035,12 @@ header nav{display:flex;align-items:center;min-width:0}
 </nav>
 
 
-<section class="ch" id="ch-learn" data-dur="12">
+<section class="ch" id="ch-learn" data-dur="8">
   <div class="ch-text">
     <div class="eb">STEP 1 <span>/ 6 · LEARN</span></div>
     <h2>First, it learns what the real ShopNova looks like.</h2>
     <p>BrandWatch opens <b>shopnova.com</b> once and keeps a fingerprint: the favicon's hash, a picture of the homepage, its colours, its login form and the words a phisher would copy.</p>
-    <p>An AI model reads the site and writes the Google searches an attacker would target.</p>
+    <ul class="pts"><li><b>AI</b> reads the site and writes the Google searches an attacker would target.</li></ul>
     <p class="why">Every suspect is later compared against this fingerprint, not against a guess.</p>
     <div class="links"><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/">see the brand page →</a><a href="#step-1" data-deep>how exactly? →</a></div>
   </div>
@@ -536,14 +1071,16 @@ header nav{display:flex;align-items:center;min-width:0}
 </section>
 
 
-<section class="ch" id="ch-find" data-dur="15">
+<section class="ch" id="ch-find" data-dur="10">
   <div class="ch-text">
     <div class="eb">STEP 2 <span>/ 6 · FIND</span></div>
     <h2>Then it hunts for look-alikes — before anyone reports them.</h2>
-    <p>Typos and look-alike letters on more than a thousand domain endings, checked in DNS. Brand-new HTTPS certificates the moment they are issued. Yesterday's newly registered domains. Google results.</p>
-    <p><b>And on social media:</b> Facebook pages and Instagram profiles under the brand's name — their history (new, renamed, run from abroad), their logo, their links and what they post, read by an AI — and the ads in each country you choose.</p>
-    <p><b>And in AI assistants:</b> ChatGPT, Gemini and Google AI Mode are asked what a customer would ask — the support phone, how to get in touch, where to log in. Every phone, short code, e-mail and address in their answers is compared with the brand's own website; for one that does not match, BrandWatch asks for the official page and opens the cited pages itself.</p>
-    <p>Nothing has to be on a blocklist first. The brand's own sites and big platforms are dropped before anything is fetched.</p>
+    <p>Typo domains on 1,000+ endings, new HTTPS certificates as they are issued, yesterday's registrations and Google results — nothing has to be on a blocklist first.</p>
+    <ul class="pts">
+      <li><b>Social:</b> Facebook pages, Instagram profiles and ads under the brand's name, read by an AI.</li>
+      <li><b>AI assistants:</b> ChatGPT and Gemini are asked what a customer asks; a phone or e-mail that is not on the brand's site becomes a finding.</li>
+    </ul>
+    <p class="why">Found before anyone reports it — the brand's own sites and big platforms are dropped first.</p>
     <div class="links"><a href="/ui/candidates/">see the watchlist →</a><a href="/ui/jobs/add4c607-69e3-40f1-a14b-92a326cd31b0/">replay a real scan →</a><a href="#step-2" data-deep>how exactly? →</a></div>
   </div>
   <div class="stage">
@@ -583,12 +1120,16 @@ header nav{display:flex;align-items:center;min-width:0}
 
 
 
-<section class="ch" id="ch-visit" data-dur="13">
+<section class="ch" id="ch-visit" data-dur="9">
   <div class="ch-text">
     <div class="eb">STEP 3 <span>/ 6 · VISIT</span></div>
     <h2>It visits every site the way a victim would.</h2>
-    <p>Each suspect opens in a locked-down browser that can't be tricked into reaching internal systems. Everything it sees is kept as evidence that nobody can edit afterwards.</p>
-    <p>Many phishing kits <b>hide from security scanners</b>: they show a harmless page to datacenter IPs and the fake login only to real people. So BrandWatch also looks like a real person, from a home IP.</p>
+    <p>Many phishing kits <b>hide from security scanners</b>: a harmless page for datacenter IPs, the fake login only for real people. So BrandWatch also visits as a real person.</p>
+    <ul class="pts">
+      <li><b>A real Chrome:</b> its User-Agent, Accept-Language, client hints, language and time zone all agree — no "HeadlessChrome" giveaway.</li>
+      <li><b>A real address:</b> through a residential or a mobile 4G / 5G proxy (or both) in the brand's country, as a desktop and / or a phone.</li>
+      <li>A <b>locked-down browser</b> that can't reach internal systems; everything it sees is kept as evidence nobody can edit.</li>
+    </ul>
     <p class="why">The score uses what a victim sees, not what the kit chose to show a scanner.</p>
     <div class="links"><a href="/ui/findings/1bcfbce5-b1c6-44d8-b534-f678beefe1d5/#looks">see this kit →</a><a href="#step-5" data-deep>how exactly? →</a></div>
   </div>
@@ -603,7 +1144,8 @@ header nav{display:flex;align-items:center;min-width:0}
         <div class="saw rv" style="--t:2000">saw: <b>a harmless page</b></div>
       </div>
       <div class="view victim rv" style="--t:2400">
-        <div class="who"><span class="ico">👤</span>Real visitor</div><div class="ip">home IP · residential probe · normal browser</div>
+        
+        <div class="who"><span class="ico">👤</span>Real visitor</div><div class="ip">home IP · real Chrome headers</div>
         <div class="loadbar"><i style="--t:2600"></i></div>
         <div class="shot"><img class="rv" style="--t:3600" src="/_r/dacff850f9017d.png" alt="what a victim sees" loading="lazy"></div>
         <div class="saw rv" style="--t:3900">saw: <b style="color:var(--crit)">a fake ShopNova login</b></div>
@@ -622,12 +1164,12 @@ header nav{display:flex;align-items:center;min-width:0}
 
 
 
-<section class="ch" id="ch-score" data-dur="14">
+<section class="ch" id="ch-score" data-dur="9">
   <div class="ch-text">
     <div class="eb">STEP 4 <span>/ 6 · SCORE</span></div>
     <h2>It scores the site — and shows its work.</h2>
-    <p>50 signals in 7 groups, each worth fixed points: does the address use the brand, does the page look the same, does it ask for a password, how new is it, is it hiding.</p>
-    <p>Each group has a cap, so one trick can't dominate. The same evidence always gives the same score. AI gives a second opinion but never changes the number.</p>
+    <p>50 signals in 7 capped groups, each worth fixed points: does the address use the brand, does the page look the same, does it ask for a password, how new is it, is it hiding.</p>
+    <ul class="pts"><li>The same evidence always gives the same score; <b>AI is a second opinion</b> and never changes the number.</li></ul>
     <p class="why">No black box: every point traces back to a piece of evidence.</p>
     <div class="links"><a href="/ui/findings/1bcfbce5-b1c6-44d8-b534-f678beefe1d5/#why">see every signal →</a><a href="#step-7" data-deep>how exactly? →</a></div>
   </div>
@@ -652,12 +1194,12 @@ header nav{display:flex;align-items:center;min-width:0}
 </section>
 
 
-<section class="ch" id="ch-map" data-dur="15">
+<section class="ch" id="ch-map" data-dur="10">
   <div class="ch-text">
     <div class="eb">STEP 5 <span>/ 6 · DECIDE &amp; MAP</span></div>
     <h2>A person decides. Then it maps the attacker.</h2>
-    <p>Nothing is confirmed automatically: an analyst reads the evidence and presses <b>Confirm</b>. The reason goes to an audit log nobody can edit.</p>
-    <p>From that one confirmed site, BrandWatch follows what the attacker reused — the same server, certificate, favicon, tracking code or owner — to the rest of the operation. Neighbours that only share a cheap server are dropped as noise, with the reason written down.</p>
+    <p>Nothing is confirmed automatically: an analyst reads the evidence and presses <b>Confirm</b>. From that one site, BrandWatch follows what the attacker reused — server, certificate, favicon, tracking code, owner — to the rest of the operation.</p>
+    <ul class="pts"><li>Neighbours that only share a cheap server are <b>dropped as noise</b>, with the reason written down.</li></ul>
     <p class="why">One fake site leads to the whole operation, and every indicator exports to a SIEM as STIX 2.1.</p>
     <div class="links"><a href="/ui/campaigns/88288233-1dad-4751-955d-c8fbc835dc10/">open the full map →</a><a href="#step-12" data-deep>how exactly? →</a></div>
   </div>
@@ -699,13 +1241,15 @@ header nav{display:flex;align-items:center;min-width:0}
 
 
 
-<section class="ch" id="ch-takedown" data-dur="13">
+<section class="ch" id="ch-takedown" data-dur="8">
   <div class="ch-text">
     <div class="eb">STEP 6 <span>/ 6 · TAKE DOWN</span></div>
     <h2>Finally, it drafts the takedown.</h2>
-    <p>A request backed by the evidence, addressed to the people who can pull the site: the <b>registrar</b>, the <b>hosting provider</b> and the <b>CDN</b> — contacts found automatically from WHOIS and the server's owner.</p>
-    <p>Plus 26 browser, anti-virus and blocklist portals, each a direct link to its report form, so the site gets blocked for everyone while the takedown is pending.</p>
-    <p>When the impostor advertises on social media, every <b>Facebook / Instagram ad</b> and <b>page</b> behind it gets a link to Meta's report flow and a ready-to-paste report.</p>
+    <p>A request backed by the evidence, addressed to the people who can pull the site: the <b>registrar</b>, the <b>hosting provider</b> and the <b>CDN</b> — contacts found automatically.</p>
+    <ul class="pts">
+      <li><b>26 report portals</b> (browsers, anti-virus, blocklists) so the site is blocked for everyone while the takedown is pending.</li>
+      <li>A fake <b>Facebook / Instagram</b> ad or page gets Meta's report flow and a ready-to-paste report.</li>
+    </ul>
     <p class="why">BrandWatch never sends anything by itself: a person reviews and sends, and every step lands in the audit log.</p>
     <div class="links"><a href="/ui/takedowns/71c2d1cb-03bb-40bb-9283-04feaa1f3a15/">open this takedown →</a><a href="/ui/takedowns/">all takedowns →</a><a href="#step-13" data-deep>how exactly? →</a></div>
   </div>
@@ -735,7 +1279,7 @@ First observed    : 2026-10-12T06:41:46.604012</div>
 
 <section class="sx-end on-view" id="the-end">
   <div class="flow rv"><b>Find</b><span>→</span><b>Prove</b><span>→</span><b>Decide</b><span>→</span><b>Map</b><span>→</span><b>Take down</b></div>
-  <p class="rv" style="--t:300">That's BrandWatch. Every step is explainable, every piece of evidence is tamper-proof, and a person decides everything that matters.</p>
+  <p class="rv" style="--t:300">That's BrandWatch, in the six steps above. Every step is explainable, every piece of evidence is tamper-proof, and a person decides everything that matters.</p>
   <div class="sx-cta rv" style="--t:600">
     <a class="btn primary big" href="/ui/dashboard/">Open the dashboard →</a>
     <a class="btn big" href="/ui/findings/1bcfbce5-b1c6-44d8-b534-f678beefe1d5/">Open the cloaked kit</a>
@@ -752,7 +1296,7 @@ First observed    : 2026-10-12T06:41:46.604012</div>
     <div class="kpi vi rv" style="--t:160"><div class="v" data-to="26">0</div><div class="l">providers in 15 fallback chains</div></div>
     <div class="kpi ok rv" style="--t:240"><div class="v" data-to="65">0</div><div class="l">recorded golden scenarios</div></div>
     <div class="kpi rv" style="--t:320"><div class="v" data-to="10">0</div><div class="l">DB-enforced immutable tables</div></div>
-    <div class="kpi mg rv" style="--t:400"><div class="v" data-to="596">0</div><div class="l">automated tests in 63 files</div></div>
+    <div class="kpi mg rv" style="--t:400"><div class="v" data-to="599">0</div><div class="l">automated tests in 63 files</div></div>
     <div class="kpi rv" style="--t:480"><div class="v" data-to="94">0</div><div class="l">REST API operations (<a href="/docs" target="_blank">OpenAPI</a>)</div></div>
     <div class="kpi rv" style="--t:560"><div class="v" data-to="14">0</div><div class="l">Alembic migrations · SQLite &amp; PostgreSQL</div></div>
   </div>
@@ -765,7 +1309,7 @@ First observed    : 2026-10-12T06:41:46.604012</div>
   <p class="muted" style="margin:0">For the questions after the demo: every step with its exact APIs and limits, the presenter's script, the engineering, and the glossary every “?” on the site links to.</p>
 
   <details class="fold" id="all-steps">
-    <summary><b>All 13 steps</b><span>· the pipeline in order — “see it” opens a real example, “More info” shows the exact APIs, limits and code</span></summary>
+    <summary><b>The pipeline, step by step</b><span>· 13 stages in order — “see it” opens a real example, “More info” shows the exact APIs, limits and code</span></summary>
     <div class="in">
       <div class="hiw-steps">
         
@@ -774,8 +1318,16 @@ First observed    : 2026-10-12T06:41:46.604012</div>
         <div class="hiw-step" id="step-1"><div class="n">1 · favicon, screenshot, login form, keywords</div><b>Learn the real site</b><p>Fingerprint the brand&#39;s real site: favicon hash, screenshot hash, colours, the login and sign-up pages, keywords — and an AI-written list of the Google searches a phisher would target.</p>
           <div class="hiw-foot"><a class="see" href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/">see it →</a>
 <span class="mi"><button type="button" class="mi-btn" aria-expanded="false" aria-label="More info about Learn the real site">More info</button>
-  <div class="deep" role="note">
-    <h4>Learn the real site</h4><div class="sub">Under the hood · the exact calls, limits and code behind this step</div>
+  <div class="deep" role="dialog" aria-label="Learn the real site — more info">
+    <button type="button" class="mi-x" aria-label="Close">✕</button>
+    <h4>Learn the real site</h4><div class="sub">Under the hood · what this step calls, costs, keeps and never does</div>
+    <ul class="short">
+      <li><b>Calls:</b> <b class="hl">Headless Chromium</b>, <b class="hl">OpenAI</b></li>
+      <li><b>Cost:</b> free · local · paid per token · $0.15 / M in, $0.60 / M out</li>
+      <li><b>Keeps:</b> brand_fingerprints row, versioned (+1 per rebuild): hashes, screenshots, keywords, palette, AI profile</li>
+      <li><b>Limit:</b> ≤ 3 auth pages followed · ≤ 20 keywords · ≤ 20 app links</li>
+    </ul>
+    <details class="all"><summary>All the details ▾</summary>
     <h5>External calls</h5>
     <div class="api"><div class="nm">Headless Chromium (Playwright, local)<span class="tg">no key</span><span class="tg">free · local</span></div>
       <div class="ln"><code>the brand&#39;s primary domain + up to 3 linked login / sign-up pages</code></div><div class="ln">call · <code>page.goto (DOMContentLoaded), viewport screenshot, favicon in a second routed tab</code></div><div class="ln">returns · rendered DOM, PNG screenshot, favicon bytes, title, bot-challenge flag</div></div><div class="api"><div class="nm">OpenAI<span class="tg">OPENAI_API_KEY</span><span class="tg">paid per token · $0.15 / M in, $0.60 / M out</span></div>
@@ -786,13 +1338,22 @@ First observed    : 2026-10-12T06:41:46.604012</div>
     <h5>Limits</h5><ul><li>≤ 3 auth pages followed · ≤ 20 keywords · ≤ 20 app links</li><li>AI input truncated to 4,000 chars; output validated: ≤ 20 keywords, ≤ 15 search queries</li><li>browser: navigation 15 s, settle 3 s, whole operation ≤ 45 s, viewport 1280×800</li><li>reused on the next scan unless &#39;include fingerprinting&#39; is ticked</li></ul>
     <h5>Demo vs live</h5><div style="font-size:12.5px;line-height:1.5">Demo: recorded pages and synthetic screenshots; a heuristic AI stand-in writes keywords and queries. Live: real Chromium, plus OpenAI when a key is set.</div>
     <h5>Code</h5><div class="mods"><span>detection/baseline.py</span><span>detection/images.py</span><span>detection/dom.py</span><span>detection/html.py</span><span>detection/ai.py</span><span>providers/impl/playwright_fetcher.py</span></div>
+    </details>
   </div></span></div></div>
         
         <div class="hiw-step" id="step-2"><div class="n">2 · typos, new certificates, new domains, Google, Facebook / Instagram ads</div><b>Find look-alikes</b><p>Five streams look for look-alikes: typo and homoglyph permutations on 1,000+ TLDs (DNS-checked), new TLS certificates, yesterday&#39;s newly registered domains, Google results, and the urlscan archive — plus fake Facebook / Instagram accounts and ads, and what ChatGPT, Gemini and Google AI Mode tell users about the brand&#39;s contacts.</p>
           <div class="hiw-foot"><a class="see" href="/ui/jobs/add4c607-69e3-40f1-a14b-92a326cd31b0/">see it →</a>
 <span class="mi"><button type="button" class="mi-btn" aria-expanded="false" aria-label="More info about Find look-alikes">More info</button>
-  <div class="deep" role="note">
-    <h4>Find look-alikes</h4><div class="sub">Under the hood · the exact calls, limits and code behind this step</div>
+  <div class="deep" role="dialog" aria-label="Find look-alikes — more info">
+    <button type="button" class="mi-x" aria-label="Close">✕</button>
+    <h4>Find look-alikes</h4><div class="sub">Under the hood · what this step calls, costs, keeps and never does</div>
+    <ul class="short">
+      <li><b>Calls:</b> <b class="hl">DNS</b>, <b class="hl">crt.sh</b>, <b class="hl">CertSpotter</b>, <b class="hl">WhoisDS newly registered domains</b>, <b class="hl">SerpApi</b>, <b class="hl">ScraperAPI</b>, <b class="hl">urlscan.io search</b>, <b class="hl">SearchApi.io · Meta Ad Library</b></li>
+      <li><b>Cost:</b> free · free · 5xx retried 4× · free · rate-limited · free · paid · $0.01 / query · paid · about 25 credits (~$0.012) / query · free tier · 100 free · then ~$0.004 / request — only for brands whose products other shops resell</li>
+      <li><b>Keeps:</b> scan_stages &#39;discovery&#39; row (hits, API calls) and one live event per stream</li>
+      <li><b>Limit:</b> streams per track: Light dnstwist + CT · Standard + urlscan · Deep all five</li>
+    </ul>
+    <details class="all"><summary>All the details ▾</summary>
     <h5>External calls</h5>
     <div class="api"><div class="nm">DNS<span class="tg">no key</span><span class="tg">free</span></div>
       <div class="ln"><code>13 root servers → TLD → authoritative, or 1.1.1.1 / 9.9.9.9 / 8.8.8.8</code></div><div class="ln">call · <code>dnspython NS / A query per generated name</code></div><div class="ln">returns · registered · does not exist · no answer</div></div><div class="api"><div class="nm">crt.sh<span class="tg">no key</span><span class="tg">free · 5xx retried 4×</span></div>
@@ -809,13 +1370,22 @@ First observed    : 2026-10-12T06:41:46.604012</div>
     <h5>Limits</h5><ul><li>streams per track: Light dnstwist + CT · Standard + urlscan · Deep all five</li><li>TLD sets: 12 / 35 / 1,284 · names DNS-checked: 1,000 / 3,000 / 20,000 · ≤ 250 homoglyphs per domain</li><li>DNS: 40 concurrent, batches of 200; &gt; 80 % no answer in the first batch stops the stream with an alert</li><li>≤ 10 search queries × each country · SerpApi timeout 45 s</li><li>Meta ads: per brand — ads per search (30 / 60 / 100 / 200, ~30 a page, one request each), searches per scan (default 6, up to 20) and shops checked in full (default 15, up to 60), set in the brand profile with the cost shown</li><li>social accounts: ≤ 2 page searches + 2 Google searches per scan; full look (page info + Instagram profile + AI) for ≤ 8 accounts; profile pictures fetched only from Meta&#39;s image hosts</li><li>hits capped at min(track 150 / 500 / 1,500, workspace max sites per scan)</li></ul>
     <h5>Demo vs live</h5><div style="font-size:12.5px;line-height:1.5">Demo: no DNS check (every permutation becomes a candidate) and CT, search and urlscan answer from recordings. Live: real DNS, crt.sh, CertSpotter, whoisds, SerpApi, urlscan.</div>
     <h5>Code</h5><div class="mods"><span>detection/sources.py</span><span>detection/discovery.py</span><span>detection/dnslookup.py</span><span>detection/runner.py</span><span>providers/impl/clients.py</span><span>providers/impl/commerce.py</span><span>detection/merchant.py</span><span>detection/commerce_registry.py</span></div>
+    </details>
   </div></span></div></div>
         
         <div class="hiw-step" id="step-3"><div class="n">3 · merge, drop official &amp; known platforms</div><b>Clean the list</b><p>One candidate per URL with every stream that found it; official domains, whitelisted partners and big platforms (YouTube, app stores) are dropped before anything is fetched.</p>
           <div class="hiw-foot"><a class="see" href="/ui/jobs/add4c607-69e3-40f1-a14b-92a326cd31b0/">see it →</a>
 <span class="mi"><button type="button" class="mi-btn" aria-expanded="false" aria-label="More info about Clean the list">More info</button>
-  <div class="deep" role="note">
-    <h4>Clean the list</h4><div class="sub">Under the hood · the exact calls, limits and code behind this step</div>
+  <div class="deep" role="dialog" aria-label="Clean the list — more info">
+    <button type="button" class="mi-x" aria-label="Close">✕</button>
+    <h4>Clean the list</h4><div class="sub">Under the hood · what this step calls, costs, keeps and never does</div>
+    <ul class="short">
+      <li><b>Calls:</b> <b class="hl">nothing outside</b> — it works on what is already stored</li>
+      
+      <li><b>Keeps:</b> candidates, unique on (brand, canonical URL); a known one only gets last_seen bumped</li>
+      <li><b>Limit:</b> 34 known platforms · 33 shared-hosting suffixes · 29 app stores and APK mirrors</li>
+    </ul>
+    <details class="all"><summary>All the details ▾</summary>
     <h5>External calls · none</h5>
     
     <h5>How it runs</h5><div class="chain">no network calls: pure normalisation plus one database upsert per URL</div>
@@ -824,17 +1394,26 @@ First observed    : 2026-10-12T06:41:46.604012</div>
     <h5>Limits</h5><ul><li>34 known platforms · 33 shared-hosting suffixes · 29 app stores and APK mirrors</li><li>visit cap = min(requested or track maximum, workspace max sites per scan); the rest waits for the next scan</li><li>dismissed candidates are not revisited</li></ul>
     <h5>Demo vs live</h5><div style="font-size:12.5px;line-height:1.5">Same logic. In demo more names reach this step because dnstwist is not DNS-filtered.</div>
     <h5>Code</h5><div class="mods"><span>detection/normalize.py</span><span>detection/protect.py</span><span>detection/runner.py</span><span>detection/sources.py</span></div>
+    </details>
   </div></span></div></div>
         
         <div class="hiw-step" id="step-4"><div class="n">4 · DNS, WHOIS, screenshot, HTML</div><b>Visit in a sandbox</b><p>Each site is visited in a sandboxed browser behind an SSRF guard: DNS, WHOIS / RDAP, TLS, screenshot, HTML, favicon and reputation feeds — all stored as evidence.</p>
           <div class="hiw-foot"><a class="see" href="/ui/findings/d3cddf21-a088-4189-9f17-2cf8dba61ab0/">see it →</a>
 <span class="mi"><button type="button" class="mi-btn" aria-expanded="false" aria-label="More info about Visit in a sandbox">More info</button>
-  <div class="deep" role="note">
-    <h4>Visit in a sandbox</h4><div class="sub">Under the hood · the exact calls, limits and code behind this step</div>
+  <div class="deep" role="dialog" aria-label="Visit in a sandbox — more info">
+    <button type="button" class="mi-x" aria-label="Close">✕</button>
+    <h4>Visit in a sandbox</h4><div class="sub">Under the hood · what this step calls, costs, keeps and never does</div>
+    <ul class="short">
+      <li><b>Calls:</b> <b class="hl">DNS</b>, <b class="hl">Headless Chromium</b>, <b class="hl">RDAP via rdap.org</b>, <b class="hl">VirusTotal v3</b>, <b class="hl">URLhaus</b>, <b class="hl">Google Safe Browsing v4</b>, <b class="hl">ip-api.com</b></li>
+      <li><b>Cost:</b> free · free · local · free · free public key · 4 req / min · free · free · non-commercial · free · ~45 req / min</li>
+      <li><b>Keeps:</b> immutable evidence rows (database triggers reject UPDATE / DELETE) with a parent chain dns → http → html / screenshot / favicon</li>
+      <li><b>Limit:</b> response ≤ 5 MB · ≤ 5 redirects · fetch timeout 15 s · connect 5 s (frozen in code)</li>
+    </ul>
+    <details class="all"><summary>All the details ▾</summary>
     <h5>External calls</h5>
     <div class="api"><div class="nm">DNS<span class="tg">no key</span><span class="tg">free</span></div>
       <div class="ln"><code>own root walk, or 1.1.1.1 / 9.9.9.9 / 8.8.8.8</code></div><div class="ln">call · <code>A query; without an A record, an NS check &#39;is it registered?&#39;</code></div><div class="ln">returns · IPv4 list · parked · does not exist</div></div><div class="api"><div class="nm">Headless Chromium (Playwright)<span class="tg">no key</span><span class="tg">free · local</span></div>
-      <div class="ln"><code>the candidate URL</code></div><div class="ln">call · <code>fresh browser per fetch: goto, settle 3 s, screenshot, favicon</code></div><div class="ln">returns · DOM, PNG, favicon, status, final URL, TLS error, bot challenge, blocked requests</div></div><div class="api"><div class="nm">RDAP via rdap.org<span class="tg">no key</span><span class="tg">free</span></div>
+      <div class="ln"><code>the candidate URL</code></div><div class="ln">call · <code>fresh browser per fetch, as a person&#39;s Chrome (User-Agent, Accept-Language, sec-ch-ua client hints, language, time zone): goto, settle 3 s, screenshot, favicon</code></div><div class="ln">returns · DOM, PNG, favicon, status, final URL, TLS error, bot challenge, blocked requests</div></div><div class="api"><div class="nm">RDAP via rdap.org<span class="tg">no key</span><span class="tg">free</span></div>
       <div class="ln"><code>rdap.org → the registry&#39;s RDAP server</code></div><div class="ln">call · <code>GET /domain/&lt;registrable&gt; (application/rdap+json)</code></div><div class="ln">returns · registration date → age, registrar, registrant, status</div></div><div class="api"><div class="nm">VirusTotal v3<span class="tg">VIRUSTOTAL_API_KEY</span><span class="tg">free public key · 4 req / min</span></div>
       <div class="ln"><code>www.virustotal.com</code></div><div class="ln">call · <code>GET /api/v3/domains/&lt;host&gt; · x-apikey header</code></div><div class="ln">returns · engine verdicts (positives / total), categories</div></div><div class="api"><div class="nm">URLhaus (abuse.ch)<span class="tg">free Auth-Key</span><span class="tg">free</span></div>
       <div class="ln"><code>urlhaus-api.abuse.ch</code></div><div class="ln">call · <code>POST /v1/host/ · Auth-Key header</code></div><div class="ln">returns · listed or not, URL count, blacklists</div></div><div class="api"><div class="nm">Google Safe Browsing v4<span class="tg">SAFEBROWSING_API_KEY</span><span class="tg">free · non-commercial</span></div>
@@ -846,31 +1425,50 @@ First observed    : 2026-10-12T06:41:46.604012</div>
     <h5>Limits</h5><ul><li>response ≤ 5 MB · ≤ 5 redirects · fetch timeout 15 s · connect 5 s (frozen in code)</li><li>24 blocked networks (RFC 1918, CGNAT, loopback, 169.254/16 metadata, ULA, NAT64 …) + the AWS IPv6 metadata address</li><li>browser operation ≤ 45 s · favicon ≤ 512 KB in 4 s</li><li>every provider call: 3 attempts, backoff from 0.5 s, circuit opens after 3 failures for 60 s, 1 h cache</li><li>no A record → no browser visit: registered goes to the watchlist as parked, otherwise dismissed</li></ul>
     <h5>Demo vs live</h5><div style="font-size:12.5px;line-height:1.5">Demo: recorded scenarios answer DNS, HTTP, WHOIS and reputation, with synthetic screenshots. Live never uses recorded data.</div>
     <h5>Code</h5><div class="mods"><span>detection/enrichment.py</span><span>security/fetcher_guard.py</span><span>security/limits.py</span><span>providers/impl/playwright_fetcher.py</span><span>providers/impl/clients.py</span><span>providers/base.py</span></div>
+    </details>
   </div></span></div></div>
         
-        <div class="hiw-step" id="step-5"><div class="n">5 · fetch as a bot, a victim and a home IP</div><b>Catch cloaking</b><p>Kits that hide from scanners are fetched again as a bot, as a victim link, from a Google referer and from a home IP; the score uses what a victim sees.</p>
+        <div class="hiw-step" id="step-5"><div class="n">5 · fetch as a bot, a victim and a home IP</div><b>Catch cloaking</b><p>Kits that hide from scanners are fetched again as a bot, as a victim link, from a Google referer — and as a person: a real Chrome (User-Agent, Accept-Language, client hints, language and time zone) through a residential or a mobile 4G / 5G proxy, or both, as a desktop and / or a phone. The score uses what a victim sees.</p>
           <div class="hiw-foot"><a class="see" href="/ui/findings/d3cddf21-a088-4189-9f17-2cf8dba61ab0/">see it →</a>
 <span class="mi"><button type="button" class="mi-btn" aria-expanded="false" aria-label="More info about Catch cloaking">More info</button>
-  <div class="deep" role="note">
-    <h4>Catch cloaking</h4><div class="sub">Under the hood · the exact calls, limits and code behind this step</div>
+  <div class="deep" role="dialog" aria-label="Catch cloaking — more info">
+    <button type="button" class="mi-x" aria-label="Close">✕</button>
+    <h4>Catch cloaking</h4><div class="sub">Under the hood · what this step calls, costs, keeps and never does</div>
+    <ul class="short">
+      <li><b>Calls:</b> <b class="hl">Headless Chromium</b>, <b class="hl">Residential proxy</b>, <b class="hl">Mobile proxy</b>, <b class="hl">Webshare API</b></li>
+      <li><b>Cost:</b> free · local · paid · metered 0.002 GB per fetch · paid · metered like the residential one · paid plan</li>
+      <li><b>Keeps:</b> one HTTP evidence row per probe (diverged, challenge, credential form)</li>
+      <li><b>Limit:</b> probes on in every track; home-IP probe gated on Light / Standard, always on Deep</li>
+    </ul>
+    <details class="all"><summary>All the details ▾</summary>
     <h5>External calls</h5>
     <div class="api"><div class="nm">Headless Chromium (Playwright)<span class="tg">no key</span><span class="tg">free · local</span></div>
-      <div class="ln"><code>the candidate URL</code></div><div class="ln">call · <code>3 re-fetches: a crawler user-agent · a victim link (?email=victim@example.com) · Referer https://www.google.com/</code></div><div class="ln">returns · DOM + screenshot per profile, compared by SHA-256 and phishing features</div></div><div class="api"><div class="nm">Residential proxy (Webshare or manual)<span class="tg">proxy password or Webshare token (encrypted)</span><span class="tg">paid · metered 0.002 GB per fetch</span></div>
-      <div class="ln"><code>p.webshare.io:80 by default</code></div><div class="ln">call · <code>Chromium through the proxy; Webshare username &lt;user&gt;-rotate-country-&lt;cc&gt;</code></div><div class="ln">returns · the page as a home IP in the brand&#39;s country sees it</div></div><div class="api"><div class="nm">Webshare API<span class="tg">Webshare API token</span><span class="tg">paid plan</span></div>
+      <div class="ln"><code>the candidate URL</code></div><div class="ln">call · <code>3 re-fetches: a crawler user-agent · a victim link (?email=victim@example.com) · Referer https://www.google.com/ (+ a phone when chosen); all but the crawler as a real Chrome with matching headers</code></div><div class="ln">returns · DOM + screenshot per profile, compared by SHA-256 and phishing features</div></div><div class="api"><div class="nm">Residential proxy (Webshare or manual)<span class="tg">proxy password or Webshare token (encrypted)</span><span class="tg">paid · metered 0.002 GB per fetch</span></div>
+      <div class="ln"><code>p.webshare.io:80 by default</code></div><div class="ln">call · <code>Chromium through the proxy; Webshare username &lt;user&gt;-rotate-country-&lt;cc&gt;</code></div><div class="ln">returns · the page as a home IP in the brand&#39;s country sees it</div></div><div class="api"><div class="nm">Mobile proxy (4G / 5G, any provider)<span class="tg">mobile proxy password (encrypted)</span><span class="tg">paid · metered like the residential one</span></div>
+      <div class="ln"><code>the provider&#39;s host:port, entered in Settings</code></div><div class="ln">call · <code>Chromium through a phone-network address — instead of the residential proxy, or as a second visit with both</code></div><div class="ln">returns · the page as a phone-network IP sees it (kits that trust carrier addresses)</div></div><div class="api"><div class="nm">Webshare API<span class="tg">Webshare API token</span><span class="tg">paid plan</span></div>
       <div class="ln"><code>proxy.webshare.io</code></div><div class="ln">call · <code>GET /api/v2/proxy/config/ · Authorization: Token</code></div><div class="ln">returns · the rotating proxy&#39;s username and password</div></div>
     <h5>Fallback chain</h5><div class="chain">browser: playwright → httpx_datacenter (no residential egress)</div>
-    <div class="two"><div><h5>Computed locally</h5><ul><li>runs when the host looks like the brand, the page has a credential / card / seed form, or the first score is ≥ Medium</li><li>signals: cloaking_ua_based · bot_blocking (CAPTCHA) · parameter_gating · referer_gating · cloaking_ip_based (home IP)</li><li>suspected = a probe revealed a form, any probe diverged, or a thin brand-less page on a look-alike host</li><li>the revealing probe&#39;s capture is adopted, so the score uses what a victim sees; the decoy is kept as evidence</li><li>the home-IP probe runs only if still suspected; navigator.webdriver is hidden</li></ul></div>
+    <div class="two"><div><h5>Computed locally</h5><ul><li>runs when the host looks like the brand, the page has a credential / card / seed form, or the first score is ≥ Medium</li><li>signals: cloaking_ua_based · bot_blocking (CAPTCHA) · parameter_gating · referer_gating · device_gating (phone only) · cloaking_ip_based (home or mobile IP)</li><li>a person&#39;s Chrome: Accept-Language and navigator.languages, sec-ch-ua / userAgentData say &#39;Google Chrome&#39; (not HeadlessChrome), locale and time zone of the proxy&#39;s country</li><li>suspected = a probe revealed a form, any probe diverged, or a thin brand-less page on a look-alike host</li><li>the revealing probe&#39;s capture is adopted, so the score uses what a victim sees; the decoy is kept as evidence</li><li>the proxy probe runs only if still suspected: residential, mobile or both (Settings → Proxy), as a desktop and / or a phone; navigator.webdriver is hidden</li></ul></div>
       <div><h5>Stored</h5><ul><li>one HTTP evidence row per probe (diverged, challenge, credential form)</li><li>the revealed page as new HTML / screenshot / favicon evidence; a &#39;residential&#39; observation</li><li>an api_usage row per home-IP fetch</li></ul></div></div>
     <h5>Limits</h5><ul><li>probes on in every track; home-IP probe gated on Light / Standard, always on Deep</li><li>home-IP probe needs a proxy and a daily GB budget (default 0 → skipped)</li><li>suspected but skipped → &#39;residential&#39; marked unavailable (confidence −8)</li><li>proxy country: the brand&#39;s override, else its search country, else its language, else US</li></ul>
-    <h5>Demo vs live</h5><div style="font-size:12.5px;line-height:1.5">Demo: scenarios define the cloaking mode (IP, user-agent, link parameter, referer) and the home-IP probe is free. Live: real re-fetches; the home-IP probe needs a proxy and a GB budget.</div>
-    <h5>Code</h5><div class="mods"><span>detection/cloaking.py</span><span>providers/impl/playwright_fetcher.py</span><span>proxy.py</span><span>tenancy.py</span><span>detection/html.py</span></div>
+    <h5>Demo vs live</h5><div style="font-size:12.5px;line-height:1.5">Demo: scenarios define the cloaking mode (IP, user-agent, link parameter, referer, device) and the proxy probe is free. Live: real re-fetches; the proxy probe needs a residential and / or mobile proxy and a GB budget.</div>
+    <h5>Code</h5><div class="mods"><span>detection/cloaking.py</span><span>providers/impl/playwright_fetcher.py</span><span>providers/impl/browser_identity.py</span><span>proxy.py</span><span>tenancy.py</span><span>detection/html.py</span></div>
+    </details>
   </div></span></div></div>
         
-        <div class="hiw-step" id="step-6"><div class="n">6 · 42 signals in 7 groups</div><b>Compare with the brand</b><p>42 signals in 7 groups compare the site with the brand: identity tricks, visual copy, what the page asks for, shared infrastructure, reputation, freshness, evasion.</p>
+        <div class="hiw-step" id="step-6"><div class="n">6 · 42 signals in 7 groups</div><b>Compare with the brand</b><p>50 signals in 7 groups compare the site with the brand: identity tricks, visual copy, what the page asks for, shared infrastructure, reputation, freshness, evasion.</p>
           <div class="hiw-foot"><a class="see" href="/ui/findings/d3cddf21-a088-4189-9f17-2cf8dba61ab0/">see it →</a>
 <span class="mi"><button type="button" class="mi-btn" aria-expanded="false" aria-label="More info about Compare with the brand">More info</button>
-  <div class="deep" role="note">
-    <h4>Compare with the brand</h4><div class="sub">Under the hood · the exact calls, limits and code behind this step</div>
+  <div class="deep" role="dialog" aria-label="Compare with the brand — more info">
+    <button type="button" class="mi-x" aria-label="Close">✕</button>
+    <h4>Compare with the brand</h4><div class="sub">Under the hood · what this step calls, costs, keeps and never does</div>
+    <ul class="short">
+      <li><b>Calls:</b> <b class="hl">nothing outside</b> — it works on what is already stored</li>
+      
+      <li><b>Keeps:</b> candidates.last_analysis: signals, unavailable evidence, score — for every scored site, used to train the classifier</li>
+      <li><b>Limit:</b> 42 signals in 7 groups (config/brand_config.py)</li>
+    </ul>
+    <details class="all"><summary>All the details ▾</summary>
     <h5>External calls · none</h5>
     
     <h5>How it runs</h5><div class="chain">no network calls: a pure function over the collected evidence and the brand fingerprint</div>
@@ -879,13 +1477,22 @@ First observed    : 2026-10-12T06:41:46.604012</div>
     <h5>Limits</h5><ul><li>42 signals in 7 groups (config/brand_config.py)</li><li>favicon near-match ≤ 6 bits · screenshot ≥ 0.90 · palette ≥ 0.67 · login DOM ≥ 0.80</li><li>colours count as close at L1 distance ≤ 54 · DOM signature ≤ 400 tokens</li></ul>
     <h5>Demo vs live</h5><div style="font-size:12.5px;line-height:1.5">Same code. Demo inputs are synthetic screenshots built to match or differ, so visual signals are deterministic; live inputs are real captures.</div>
     <h5>Code</h5><div class="mods"><span>detection/analysis.py</span><span>detection/dom.py</span><span>detection/images.py</span><span>detection/html.py</span></div>
+    </details>
   </div></span></div></div>
         
         <div class="hiw-step" id="step-7"><div class="n">7 · risk 0–100 + confidence</div><b>Score &amp; explain</b><p>Deterministic and versioned: points per signal, a cap per group, combination rules for known kit shapes, false-positive penalties — plus a separate confidence axis. AI and a classifier give advisory opinions only.</p>
           <div class="hiw-foot"><a class="see" href="/ui/findings/d3cddf21-a088-4189-9f17-2cf8dba61ab0/">see it →</a>
 <span class="mi"><button type="button" class="mi-btn" aria-expanded="false" aria-label="More info about Score &amp; explain">More info</button>
-  <div class="deep" role="note">
-    <h4>Score &amp; explain</h4><div class="sub">Under the hood · the exact calls, limits and code behind this step</div>
+  <div class="deep" role="dialog" aria-label="Score &amp; explain — more info">
+    <button type="button" class="mi-x" aria-label="Close">✕</button>
+    <h4>Score &amp; explain</h4><div class="sub">Under the hood · what this step calls, costs, keeps and never does</div>
+    <ul class="short">
+      <li><b>Calls:</b> <b class="hl">OpenAI</b></li>
+      <li><b>Cost:</b> paid per token</li>
+      <li><b>Keeps:</b> risk_scores: append-only history (only is_current flips) with signals, group breakdown and the scoring version</li>
+      <li><b>Limit:</b> bands: Medium ≥ 25 · High ≥ 50 · Critical ≥ 75 (per brand, must stay in order)</li>
+    </ul>
+    <details class="all"><summary>All the details ▾</summary>
     <h5>External calls</h5>
     <div class="api"><div class="nm">OpenAI (advisory only)<span class="tg">OPENAI_API_KEY</span><span class="tg">paid per token</span></div>
       <div class="ln"><code>api.openai.com</code></div><div class="ln">call · <code>POST /v1/chat/completions · strict JSON schema phishing_triage · temperature 0 · page text framed as untrusted</code></div><div class="ln">returns · is_phishing, impersonated brand, confidence 0–1, rationale ≤ 400 chars</div></div>
@@ -895,13 +1502,22 @@ First observed    : 2026-10-12T06:41:46.604012</div>
     <h5>Limits</h5><ul><li>bands: Medium ≥ 25 · High ≥ 50 · Critical ≥ 75 (per brand, must stay in order)</li><li>false-positive penalties: redirects to the official site −60 · domain older than 2 years −15</li><li>AI opinion only for Medium+ when enabled (off on Light) · page text ≤ 4,000 chars</li><li>the classifier needs ≥ 8 labelled sites of both classes</li></ul>
     <h5>Demo vs live</h5><div style="font-size:12.5px;line-height:1.5">Demo: a heuristic AI stand-in and a classifier bootstrapped from the golden labels. Live: OpenAI and a classifier trained on analyst verdicts. The deterministic score is identical.</div>
     <h5>Code</h5><div class="mods"><span>detection/scoring.py</span><span>config/brand_config.py</span><span>detection/ai.py</span><span>detection/ml.py</span><span>detection/runner.py</span></div>
+    </details>
   </div></span></div></div>
         
         <div class="hiw-step" id="step-8"><div class="n">8 · Medium and above go to an analyst</div><b>Raise a finding</b><p>Medium and above become a finding for an analyst; the rest stays on the watchlist and is re-checked on a schedule (a parked domain that grows a login form jumps to the front).</p>
           <div class="hiw-foot"><a class="see" href="/ui/findings/">see it →</a>
 <span class="mi"><button type="button" class="mi-btn" aria-expanded="false" aria-label="More info about Raise a finding">More info</button>
-  <div class="deep" role="note">
-    <h4>Raise a finding</h4><div class="sub">Under the hood · the exact calls, limits and code behind this step</div>
+  <div class="deep" role="dialog" aria-label="Raise a finding — more info">
+    <button type="button" class="mi-x" aria-label="Close">✕</button>
+    <h4>Raise a finding</h4><div class="sub">Under the hood · what this step calls, costs, keeps and never does</div>
+    <ul class="short">
+      <li><b>Calls:</b> <b class="hl">Slack incoming webhook</b>, <b class="hl">Telegram Bot API</b>, <b class="hl">SMTP e-mail</b></li>
+      <li><b>Cost:</b> free · free · free</li>
+      <li><b>Keeps:</b> findings + a risk_scores row + evidence links with a role (primary, supporting, context, contradicting)</li>
+      <li><b>Limit:</b> re-check every 24 / 12 / 6 h for 7 / 14 / 30 days (Light / Standard / Deep)</li>
+    </ul>
+    <details class="all"><summary>All the details ▾</summary>
     <h5>External calls</h5>
     <div class="api"><div class="nm">Slack incoming webhook<span class="tg">webhook URL</span><span class="tg">free</span></div>
       <div class="ln"><code>SLACK_WEBHOOK_URL</code></div><div class="ln">call · <code>POST {text} per new or updated finding</code></div><div class="ln">returns · HTTP status</div></div><div class="api"><div class="nm">Telegram Bot API<span class="tg">bot token + chat id</span><span class="tg">free</span></div>
@@ -913,13 +1529,22 @@ First observed    : 2026-10-12T06:41:46.604012</div>
     <h5>Limits</h5><ul><li>re-check every 24 / 12 / 6 h for 7 / 14 / 30 days (Light / Standard / Deep)</li><li>past the window → long watch at 3× the cadence; past 3× the window → dismissed</li><li>scheduler tick every 60 s · ≤ 200 re-checks per tick · automatic scans are off per brand until switched on (brand page → Automatic scans); one scan at a time per brand; the watchlist re-check is one of the tasks</li><li>alerts at ≥ High by default</li></ul>
     <h5>Demo vs live</h5><div style="font-size:12.5px;line-height:1.5">Same logic. Demo re-checks replay recordings; live re-fetches the real site, so a parked domain that grows a login form jumps the queue.</div>
     <h5>Code</h5><div class="mods"><span>detection/finding.py</span><span>detection/triggers.py</span><span>detection/scheduler.py</span><span>notifications.py</span></div>
+    </details>
   </div></span></div></div>
         
         <div class="hiw-step" id="step-9"><div class="n">9 · what this scan did, step by step</div><b>Report</b><p>The live console narrates every step while it happens and ends with a plain-language report; an engineering trace records every provider call, AI prompt and the scoring maths.</p>
           <div class="hiw-foot"><a class="see" href="/ui/jobs/add4c607-69e3-40f1-a14b-92a326cd31b0/">see it →</a>
 <span class="mi"><button type="button" class="mi-btn" aria-expanded="false" aria-label="More info about Report">More info</button>
-  <div class="deep" role="note">
-    <h4>Report</h4><div class="sub">Under the hood · the exact calls, limits and code behind this step</div>
+  <div class="deep" role="dialog" aria-label="Report — more info">
+    <button type="button" class="mi-x" aria-label="Close">✕</button>
+    <h4>Report</h4><div class="sub">Under the hood · what this step calls, costs, keeps and never does</div>
+    <ul class="short">
+      <li><b>Calls:</b> <b class="hl">nothing outside</b> — it works on what is already stored</li>
+      
+      <li><b>Keeps:</b> scan_events (unique job + sequence), scan_stages (hits, API calls, cost, time), api_usage per provider call</li>
+      <li><b>Limit:</b> SSE stream resumes from Last-Event-ID; polls every 0.5 s; keep-alive when idle; an &#39;end&#39; event</li>
+    </ul>
+    <details class="all"><summary>All the details ▾</summary>
     <h5>External calls · none</h5>
     
     <h5>How it runs</h5><div class="chain">no network calls: database rows, a live event stream and a trace file</div>
@@ -928,12 +1553,21 @@ First observed    : 2026-10-12T06:41:46.604012</div>
     <h5>Limits</h5><ul><li>SSE stream resumes from Last-Event-ID; polls every 0.5 s; keep-alive when idle; an &#39;end&#39; event</li><li>polling fallback: GET /api/jobs/{id}/events?from_seq=N (≤ 5,000 per page)</li><li>trace values cut at 1,200 chars (AI 12,000) · secrets redacted</li></ul>
     <h5>Demo vs live</h5><div style="font-size:12.5px;line-height:1.5">Same machinery. DEMO_FLAKY_PROVIDER fakes one outage to show the alert panel; live shows real call counts and cost.</div>
     <h5>Code</h5><div class="mods"><span>detection/runner.py</span><span>events/emitter.py</span><span>api/scans.py</span><span>trace.py</span><span>providers/base.py</span></div>
+    </details>
   </div></span></div></div>
         
         <div class="hiw-step" id="step-10"><div class="n">10 · verdict</div><b>Confirm or dismiss</b><p>The finding page explains itself in two sentences and shows every signal, its points and the evidence. A human decides; the reason goes to the audit log and the training set.</p><div class="hiw-foot"><a class="see" href="/ui/findings/2e59c045-14b0-4c09-baac-28046be16ff5/">see it →</a>
 <span class="mi"><button type="button" class="mi-btn" aria-expanded="false" aria-label="More info about Confirm or dismiss">More info</button>
-  <div class="deep" role="note">
-    <h4>Confirm or dismiss</h4><div class="sub">Under the hood · the exact calls, limits and code behind this step</div>
+  <div class="deep" role="dialog" aria-label="Confirm or dismiss — more info">
+    <button type="button" class="mi-x" aria-label="Close">✕</button>
+    <h4>Confirm or dismiss</h4><div class="sub">Under the hood · what this step calls, costs, keeps and never does</div>
+    <ul class="short">
+      <li><b>Calls:</b> <b class="hl">nothing outside</b> — it works on what is already stored</li>
+      
+      <li><b>Keeps:</b> finding state + verdict; analyst_labels (label, reason, analyst)</li>
+      <li><b>Limit:</b> reason ≤ 2,000 chars</li>
+    </ul>
+    <details class="all"><summary>All the details ▾</summary>
     <h5>External calls · none</h5>
     
     <h5>How it runs</h5><div class="chain">an analyst action; confirming can start the infrastructure map (card 12)</div>
@@ -942,11 +1576,20 @@ First observed    : 2026-10-12T06:41:46.604012</div>
     <h5>Limits</h5><ul><li>reason ≤ 2,000 chars</li><li>10 immutable tables: audit_events, observations, evidence + 7 evidence child tables</li></ul>
     <h5>Demo vs live</h5><div style="font-size:12.5px;line-height:1.5">Identical; in demo the automatic infrastructure map runs on recorded data.</div>
     <h5>Code</h5><div class="mods"><span>detection/finding.py</span><span>api/findings.py</span><span>api/campaigns.py</span><span>detection/ml.py</span></div>
+    </details>
   </div></span></div></div>
         <div class="hiw-step" id="step-11"><div class="n">11 · investigate</div><b>Site &amp; network investigation</b><p>VirusTotal-style lookup on the finding page itself: detections, DNS, certificate, RDAP and abuse contact, WHOIS history (every past owner, and details hidden later), passive DNS, every other site on the server, urlscan similar pages.</p><div class="hiw-foot"><a class="see" href="/ui/findings/d3cddf21-a088-4189-9f17-2cf8dba61ab0/#reputation">see it →</a>
 <span class="mi"><button type="button" class="mi-btn" aria-expanded="false" aria-label="More info about Site &amp; network investigation">More info</button>
-  <div class="deep" role="note">
-    <h4>Site &amp; network investigation</h4><div class="sub">Under the hood · the exact calls, limits and code behind this step</div>
+  <div class="deep" role="dialog" aria-label="Site &amp; network investigation — more info">
+    <button type="button" class="mi-x" aria-label="Close">✕</button>
+    <h4>Site &amp; network investigation</h4><div class="sub">Under the hood · what this step calls, costs, keeps and never does</div>
+    <ul class="short">
+      <li><b>Calls:</b> <b class="hl">VirusTotal v3</b>, <b class="hl">RDAP via rdap.org</b>, <b class="hl">crt.sh → CertSpotter</b>, <b class="hl">urlscan.io</b>, <b class="hl">WhoisXML WHOIS History</b>, <b class="hl">ip-api.com</b>, <b class="hl">AbuseIPDB v2</b>, <b class="hl">Live DNS + TLS handshake</b></li>
+      <li><b>Cost:</b> free public · 4 req / min; premium-only relations are marked as such · free · free · free tier · paid · WhoisXML credits · free · free daily quota · free</li>
+      <li><b>Keeps:</b> intel_lookups keyed by (workspace, subject, source, relation): payload, status, expiry</li>
+      <li><b>Limit:</b> cache 24 h (errors 10 min) · Refresh forces new lookups</li>
+    </ul>
+    <details class="all"><summary>All the details ▾</summary>
     <h5>External calls</h5>
     <div class="api"><div class="nm">VirusTotal v3<span class="tg">x-apikey</span><span class="tg">free public · 4 req / min; premium-only relations are marked as such</span></div>
       <div class="ln"><code>www.virustotal.com/api/v3</code></div><div class="ln">call · <code>GET /domains/{d}, /ip_addresses/{ip}, /{kind}/{v}/{relationship}?limit=40&amp;cursor=</code></div><div class="ln">returns · detections, DNS, certificate, WHOIS, JARM; resolutions, WHOIS / SSL history, files, subdomains</div></div><div class="api"><div class="nm">RDAP via rdap.org<span class="tg">no key</span><span class="tg">free</span></div>
@@ -963,11 +1606,20 @@ First observed    : 2026-10-12T06:41:46.604012</div>
     <h5>Limits</h5><ul><li>cache 24 h (errors 10 min) · Refresh forces new lookups</li><li>≤ 4 IPs, ≤ 48 calls, ≤ 300 s per job; the daily spend cap still applies</li><li>VirusTotal resolutions: 2 pages for a domain, 3 for an IP (40 per page)</li><li>IP intel only for public IPs (the SSRF block list applies)</li></ul>
     <h5>Demo vs live</h5><div style="font-size:12.5px;line-height:1.5">Demo: recorded VirusTotal, RDAP, urlscan and geo answers. Live: detections and relations need a VirusTotal key; without one, RDAP + DNS + the live certificate + CT still work.</div>
     <h5>Code</h5><div class="mods"><span>detection/intel.py</span><span>detection/whois_history.py</span><span>api/intel.py</span><span>providers/impl/clients.py</span><span>security/tls_probe.py</span></div>
+    </details>
   </div></span></div></div>
         <div class="hiw-step" id="step-12"><div class="n">12 · map the attacker</div><b>Attack infrastructure</b><p>From one confirmed site, a budgeted pivot over shared servers, certificates, favicons and tracking IDs; co-hosted noise is triaged out. Indicators export as STIX 2.1.</p><div class="hiw-foot"><a class="see" href="/ui/campaigns/88288233-1dad-4751-955d-c8fbc835dc10/">see it →</a>
 <span class="mi"><button type="button" class="mi-btn" aria-expanded="false" aria-label="More info about Attack infrastructure">More info</button>
-  <div class="deep" role="note">
-    <h4>Attack infrastructure</h4><div class="sub">Under the hood · the exact calls, limits and code behind this step</div>
+  <div class="deep" role="dialog" aria-label="Attack infrastructure — more info">
+    <button type="button" class="mi-x" aria-label="Close">✕</button>
+    <h4>Attack infrastructure</h4><div class="sub">Under the hood · what this step calls, costs, keeps and never does</div>
+    <ul class="short">
+      <li><b>Calls:</b> <b class="hl">VirusTotal resolutions</b>, <b class="hl">Shodan</b>, <b class="hl">crt.sh</b>, <b class="hl">OpenAI + Chromium</b></li>
+      <li><b>Cost:</b> free public · 4 req / min · paid membership for search · free · paid per token</li>
+      <li><b>Keeps:</b> campaigns, campaign_nodes (included, triage reason, AI verdict), campaign_edges (typed, linked to evidence)</li>
+      <li><b>Limit:</b> budget: depth 2, 100 nodes, 300 edges (frozen in code) · 60 API calls · 120 s · the workspace&#39;s investigation cost cap</li>
+    </ul>
+    <details class="all"><summary>All the details ▾</summary>
     <h5>External calls</h5>
     <div class="api"><div class="nm">VirusTotal resolutions<span class="tg">VIRUSTOTAL_API_KEY</span><span class="tg">free public · 4 req / min</span></div>
       <div class="ln"><code>www.virustotal.com</code></div><div class="ln">call · <code>GET /ip_addresses/{ip}/resolutions or /domains/{d}/resolutions?limit=40</code></div><div class="ln">returns · every hostname seen on a server, or every server a domain used</div></div><div class="api"><div class="nm">Shodan<span class="tg">SHODAN_API_KEY</span><span class="tg">paid membership for search</span></div>
@@ -980,11 +1632,20 @@ First observed    : 2026-10-12T06:41:46.604012</div>
     <h5>Limits</h5><ul><li>budget: depth 2, 100 nodes, 300 edges (frozen in code) · 60 API calls · 120 s · the workspace&#39;s investigation cost cap</li><li>a server with &gt; 25 names is shared hosting → no further pivot from it</li><li>≤ 8 AI-triaged neighbours per map · IOC export ≤ 20,000 rows</li></ul>
     <h5>Demo vs live</h5><div style="font-size:12.5px;line-height:1.5">Demo: recordings supply certificate fingerprints and realistic reverse-IP noise. Live: needs VirusTotal (passive DNS) and Shodan keys.</div>
     <h5>Code</h5><div class="mods"><span>detection/investigation.py</span><span>api/campaigns.py</span><span>security/limits.py</span><span>detection/ai.py</span><span>detection/protect.py</span></div>
+    </details>
   </div></span></div></div>
         <div class="hiw-step" id="step-13"><div class="n">13 · take it down</div><b>Takedown</b><p>An evidence-backed request with an audited lifecycle; contacts for the registrar, the hosting provider and the CDN; 26 blocklists, anti-virus and abuse-report portals. BrandWatch never sends anything itself.</p><div class="hiw-foot"><a class="see" href="/ui/takedowns/71c2d1cb-03bb-40bb-9283-04feaa1f3a15/">see it →</a>
 <span class="mi"><button type="button" class="mi-btn" aria-expanded="false" aria-label="More info about Takedown">More info</button>
-  <div class="deep" role="note">
-    <h4>Takedown</h4><div class="sub">Under the hood · the exact calls, limits and code behind this step</div>
+  <div class="deep" role="dialog" aria-label="Takedown — more info">
+    <button type="button" class="mi-x" aria-label="Close">✕</button>
+    <h4>Takedown</h4><div class="sub">Under the hood · what this step calls, costs, keeps and never does</div>
+    <ul class="short">
+      <li><b>Calls:</b> <b class="hl">nothing outside</b> — it works on what is already stored</li>
+      
+      <li><b>Keeps:</b> takedown_drafts: state, contacts, reference, body, sent / response / resolved times, channels and portals reported</li>
+      <li><b>Limit:</b> only for confirmed findings · editable in draft, review or reopened</li>
+    </ul>
+    <details class="all"><summary>All the details ▾</summary>
     <h5>External calls · none</h5>
     
     <h5>How it runs</h5><div class="chain">no new calls: contacts come from stored WHOIS evidence and the 24 h intel cache (RDAP, VirusTotal, ip-api), then 24 known abuse desks</div>
@@ -993,13 +1654,14 @@ First observed    : 2026-10-12T06:41:46.604012</div>
     <h5>Limits</h5><ul><li>only for confirmed findings · editable in draft, review or reopened</li><li>draft → review → approved → sent → acknowledged → in progress → taken down (+ rejected, reopened)</li><li>&#39;sent&#39; needs an abuse contact and is recorded by the analyst after mailing it</li><li>26 report portals in 5 groups (browsers, anti-virus, corporate web filters, phishing feeds, national reporting), each linked as close to the form as the vendor allows</li><li>suspicious shops: a letter worded to the conclusion — a request for review for a suspicious shop, “likely selling counterfeit” for a likely one, “selling counterfeit … confirmed by a test purchase” only when confirmed — plus Report to Meta — every ad (Ad Library link → Report ad) and every advertiser page that sends buyers to the shop, and Meta&#39;s trademark / counterfeit forms for the brand owner; each marked reported with an audit event</li></ul>
     <h5>Demo vs live</h5><div style="font-size:12.5px;line-height:1.5">Same code. Demo contacts come from recorded WHOIS / RDAP / VirusTotal data, live from real lookups. Nothing is ever sent automatically.</div>
     <h5>Code</h5><div class="mods"><span>detection/takedown_channels.py</span><span>detection/reports.py</span><span>api/reports.py</span><span>db/enums.py</span></div>
+    </details>
   </div></span></div></div>
       </div>
     </div>
   </details>
 
   <details class="fold" id="demo">
-    <summary><b>Demo walkthrough · 8 stops</b><span>· the presenter's ten-minute script, with the questions people ask</span></summary>
+    <summary><b>Guided tour · 8 stops</b><span>· a ten-minute walk through the app, with the questions people ask</span></summary>
     <div class="in">
       <ol class="tour">
         <li><div class="where"><a href="/ui/dashboard/">Dashboard</a> — the mission line and the five-step strip</div>
@@ -1060,7 +1722,7 @@ First observed    : 2026-10-12T06:41:46.604012</div>
           <p>Every query is workspace-scoped; RBAC (admin / analyst / viewer) is identical in the UI and the API.</p>
           <div class="mod">keys.py · config/secrets.py · tenancy.py · api/auth.py</div></div>
         <div class="card" id="tests"><h3>Tests &amp; CI</h3>
-          <p>596 test functions in 63 files: schema and trigger enforcement, SSRF cases, provider resilience, every UI page, the golden gate. CI runs lint, test-sqlite, test-postgres, including migrations up and down on PostgreSQL 16.</p>
+          <p>599 test functions in 63 files: schema and trigger enforcement, SSRF cases, provider resilience, every UI page, the golden gate. CI runs lint, test-sqlite, test-postgres, including migrations up and down on PostgreSQL 16.</p>
           <div class="mod">tests/ · .github/workflows/ci.yml</div></div>
       </div>
       <h2>Trust &amp; safety</h2>
@@ -1101,9 +1763,11 @@ First observed    : 2026-10-12T06:41:46.604012</div>
 
   // ---------------------------------------------------------------- chapter animations
   const timers = new WeakMap();
-  function later(ch, ms, fn){ const t = setTimeout(fn, reduce ? 0 : ms); (timers.get(ch) || timers.set(ch, []).get(ch)).push(t); }
+  const QUICK = 0.25;  // a chapter the reader scrolls to draws itself in a quarter of the narration time
+  const pace = ch => parseFloat(ch.style.getPropertyValue('--speed')) || 1;
+  function later(ch, ms, fn){ const t = setTimeout(fn, reduce ? 0 : Math.round(ms * pace(ch))); (timers.get(ch) || timers.set(ch, []).get(ch)).push(t); }
   function countUp(el){
-    const to = parseFloat(el.dataset.to) || 0, dur = reduce ? 0 : parseInt(el.dataset.dur || 1200, 10);
+    const to = parseFloat(el.dataset.to) || 0, dur = reduce ? 0 : Math.round(parseInt(el.dataset.dur || 1200, 10) * pace(el.closest('.ch, .on-view') || el));
     const t0 = performance.now(), fmt = v => Math.round(v).toLocaleString('en-US');
     const ring = el.closest('.bigring');
     const step = t => { const k = dur ? Math.min(1, (t - t0) / dur) : 1, e = 1 - Math.pow(1 - k, 3);
@@ -1115,13 +1779,14 @@ First observed    : 2026-10-12T06:41:46.604012</div>
   function typeOut(el){
     const full = el.dataset.full; el.textContent = '';
     if (reduce) { el.textContent = full; return; }
-    const per = Math.max(6, Math.min(22, 2600 / Math.max(1, full.length)));
+    const per = Math.max(6, Math.min(22, 2600 / Math.max(1, full.length))) * pace(el.closest('.ch, .on-view') || el);
     let i = 0; const tick = () => { i = Math.min(full.length, i + 2); el.textContent = full.slice(0, i); if (i < full.length) setTimeout(tick, per * 2); };
     tick();
   }
   document.querySelectorAll('[data-type]').forEach(el => { el.dataset.full = el.textContent; });
-  function run(ch){
+  function run(ch, speed = QUICK){
     (timers.get(ch) || []).forEach(clearTimeout); timers.set(ch, []);
+    ch.style.setProperty('--speed', speed);
     ch.classList.remove('live'); void ch.offsetWidth; ch.classList.add('live');
     ch.querySelectorAll('[data-to]').forEach(el => { el.textContent = '0'; later(ch, parseInt(el.dataset.t || 0, 10), () => countUp(el)); });
     ch.querySelectorAll('[data-type]').forEach(el => { el.textContent = ''; later(ch, parseInt(el.dataset.t || 0, 10), () => typeOut(el)); });
@@ -1184,7 +1849,7 @@ First observed    : 2026-10-12T06:41:46.604012</div>
     const narrow = innerWidth < 900, lead = narrow ? 3800 : 450;
     if (narrow) setTimeout(() => { if (playing && idx === i) { const st = chapters[i].querySelector('.stage');
       scrollTo({top: st.getBoundingClientRect().top + scrollY - offset(), behavior: reduce ? 'auto' : 'smooth'}); } }, lead - 400);
-    setTimeout(() => { if (playing && idx === i) run(chapters[i]); }, lead);
+    setTimeout(() => { if (playing && idx === i) run(chapters[i], 1); }, lead);
     chStart = performance.now(); tickLeft();
     chTimer = setTimeout(() => playFrom(i + 1), durs[i]);
   }
@@ -1215,15 +1880,23 @@ First observed    : 2026-10-12T06:41:46.604012</div>
 
   // ---------------------------------------------------------------- "More info" panels
   const all = [...document.querySelectorAll('.mi')];
-  const place = mi => { mi.classList.remove('r'); if (mi.getBoundingClientRect().left + 680 > innerWidth) mi.classList.add('r'); };
+  const back = document.createElement('div'); back.id = 'mi-back'; document.body.appendChild(back);
+  let shown = null;
+  const closeAll = () => {
+    if (shown) { shown.d.classList.remove('on'); shown.mi.appendChild(shown.d); shown = null; }
+    all.forEach(o => { o.classList.remove('open'); o.querySelector('.mi-btn').setAttribute('aria-expanded', 'false'); });
+    document.body.classList.remove('mi-on'); };
   all.forEach(mi => {
-    mi.addEventListener('mouseenter', () => place(mi));
-    mi.querySelector('.mi-btn').addEventListener('click', e => { e.stopPropagation(); place(mi);
-      const open = !mi.classList.contains('open'); all.forEach(o => { o.classList.remove('open'); o.querySelector('.mi-btn').setAttribute('aria-expanded', 'false'); });
-      if (open) { mi.classList.add('open'); e.currentTarget.setAttribute('aria-expanded', 'true'); } });
+    mi.querySelector('.mi-btn').addEventListener('click', e => { e.stopPropagation();
+      const open = !mi.classList.contains('open'); closeAll();
+      if (open) { if (playing) stop(); const d = mi.querySelector('.deep'); shown = {mi, d};
+        document.body.appendChild(d); d.classList.add('on'); d.scrollTop = 0;
+        mi.classList.add('open'); document.body.classList.add('mi-on'); e.currentTarget.setAttribute('aria-expanded', 'true'); } });
+    const x = mi.querySelector('.mi-x'); if (x) x.addEventListener('click', e => { e.stopPropagation(); closeAll(); });
   });
-  document.addEventListener('click', e => { if (!e.target.closest('.mi')) all.forEach(o => o.classList.remove('open')); });
-  document.addEventListener('keydown', e => { if (e.key === 'Escape') { all.forEach(o => o.classList.remove('open')); if (document.activeElement && document.activeElement.closest('.mi')) document.activeElement.blur(); } });
+  back.addEventListener('click', closeAll);
+  document.addEventListener('click', e => { if (shown && !e.target.closest('.mi') && !e.target.closest('.deep')) closeAll(); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeAll(); if (document.activeElement && document.activeElement.closest('.mi')) document.activeElement.blur(); } });
 })();
 </script>
 

@@ -1,9 +1,16 @@
 <!doctype html>
 <html lang="en">
-<head><script>window.__BW_GITHUB="https://github.com/itaya12/brandwatch"</script><script src="/_demo/map.js"></script><script src="/_demo/shim.js"></script>
+<head><script>window.__BW_GITHUB=""</script><script src="/_demo/map.js"></script><script src="/_demo/shim.js"></script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Settings · BrandWatch</title>
+
+<meta name="description" content="BrandWatch finds the fake sites impersonating a brand, proves it with tamper-proof evidence, maps the attackers behind them and gets them taken down.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="BrandWatch">
+<meta property="og:title" content="Settings · BrandWatch">
+<meta property="og:description" content="BrandWatch finds the fake sites impersonating a brand, proves it with tamper-proof evidence, maps the attackers behind them and gets them taken down.">
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=JetBrains+Mono:wght@400;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -530,6 +537,7 @@ header nav{display:flex;align-items:center;min-width:0}
         <div id="proxy-kind"><label>Which proxy the probe uses</label>
           <label class="opt"><input type="radio" name="proxy_kind" value="residential" checked > Residential — a home broadband address</label>
           <label class="opt"><input type="radio" name="proxy_kind" value="mobile"  > Mobile — a 4G / 5G carrier address</label>
+          <label class="opt"><input type="radio" name="proxy_kind" value="both"  > Both — one visit through each (kits that trust only one kind of address)</label>
         </div>
         <div id="probe-devices"><label>Visit as</label>
           <label class="opt"><input type="radio" name="devices" value="desktop" checked > A desktop browser</label>
@@ -537,7 +545,8 @@ header nav{display:flex;align-items:center;min-width:0}
           <label class="opt"><input type="radio" name="devices" value="both"  > Both: two visits, one of each</label>
         </div>
       </div>
-      <p class="small muted" style="margin:0 0 10px">A phone visit is also made from the data-centre IP (free) when "mobile" or "both" is chosen, because kits that target phones show the lure to a mobile browser whatever the address. Through the proxy it costs the same as a desktop visit, once per device.</p>
+      <p class="small muted" style="margin:0 0 10px">A phone visit is also made from the data-centre IP (free) when "mobile" or "both" is chosen, because kits that target phones show the lure to a mobile browser whatever the address. Through the proxy it costs the same as a desktop visit, once per device and per proxy.
+        Every visit except the crawler's is a <b>real Chrome</b>: its User-Agent, Accept-Language, client hints (<span class="mono">sec-ch-ua</span>), language and time zone agree with each other and with the proxy's country.</p>
       <h3 class="subh">RESIDENTIAL PROXY</h3>
       <label class="opt"><input type="radio" name="mode" value="off" checked > Off — datacentre probes only</label>
       <label class="opt"><input type="radio" name="mode" value="webshare"  > Webshare rotating residential (paste the API token below)</label>
