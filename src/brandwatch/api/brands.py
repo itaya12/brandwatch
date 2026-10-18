@@ -22,6 +22,7 @@ from brandwatch.api.auth import (
 )
 from brandwatch.api.deps import get_session
 from brandwatch.config.brand_config import (
+    BRAND_SWITCHES,
     BrandConfig,
     detection_for_preset,
     is_custom_detection,
@@ -85,10 +86,30 @@ class BrandPatch(BaseModel):
     domains: list[str] | None = Field(default=None, min_length=1, max_length=50)
 
 
+ScanTask = Literal["dnstwist", "ct", "nrd", "search", "urlscan", "meta_ads", "social"]
+# "scan now, only …": one part of the scan, by itself
+ONLY_PARTS = {
+    "lookalike": "look-alike sites",
+    "search": "Google search",
+    "social": "social media",
+    "ads": "Facebook / Instagram ads",
+}
+DOMAIN_STREAMS = ("dnstwist", "ct", "nrd", "urlscan")
+
+
+def tasks_for_only(cfg: BrandConfig, only: str) -> list[str]:
+    """The tasks of one part of the scan: look-alike sites use the brand's own domain streams (dnstwist at least)."""
+    if only == "lookalike":
+        return [x for x in cfg.detection.streams if x in DOMAIN_STREAMS] or ["dnstwist"]
+    return {"search": ["search"], "social": ["social"], "ads": ["meta_ads"]}[only]
+
+
 class ScanRequest(BaseModel):
     max_candidates: int | None = Field(default=None, ge=1, le=5000)
     max_names: int | None = Field(default=None, ge=1, le=100_000)  # look-alike names checked in DNS
     rebuild_baseline: bool = False  # fingerprint the official site again before discovery
+    tasks: list[ScanTask] | None = Field(default=None, min_length=1, max_length=7)  # only these parts (None: the whole track)
+    only: Literal["lookalike", "search", "social", "ads"] | None = None  # shorthand for tasks, by part
 
 
 class UrlScanRequest(BaseModel):
@@ -451,7 +472,8 @@ def country_site_suggestions(session: Session, brand: Brand) -> list[dict[str, A
     mine = {split_host(d).registrable for d in regions_mod.family_domains(session, brand.id)}
     ignored = {str(x).lower() for x in (brand.profile or {}).get("ignored_country_sites") or []}
     return [r for r in (fp.features or {}).get("country_sites") or []
-            if r.get("domain") and r["domain"] not in mine and r["domain"].lower() not in ignored]
+            if r.get("domain") and r.get("country")  # an older fingerprint may hold brand-named domains without a country: not country sites
+            and r["domain"] not in mine and r["domain"].lower() not in ignored]
 
 
 # ------------------------------------------------------------------------------------------
@@ -611,6 +633,106 @@ def country_site_action(
     return {"action": "region", "domain": dom, "region_id": str(child.id)}
 
 
+# ------------------------------------------------------------------------------------ links on the official homepage
+def _latest_fingerprint(session: Session, brand: Brand) -> BrandFingerprint | None:
+    return session.scalars(
+        sa.select(BrandFingerprint).where(BrandFingerprint.brand_id == brand.id).order_by(BrandFingerprint.version.desc())
+    ).first()
+
+
+def site_links(session: Session, brand: Brand) -> dict[str, Any]:
+    """Every link from the official homepage to another site (baseline ``external_links``), each with its
+    status: ``ours`` (already an official domain, a whitelisted partner, a known account or app), ``new``
+    (waiting for a decision) — the ignored ones are left out and counted."""
+    from brandwatch.detection.social import official_handles
+
+    fp = _latest_fingerprint(session, brand)
+    feats = (fp.features or {}) if fp else {}
+    rows = list(feats.get("external_links") or [])
+    if fp is None:
+        return {"fingerprinted": False, "rows": [], "ignored": 0, "new": 0, "by_kind": {}}
+    prof = brand.profile or {}
+    ignored = {str(x) for x in prof.get("ignored_links") or []}
+    family = {d.lower() for d in regions_mod.family_domains(session, brand.id)}
+    family_reg = {split_host(d).registrable for d in family}
+    partners = {d.domain.lower(): d.kind for d in session.scalars(
+        sa.select(BrandDomain).where(BrandDomain.brand_id == brand.id, BrandDomain.is_official.is_(False))).all()}  # fmt: skip
+    accounts = official_handles(prof, feats.get("official_social") or [])
+    apps = {canonical_listing_url(str(a)).lower() for a in [*(feats.get("official_apps") or []), *(prof.get("official_apps") or [])]}
+    out: list[dict[str, Any]] = []
+    hidden = 0
+    for r in rows:
+        if r.get("key") in ignored:
+            hidden += 1
+            continue
+        row = dict(r)
+        status_, why = "new", ""
+        if r["kind"] == "social":
+            if f"{r['platform']}:{r['handle']}".lower() in accounts:
+                status_, why = "ours", "a known account of the brand"
+        elif r["kind"] == "app":
+            if canonical_listing_url(r["url"]).lower() in apps:
+                status_, why = "ours", "a known app of the brand"
+        else:
+            dom = (r.get("domain") or "").lower()
+            if dom in family or dom in family_reg:
+                status_, why = "ours", "an official domain of the brand"
+            elif dom in partners:
+                status_, why = "ours", f"whitelisted ({partners[dom]})"
+        row["status"], row["status_why"] = status_, why
+        out.append(row)
+    by_kind: dict[str, int] = {}
+    for r in out:
+        by_kind[r["kind"]] = by_kind.get(r["kind"], 0) + 1
+    return {"fingerprinted": True, "rows": out, "ignored": hidden, "new": sum(1 for r in out if r["status"] == "new"), "by_kind": by_kind}
+
+
+class SiteLinkAction(BaseModel):
+    key: str = Field(min_length=3, max_length=400)
+    action: Literal["official", "partner", "ours", "ignore"]
+
+
+@router.post("/{brand_id}/site-links")
+def site_link_action(
+    brand_id: uuid.UUID, body: SiteLinkAction,
+    session: Annotated[Session, Depends(get_session, scope="function")], user: Annotated[User, Depends(require_analyst)],
+) -> dict[str, Any]:  # fmt: skip
+    """What to do with a link found on the official homepage: another official domain of the brand, a
+    whitelisted partner, the brand's own social account, or ignore it. Nothing is added unless the analyst says so."""
+    from brandwatch.detection.protect import dismiss_protected
+
+    brand = _get_brand(session, user, brand_id)
+    found = {r["key"]: r for r in site_links(session, brand)["rows"]}
+    row = found.get(body.key)
+    if row is None:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "that link is not among the links found on the official site")
+    prof = dict(brand.profile or {})
+    if body.action == "ignore":
+        prof["ignored_links"] = sorted({*(prof.get("ignored_links") or []), body.key})
+        brand.profile = prof
+    elif body.action == "ours":
+        if row["kind"] != "social":
+            raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, "only a social account can be marked as the brand's own account")
+        prof["official_social"] = sorted({*(prof.get("official_social") or []), f"{row['platform']}:{row['handle']}".lower()})
+        brand.profile = prof
+    else:
+        if row["kind"] not in ("official_site", "other", "country_site"):
+            raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, "only a website can be added as a domain")
+        norm = normalize(DiscoveryHit(DiscoverySource.MANUAL, row["domain"], Surface.NAME))
+        if norm is None:
+            raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, f"invalid domain: {row['domain']!r}")
+        if session.scalars(sa.select(BrandDomain).where(BrandDomain.brand_id == brand.id, BrandDomain.domain == norm.hostname)).first():
+            raise HTTPException(status.HTTP_409_CONFLICT, "domain already listed for this brand")
+        official = body.action == "official"
+        session.add(BrandDomain(brand_id=brand.id, domain=norm.hostname, is_official=official, kind="alias" if official else "partner"))
+    audit(session, workspace_id=user.workspace_id, actor_type="analyst", actor_id=user.id, action=f"brand.site_link_{body.action}",
+          object_type="brand", object_id=brand.id, new={"key": body.key, "kind": row["kind"]})  # fmt: skip
+    session.flush()
+    if body.action in ("official", "partner"):
+        dismiss_protected(session, brand.id)
+    return {"action": body.action, "key": body.key}
+
+
 @router.get("/{brand_id}")
 def get_brand(
     brand_id: uuid.UUID,
@@ -645,6 +767,7 @@ def get_brand(
     out["schedule"] = schedule_view(session, brand, cfg, out["search_queries"])
     out["scoring_version"] = cfg.scoring.version
     out["country_sites"] = country_site_suggestions(session, brand)
+    out["site_links"] = site_links(session, brand)
     out["whitelist"] = [
         {"domain": d.domain, "kind": d.kind}
         for d in session.scalars(
@@ -688,7 +811,8 @@ def _candidate_config(
         stored["preset"] = body.preset
         # choosing a track resets detection to its profile; an explicit detection patch
         # (custom mode) is then layered on top
-        stored["detection"] = detection_for_preset(body.preset).model_dump()
+        kept = {k: stored["detection"][k] for k in BRAND_SWITCHES if k in stored["detection"]}  # social on / off is the brand's
+        stored["detection"] = {**detection_for_preset(body.preset).model_dump(), **kept}
     for part in ("detection", "scoring", "economic_limits"):
         patch = getattr(body, part)
         if patch:
@@ -1322,15 +1446,31 @@ def start_scan(
     brand = _get_brand(session, user, brand_id)
     if not official_domains(session, brand.id):
         raise HTTPException(status.HTTP_409_CONFLICT, "brand has no official domain")
+    tasks = list(body.tasks) if body.tasks else None
+    if body.only:
+        cfg = tenancy.effective_brand_config(session, brand.id)
+        tasks = tasks_for_only(cfg, body.only)
+        if body.only == "search":
+            qs = search_queries_mod.query_state(brand, cfg.detection, load_baseline(session, brand))
+            if not qs.approved:
+                raise HTTPException(status.HTTP_409_CONFLICT, "Google search runs only with approved queries — approve them first (brand page → Google queries)")
+        if body.only == "social" and not request.app.state.settings.demo_mode and request.app.state.providers.uses_mock("searchapi"):
+            raise HTTPException(status.HTTP_409_CONFLICT, "Social media needs a SearchApi key — add it in Settings → API keys")
+        if body.only == "ads" and brand.kind != "retail":
+            raise HTTPException(status.HTTP_409_CONFLICT, "Ads are searched for a brand whose products are sold in shops (brand kind: retail)")
     session.commit()  # release our write lock before the job thread starts writing
+    payload: dict[str, Any] = {
+        "max_candidates": body.max_candidates,
+        "max_names": body.max_names,
+        "rebuild_baseline": body.rebuild_baseline,
+        "requested_by": str(user.id),
+    }
+    if tasks is not None:
+        payload["tasks"] = tasks
+        payload["only"] = ONLY_PARTS.get(body.only or "", "") or ", ".join(tasks)
     job_id = request.app.state.queue.enqueue(
         "brand_scan",
-        {
-            "max_candidates": body.max_candidates,
-            "max_names": body.max_names,
-            "rebuild_baseline": body.rebuild_baseline,
-            "requested_by": str(user.id),
-        },
+        payload,
         workspace_id=user.workspace_id,
         brand_id=brand.id,
     )

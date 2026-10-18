@@ -627,6 +627,48 @@ async def brand_country_site(
     return RedirectResponse(f"/ui/brands/{brand_id}?region={'added' if out['action'] == 'domain' else 'ignored'}#regions", status_code=303)
 
 
+@router.post("/brands/{brand_id}/site-links")
+async def brand_site_link(
+    brand_id: uuid.UUID,
+    request: Request,
+    session: Annotated[Session, Depends(get_session, scope="function")],
+    user: Annotated[User | None, Depends(ui_writer)],
+):
+    """A link found on the official homepage: an official domain / a whitelisted partner / our account / ignore."""
+    if user is None:
+        return _login_redirect(request)
+    form = await request.form()
+    try:
+        out = brands_api.site_link_action(
+            brand_id, brands_api.SiteLinkAction(key=str(form.get("key") or ""), action=str(form.get("action") or "ignore")),  # type: ignore[arg-type]
+            session, user,
+        )  # fmt: skip
+    except (ValueError, HTTPException) as exc:
+        session.rollback()
+        return _brand_error(request, session, user, brand_id, exc)
+    return RedirectResponse(f"/ui/brands/{brand_id}?links={out['action']}#sitelinks", status_code=303)
+
+
+@router.post("/brands/{brand_id}/social")
+async def brand_social_switch(
+    brand_id: uuid.UUID,
+    request: Request,
+    session: Annotated[Session, Depends(get_session, scope="function")],
+    user: Annotated[User | None, Depends(ui_writer)],
+):
+    """Social media scanning on / off for this brand, whatever its detection track."""
+    if user is None:
+        return _login_redirect(request)
+    form = await request.form()
+    on = str(form.get("on") or "") == "1"
+    try:
+        brands_api.patch_config(brand_id, brands_api.ConfigPatch(detection={"social_accounts": on}), session, user)
+    except (ValueError, HTTPException) as exc:
+        session.rollback()
+        return _brand_error(request, session, user, brand_id, exc)
+    return RedirectResponse(f"/ui/brands/{brand_id}?social={'on' if on else 'off'}#scan", status_code=303)
+
+
 @router.post("/brands/{brand_id}/schedule")
 async def brand_schedule_save(
     brand_id: uuid.UUID,

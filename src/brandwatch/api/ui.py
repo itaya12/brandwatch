@@ -312,6 +312,8 @@ def brand_context(
         "PRESETS": presets_view(),
         "scheduler_on": bool(getattr(request.app.state.settings, "scheduler_enabled", False)),
         "setup_needed": _needs_setup(brand),
+        # social media is searched through SearchApi: in live mode it needs that key
+        "social_ready": bool(request.app.state.settings.demo_mode or not request.app.state.providers.uses_mock("searchapi")),
         "active": "brands",
     }
 
@@ -346,21 +348,29 @@ def brand_scan(
     max_candidates: Annotated[str, Form()] = "",
     max_names: Annotated[str, Form()] = "",
     rebuild_baseline: Annotated[str, Form()] = "",
+    only: Annotated[str, Form()] = "",  # "scan now, only …": lookalike / search / social / ads
 ):  # fmt: skip
     if user is None:
         return _login_redirect(request)
     cap = int(max_candidates) if max_candidates.strip().isdigit() else None
-    out = brands_api.start_scan(
-        brand_id,
-        brands_api.ScanRequest(
-            max_candidates=cap,
-            max_names=int(max_names) if max_names.strip().isdigit() else None,
-            rebuild_baseline=rebuild_baseline == "on",
-        ),
-        request,
-        session,
-        user,
-    )
+    try:
+        out = brands_api.start_scan(
+            brand_id,
+            brands_api.ScanRequest(
+                max_candidates=cap,
+                max_names=int(max_names) if max_names.strip().isdigit() else None,
+                rebuild_baseline=rebuild_baseline == "on",
+                only=only if only in brands_api.ONLY_PARTS else None,  # type: ignore[arg-type]
+            ),
+            request,
+            session,
+            user,
+        )
+    except HTTPException as exc:
+        from brandwatch.api.ui_settings import _brand_error
+
+        session.rollback()
+        return _brand_error(request, session, user, brand_id, exc)
     return RedirectResponse(f"/ui/jobs/{out['job_id']}", status_code=303)
 
 

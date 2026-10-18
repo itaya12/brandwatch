@@ -157,7 +157,9 @@ def _label_has_brand(host: str, brand_key: str) -> bool:
 def country_sites(html: str | None, base_url: str, brand_key: str, official: set[str]) -> list[dict[str, Any]]:
     """The brand's other country sites, read from the official homepage: ``<link rel="alternate"
     hreflang>`` and links to a different registrable domain whose name carries the brand
-    (thenorthface.co.il, thenorthface.de). Never the official domains themselves."""
+    (thenorthface.co.il, thenorthface.de). Never the official domains themselves. A domain that
+    carries the brand but names no country (thenorthface-help.com) is not a country site: it is an
+    *other official site*, listed by ``site_links`` and decided there."""
     if not html or not brand_key:
         return []
     soup = BeautifulSoup(html, "html.parser")
@@ -178,6 +180,8 @@ def country_sites(html: str | None, base_url: str, brand_key: str, official: set
             m = _LANG_COUNTRY.match(hreflang.strip())
             country = m.group(1).upper() if m else None
         country = country or guess_country(reg)
+        if not country:
+            return
         row = found.setdefault(reg, {"domain": reg, "hreflang": None, "country": None})
         row["hreflang"] = row["hreflang"] or (hreflang or None)
         row["country"] = row["country"] or country

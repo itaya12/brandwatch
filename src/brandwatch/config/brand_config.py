@@ -469,9 +469,13 @@ def detection_for_preset(preset: str) -> DetectionConfig:
     return DetectionConfig.model_validate(PRESET_PROFILES.get(preset, PRESET_PROFILES["basic"]))
 
 
+# switches of the brand itself, not of its track: changing them is not "custom", changing the track keeps them
+BRAND_SWITCHES = ("social_accounts",)
+
+
 def is_custom_detection(preset: str, detection: DetectionConfig) -> bool:
     """True when the brand deviates from its track (the UI then shows the full parameter set)."""
-    return detection.model_dump() != detection_for_preset(preset).model_dump()
+    return detection.model_dump(exclude=set(BRAND_SWITCHES)) != detection_for_preset(preset).model_dump(exclude=set(BRAND_SWITCHES))
 
 
 class BrandConfig(BaseModel):

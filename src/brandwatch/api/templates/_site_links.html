@@ -1,0 +1,64 @@
+{# Links on the official homepage (detection/site_links.py, read at fingerprinting): every other site it links to,
+   sorted into country sites, other official sites, social accounts, apps and the rest — each with what is known
+   about it and what the analyst can do. Nothing is added by itself.
+   Context: brand (incl. site_links, domains), can_write, request. #}
+{% set sl = brand.site_links or {} %}
+{% set done = request.query_params.get('links') if request else None %}
+{% set GROUPS = [
+  ('country_site', 'Country sites', 'the brand on another country domain'),
+  ('official_site', 'Other official sites', 'a domain that carries the brand name, or its own page on a service platform'),
+  ('social', 'Social accounts', 'accounts the homepage links to'),
+  ('app', 'Apps', 'app-store listings — known to the brand automatically'),
+  ('other', 'Other links', 'payment providers, partners, news — usually nothing to do'),
+] %}
+<style>
+  #sitelinks{scroll-margin-top:90px}
+  #sitelinks .grp{margin-top:12px}
+  #sitelinks .grp h3{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:0 0 4px}
+  #sitelinks .lrow{display:flex;flex-wrap:wrap;gap:6px 12px;align-items:center;padding:7px 0;border-top:1px solid var(--border)}
+  #sitelinks .lrow:first-of-type{border-top:0}
+  #sitelinks .lrow .what{min-width:0;flex:1 1 260px;overflow-wrap:anywhere}
+  #sitelinks .lrow .acts{display:inline-flex;gap:6px;flex-wrap:wrap;margin-left:auto}
+  #sitelinks .lrow form{display:inline;margin:0}
+  #sitelinks .ok{color:var(--low)}
+  #sitelinks .newb{border:1px solid var(--accent);color:var(--accent2);border-radius:999px;padding:0 8px;font-size:11px}
+</style>
+<div class="panel" style="margin-top:14px" id="sitelinks">
+  <h2>Links on the official site <span class="muted">· every other site {{ brand.domains[0] if brand.domains else 'the homepage' }} links to — a country site, another official site, a social account or something else{% if sl.new %} · <b style="color:var(--accent2)">{{ sl.new }} to decide</b>{% endif %}</span></h2>
+  {% if done %}<div class="small ok" style="margin-bottom:6px">✓ {{ {'official': 'Added as an official domain — never a suspect', 'partner': 'Whitelisted as a partner — never a suspect', 'ours': 'Saved as the brand’s own account — a copy of it is a fake', 'ignore': 'Ignored'}.get(done, 'Saved') }}</div>{% endif %}
+  {% if not sl.fingerprinted %}
+  <p class="small muted" style="margin:0">The first scan fingerprints the official homepage; its links are listed here after that.</p>
+  {% elif not sl.rows %}
+  <p class="small muted" style="margin:0">{% if sl.ignored %}Every link found is decided ({{ sl.ignored }} ignored).{% else %}No links to other sites were read from the homepage yet. Fingerprint the official site again (tick “include fingerprinting” on the next scan) to list them.{% endif %}</p>
+  {% else %}
+  {% for kind, title, help in GROUPS %}{% set rows = sl.rows|selectattr('kind', 'equalto', kind)|list %}{% if rows %}
+  {% if kind == 'other' %}<details class="grp"><summary style="cursor:pointer"><h3 style="display:inline">{{ title }} · {{ rows|length }}</h3> <span class="small muted">— {{ help }}</span></summary>
+  {% else %}<div class="grp"><h3>{{ title }} · {{ rows|length }} <span style="text-transform:none;letter-spacing:0;font-weight:400">— {{ help }}</span></h3>{% endif %}
+    {% for r in rows %}
+    <div class="lrow">
+      <div class="what">
+        {% if kind == 'social' %}<b>{{ r.platform_label }}</b> <a class="mono" href="{{ r.url }}" target="_blank" rel="noopener noreferrer">{{ r.handle }}</a>
+        {% elif kind == 'app' %}<a class="mono" href="{{ r.url }}" target="_blank" rel="noopener noreferrer">{{ r.url }}</a>
+        {% else %}<span class="mono">{{ r.domain }}</span>{% if r.region %} <span class="small muted">· {{ r.region }}{% if r.hreflang %} ({{ r.hreflang }}){% endif %}</span>{% endif %}{% if r.why %} <span class="small muted">· {{ r.why }}</span>{% endif %}{% endif %}
+        {% if r.text %}<span class="small muted"> · “{{ r.text }}”</span>{% endif %}{% if r.count > 1 %}<span class="small muted"> · ×{{ r.count }}</span>{% endif %}
+      </div>
+      {% if r.status == 'ours' %}<span class="small ok">✓ {{ r.status_why }}</span>
+      {% else %}<span class="newb">new</span>
+        {% if can_write %}<span class="acts">
+          {% if kind == 'country_site' %}<a class="btn small" href="#regions" title="its own campaign, or another official domain — decided in Regional campaigns">Decide in Regional campaigns ↑</a>
+          {% elif kind == 'social' %}
+            <form method="post" action="/ui/brands/{{ brand.id }}/site-links"><input type="hidden" name="key" value="{{ r.key }}"><button name="action" value="ours" class="primary small" title="the brand's own account: a look-alike of it is a fake">This is our account</button></form>
+          {% elif kind != 'app' %}
+            <form method="post" action="/ui/brands/{{ brand.id }}/site-links"><input type="hidden" name="key" value="{{ r.key }}"><button name="action" value="official" class="{{ 'primary ' if kind == 'official_site' }}small" title="another official domain of this brand: never a suspect, and a copy of it is">Add as an official domain</button></form>
+            <form method="post" action="/ui/brands/{{ brand.id }}/site-links"><input type="hidden" name="key" value="{{ r.key }}"><button name="action" value="partner" class="small" title="a partner, payment provider or service of the brand: never a suspect">Whitelist (partner)</button></form>
+          {% endif %}
+          {% if kind != 'country_site' and kind != 'app' %}<form method="post" action="/ui/brands/{{ brand.id }}/site-links"><input type="hidden" name="key" value="{{ r.key }}"><button name="action" value="ignore" class="ghost small">Ignore</button></form>{% endif %}
+        </span>{% endif %}
+      {% endif %}
+    </div>
+    {% endfor %}
+  {% if kind == 'other' %}</details>{% else %}</div>{% endif %}
+  {% endif %}{% endfor %}
+  {% if sl.ignored %}<p class="small muted" style="margin:10px 0 0">{{ sl.ignored }} link{{ '' if sl.ignored == 1 else 's' }} ignored.</p>{% endif %}
+  {% endif %}
+</div>

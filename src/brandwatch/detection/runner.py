@@ -1588,9 +1588,12 @@ async def run_scan(
         shop = ctx.extra["shop"]
         if shop["retail"] and (tasks is None or "meta_ads" in tasks):  # follows the brand kind, not the track
             enabled.append("meta_ads")
-        if tasks is not None:
+        if tasks is not None and (job.payload or {}).get("scheduled"):
             summary.step(f"Automatic scan · {(job.payload or {}).get('schedule') or 'scheduled'}",
                          "tasks: " + ", ".join(tasks) if tasks else "no tasks")  # fmt: skip
+        elif tasks is not None:  # "scan now, only …" from the brand page
+            summary.step(f"Scan of one part · {(job.payload or {}).get('only') or ', '.join(tasks)}",
+                         "only: " + ", ".join(tasks) + " — the other parts of the track do not run")  # fmt: skip
         ad_keywords = list(shop["profile"].get("ad_keywords") or []) or [brand.search_name.lower()]
         ad_countries = (
             [c.upper() for c in shop["profile"].get("countries") or []]

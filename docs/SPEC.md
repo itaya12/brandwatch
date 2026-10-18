@@ -438,6 +438,37 @@ with regional child campaigns**. A small company with one multilingual site stay
 | **Delete** | a main brand with regions cannot be deleted ("delete them first"). |
 | **API** | `POST /api/brands/{id}/regions`, `POST /api/brands/{id}/regions/sync`, `POST /api/brands/{id}/country-sites`; the brand summary gains `parent_id`, `parent_name`, `region`, `regions[]`, `family_open_findings`; the brand detail gains `country_sites`. |
 
+### 2.9 Links on the official site, the social switch, and one part of a scan
+
+**Links on the official site** (`detection/site_links.py`, brand page panel `#sitelinks`, `_site_links.html`). When the
+official homepage is fingerprinted, every link to another site is kept in `features.external_links`, one row per domain
+or per account, with how many times the page links to it. Each row has a kind:
+
+| Kind | What it is | What the analyst can do |
+|---|---|---|
+| `country_site` | the brand on a country domain (hreflang or ccTLD, the name carries the brand) | decided in Regional campaigns (region / official domain / ignore) |
+| `official_site` | a domain that carries the brand's name (`shopnova-business.com`), or a brand subdomain on a service platform (`shopnova.zendesk.com`) | Add as an official domain · Whitelist (partner) · Ignore |
+| `social` | an account on Facebook, Instagram, X, TikTok, YouTube, LinkedIn, Telegram, WhatsApp, Pinterest, Threads, Discord, Reddit, GitHub or Snapchat (share buttons and posts are not accounts) | This is our account (→ `profile.official_social`) · Ignore |
+| `app` | an app-store listing | none: known to the brand automatically |
+| `other` | anything else (payments, partners, news), folded | Whitelist (partner) · Add as an official domain · Ignore |
+
+`site_links()` marks each row `ours` (an official or whitelisted domain, a known account or app) or `new`; ignored rows
+(`profile.ignored_links`) are counted and hidden. Actions: `POST /api/brands/{id}/site-links {key, action}` with
+`action ∈ official | partner | ours | ignore` (UI: `POST /ui/brands/{id}/site-links`), audited as
+`brand.site_link_<action>`. Nothing is added unless the analyst chooses.
+
+**Social media is a switch of the brand, not of its track.** `detection.social_accounts` is in
+`brand_config.BRAND_SWITCHES`: changing it does not make the brand "custom parameters", and choosing another track
+keeps it. The brand page's "social media on · turn off" pill flips it (`POST /ui/brands/{id}/social`, `on=1|0`). In
+live mode without a SearchApi key the page says that social media is skipped.
+
+**Scan now, only one part.** Under START SCAN: *Look-alike sites* (the brand's own domain streams among dnstwist, ct,
+nrd, urlscan; dnstwist at least), *Google search* (only with approved queries), *Social media* (needs SearchApi in live
+mode; runs even when the switch is off) and, for a retail brand, *Ads*. `ScanRequest.only` (or `tasks`) becomes the job
+payload's `tasks` plus a label in `only`; the runner already runs exactly the payload's tasks and says
+"Scan of one part · social media" (an automatic run still says "Automatic scan · …"). A part that cannot run is refused
+with 409 and the reason, shown on the brand page.
+
 ## 3. The detection pipeline, stage by stage
 
 `detection/runner.py` orchestrates the scan. The table maps each stage to its module and its scan-console name.

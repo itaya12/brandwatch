@@ -13,6 +13,13 @@
   .scanhero{display:grid;grid-template-columns:1fr auto;gap:18px;align-items:center;padding:18px 22px;margin-top:14px;
     border:1px solid rgba(53,199,242,.35);background:linear-gradient(120deg,rgba(53,199,242,.10),rgba(14,20,32,.96) 50%,rgba(167,139,250,.10))}
   .scanhero h2{margin-top:0}
+  .scanhero .socsw{display:inline;margin:0}
+  .scanhero .socsw button.pill{cursor:pointer;font:inherit;background:transparent}
+  .scanhero .socsw button.pill:hover{border-color:var(--accent);color:var(--accent2)!important}
+  .scanhero .onlybar{margin-top:14px;padding-top:12px;border-top:1px dashed var(--border);text-align:center}
+  .scanhero .onlybtns{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
+  .scanhero .onlybtns form{margin:0}
+  .scanhero .onlybtns .btn{text-decoration:none}
   .scanhero .track{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:13px}
   .scanhero .track b{font-family:var(--display);font-size:22px;letter-spacing:.04em}
   .tr-basic{color:var(--low)}.tr-standard{color:var(--accent2)}.tr-enterprise{color:var(--magenta)}
@@ -88,7 +95,7 @@
 </div>
 
 {# ---------------------------------------------------------------- START SCAN ---------------------------------------------------------------- #}
-<div class="panel scanhero">
+<div class="panel scanhero" id="scan">
   <div style="min-width:0">
     <h2>Scan this brand</h2>
     <div class="track"><span class="muted">track</span> <b class="tr-{{ cfg.preset }}">{{ PRESETS[cfg.preset].label }}</b>
@@ -101,7 +108,9 @@
       <span class="pill" style="{{ 'color:var(--low)' if cfg.detection.cloaking_probes else 'color:var(--muted)' }}">cloaking {{ 'on' if cfg.detection.cloaking_probes else 'off' }}</span>
       <span class="pill" style="{{ 'color:var(--low)' if cfg.detection.ai_second_opinion else 'color:var(--muted)' }}">AI {{ 'on' if cfg.detection.ai_second_opinion else 'off' }}</span>
       <span class="pill">re-check every {{ cfg.detection.watch_cadence_hours }}h</span>
-      <span class="pill" style="{{ 'color:var(--low)' if cfg.detection.social_accounts else 'color:var(--muted)' }}" title="Facebook pages / Instagram profiles under the brand's name">social media {{ 'on' if cfg.detection.social_accounts else 'off' }}</span>
+      {% if can_write %}<form method="post" action="/ui/brands/{{ brand.id }}/social" class="socsw"><input type="hidden" name="on" value="{{ '0' if cfg.detection.social_accounts else '1' }}">
+        <button type="submit" class="pill" style="{{ 'color:var(--low)' if cfg.detection.social_accounts else 'color:var(--muted)' }}" title="Facebook pages / Instagram profiles under the brand's name — click to switch {{ 'off' if cfg.detection.social_accounts else 'on' }} for every scan of this brand">social media {{ 'on' if cfg.detection.social_accounts else 'off' }} · {{ 'turn off' if cfg.detection.social_accounts else 'turn on' }}</button></form>
+      {% else %}<span class="pill" style="{{ 'color:var(--low)' if cfg.detection.social_accounts else 'color:var(--muted)' }}" title="Facebook pages / Instagram profiles under the brand's name">social media {{ 'on' if cfg.detection.social_accounts else 'off' }}</span>{% endif %}
       <a class="pill" href="#schedule" style="{{ 'color:var(--low)' if brand.schedule.enabled else 'color:var(--muted)' }}">automatic: {{ brand.schedule.label if brand.schedule.enabled else 'off' }}</a>
       {% if 'search' in cfg.detection.streams %}<a class="pill" href="#queries" style="{{ 'color:var(--low)' if brand.search_queries.approved else 'color:var(--high)' }}">Google queries {{ 'approved' if brand.search_queries.approved else '· waiting for approval' }}</a>{% endif %}
     </div>
@@ -109,6 +118,11 @@
     <p class="small" style="margin:8px 0 0;color:var(--high)">Brand profile incomplete —
       {% if not brand.profile.countries %}Facebook / Instagram ads will be searched only in <b>{{ cfg.detection.search_geo|upper }}</b> (no countries set){% endif %}{% if not brand.profile.countries and not brand.profile.products %}; {% endif %}{% if not brand.profile.products %}no official prices, so shops cannot be compared with them{% endif %}
       — <a href="#profile">fill in the brand profile ↓</a> (Suggest with AI pre-fills it)</p>
+    {% endif %}
+    {% set sdone = request.query_params.get('social') if request else None %}
+    {% if sdone %}<p class="small" style="margin:8px 0 0;color:var(--low)">✓ Social media scanning is {{ sdone }} for {{ brand.name }}{% if sdone == 'on' %} — every scan now also looks for fake Facebook pages and Instagram profiles{% endif %}.</p>{% endif %}
+    {% if cfg.detection.social_accounts and not social_ready %}
+    <p class="small" style="margin:8px 0 0;color:var(--high)">Social media is on, but it is skipped: it needs a SearchApi key — <a href="/ui/settings#keys">Settings → API keys</a>.</p>
     {% endif %}
     {% if 'search' in cfg.detection.streams and not brand.search_queries.approved %}
     <p class="small" style="margin:8px 0 0;color:var(--high)">Google search is skipped until you approve its queries — <a href="#queries">review the {{ brand.search_queries.proposal|length }} proposed queries ↓</a></p>
@@ -150,10 +164,25 @@
         {% if ws_cap and default_cap > ws_cap %}<div class="small" style="margin-top:4px;color:var(--high)">your {{ default_cap }} is saved, but this scan visits {{ ws_cap }} — the workspace limit · <a href="/ui/brands/{{ brand.id }}/setup#s-size">raise it</a></div>{% endif %}
       </form>
     {% else %}<p class="muted">Viewer access: scans are started by analysts.</p>{% endif %}
+    {% if can_write and not running %}
+    {% set dom_streams = cfg.detection.streams|select('in', ['dnstwist','ct','nrd','urlscan'])|list or ['dnstwist'] %}
+    <div class="onlybar">
+      <div class="small muted" style="margin-bottom:6px">or scan now, <b>only one part</b> — the rest of the track does not run</div>
+      <div class="onlybtns">
+        <form method="post" action="/ui/brands/{{ brand.id }}/scan"><input type="hidden" name="only" value="lookalike"><button type="submit" class="small" title="only the domain streams: {{ dom_streams|join(', ') }} — then every site found is visited and scored">🔎 Look-alike sites</button></form>
+        {% if brand.search_queries.approved %}<form method="post" action="/ui/brands/{{ brand.id }}/scan"><input type="hidden" name="only" value="search"><button type="submit" class="small" title="only Google, with the {{ brand.search_queries.queries|length }} approved queries">🌐 Google search</button></form>
+        {% else %}<a class="btn small" href="#queries" style="opacity:.7" title="Google runs only with approved queries">🌐 Google search · approve the queries first</a>{% endif %}
+        {% if social_ready %}<form method="post" action="/ui/brands/{{ brand.id }}/scan"><input type="hidden" name="only" value="social"><button type="submit" class="small" title="only Facebook pages and Instagram profiles under the brand's name{{ ' — runs even though social media is off for automatic scans' if not cfg.detection.social_accounts }}">👥 Social media</button></form>
+        {% else %}<a class="btn small" href="/ui/settings#keys" style="opacity:.7" title="social media is searched through SearchApi">👥 Social media · needs a SearchApi key</a>{% endif %}
+        {% if brand.kind == 'retail' %}<form method="post" action="/ui/brands/{{ brand.id }}/scan"><input type="hidden" name="only" value="ads"><button type="submit" class="small" title="only Facebook / Instagram ads that sell the brand's products">📣 Ads</button></form>{% endif %}
+      </div>
+    </div>
+    {% endif %}
   </div>
 </div>
 
 {% include "_regions.html" %}
+{% include "_site_links.html" %}
 {% include "_schedule.html" %}
 
 {# ---------------------------------------------------------------- EDIT BRAND ---------------------------------------------------------------- #}

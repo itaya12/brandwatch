@@ -33,6 +33,7 @@ from brandwatch.detection.html import (
     title_keywords,
 )
 from brandwatch.detection.regions import country_sites
+from brandwatch.detection.site_links import external_links
 from brandwatch.detection.snapshot import urlscan_snapshot as _urlscan_snapshot
 from brandwatch.detection.social import social_links
 from brandwatch.evidence.store import EvidenceStore
@@ -493,6 +494,8 @@ async def build_baseline(
             "official_social": social_links(html) if html else [],
             # the brand's other country sites, linked from the official homepage (suggested to the analyst)
             "country_sites": country_sites(html, url, key, set(domains)) if html else [],
+            # every other link on the homepage, sorted (country site / official site / social / app / other) for the analyst
+            "external_links": external_links(html, url, key, set(domains)) if html else [],
             "fetch": {**health, "url": url, "via": live_via, "at": utcnow().isoformat(), **_fetch_extra(attempts, source, snap)},
         },
         colors={"palette": colors},
