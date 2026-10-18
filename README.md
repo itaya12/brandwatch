@@ -8,18 +8,18 @@
 ![Python](https://img.shields.io/badge/python-3.12-3776AB?logo=python&logoColor=white)
 ![FastAPI](https://img.shields.io/badge/FastAPI-009688?logo=fastapi&logoColor=white)
 ![Playwright](https://img.shields.io/badge/Playwright-sandboxed-2EAD33?logo=playwright&logoColor=white)
-![Tests](https://img.shields.io/badge/tests-678%20passing-brightgreen)
+![Tests](https://img.shields.io/badge/tests-688%20passing-brightgreen)
 ![Demo](https://img.shields.io/badge/demo-%240%2C%20no%20API%20keys-35C7F2)
 
-### [▶ Open the live demo](https://brandwatch.itaya12.workers.dev/ui/dashboard/)
+### [▶ Open the live demo](https://nbse3h.s.gy/M37Izw)
 <sub>A read-only copy of the app with fictional brands: click through every page, the attacker map and the findings. Nothing is sent anywhere.</sub>
 
-### [🎬 Watch a real case study](https://youtu.be/17dMOIzThgk)
+### [🎬 Watch a real case study](https://nbse3h.s.gy/sSLDpR)
 <sub>A live scan of a real crypto-trading brand: BrandWatch finds its look-alike domains, investigates them, and the map shows that eight typo domains are one operation, forwarding visitors to the real site with the same affiliate id.</sub>
 
-<a href="https://youtu.be/17dMOIzThgk"><img src="https://img.youtube.com/vi/17dMOIzThgk/maxresdefault.jpg" alt="Video: a real BrandWatch case study" width="70%"></a>
+<a href="https://nbse3h.s.gy/sSLDpR"><img src="https://img.youtube.com/vi/17dMOIzThgk/maxresdefault.jpg" alt="Video: a real BrandWatch case study" width="70%"></a>
 
-<a href="https://brandwatch.itaya12.workers.dev/ui/dashboard/"><img src="docs/images/dashboard.png" alt="BrandWatch dashboard: the five-step pipeline and a live map of where the phishing kits are hosted" width="100%"></a>
+<a href="https://nbse3h.s.gy/M37Izw"><img src="docs/images/dashboard.png" alt="BrandWatch dashboard: the five-step pipeline and a live map of where the phishing kits are hosted" width="100%"></a>
 
 </div>
 
@@ -27,12 +27,30 @@
 
 | | |
 |---|---|
-| 🔎 **Find** | Look-alike domains from typo permutations, certificate-transparency logs, newly registered domains, Google results, urlscan, and fake Facebook / Instagram pages and ads that use the brand's name. |
+| 🔎 **Find** | Look-alike domains (typos and look-alike letters on 1,000+ domain endings, checked in DNS), newly registered domains from yesterday's registrations, brand-new HTTPS certificates, Google results, urlscan, and fake Facebook / Instagram pages and ads that use the brand's name. |
 | 🤖 **Ask the AI assistants** | Asks ChatGPT, Gemini and Google AI Mode what a customer would ask ("what is the support phone of …?"), checks every phone, short code, e-mail and login address in the answers against the brand's own website, asks for the proof when one does not match, opens the cited pages itself, and raises made-up or scam-published contacts as findings. |
 | 🧪 **Prove** | Visits every suspect in a sandboxed browser like a real victim would (and like a scanner would, to catch cloaking), compares it with the real site (favicon, screenshot, login form, DOM), and scores 50 signals in 7 capped groups. Every point is explained. |
 | ⚖️ **Decide** | An analyst confirms or dismisses, one by one or in bulk. AI and an ML classifier give a second opinion, but never change the score. Nothing is sent automatically. |
 | 🕸️ **Map the attackers** | Pivots on servers, certificates, registrants, analytics IDs, affiliate IDs, redirect hosts and where the stolen data goes, then groups the sites into **operations**: who is behind them, how they operate, and the shortest way to stop each one. |
 | 🧾 **Take down** | Registrar, host and CDN abuse contacts, 26 report portals, evidence packages (HTML + JSON, SHA-256 per row), and an audited takedown lifecycle. |
+
+### 🤖 AI answers: what ChatGPT and Gemini tell your customers
+
+People no longer only search Google — they ask an assistant *"what is the support phone of my bank?"* and call the number
+it gives. When the assistant makes a number up (a hallucination) or repeats one a scam page published, the caller reaches
+a stranger; a made-up number is one a scammer can claim tomorrow. BrandWatch checks it, per brand, with a switch:
+
+1. **Learns the real contacts** — reads the brand's own website (contact, support and service pages first) and keeps every
+   phone, short code (`*2407`), e-mail and WhatsApp number with the page it is on.
+2. **Asks like a customer** — approved questions in the brand's languages (support phone, every way to get in touch,
+   where to log in, how to report fraud) to **ChatGPT** (with web search), **Gemini** and **Google AI Mode**.
+3. **Compares** — every contact and web address in the answers against the official ones.
+4. **Asks for the proof** — *"show me the official page where it appears, I suspect it is a fraud"* — and then **opens every
+   cited page itself**: the assistant's word is never taken. A Google search of the number shows who else publishes it.
+5. **Raises a finding** — *made up* (no page publishes it, or the assistant took it back), *published off the brand's site*
+   (Critical when a look-alike or a known phishing site carries it), or *sends users to a site that is not the brand's* —
+   with the full transcripts as evidence and a ready text for reporting the answer. Pages that publish the wrong number
+   are checked as suspects in the same scan.
 
 <table>
 <tr>
