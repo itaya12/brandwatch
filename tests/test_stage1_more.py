@@ -175,6 +175,8 @@ def test_notifications_carry_absolute_links_and_follow_the_workspace_preferences
         ui.post("/ui/settings/notify", data={"min_severity": "high", "brand_on": brand["id"]}, follow_redirects=False)  # digest off
         with Session(engine) as s:
             assert svc.daily_digest(s, uuid.UUID(ws)) is False
+            tenancy.set_workspace_notify(s, uuid.UUID(ws), min_severity="high", channels=None, brands_off=[], digest=True)  # the defaults again
+            s.commit()
 
 
 def test_the_finding_page_groups_its_tabs_and_investigates_by_itself(engine, tmp_path):

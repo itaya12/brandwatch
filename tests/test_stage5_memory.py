@@ -56,7 +56,11 @@ def test_a_snoozed_finding_leaves_the_queue_and_comes_back_by_itself(engine, tmp
         from sqlalchemy.orm import Session
 
         ws = c.get("/api/auth/me").json()["workspace_id"]
+        from brandwatch import tenancy
+
         with Session(engine) as s:
+            # another test may have muted the digest of this (shared) workspace: on, for every brand
+            tenancy.set_workspace_notify(s, uuid.UUID(ws), min_severity="high", channels=None, brands_off=[], digest=True)
             svc.daily_digest(s, uuid.UUID(ws))
             s.commit()
         digest = [m for m in svc.log_outbox if m.subject.startswith("[BrandWatch] daily digest")][-1]
