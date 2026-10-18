@@ -8,7 +8,7 @@
 ![Python](https://img.shields.io/badge/python-3.12-3776AB?logo=python&logoColor=white)
 ![FastAPI](https://img.shields.io/badge/FastAPI-009688?logo=fastapi&logoColor=white)
 ![Playwright](https://img.shields.io/badge/Playwright-sandboxed-2EAD33?logo=playwright&logoColor=white)
-![Tests](https://img.shields.io/badge/tests-691%20passing-brightgreen)
+![Tests](https://img.shields.io/badge/tests-695%20passing-brightgreen)
 ![Demo](https://img.shields.io/badge/demo-%240%2C%20no%20API%20keys-35C7F2)
 
 ### [▶ Open the live demo](https://nbse3h.s.gy/M37Izw)
@@ -27,7 +27,7 @@
 
 | | |
 |---|---|
-| 🔎 **Find** | Look-alike domains (typos and look-alike letters on 1,000+ domain endings, checked in DNS), newly registered domains from yesterday's registrations, brand-new HTTPS certificates, Google results, urlscan, and fake Facebook / Instagram pages and ads that use the brand's name. |
+| 🔎 **Find** | Look-alike domains (typos and look-alike letters on 1,000+ domain endings, checked in DNS), newly registered domains from yesterday's registrations, brand-new HTTPS certificates, Google results, urlscan, and fake Facebook / Instagram pages and ads that use the brand's name — scam shops for a brand that shops resell, phishing ads for a bank or a payment app (the site behind such an ad often has no brand name in its domain). |
 | 🤖 **Ask the AI assistants** | Asks ChatGPT, Gemini and Google AI Mode what a customer would ask ("what is the support phone of …?"), checks every phone, short code, e-mail and login address in the answers against the brand's own website, asks for the proof when one does not match, opens the cited pages itself, and raises made-up or scam-published contacts as findings. |
 | 🧪 **Prove** | Visits every suspect in a sandboxed browser like a real victim would — a real Chrome (User-Agent, Accept-Language, client hints, language and time zone) through a residential or mobile 4G / 5G proxy, as a desktop or a phone — and like a scanner would, to catch cloaking; compares it with the real site (favicon, screenshot, login form, DOM), and scores 50 signals in 7 capped groups. Every point is explained. |
 | ⚖️ **Decide** | An analyst confirms or dismisses, one by one or in bulk. AI and an ML classifier give a second opinion, but never change the score. Nothing is sent automatically. |

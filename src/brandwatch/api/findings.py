@@ -705,6 +705,7 @@ def finding_detail(session: Session, f: Finding) -> dict[str, Any]:
                 signals_raw, details if isinstance(details, dict) else {}, brand.name
             ),
             "shop": breakdown.get("shop"),
+            "ads": breakdown.get("ads"),  # a phishing site's own ads (a brand nobody else sells)
             "social": breakdown.get("social"),
             "ai_answer": breakdown.get("ai_answer"),
             "phishing": breakdown.get("phishing"),

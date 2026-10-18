@@ -24,15 +24,15 @@
       <label class="kind"><input type="radio" name="kind" value="retail" {{ 'checked' if brand.kind == 'retail' }} {{ 'disabled' if not can_write }}>
         <div><b>Other shops sell it too</b><span>shoes, clothing, electronics — scam shops advertise the products on Facebook / Instagram and ship replicas. BrandWatch searches the ads in your countries and checks every shop they link to.</span></div></label>
       <label class="kind"><input type="radio" name="kind" value="service" {{ 'checked' if brand.kind != 'retail' }} {{ 'disabled' if not can_write }}>
-        <div><b>Only the brand sells it</b><span>software, finance, a service — anyone else using the name is an impostor. The phishing streams cover it; fake Facebook / Instagram pages are the next step.</span></div></label>
+        <div><b>Only the brand sells it</b><span>software, finance, a service — anyone else using the name is an impostor. The phishing streams cover it, fake Facebook / Instagram pages, and — with “phishing ads” on — the ads that use its name.</span></div></label>
+    </div>
+    <div class="two">
+      <div><label>Countries <span class="muted small">· ISO codes, the ads are searched in each one</span></label>
+        <input name="countries" value="{{ pf.countries|join(', ') }}" placeholder="IL, US, GB" {{ 'disabled' if not can_write }}></div>
+      <div><label>Ad keywords <span class="muted small">· one per line — the brand's name as people write it, in each language (e.g. “bank hapoalim”, “בנק הפועלים”), and its own product names; never a generic word: that finds every brand's ads</span></label>
+        <textarea name="ad_keywords" rows="3" placeholder="{{ brand.name|lower }}&#10;{{ brand.name|lower }} {{ 'sale' if brand.kind == 'retail' else 'login' }}" {{ 'disabled' if not can_write }}>{{ pf.ad_keywords|join('\n') }}</textarea></div>
     </div>
     <div class="retail-only" {{ 'hidden' if brand.kind != 'retail' }}>
-      <div class="two">
-        <div><label>Countries <span class="muted small">· ISO codes, the ads are searched in each one</span></label>
-          <input name="countries" value="{{ pf.countries|join(', ') }}" placeholder="IL, US, GB" {{ 'disabled' if not can_write }}></div>
-        <div><label>Ad keywords <span class="muted small">· one per line — the brand's name and its own model names (e.g. “the north face”, “nuptse”); never “mountain jacket”: that finds every brand's ads</span></label>
-          <textarea name="ad_keywords" rows="3" placeholder="{{ brand.name|lower }}&#10;{{ brand.name|lower }} sale" {{ 'disabled' if not can_write }}>{{ pf.ad_keywords|join('\n') }}</textarea></div>
-      </div>
       <label style="margin-top:10px">Official prices <span class="muted small">· per single item, per country — a shop at half the price or less is flagged</span></label>
       <div class="tw"><table class="prod" id="prodtable"><tr><th>Product</th><th>Price</th><th>Currency</th><th>Country</th><th></th></tr>
         {% for p in pf.products + [{}, {}] %}

@@ -1577,8 +1577,6 @@ def start_scan(
                 raise HTTPException(status.HTTP_409_CONFLICT, "AI answers run only with approved questions — approve them first (brand page → AI answers)")
             if not request.app.state.settings.demo_mode and request.app.state.providers.uses_mock("searchapi"):
                 raise HTTPException(status.HTTP_409_CONFLICT, "AI answers need a SearchApi key — add it in Settings → API keys")
-        if body.only == "ads" and brand.kind != "retail":
-            raise HTTPException(status.HTTP_409_CONFLICT, "Ads are searched for a brand whose products are sold in shops (brand kind: retail)")
     session.commit()  # release our write lock before the job thread starts writing
     payload: dict[str, Any] = {
         "max_candidates": body.max_candidates,

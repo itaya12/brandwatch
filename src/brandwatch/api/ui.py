@@ -585,9 +585,14 @@ def finding_context(session: Session, user: User, finding_id: uuid.UUID) -> dict
 
     shop = (d.get("score") or {}).get("shop") or {}
     soc = (d.get("score") or {}).get("social") or {}
+    ads = (d.get("score") or {}).get("ads") or []
     if d["finding"].get("kind") == "social" and soc:
         meta = {"pages": tc.social_targets(soc), "forms": tc.SOCIAL_FORMS, "social": True,
                 "text": tc.social_report_text(d["brand"]["name"], soc, (d.get("score") or {}).get("summary"))}  # fmt: skip
+    elif ads and d["finding"].get("kind") == "phishing":
+        meta = {"pages": tc.meta_pages({"ads": ads}), "forms": tc.PHISHING_AD_FORMS, "phishing_ad": True, "meta_reason": "Scam or fraud",
+                "text": tc.phishing_ad_report_text(d["brand"]["name"], d["candidate"]["canonical_url"], {"ads": ads},
+                                                   (d.get("score") or {}).get("summary"))}  # fmt: skip
     else:
         lv = d["finding"].get("shop_level") or {}
         level = lv.get("level") or "suspicious_retailer"
@@ -771,9 +776,13 @@ def takedown_page(
     brand = session.get(Brand, finding.brand_id) if finding else None
     shop = tc.shop_record_of(session, finding) if finding else {}
     soc = tc.social_record_of(session, finding) if finding and finding.kind == "social" else {}
+    ad_rec = tc.ads_record_of(session, finding) if finding and finding.kind == "phishing" else {}
     if soc:
         meta = {"pages": tc.social_targets(soc), "forms": tc.SOCIAL_FORMS, "social": True,
                 "text": tc.social_report_text(brand.name if brand else "", soc, None)}  # fmt: skip
+    elif ad_rec:
+        meta = {"pages": tc.meta_pages(ad_rec), "forms": tc.PHISHING_AD_FORMS, "phishing_ad": True, "meta_reason": "Scam or fraud",
+                "text": tc.phishing_ad_report_text(brand.name if brand else "", url, ad_rec, None)}  # fmt: skip
     else:
         level, conclusion = tc.shop_level_of(session, finding) if finding else ("suspicious_retailer", None)
         meta = {"pages": tc.meta_pages(shop), "forms": tc.META_FORMS, **_meta_level(level),

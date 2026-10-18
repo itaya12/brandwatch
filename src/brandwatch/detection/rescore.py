@@ -127,7 +127,7 @@ def apply(session: Session, brand_id: uuid.UUID, cfg: ScoringConfig, *, actor: U
         old_breakdown = dict((rs.groups or {}).get("_breakdown", {}))
         breakdown = {
             **new.breakdown,
-            **{k: old_breakdown[k] for k in ("ai", "ml", "cloaking") if k in old_breakdown},
+            **{k: old_breakdown[k] for k in ("ai", "ml", "cloaking", "ads") if k in old_breakdown},
         }
         breakdown["rescored_from"] = rs.scoring_version
         session.execute(sa.update(RiskScore).where(RiskScore.id == rs.id).values(is_current=False))

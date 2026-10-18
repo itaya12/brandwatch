@@ -757,6 +757,26 @@ async def brand_social_switch(
     return RedirectResponse(f"/ui/brands/{brand_id}?social={'on' if on else 'off'}#scan", status_code=303)
 
 
+@router.post("/brands/{brand_id}/ads")
+async def brand_ads_switch(
+    brand_id: uuid.UUID,
+    request: Request,
+    session: Annotated[Session, Depends(get_session, scope="function")],
+    user: Annotated[User | None, Depends(ui_writer)],
+):
+    """Phishing ads on / off for a brand nobody else sells (a resold brand's ads are always searched, for scam shops)."""
+    if user is None:
+        return _login_redirect(request)
+    form = await request.form()
+    on = str(form.get("on") or "") == "1"
+    try:
+        brands_api.patch_config(brand_id, brands_api.ConfigPatch(detection={"phishing_ads": on}), session, user)
+    except (ValueError, HTTPException) as exc:
+        session.rollback()
+        return _brand_error(request, session, user, brand_id, exc)
+    return RedirectResponse(f"/ui/brands/{brand_id}?ads={'on' if on else 'off'}#scan", status_code=303)
+
+
 @router.post("/brands/{brand_id}/schedule")
 async def brand_schedule_save(
     brand_id: uuid.UUID,

@@ -131,6 +131,11 @@ class FixtureStore:
     def all(self) -> list[Scenario]:
         return list(self._by_host.values())
 
+    def everything(self) -> list[Scenario]:
+        """The golden scenarios and the extras (demo networks) — for searches that look across the recorded world,
+        like the Ad Library; ``all()`` stays the golden set the metrics are measured on."""
+        return [*self._by_host.values(), *self._extra.values()]
+
     def by_label(self, label: str) -> list[Scenario]:
         return [s for s in self._by_host.values() if s.label == label]
 

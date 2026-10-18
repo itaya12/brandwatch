@@ -25,7 +25,7 @@ TASKS: dict[str, tuple[str, str]] = {
     "nrd": ("Newly registered domains", "yesterday's registrations that carry the brand"),
     "search": ("Google search", "the approved Google search queries, in each search country"),
     "urlscan": ("urlscan archive", "pages other researchers scanned that carry the brand"),
-    "meta_ads": ("Facebook / Instagram ads", "ads that sell the brand's products, and the shops behind them"),
+    "meta_ads": ("Facebook / Instagram ads", "ads that use the brand's name and the sites they send people to — scam shops for a brand that shops resell, phishing for any other"),
     "social": ("Fake social accounts", "Facebook pages and Instagram profiles under the brand's name"),
     "ai_answers": ("AI answers", "what ChatGPT, Gemini and Google AI Mode tell users about the brand's phone, e-mail and login"),
     "watchlist": ("Re-check the watchlist", "visit suspicious sites and open findings again to catch changes"),
@@ -58,10 +58,10 @@ class Schedule:
 
 
 def default_tasks(detection: Any, retail: bool) -> list[str]:
-    """What a scan of this brand does today: its track's streams, ads for resold brands, social
-    accounts when on, and the watchlist."""
+    """What a scan of this brand does today: its track's streams, ads (resold brands, or the phishing-ads switch),
+    social accounts when on, and the watchlist."""
     out = [s for s in STREAM_TASKS if s in (getattr(detection, "streams", None) or [])]
-    if retail:
+    if retail or getattr(detection, "phishing_ads", False):
         out.append("meta_ads")
     if getattr(detection, "social_accounts", True):
         out.append("social")
@@ -124,9 +124,9 @@ def cost_estimate(s: Schedule, *, approved_queries: int, search_max: int, geos: 
     lines: list[tuple[str, float]] = []
     if "search" in s.tasks and approved_queries:
         lines.append(("Google search", min(approved_queries, search_max) * max(1, geos) * 0.01))
-    if "meta_ads" in s.tasks and retail:
-        # ad_queries = page requests; + the shops checked in full (registry, two searches, the AI)
-        lines.append(("Facebook / Instagram ads", ad_queries * 0.004 + shops_checked * 0.021))
+    if "meta_ads" in s.tasks:
+        # ad_queries = page requests; a resold brand's shops are also checked in full (registry, two searches, the AI)
+        lines.append(("Facebook / Instagram ads", ad_queries * 0.004 + (shops_checked * 0.021 if retail else 0)))
     if "social" in s.tasks:
         lines.append(("Fake social accounts", (2 + 8 * 2) * 0.004 + 2 * 0.01))
     if "ai_answers" in s.tasks and ai_requests:

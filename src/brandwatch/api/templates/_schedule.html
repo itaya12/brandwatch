@@ -39,11 +39,11 @@
     <label style="margin-top:12px">What to do on each run</label>
     <div class="tasks">
       {% for key, (name, desc) in sc.tasks_info.items() %}
-      {% set off = key == 'meta_ads' and not sc.retail %}
+      {% set off = false %}
       <label class="task {{ 'off' if off }}"><input type="checkbox" name="tasks" value="{{ key }}" {{ 'checked' if key in sc.tasks and not off }} {{ 'disabled' if off or not can_write }}>
         <div><b>{{ name }}</b><span>{{ desc }}</span>
           {% if key == 'search' and not sc.search_approved %}<br><span class="warn">skipped until you approve the Google queries ↑</span>{% endif %}
-          {% if off %}<br><span>only for brands whose products other shops sell — set in the brand profile ↓</span>{% endif %}
+          {% if key == 'meta_ads' and not sc.retail %}<br><span>for {{ brand.name }}: phishing ads — the ad keywords and countries are in the brand profile ↓</span>{% endif %}
           {% if key == 'fingerprint' %}<br><span>the AI then proposes Google queries again; the approved list stays until you approve a new one</span>{% endif %}
         </div></label>
       {% endfor %}

@@ -716,6 +716,7 @@ async def stream_meta_ads(
     max_queries: int = 6,
     ads_per_search: int = 30,
     on_query: Callable[..., None] | None = None,
+    purpose: str = "shop",
 ) -> StreamResult:
     """Ads in Meta's Ad Library (via SearchApi.io) that use the brand's product keywords in each
     chosen country, and the shops they link to. ``officials`` holds the brand's own domains *and*
@@ -726,8 +727,13 @@ async def stream_meta_ads(
     or says the brand's words next to what the brand sells. An ad that only shares the words is read
     by the AI when one is configured, otherwise skipped. One URL per shop host becomes a candidate;
     every ad that pointed at it is kept in ``ads_by_host`` (for the finding and for reporting the ad
-    and the page to Meta)."""
+    and the page to Meta).
+
+    ``purpose``: "shop" (a resold brand: the sites are scam-shop suspects) or "phishing" (a brand nobody else sells:
+    an ad that uses its name and sends people elsewhere is an impostor; the site gets the phishing checks)."""
     from brandwatch.detection import ai as ai_mod
+
+    phishing = purpose == "phishing"
 
     keywords = [k for k in dict.fromkeys(k.strip() for k in keywords) if k] or []
     countries = [c.upper() for c in dict.fromkeys(c.strip() for c in countries) if c] or ["US"]
@@ -778,13 +784,17 @@ async def stream_meta_ads(
             elif rel == "no":
                 tag, verdict, visit = "not about the brand", why, False
             elif host in _NOT_A_SHOP or any(host.endswith("." + x) for x in _NOT_A_SHOP):
-                tag, verdict, visit = "chat link", "sends people to a chat or a Facebook page, not to a shop", False
+                tag, verdict, visit = "chat link", ("uses the brand's name and sends people to a chat — report the ad to Meta"
+                                                    if phishing else "sends people to a chat or a Facebook page, not to a shop"), False
             elif is_known_platform(host) or is_app_store(host):
                 tag, verdict, visit = "platform", (
-                    f"about the brand ({why}), but it sends buyers to {host}, not to a web shop"
+                    f"about the brand ({why}), but it sends {'people' if phishing else 'buyers'} to {host}, "
+                    + ("a well-known platform" if phishing else "not to a web shop")
                     if rel == "yes" else "a well-known platform, not a shop"), False  # fmt: skip
             elif rel == "maybe":
                 tag, verdict, visit = "unclear", why, False
+            elif phishing:
+                tag, verdict, visit = "shop", f"uses the brand's name ({why}) and sends people to {host}, not to the brand — checked next for phishing", True
             else:
                 tag, verdict, visit = "shop", f"a shop advertising the brand's products ({why}) — checked next", True
             entry = {"label": ad.get("page_name") or host, "url": ad.get("library_url") or url, "host": host,
@@ -816,7 +826,7 @@ async def stream_meta_ads(
                                  verdict=f"{entry['verdict']} — no AI configured to read it, so it was skipped")  # fmt: skip
                 elif about:
                     entry.update(relevance="shop", visit=True,
-                                 verdict=f"the AI read the ad: {ai_why or 'it sells the brand'} — checked next")  # fmt: skip
+                                 verdict=f"the AI read the ad: {ai_why or ('it is about the brand' if phishing else 'it sells the brand')} — checked next")  # fmt: skip
                 else:
                     entry.update(relevance="not about the brand",
                                  verdict=f"the AI read the ad: {ai_why or 'it is about something else'}")  # fmt: skip

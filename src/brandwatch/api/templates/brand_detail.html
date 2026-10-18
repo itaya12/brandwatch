@@ -111,6 +111,10 @@
       {% if can_write %}<form method="post" action="/ui/brands/{{ brand.id }}/social" class="socsw"><input type="hidden" name="on" value="{{ '0' if cfg.detection.social_accounts else '1' }}">
         <button type="submit" class="pill" style="{{ 'color:var(--low)' if cfg.detection.social_accounts else 'color:var(--muted)' }}" title="Facebook pages / Instagram profiles under the brand's name — click to switch {{ 'off' if cfg.detection.social_accounts else 'on' }} for every scan of this brand">social media {{ 'on' if cfg.detection.social_accounts else 'off' }} · {{ 'turn off' if cfg.detection.social_accounts else 'turn on' }}</button></form>
       {% else %}<span class="pill" style="{{ 'color:var(--low)' if cfg.detection.social_accounts else 'color:var(--muted)' }}" title="Facebook pages / Instagram profiles under the brand's name">social media {{ 'on' if cfg.detection.social_accounts else 'off' }}</span>{% endif %}
+      {% if brand.kind != 'retail' %}{% set pa = cfg.detection.phishing_ads %}
+      {% if can_write %}<form method="post" action="/ui/brands/{{ brand.id }}/ads" class="socsw"><input type="hidden" name="on" value="{{ '0' if pa else '1' }}">
+        <button type="submit" class="pill" style="{{ 'color:var(--low)' if pa else 'color:var(--muted)' }}" title="Facebook / Instagram ads that use {{ brand.name }}'s name and send people to a site that is not {{ brand.name }}'s — click to switch {{ 'off' if pa else 'on' }}">phishing ads {{ 'on' if pa else 'off' }} · {{ 'turn off' if pa else 'turn on' }}</button></form>
+      {% else %}<span class="pill" style="{{ 'color:var(--low)' if pa else 'color:var(--muted)' }}">phishing ads {{ 'on' if pa else 'off' }}</span>{% endif %}{% endif %}
       {% if can_write %}<form method="post" action="/ui/brands/{{ brand.id }}/ai-answers" class="socsw"><input type="hidden" name="on" value="{{ '0' if cfg.detection.ai_answers else '1' }}">
         <button type="submit" class="pill" style="{{ 'color:var(--low)' if cfg.detection.ai_answers else 'color:var(--muted)' }}" title="what ChatGPT, Gemini and Google AI Mode tell users about the brand's phone, e-mail and login — click to switch {{ 'off' if cfg.detection.ai_answers else 'on' }}">AI answers {{ 'on' if cfg.detection.ai_answers else 'off' }} · {{ 'turn off' if cfg.detection.ai_answers else 'turn on' }}</button></form>
       {% else %}<a class="pill" href="#ai-answers" style="{{ 'color:var(--low)' if cfg.detection.ai_answers else 'color:var(--muted)' }}">AI answers {{ 'on' if cfg.detection.ai_answers else 'off' }}</a>{% endif %}
@@ -124,6 +128,11 @@
     {% endif %}
     {% set sdone = request.query_params.get('social') if request else None %}
     {% if sdone %}<p class="small" style="margin:8px 0 0;color:var(--low)">✓ Social media scanning is {{ sdone }} for {{ brand.name }}{% if sdone == 'on' %} — every scan now also looks for fake Facebook pages and Instagram profiles{% endif %}.</p>{% endif %}
+    {% set adone = request.query_params.get('ads') if request else None %}
+    {% if adone %}<p class="small" style="margin:8px 0 0;color:var(--low)">✓ Phishing ads are {{ adone }} for {{ brand.name }}{% if adone == 'on' %} — every scan now also reads the Facebook / Instagram ads that use its name{% if not brand.profile.countries %}, in {{ cfg.detection.search_geo|upper }} (add countries and ad keywords in the brand profile ↓){% endif %}{% endif %}.</p>{% endif %}
+    {% if brand.kind != 'retail' and cfg.detection.phishing_ads and not social_ready %}
+    <p class="small" style="margin:8px 0 0;color:var(--high)">Phishing ads are on, but they are skipped: they need a SearchApi key — <a href="/ui/settings#keys">Settings → API keys</a>.</p>
+    {% endif %}
     {% if cfg.detection.ai_answers and not brand.ai_answers.prompts.approved %}
     <p class="small" style="margin:8px 0 0;color:var(--high)">AI answers are on, but they wait for you: <a href="#ai-answers">approve the {{ brand.ai_answers.prompts.proposal|length }} proposed questions ↓</a></p>
     {% elif cfg.detection.ai_answers and not social_ready %}
@@ -184,7 +193,8 @@
         {% else %}<a class="btn small" href="/ui/settings#keys" style="opacity:.7" title="social media is searched through SearchApi">👥 Social media · needs a SearchApi key</a>{% endif %}
         {% if brand.ai_answers.prompts.approved and social_ready %}<form method="post" action="/ui/brands/{{ brand.id }}/scan"><input type="hidden" name="only" value="ai"><button type="submit" class="small" title="only the AI assistants: {{ brand.ai_answers.requests }} question(s), about ${{ brand.ai_answers.cost }}{{ ' — runs even though AI answers are off for automatic scans' if not cfg.detection.ai_answers }}">🤖 AI answers</button></form>
         {% else %}<a class="btn small" href="#ai-answers" style="opacity:.7" title="AI answers run only with approved questions{{ ' and a SearchApi key' if not social_ready }}">🤖 AI answers · {{ 'approve the questions first' if not brand.ai_answers.prompts.approved else 'needs a SearchApi key' }}</a>{% endif %}
-        {% if brand.kind == 'retail' %}<form method="post" action="/ui/brands/{{ brand.id }}/scan"><input type="hidden" name="only" value="ads"><button type="submit" class="small" title="only Facebook / Instagram ads that sell the brand's products">📣 Ads</button></form>{% endif %}
+        {% if social_ready %}<form method="post" action="/ui/brands/{{ brand.id }}/scan"><input type="hidden" name="only" value="ads"><button type="submit" class="small" title="{{ 'only Facebook / Instagram ads that sell the brand’s products' if brand.kind == 'retail' else 'only Facebook / Instagram ads that use the brand’s name — the sites they send people to are checked for phishing' }}">📣 Ads</button></form>
+        {% else %}<a class="btn small" href="/ui/settings#keys" style="opacity:.7" title="ads are read through SearchApi">📣 Ads · needs a SearchApi key</a>{% endif %}
       </div>
     </div>
     {% endif %}

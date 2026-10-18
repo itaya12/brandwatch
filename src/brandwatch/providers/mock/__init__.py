@@ -1014,7 +1014,7 @@ class MockAdsProvider(_MockBase):
         from urllib.parse import quote
 
         q, cc, ads = query.lower().strip(), country.upper(), []
-        for sc in self.store.all():
+        for sc in self.store.everything():
             for i, ad in enumerate(sc.ads):
                 text = str(ad.get("text") or "")
                 keys = [str(k).lower() for k in ad.get("keywords") or []]

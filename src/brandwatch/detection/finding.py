@@ -134,6 +134,13 @@ def record(
         finding.confidence = Decimal(str(round(risk.confidence, 2)))
         finding.kind = kind  # a scam shop that grows a login form becomes a phishing finding
 
+    # the ads found for this site before stay with it, joined with any found now
+    prev = session.scalars(sa.select(RiskScore).where(RiskScore.finding_id == finding.id, RiskScore.is_current.is_(True))).first()
+    old_ads = (((prev.groups or {}).get("_breakdown") or {}).get("ads") or []) if prev else []
+    if old_ads:
+        merged = {str(a.get("ad_id")): a for a in old_ads}
+        merged.update({str(a.get("ad_id")): a for a in risk.breakdown.get("ads") or []})
+        risk.breakdown["ads"] = list(merged.values())
     # append-only scoring history: flip the previous current row, insert the new one
     session.execute(
         sa.update(RiskScore)

@@ -1508,6 +1508,9 @@ async def process_candidate(
         shop = ctx.extra.get("shop") or {}
         if shop.get("retail") and col.html:
             an, risk, kind = await _shop_stage(ctx, cand, col, an, risk, shop)
+        elif (shop.get("ads_by_host") or {}).get(host):
+            # a phishing site that is advertised: its ads go with the finding (to report them to Meta)
+            risk.breakdown["ads"] = list(shop["ads_by_host"][host])
 
         fr = finding_stage.record(
             ctx.session, workspace_id=ctx.workspace_id, cand=cand, col=col, analysis=an, risk=risk,
@@ -1779,8 +1782,11 @@ async def run_scan(
                 x for x in cfg.detection.streams if x in streams.STREAMS and x != "meta_ads"
             ] or ["dnstwist"]
         shop = ctx.extra["shop"]
-        if shop["retail"] and (tasks is None or "meta_ads" in tasks):  # follows the brand kind, not the track
+        # ads: always for a resold brand (scam shops); for any other brand when its "phishing ads" switch is on;
+        # an automatic run or "scan only ads" does what it was told
+        if ("meta_ads" in tasks) if tasks is not None else (shop["retail"] or cfg.detection.phishing_ads):
             enabled.append("meta_ads")
+        ads_purpose = "shop" if shop["retail"] else "phishing"
         if tasks is not None and (job.payload or {}).get("scheduled"):
             summary.step(f"Automatic scan · {(job.payload or {}).get('schedule') or 'scheduled'}",
                          "tasks: " + ", ".join(tasks) if tasks else "no tasks")  # fmt: skip
@@ -1801,8 +1807,8 @@ async def run_scan(
                     data={"alert": {"kind": "profile", "provider": "brand profile",
                                     "title": f"Ads are searched only in {', '.join(ad_countries)} — no countries in the brand profile",
                                     "fix": "Meta's Ad Library is searched country by country. Add the countries where the brand "
-                                           "sells (e.g. IL) and the ad keywords in the brand profile — scam shops advertise "
-                                           "locally, in the local language.",
+                                           "sells (e.g. IL) and the ad keywords in the brand profile — "
+                                           + ("scam shops" if ads_purpose == "shop" else "impostors") + " advertise locally, in the local language.",
                                     "settings_url": f"/ui/brands/{brand.id}#profile"}})  # fmt: skip
             summary.step(f"Facebook / Instagram ads searched only in {', '.join(ad_countries)}",
                          "no countries in the brand profile — add them so the ads of each country are searched")
@@ -1820,7 +1826,11 @@ async def run_scan(
         for name in enabled:
             title, detail = STREAM_NOW.get(name, (f"Stream {name}", ""))
 
-            if name == "meta_ads":
+            if name == "meta_ads" and ads_purpose == "phishing":
+                detail = (f"Ads in {', '.join(ad_countries)} for: " + " · ".join(ad_keywords[:6])
+                          + " — an ad that uses the brand's name and sends people to a site that is not the brand's is an "
+                          "impostor: that site is checked next for phishing")  # fmt: skip
+            elif name == "meta_ads":
                 detail = (f"Ads in {', '.join(ad_countries)} for: " + " · ".join(ad_keywords[:6])
                           + " — only ads about the brand count (its name, a product, or its words next to what it "
                           "sells); the shops they link to are checked next, authorised retailers skipped")  # fmt: skip
@@ -1878,7 +1888,7 @@ async def run_scan(
                     r = await streams.stream_meta_ads(
                         providers, ad_keywords, ad_countries, official_set | protected_hosts,
                         terms=shop.get("terms"), max_queries=ads_cfg["ad_searches_max"],
-                        ads_per_search=ads_cfg["ads_per_search"], on_query=_ads_narrator(em),
+                        ads_per_search=ads_cfg["ads_per_search"], on_query=_ads_narrator(em), purpose=ads_purpose,
                     )  # fmt: skip
                     shop["ads_by_host"] = dict(r.ads_by_host)
                 else:

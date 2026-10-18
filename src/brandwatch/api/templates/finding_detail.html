@@ -227,6 +227,7 @@
       {% elif s and ((s.ai and not s.ai.is_phishing) or (s.ml and s.ml.probability < 0.5)) %}Medium risk and the advisory AI / classifier lean legitimate → most likely dismiss, or re-scan later.
       {% else %}Medium risk: the evidence is real but weak → check the screenshots; dismiss if it is a legitimate site.{% endif %}
       {% if s and s.ai and sev in ('critical', 'high') and not s.ai.is_phishing %}<br>Note: the AI second opinion disagrees — it is advisory and never changes the score.{% endif %}
+      {% if s and s.ads and not is_shop %}<br><b>It is advertised:</b> {{ s.ads|length }} Facebook / Instagram ad{{ 's' if s.ads|length != 1 }} send{{ 's' if s.ads|length == 1 }} people here — report {{ 'it' if s.ads|length == 1 else 'them' }} to Meta (<a href="#ads" data-goto="ads">Ads tab</a>).{% endif %}
     </p>
   {% elif d.finding.state == 'confirmed' %}
     <div class="done-box">
@@ -288,6 +289,7 @@
 <nav class="tabs" role="tablist" id="tabs" aria-label="Finding details">
   {% if is_ai and ar %}<button role="tab" data-tab="aianswer">AI answer <span class="n bad">{{ ar.engines|length }} assistant{{ 's' if ar.engines|length != 1 }}</span></button>{% endif %}
   {% if is_social and s and s.social %}<button role="tab" data-tab="social">Social account {% if s.social.why %}<span class="n bad">{{ s.social.why|length }} sign{{ 's' if s.social.why|length != 1 }}</span>{% endif %}</button>{% endif %}
+  {% if s and s.ads and not is_shop %}<button role="tab" data-tab="ads">Facebook / Instagram ads <span class="n bad">{{ s.ads|length }}</span></button>{% endif %}
   {% if s and s.shop %}<button role="tab" data-tab="shop">Shop checks {% if s.shop.why %}<span class="n {{ 'bad' if is_shop }}">{{ s.shop.why|length }} warning{{ 's' if s.shop.why|length != 1 }}</span>{% endif %}</button>{% endif %}
   <button role="tab" data-tab="why">Why flagged {% if s %}<span class="n">{{ s.signals|length }} signals</span>{% endif %}</button>
   {% if not off_site %}
@@ -320,6 +322,13 @@
   </div>
 </div>
 
+{% if s and s.ads and not is_shop %}<section class="tabpane" id="tab-ads">
+  <div class="panel">
+    <h2>Advertised on Facebook / Instagram <span class="muted">· {{ s.ads|length }} ad{{ 's' if s.ads|length != 1 }} that use{{ 's' if s.ads|length == 1 }} {{ d.brand.name }}'s name and send people to this site</span></h2>
+    <p class="small muted" style="margin:0 0 6px">Found in Meta's Ad Library. The ad is how victims reach the kit: reporting it stops new visitors even before the site is taken down.</p>
+    {% include "_meta_report.html" %}
+  </div>
+</section>{% endif %}
 {% if s and s.shop %}<section class="tabpane" id="tab-shop">{% set sh = s.shop %}{% include "_shop_checks.html" %}</section>{% endif %}
 {% if is_ai and ar %}<section class="tabpane" id="tab-aianswer">{% include "_ai_answer.html" %}</section>{% endif %}
 {% if is_social and s and s.social %}<section class="tabpane" id="tab-social">{% set sa = s.social %}{% include "_social_account.html" %}</section>{% endif %}

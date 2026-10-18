@@ -143,7 +143,7 @@ def reassess(session: Session, brand_id: uuid.UUID, cfg: ScoringConfig, *, actor
         if new.severity == rs.severity and set(new.signals) == {k for k in sig if not k.startswith("_")}:
             continue
         old_breakdown = dict((rs.groups or {}).get("_breakdown", {}))
-        breakdown = {**new.breakdown, **{k: old_breakdown[k] for k in ("ai", "ml", "cloaking") if k in old_breakdown}, "rescored_from": rs.scoring_version,
+        breakdown = {**new.breakdown, **{k: old_breakdown[k] for k in ("ai", "ml", "cloaking", "ads") if k in old_breakdown}, "rescored_from": rs.scoring_version,
                      "reassessed": "the visit ends on the brand's own site"}  # fmt: skip
         session.execute(sa.update(RiskScore).where(RiskScore.id == rs.id).values(is_current=False))
         session.add(RiskScore(

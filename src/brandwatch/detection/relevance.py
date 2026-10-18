@@ -206,6 +206,11 @@ def brand_terms(
     def add(term: str) -> None:
         term = " ".join(term.lower().split())
         c = compact(term)
+        if not c and not _latin(term):
+            # Hebrew, Arabic, Cyrillic ("בנק הפועלים"): no Latin letters to compact — the words themselves are a phrase
+            if len(re.sub(r"[\W_]", "", term)) >= MIN_PHRASE and term not in phrases:
+                phrases.append(term)
+            return
         if len(c) < MIN_PHRASE:
             return
         multi = " " in term or "-" in term
@@ -269,6 +274,8 @@ def standalone_phrase(p: str) -> bool:
     """A name of two or more long words ("north face", "golden goose") points to the brand by itself;
     one with a short word ("on cloud") can mean anything without a product word next to it."""
     ws = _words(p)
+    if len(ws) >= 2 and not _latin(p) and sum(len(w) for w in ws) >= 6:
+        return True  # Hebrew / Arabic / Cyrillic names are full of short words ("בנק הפועלים", "בית ספר"): the whole name counts
     return len(ws) >= 2 and all(len(w) >= 4 for w in ws) and not is_generic_phrase(p)
 
 

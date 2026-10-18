@@ -309,7 +309,7 @@ def toggle_report(
         # Report-to-Meta rows: only the ads / pages / forms of this finding's own shop
         finding = session.get(Finding, draft.finding_id)
         allowed = (meta_report_keys(shop_record_of(session, finding)) | social_report_keys(social_record_of(session, finding))
-                   if finding else set())  # fmt: skip
+                   | meta_report_keys(ads_record_of(session, finding)) if finding else set())  # fmt: skip
         if portal not in allowed:
             raise ValueError(f"unknown report portal {portal!r}")
     ch = ensure_channels(session, draft, persist=False)
@@ -470,6 +470,28 @@ def social_report_keys(rec: dict[str, Any]) -> set[str]:
 def shop_record_of(session: Session, finding: Finding) -> dict[str, Any]:
     cur = finding.current_score
     return dict(((cur.groups or {}).get("_breakdown") or {}).get("shop") or {}) if cur else {}
+
+
+def ads_record_of(session: Session, finding: Finding) -> dict[str, Any]:
+    """The ads of an advertised phishing site, in the shape ``meta_pages`` reads (``{"ads": [...]}``)."""
+    cur = finding.current_score
+    ads = list(((cur.groups or {}).get("_breakdown") or {}).get("ads") or []) if cur else []
+    return {"ads": ads} if ads else {}
+
+
+# a phishing ad uses the brand's name: the trademark owner's forms fit; the counterfeit one does not
+PHISHING_AD_FORMS: list[dict[str, str]] = [f for f in META_FORMS if f["key"] != "meta_form:counterfeit"]
+
+
+def phishing_ad_report_text(brand: str, url: str, rec: dict[str, Any], summary: str | None) -> str:
+    """Copy-ready text for Meta: an ad that impersonates the brand and sends people to a phishing site."""
+    lines = [f"This ad uses the name of {brand} and sends people to {url}, a phishing site that is not {brand}'s. "
+             f"It asks for {brand} customers' login details. Please remove the ad and the page behind it."]  # fmt: skip
+    if summary:
+        lines.append(summary)
+    for a in (rec.get("ads") or [])[:5]:
+        lines.append(f"Ad: {a.get('library_url')} — page “{a.get('page_name')}”")
+    return "\n".join(lines)
 
 
 def shop_level_of(session: Session, finding: Finding) -> tuple[str, dict[str, Any] | None]:

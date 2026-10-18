@@ -78,7 +78,7 @@
 | Step | What happens | Main code |
 |---|---|---|
 | **Learn** | Fingerprints the official site: favicon mmh3 and pHash, home and login screenshots (pHash and dHash), colour palette, title keywords, login-form signature, official app listings, official social accounts. Asks an AI for the vertical, lure words and the Google queries attackers would target. | `detection/baseline.py`, `detection/ai.py` |
-| **Find** | Candidates come from seven sources:<br>- look-alike domains (dnstwist plus DNS check)<br>- certificate-transparency logs<br>- newly registered domains<br>- Google search, using queries the analyst approved<br>- the urlscan.io archive<br>- Facebook/Instagram **ads** (retail brands only)<br>- Facebook/Instagram **accounts** | `detection/sources.py`, `detection/social.py` |
+| **Find** | Candidates come from seven sources:<br>- look-alike domains (dnstwist plus DNS check)<br>- certificate-transparency logs<br>- newly registered domains<br>- Google search, using queries the analyst approved<br>- the urlscan.io archive<br>- Facebook/Instagram **ads** (retail brands: scam shops; any other brand with “phishing ads” on: phishing)<br>- Facebook/Instagram **accounts** | `detection/sources.py`, `detection/social.py` |
 | **Prove** | Visits each site in a sandboxed Chromium and stores immutable, SHA-256-hashed evidence: screenshot, HTML, HTTP, DNS, WHOIS, TLS (demo only, see 17.1) and reputation.<br>Probes for cloaking: crawler UA, victim-link parameter, search referer, residential IP.<br>Computes 42 phishing signals and a 0–100 score with confidence. Retail brands also get **shop checks**; accounts get **social checks**. | `detection/enrichment.py`, `cloaking.py`, `analysis.py`, `scoring.py`, `merchant.py`, `social.py` |
 | **Decide** | An analyst confirms or dismisses each finding, with a reason. AI and ML opinions are shown as advice next to the score. | `detection/finding.py` |
 | **Map** | For a confirmed finding, pivots over shared IPs, certificates, favicon hashes, tracking IDs and registrant. It triages co-hosted neighbours (rules plus AI), builds a campaign graph, and extracts IOCs (exported as STIX 2.1, CSV or JSON). | `detection/investigation.py` |
@@ -345,6 +345,26 @@ stateDiagram-v2
   reopened --> draft
 ```
 
+### 2.5b Phishing ads (brands nobody else sells)
+
+A bank or a payment app has no resellers, but impostors advertise it ("your account is limited — verify now"), and the site
+behind the ad often has no brand name in its domain, so no look-alike stream finds it.
+
+- **When:** the brand switch `detection.phishing_ads` (default off, in `BRAND_SWITCHES`: not "custom", kept across a track
+  change; pill "phishing ads on · turn off", `POST /ui/brands/{id}/ads`), the `meta_ads` task of an automatic scan, or
+  "scan now, only ads" (`only=ads`, any brand kind). A retail brand's ads are searched as before, for scam shops.
+- **Search:** the same `meta_ads` stream (`purpose="phishing"`): the brand profile's countries and ad keywords (now shown
+  for every brand kind; default: the brand's name, the search countries), the same relevance check.
+- **Triage:** the brand's own ads are left alone; an ad that uses the brand's name and links elsewhere → its site is a
+  candidate that gets the ordinary phishing checks (no shop checks). Chat links are listed ("report the ad to Meta").
+- **Finding:** `RiskScore.groups._breakdown.ads` keeps every ad (page, text, country, Ad Library link); a later scan or a
+  rescore keeps them. The finding page gets a **Facebook / Instagram ads** tab with the Report-to-Meta box (Report ad →
+  Scam or fraud, the trademark forms, ready text "This ad uses the name of … and sends people to … a phishing site"); the
+  ads and pages can be ticked as reported on the takedown record.
+- **Cost:** one SearchApi request per ads page ($0.004); no shop checks.
+- **Demo:** VaultPay's genuine ad is left alone; two impostor ads lead to `account-review-center.com` (a clone on the
+  operation's server, `demo/networks`).
+
 ### 2.6 The shop flow (retail brands)
 
 Example: the analyst enters keyword **"on cloud"** for country **US**.
@@ -608,7 +628,7 @@ The analyst can also choose the snapshot directly (`via = "snapshot"`): the page
 |---|---|
 | Automatic (payload has `tasks`) | The stream tasks among dnstwist, ct, nrd, search and urlscan. The list may be empty. |
 | Manual | The track's streams; dnstwist if that list is empty |
-| Either | `meta_ads` is added for retail brands (in an automatic run, only if the task is ticked) |
+| Either | `meta_ads` is added for retail brands and for brands with `phishing_ads` on (in an automatic run or `only=ads`, when the task is asked for) |
 
 **Inputs**
 - **Visit cap:** `min(requested or detection.max_candidates, economic_limits.max_candidate_count)`.
@@ -869,7 +889,7 @@ Neither ML nor AI changes the phishing score.
 | `nrd` | whoisds newly-registered-domains daily list | free | Deep | nrd |
 | `search` | SerpApi Google (falls back to Serper, which is a stub) | ~$0.01 per query × geo | Deep | search |
 | `urlscan` | urlscan.io search API | free | Standard, Deep | urlscan |
-| `meta_ads` | SearchApi `meta_ad_library` | $0.004 per request | not part of any track; retail brands only | meta_ads |
+| `meta_ads` | SearchApi `meta_ad_library` | $0.004 per request | not part of any track; retail brands, or `phishing_ads` on | meta_ads |
 | social | SearchApi page search, page info and IG profile, plus Google `site:` | ~$0.09 per scan | toggle `social_accounts` (default on) | social |
 
 ### 4.1 dnstwist
@@ -1942,7 +1962,7 @@ the whole product as one picture; every chapter is a headline, two lines, short 
    - **At about:** any time, or 00:00–23:00 in the browser's local time.
    - **Tasks:** 9 task cards (chapter 12):
      - Google search shows "skipped until you approve the queries" while the queries are pending.
-     - Facebook/Instagram ads are disabled for non-retail brands.
+     - Facebook/Instagram ads: scam shops for a retail brand, phishing ads for any other.
      - "Refresh the fingerprint" explains that the AI will propose queries again.
    - **Status line:** last automatic scan (link and state), next run (local time plus "in N h"), and the cost per run and per month, with a breakdown tooltip.
    - A warning appears when this server's scheduler is off.
@@ -1962,9 +1982,8 @@ the whole product as one picture; every chapter is a headline, two lines, short 
    - **Footer:** how many Google searches each scan makes and the approximate cost.
 5. **Brand profile** (`#profile`)
    - **Kind:** other shops sell it, or only the brand sells it.
+   - **Countries and ad keywords** (every brand kind: the ads are searched with them);
    - **Retail fields** (shown only for retail brands):
-     - countries;
-     - ad keywords;
      - an official price table (product, price, currency, country, with an AI tag);
      - authorised retailers to add to the whitelist.
    - **"The brand's own Facebook / Instagram accounts"**: a free-text list.
@@ -2344,7 +2363,7 @@ After the rules, up to `MAX_AI_TRIAGE=8` excluded neighbours are fetched and cla
 | nrd | Newly registered domains (yesterday's registrations carrying the brand) |
 | search | The approved Google queries in each search country; skipped until they are approved |
 | urlscan | Pages other researchers scanned that carry the brand |
-| meta_ads | Facebook/Instagram ads that sell the brand's products (retail brands only) |
+| meta_ads | Facebook/Instagram ads that use the brand's name and the sites they send people to: scam shops (retail) or phishing (any other brand) |
 | social | Fake Facebook pages and Instagram profiles |
 | watchlist | Re-visit suspicious sites and open findings to catch changes (drives the watchlist re-checks) |
 | fingerprint | Re-read the official site (`rebuild_baseline`). The AI then proposes queries again, but the approved list stays until a new one is approved |

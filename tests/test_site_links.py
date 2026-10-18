@@ -112,7 +112,10 @@ def test_scan_now_only_one_part(engine, tmp_path):
         assert "Scan of one part · social media" in titles, titles
         assert not any(t.startswith("Automatic scan") for t in titles)  # said as what it is: started by hand, one part
         assert c.post(f"/api/brands/{b['id']}/scan", json={"only": "search"}).status_code == 409
-        assert c.post(f"/api/brands/{b['id']}/scan", json={"only": "ads"}).status_code == 409  # not a retail brand
+        ads = c.post(f"/api/brands/{b['id']}/scan", json={"only": "ads"})  # not a retail brand: its phishing ads
+        assert ads.status_code == 202
+        app.state.queue.wait(uuid.UUID(ads.json()["job_id"]), timeout=120)
+        assert _payload(engine, uuid.UUID(ads.json()["job_id"]))["tasks"] == ["meta_ads"]
         refused = ui.post(f"/ui/brands/{b['id']}/scan", data={"only": "search"})
         assert refused.status_code == 200 and "approved queries" in refused.text  # said on the brand page, not an error page
         r = ui.post(f"/ui/brands/{b['id']}/scan", data={"only": "lookalike"}, follow_redirects=False)
