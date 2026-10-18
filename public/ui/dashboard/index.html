@@ -29,6 +29,7 @@ body::after{content:"";position:fixed;left:0;right:0;top:-40%;height:40%;pointer
 a{color:var(--accent);text-decoration:none;transition:color .2s}a:hover{color:var(--accent2)}
 header{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:24px;padding:10px 20px;border-bottom:1px solid var(--border);
   background:rgba(14,20,32,.86);backdrop-filter:blur(8px)}
+@media (max-width:900px){header{background:#0e1420;backdrop-filter:none;-webkit-backdrop-filter:none}}  /* a blurred sticky bar flickers while a phone scrolls */
 header .logo{font-family:var(--mono);font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);display:flex;align-items:center;gap:8px}
 header .logo::before{content:"";width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 10px var(--accent);animation:beat 2.2s ease-in-out infinite}
 @keyframes beat{0%,100%{opacity:.45;transform:scale(.85)}50%{opacity:1;transform:scale(1.1)}}
@@ -320,7 +321,7 @@ header nav{display:flex;align-items:center;min-width:0}
 </style>
 <div class="dash">
 <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:12px">
-  <h1 style="margin:0;font-family:Rajdhani;font-size:26px;letter-spacing:.04em">DASHBOARD <span class="muted small" style="font-family:var(--sans)">· BRAND MONITOR · all brands · updated <span id="updated">09:45:15</span> UTC</span></h1>
+  <h1 style="margin:0;font-family:Rajdhani;font-size:26px;letter-spacing:.04em">DASHBOARD <span class="muted small" style="font-family:var(--sans)">· BRAND MONITOR · all brands · updated <span id="updated">10:04:11</span> UTC</span></h1>
   <form method="get" action="/ui/dashboard/" style="margin-left:auto;display:flex;gap:8px;align-items:center">
     <select name="brand_id" onchange="this.form.submit()"><option value="">all brands</option><option value="eb019060-41b6-4160-871c-14094ad558a4" >ShopNova</option><option value="1909c3e0-295d-4d38-bb7e-a2b05c9287d4" >ShopNova · Israel</option><option value="f46bffed-4795-4cdd-ad8f-abd3d26fcc60" >CoinPilot</option><option value="a7b5cb5c-e4a0-495d-b6c9-3ac5209ac3b2" >VaultPay</option></select>
   </form>

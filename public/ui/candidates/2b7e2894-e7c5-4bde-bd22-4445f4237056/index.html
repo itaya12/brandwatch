@@ -29,6 +29,7 @@ body::after{content:"";position:fixed;left:0;right:0;top:-40%;height:40%;pointer
 a{color:var(--accent);text-decoration:none;transition:color .2s}a:hover{color:var(--accent2)}
 header{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:24px;padding:10px 20px;border-bottom:1px solid var(--border);
   background:rgba(14,20,32,.86);backdrop-filter:blur(8px)}
+@media (max-width:900px){header{background:#0e1420;backdrop-filter:none;-webkit-backdrop-filter:none}}  /* a blurred sticky bar flickers while a phone scrolls */
 header .logo{font-family:var(--mono);font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);display:flex;align-items:center;gap:8px}
 header .logo::before{content:"";width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 10px var(--accent);animation:beat 2.2s ease-in-out infinite}
 @keyframes beat{0%,100%{opacity:.45;transform:scale(.85)}50%{opacity:1;transform:scale(1.1)}}

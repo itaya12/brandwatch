@@ -29,6 +29,7 @@ body::after{content:"";position:fixed;left:0;right:0;top:-40%;height:40%;pointer
 a{color:var(--accent);text-decoration:none;transition:color .2s}a:hover{color:var(--accent2)}
 header{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:24px;padding:10px 20px;border-bottom:1px solid var(--border);
   background:rgba(14,20,32,.86);backdrop-filter:blur(8px)}
+@media (max-width:900px){header{background:#0e1420;backdrop-filter:none;-webkit-backdrop-filter:none}}  /* a blurred sticky bar flickers while a phone scrolls */
 header .logo{font-family:var(--mono);font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);display:flex;align-items:center;gap:8px}
 header .logo::before{content:"";width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 10px var(--accent);animation:beat 2.2s ease-in-out infinite}
 @keyframes beat{0%,100%{opacity:.45;transform:scale(.85)}50%{opacity:1;transform:scale(1.1)}}
@@ -214,10 +215,10 @@ header nav{display:flex;align-items:center;min-width:0}
 <p class="intro">The append-only audit trail: who did what, when, old → new, and why. The database itself refuses to edit or delete it.</p>
 
 <div class="kpis">
-  <div class="kpi"><div class="v" data-count="247">0</div><div class="l">events (latest)</div></div>
-  <div class="kpi"><div class="v" data-count="55">0</div><div class="l">analyst actions</div></div>
+  <div class="kpi"><div class="v" data-count="245">0</div><div class="l">events (latest)</div></div>
+  <div class="kpi"><div class="v" data-count="53">0</div><div class="l">analyst actions</div></div>
   <div class="kpi"><div class="v" data-count="192">0</div><div class="l">system actions</div></div>
-  <div class="kpi"><div class="v" data-count="26">0</div><div class="l">verdicts recorded</div></div>
+  <div class="kpi"><div class="v" data-count="25">0</div><div class="l">verdicts recorded</div></div>
   <div class="kpi"><div class="v" data-count="6">0</div><div class="l">logins (24h)</div></div>
 </div>
 
@@ -235,12 +236,12 @@ header nav{display:flex;align-items:center;min-width:0}
       <div class="ev " data-cat="user" data-notable="0" style="--r:0;display:none">
         <div class="av " title="admin">AD</div>
         <div>
-          <div class="what"><span class="muted">admin</span> <b>user</b> · login <span class="pill" title="33 consecutive events, first 2026-10-18 07:32">×33</span>
+          <div class="what"><span class="muted">admin</span> <b>user</b> · login <span class="pill" title="35 consecutive events, first 2026-10-18 07:32">×35</span>
             
             <span class="muted small">user bc089017</span></div>
           
         </div>
-        <div class="when" data-rel="2026-10-18T09:45:13.504240+00:00" title="2026-10-18T09:45:13.504240+00:00">2026-10-18 09:45:13</div>
+        <div class="when" data-rel="2026-10-18T10:04:10.532545+00:00" title="2026-10-18T10:04:10.532545+00:00">2026-10-18 10:04:10</div>
       </div>
       
       
@@ -4120,38 +4121,6 @@ header nav{display:flex;align-items:center;min-width:0}
       </div>
       
       
-      <div class="ev " data-cat="investigation" data-notable="1" style="--r:30">
-        <div class="av " title="admin">AD</div>
-        <div>
-          <div class="what"><span class="muted">admin</span> <b>investigation</b> · map all
-            
-            <span class="muted small">workspace 5edcdd68</span></div>
-          
-          
-          <div class="diff"><span class="new">count: 7 · remap: no</span>
-            </div>
-          
-        </div>
-        <div class="when" data-rel="2026-10-14T09:46:25.335029+00:00" title="2026-10-14T09:46:25.335029+00:00">2026-10-14 09:46:25</div>
-      </div>
-      
-      
-      <div class="ev t-crit" data-cat="finding" data-notable="1" style="--r:30">
-        <div class="av " title="admin">AD</div>
-        <div>
-          <div class="what"><span class="muted">admin</span> <b>finding</b> · confirmed
-            
-            <span class="muted small">finding <a href="/ui/findings/be5f0a7c-d96e-4260-b413-a70d917bbfe9/" class="mono">vaultpay-login.com ↗</a></span></div>
-          
-          
-          <div class="diff"><span class="old">state: open</span> → <span class="new">state: confirmed · verdict: phishing</span>
-            <div style="color:var(--text);opacity:.8;margin-top:2px">“look-alike of the brand run by the same group (demo story)”</div></div>
-          
-        </div>
-        <div class="when" data-rel="2026-10-14T09:46:25.301324+00:00" title="2026-10-14T09:46:25.301324+00:00">2026-10-14 09:46:25</div>
-      </div>
-      
-      
     </div>
     <div class="more"><button type="button" id="more" style="display:none">Show older events</button></div>
   </div>
@@ -4160,26 +4129,26 @@ header nav{display:flex;align-items:center;min-width:0}
       <h2>By category</h2>
       
       
-      <div class="hbar"><span>user</span><div class="bar"><i data-w="100"></i></div><b>61</b></div>
+      <div class="hbar"><span>user</span><div class="bar"><i data-w="100"></i></div><b>63</b></div>
       
-      <div class="hbar"><span>finding</span><div class="bar"><i data-w="92"></i></div><b>56</b></div>
+      <div class="hbar"><span>finding</span><div class="bar"><i data-w="87"></i></div><b>55</b></div>
       
-      <div class="hbar"><span>report</span><div class="bar"><i data-w="59"></i></div><b>36</b></div>
+      <div class="hbar"><span>report</span><div class="bar"><i data-w="57"></i></div><b>36</b></div>
       
-      <div class="hbar"><span>intel</span><div class="bar"><i data-w="59"></i></div><b>36</b></div>
+      <div class="hbar"><span>intel</span><div class="bar"><i data-w="57"></i></div><b>36</b></div>
       
-      <div class="hbar"><span>campaign</span><div class="bar"><i data-w="57"></i></div><b>35</b></div>
+      <div class="hbar"><span>campaign</span><div class="bar"><i data-w="56"></i></div><b>35</b></div>
       
-      <div class="hbar"><span>notification</span><div class="bar"><i data-w="49"></i></div><b>30</b></div>
+      <div class="hbar"><span>notification</span><div class="bar"><i data-w="48"></i></div><b>30</b></div>
       
-      <div class="hbar"><span>investigation</span><div class="bar"><i data-w="44"></i></div><b>27</b></div>
+      <div class="hbar"><span>investigation</span><div class="bar"><i data-w="41"></i></div><b>26</b></div>
       
       <div class="hbar"><span>Brand use</span><div class="bar"><i data-w="16"></i></div><b>10</b></div>
       
     </div>
     <div class="panel" style="margin-top:14px">
       <h2>Activity · 14 days</h2>
-      <svg class="spark" data-spark='{"series": [{"color": "#35C7F2", "values": [0, 0, 0, 0, 0, 0, 0, 0, 0, 200, 0, 0, 0, 47]}]}'></svg>
+      <svg class="spark" data-spark='{"series": [{"color": "#35C7F2", "values": [0, 0, 0, 0, 0, 0, 0, 0, 0, 198, 0, 0, 0, 47]}]}'></svg>
     </div>
     <div class="panel" style="margin-top:14px">
       <h2>Most active</h2>
