@@ -196,13 +196,13 @@ header nav{display:flex;align-items:center;min-width:0}
 <p class="intro">A finding is a look-alike that scored Medium or higher and waits for an analyst&#39;s verdict. Everything below the threshold stays on the Watchlist and is re-checked on a schedule.</p>
 
 <div class="kpis">
-  <a class="kpi crit " href="?state=open&severity=critical&amp;brand_id=eb019060-41b6-4160-871c-14094ad558a4"><div class="v" data-count="4">0</div><div class="l"><span class="pulse"></span> critical open</div></a>
-  <a class="kpi hi " href="?state=open&severity=high&amp;brand_id=eb019060-41b6-4160-871c-14094ad558a4"><div class="v" data-count="0">0</div><div class="l">high open</div></a>
+  <a class="kpi crit " href="?state=open&severity=critical&amp;brand_id=eb019060-41b6-4160-871c-14094ad558a4"><div class="v" data-count="7">0</div><div class="l"><span class="pulse"></span> critical open</div></a>
+  <a class="kpi hi " href="?state=open&severity=high&amp;brand_id=eb019060-41b6-4160-871c-14094ad558a4"><div class="v" data-count="1">0</div><div class="l">high open</div></a>
   <a class="kpi med " href="?state=open&severity=medium&amp;brand_id=eb019060-41b6-4160-871c-14094ad558a4"><div class="v" data-count="0">0</div><div class="l">medium open</div></a>
-  <a class="kpi cy " href="?state=open&amp;brand_id=eb019060-41b6-4160-871c-14094ad558a4"><div class="v" data-count="4">0</div><div class="l">awaiting verdict</div></a>
+  <a class="kpi cy " href="?state=open&amp;brand_id=eb019060-41b6-4160-871c-14094ad558a4"><div class="v" data-count="8">0</div><div class="l">awaiting verdict</div></a>
   <a class="kpi ok on" href="?state=confirmed&amp;brand_id=eb019060-41b6-4160-871c-14094ad558a4"><div class="v" data-count="28">0</div><div class="l">confirmed phishing</div></a>
   <a class="kpi " href="?state=dismissed&amp;brand_id=eb019060-41b6-4160-871c-14094ad558a4"><div class="v" data-count="2">0</div><div class="l">dismissed</div></a>
-  <div class="kpi vi"><div class="v" data-count="91" data-suffix="%">0</div><div class="l">avg confidence</div></div>
+  <div class="kpi vi"><div class="v" data-count="90" data-suffix="%">0</div><div class="l">avg confidence</div></div>
   <div class="kpi mg"><div class="v" data-count="4">0</div><div class="l">new in 24h</div></div>
 </div>
 
@@ -211,8 +211,8 @@ header nav{display:flex;align-items:center;min-width:0}
   <div class="panel">
     <h2>Open by severity <span class="muted">· Medium ≥ 25 · High ≥ 50 · Critical ≥ 75</span></h2>
     <div class="donut-wrap">
-      <svg class="donut" data-donut='[{"color": "#FF4D4D", "key": "critical", "label": "critical", "value": 4}]' data-center="open"></svg>
-      <div class="legend"><div><i style="background:#FF4D4D"></i>critical<b>4</b></div>
+      <svg class="donut" data-donut='[{"color": "#FF4D4D", "key": "critical", "label": "critical", "value": 7}, {"color": "#FF9F1C", "key": "high", "label": "high", "value": 1}]' data-center="open"></svg>
+      <div class="legend"><div><i style="background:#FF4D4D"></i>critical<b>7</b></div><div><i style="background:#FF9F1C"></i>high<b>1</b></div>
         </div>
     </div>
   </div>
@@ -220,29 +220,31 @@ header nav{display:flex;align-items:center;min-width:0}
     <h2>Why things are flagged <span class="muted">· signals fired per group across open findings</span></h2>
     
     
-    <div class="hbar"><span>Behaviour</span><div class="bar"><i data-w="100"></i></div><b>84</b></div>
+    <div class="hbar"><span>Behaviour</span><div class="bar"><i data-w="100"></i></div><b>88</b></div>
     
-    <div class="hbar"><span>Visual</span><div class="bar"><i data-w="76"></i></div><b>64</b></div>
+    <div class="hbar"><span>Visual</span><div class="bar"><i data-w="80"></i></div><b>70</b></div>
     
-    <div class="hbar"><span>Identity</span><div class="bar"><i data-w="50"></i></div><b>42</b></div>
+    <div class="hbar"><span>Identity</span><div class="bar"><i data-w="53"></i></div><b>47</b></div>
     
-    <div class="hbar"><span>Freshness</span><div class="bar"><i data-w="40"></i></div><b>34</b></div>
+    <div class="hbar"><span>Infrastructure</span><div class="bar"><i data-w="40"></i></div><b>35</b></div>
     
-    <div class="hbar"><span>Infrastructure</span><div class="bar"><i data-w="35"></i></div><b>29</b></div>
+    <div class="hbar"><span>Freshness</span><div class="bar"><i data-w="40"></i></div><b>35</b></div>
     
-    <div class="hbar"><span>Seller</span><div class="bar"><i data-w="20"></i></div><b>17</b></div>
+    <div class="hbar"><span>Seller</span><div class="bar"><i data-w="19"></i></div><b>17</b></div>
     
-    <div class="hbar"><span>Reputation</span><div class="bar"><i data-w="14"></i></div><b>12</b></div>
+    <div class="hbar"><span>Reputation</span><div class="bar"><i data-w="16"></i></div><b>14</b></div>
     
     <div class="hbar"><span>Contact &amp; policies</span><div class="bar"><i data-w="14"></i></div><b>12</b></div>
     
-    <div class="hbar"><span>Offer</span><div class="bar"><i data-w="12"></i></div><b>10</b></div>
+    <div class="hbar"><span>Offer</span><div class="bar"><i data-w="11"></i></div><b>10</b></div>
+    
+    <div class="hbar"><span>Evasion</span><div class="bar"><i data-w="6"></i></div><b>5</b></div>
     
     <div class="hbar"><span>AI reading</span><div class="bar"><i data-w="5"></i></div><b>4</b></div>
     
-    <div class="hbar"><span>Evasion</span><div class="bar"><i data-w="5"></i></div><b>4</b></div>
-    
     <div class="hbar"><span>Brand use</span><div class="bar"><i data-w="2"></i></div><b>2</b></div>
+    
+    <div class="hbar"><span>Proof</span><div class="bar"><i data-w="2"></i></div><b>2</b></div>
     
     
   </div>
@@ -252,75 +254,75 @@ header nav{display:flex;align-items:center;min-width:0}
       
       <i data-h="0" style="--c:#2ECC71" title="0–9: 0"><span>0</span></i>
       <i data-h="0" style="--c:#2ECC71" title="10–19: 0"><span>10</span></i>
-      <i data-h="36" style="--c:#F5C518" title="20–29: 4"><b>4</b><span>20</span></i>
-      <i data-h="9" style="--c:#F5C518" title="30–39: 1"><b>1</b><span>30</span></i>
+      <i data-h="31" style="--c:#F5C518" title="20–29: 4"><b>4</b><span>20</span></i>
+      <i data-h="8" style="--c:#F5C518" title="30–39: 1"><b>1</b><span>30</span></i>
       <i data-h="0" style="--c:#F5C518" title="40–49: 0"><span>40</span></i>
-      <i data-h="36" style="--c:#FF9F1C" title="50–59: 4"><b>4</b><span>50</span></i>
-      <i data-h="18" style="--c:#FF9F1C" title="60–69: 2"><b>2</b><span>60</span></i>
-      <i data-h="64" style="--c:#FF4D4D" title="70–79: 7"><b>7</b><span>70</span></i>
-      <i data-h="100" style="--c:#FF4D4D" title="80–89: 11"><b>11</b><span>80</span></i>
-      <i data-h="27" style="--c:#FF4D4D" title="90–99: 3"><b>3</b><span>90</span></i>
+      <i data-h="31" style="--c:#FF9F1C" title="50–59: 4"><b>4</b><span>50</span></i>
+      <i data-h="15" style="--c:#FF9F1C" title="60–69: 2"><b>2</b><span>60</span></i>
+      <i data-h="54" style="--c:#FF4D4D" title="70–79: 7"><b>7</b><span>70</span></i>
+      <i data-h="100" style="--c:#FF4D4D" title="80–89: 13"><b>13</b><span>80</span></i>
+      <i data-h="38" style="--c:#FF4D4D" title="90–99: 5"><b>5</b><span>90</span></i>
     </div>
   </div>
   <div class="panel">
     <h2>New findings · 14 days</h2>
-    <svg class="spark" data-spark='{"series": [{"color": "#35C7F2", "values": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 30, 0, 4]}]}'></svg>
+    <svg class="spark" data-spark='{"series": [{"color": "#35C7F2", "values": [0, 0, 0, 0, 0, 0, 0, 30, 0, 4, 0, 0, 0, 4]}]}'></svg>
     <div class="small muted" style="display:flex;justify-content:space-between;margin-top:6px"><span>14 days ago</span><span>today · 4</span></div>
     <h2>Surface <span class="muted">· where the brand appears: domain name · subdomain · URL path</span></h2>
-    <div class="stack"><i data-w="78.1" style="background:#35C7F2" title="domain name: 25"></i><i data-w="12.5" style="background:#8A97A8" title="content: 4"></i><i data-w="9.4" style="background:#1a5f78" title="URL path: 3"></i></div>
-    <div class="small muted" style="margin-top:6px"><span style="color:#35C7F2">■</span> domain name 25 &nbsp;<span style="color:#8A97A8">■</span> content 4 &nbsp;<span style="color:#1a5f78">■</span> URL path 3 &nbsp;</div>
+    <div class="stack"><i data-w="69.4" style="background:#35C7F2" title="domain name: 25"></i><i data-w="19.4" style="background:#8A97A8" title="content: 7"></i><i data-w="11.1" style="background:#1a5f78" title="URL path: 4"></i></div>
+    <div class="small muted" style="margin-top:6px"><span style="color:#35C7F2">■</span> domain name 25 &nbsp;<span style="color:#8A97A8">■</span> content 7 &nbsp;<span style="color:#1a5f78">■</span> URL path 4 &nbsp;</div>
   </div>
   <div class="panel">
     <h2>Top fired signals</h2>
     
     <div style="display:grid;grid-template-columns:1fr 34px;gap:8px;align-items:center;margin:6px 0">
       <div><div class="small" title="title_claims_brand">page title claims the brand</div><div class="bar" style="height:6px;margin-top:3px"><i data-w="100"></i></div></div>
-      <div class="mono small right">20</div>
+      <div class="mono small right">21</div>
     </div>
     
     <div style="display:grid;grid-template-columns:1fr 34px;gap:8px;align-items:center;margin:6px 0">
       <div><div class="small" title="brand_keywords_in_content">brand words in the text</div><div class="bar" style="height:6px;margin-top:3px"><i data-w="100"></i></div></div>
-      <div class="mono small right">20</div>
+      <div class="mono small right">21</div>
     </div>
     
     <div style="display:grid;grid-template-columns:1fr 34px;gap:8px;align-items:center;margin:6px 0">
-      <div><div class="small" title="brand_exact_in_domain">brand name in the domain</div><div class="bar" style="height:6px;margin-top:3px"><i data-w="85"></i></div></div>
+      <div><div class="small" title="brand_exact_in_domain">brand name in the domain</div><div class="bar" style="height:6px;margin-top:3px"><i data-w="86"></i></div></div>
+      <div class="mono small right">18</div>
+    </div>
+    
+    <div style="display:grid;grid-template-columns:1fr 34px;gap:8px;align-items:center;margin:6px 0">
+      <div><div class="small" title="combosquat">brand + extra word</div><div class="bar" style="height:6px;margin-top:3px"><i data-w="81"></i></div></div>
       <div class="mono small right">17</div>
     </div>
     
     <div style="display:grid;grid-template-columns:1fr 34px;gap:8px;align-items:center;margin:6px 0">
-      <div><div class="small" title="combosquat">brand + extra word</div><div class="bar" style="height:6px;margin-top:3px"><i data-w="80"></i></div></div>
+      <div><div class="small" title="lure_language">urgent lure wording</div><div class="bar" style="height:6px;margin-top:3px"><i data-w="81"></i></div></div>
+      <div class="mono small right">17</div>
+    </div>
+    
+    <div style="display:grid;grid-template-columns:1fr 34px;gap:8px;align-items:center;margin:6px 0">
+      <div><div class="small" title="age_lt_30d">registered &lt; 30 days ago</div><div class="bar" style="height:6px;margin-top:3px"><i data-w="81"></i></div></div>
+      <div class="mono small right">17</div>
+    </div>
+    
+    <div style="display:grid;grid-template-columns:1fr 34px;gap:8px;align-items:center;margin:6px 0">
+      <div><div class="small" title="favicon_exact">identical favicon</div><div class="bar" style="height:6px;margin-top:3px"><i data-w="81"></i></div></div>
+      <div class="mono small right">17</div>
+    </div>
+    
+    <div style="display:grid;grid-template-columns:1fr 34px;gap:8px;align-items:center;margin:6px 0">
+      <div><div class="small" title="login_dom_similarity">cloned login form</div><div class="bar" style="height:6px;margin-top:3px"><i data-w="76"></i></div></div>
       <div class="mono small right">16</div>
     </div>
     
     <div style="display:grid;grid-template-columns:1fr 34px;gap:8px;align-items:center;margin:6px 0">
-      <div><div class="small" title="lure_language">urgent lure wording</div><div class="bar" style="height:6px;margin-top:3px"><i data-w="80"></i></div></div>
+      <div><div class="small" title="credential_form">asks for a password</div><div class="bar" style="height:6px;margin-top:3px"><i data-w="76"></i></div></div>
       <div class="mono small right">16</div>
     </div>
     
     <div style="display:grid;grid-template-columns:1fr 34px;gap:8px;align-items:center;margin:6px 0">
-      <div><div class="small" title="age_lt_30d">registered &lt; 30 days ago</div><div class="bar" style="height:6px;margin-top:3px"><i data-w="80"></i></div></div>
-      <div class="mono small right">16</div>
-    </div>
-    
-    <div style="display:grid;grid-template-columns:1fr 34px;gap:8px;align-items:center;margin:6px 0">
-      <div><div class="small" title="favicon_exact">identical favicon</div><div class="bar" style="height:6px;margin-top:3px"><i data-w="80"></i></div></div>
-      <div class="mono small right">16</div>
-    </div>
-    
-    <div style="display:grid;grid-template-columns:1fr 34px;gap:8px;align-items:center;margin:6px 0">
-      <div><div class="small" title="login_dom_similarity">cloned login form</div><div class="bar" style="height:6px;margin-top:3px"><i data-w="75"></i></div></div>
+      <div><div class="small" title="screenshot_similarity_ge_90">looks like the real site</div><div class="bar" style="height:6px;margin-top:3px"><i data-w="71"></i></div></div>
       <div class="mono small right">15</div>
-    </div>
-    
-    <div style="display:grid;grid-template-columns:1fr 34px;gap:8px;align-items:center;margin:6px 0">
-      <div><div class="small" title="credential_form">asks for a password</div><div class="bar" style="height:6px;margin-top:3px"><i data-w="75"></i></div></div>
-      <div class="mono small right">15</div>
-    </div>
-    
-    <div style="display:grid;grid-template-columns:1fr 34px;gap:8px;align-items:center;margin:6px 0">
-      <div><div class="small" title="screenshot_similarity_ge_90">looks like the real site</div><div class="bar" style="height:6px;margin-top:3px"><i data-w="70"></i></div></div>
-      <div class="mono small right">14</div>
     </div>
     
     
@@ -339,7 +341,7 @@ header nav{display:flex;align-items:center;min-width:0}
       <div><label>Brand</label><select name="brand_id" onchange="this.form.submit()"><option value="">all</option><option value="eb019060-41b6-4160-871c-14094ad558a4" selected>ShopNova</option><option value="1909c3e0-295d-4d38-bb7e-a2b05c9287d4" >ShopNova · Israel</option><option value="f46bffed-4795-4cdd-ad8f-abd3d26fcc60" >CoinPilot</option><option value="a7b5cb5c-e4a0-495d-b6c9-3ac5209ac3b2" >VaultPay</option></select></div>
       <div><label>State</label><select name="state" onchange="this.form.submit()"><option value="">all</option><option value="open" >open</option><option value="confirmed" selected>confirmed</option><option value="dismissed" >dismissed</option></select></div>
       <div><label>Severity</label><select name="severity" onchange="this.form.submit()"><option value="">all</option><option value="low" >low</option><option value="medium" >medium</option><option value="high" >high</option><option value="critical" >critical</option></select></div>
-      <div><label>Kind</label><select name="kind" onchange="this.form.submit()"><option value="">all</option><option value="phishing" >phishing</option><option value="shop" >suspicious shop</option><option value="social" >fake social account</option></select></div>
+      <div><label>Kind</label><select name="kind" onchange="this.form.submit()"><option value="">all</option><option value="phishing" >phishing</option><option value="shop" >suspicious shop</option><option value="social" >fake social account</option><option value="ai_answer" >AI answer</option></select></div>
       <div><label>Search host</label><input id="q" placeholder="type to filter…" autocomplete="off"></div>
       <div><label>View</label><label class="shotsw" title="a screenshot next to every site (off by default: the list stays short)"><input type="checkbox" id="t-shots"> show screenshots</label></div>
       <div><button type="submit">Apply</button></div>
@@ -425,9 +427,9 @@ header nav{display:flex;align-items:center;min-width:0}
       
       <tr class="sevrow critical" data-host="onestyle-shopping.com">
         <td class="selcol"></td>
-        <td class="shotcol"><img class="bigshot" data-src="/_r/1ee78b58ea1e62.png" alt="screenshot of onestyle-shopping.com" title="click to enlarge" data-host="onestyle-shopping.com" data-href="/ui/findings/3f10d506-29e2-4c08-bfce-bfb343c7d5f1/"></td>
+        <td class="shotcol"><img class="bigshot" data-src="/_r/18890a003af575.png" alt="screenshot of onestyle-shopping.com" title="click to enlarge" data-host="onestyle-shopping.com" data-href="/ui/findings/3f10d506-29e2-4c08-bfce-bfb343c7d5f1/"></td>
         <td><span class="badge sev-critical">critical</span><div style="margin-top:4px"><span class="badge" style="border:1px solid var(--crit);color:var(--crit)" title="Likely counterfeit seller — independent evidence about the goods and about the seller point to counterfeits">shop · likely fake</span></div></td>
-        <td><a href="/ui/findings/3f10d506-29e2-4c08-bfce-bfb343c7d5f1/"><span class="mono">onestyle-shopping.com</span></a><div class="small muted">domain name · found by Facebook / Instagram ads · <a href="/ui/findings/3f10d506-29e2-4c08-bfce-bfb343c7d5f1/#network" title="site & network investigation: servers, WHOIS history, urlscan">network</a> · <a href="/ui/candidates/656ccb9e-7a12-451c-91aa-32bad6cd7d10/" title="domain timeline on the watchlist">timeline</a></div></td>
+        <td><a href="/ui/findings/3f10d506-29e2-4c08-bfce-bfb343c7d5f1/"><span class="mono">onestyle-shopping.com</span></a><div class="small muted">domain name · found by Facebook / Instagram ads, Facebook pages / Instagram profiles · <a href="/ui/findings/3f10d506-29e2-4c08-bfce-bfb343c7d5f1/#network" title="site & network investigation: servers, WHOIS history, urlscan">network</a> · <a href="/ui/candidates/656ccb9e-7a12-451c-91aa-32bad6cd7d10/" title="domain timeline on the watchlist">timeline</a></div></td>
         <td class="mono" style="white-space:nowrap">85<span class="scorebar"><i data-w="85"></i></span>
           <span style="margin-left:6px"><a class="pill" href="https://www.virustotal.com/gui/domain/onestyle-shopping.com" target="_blank" rel="noreferrer noopener" title="not in VirusTotal yet — unknown is never treated as clean" style="font-size:10px;color:var(--muted)">VT —</a></span></td>
         <td><div class="ring sm" data-p="90" style="--c:var(--accent)" title="confidence in the evidence: 90%"><div>90</div></div></td>
@@ -488,30 +490,30 @@ header nav{display:flex;align-items:center;min-width:0}
         <td class="mono small muted" data-rel="2026-10-12T06:41:51.244605">2026-10-12 06:41</td>
       </tr>
       
+      <tr class="sevrow critical" data-host="shopnova-support-center.com">
+        <td class="selcol"></td>
+        <td class="shotcol"><img class="bigshot" data-src="/_r/6bb6bcc1573e5f.png" alt="screenshot of shopnova-support-center.com" title="click to enlarge" data-host="shopnova-support-center.com" data-href="/ui/findings/226b88f3-c048-4394-987b-32bc526c461c/"></td>
+        <td><span class="badge sev-critical">critical</span></td>
+        <td><a href="/ui/findings/226b88f3-c048-4394-987b-32bc526c461c/"><span class="mono">shopnova-support-center.com</span></a><div class="small muted">domain name · found by AI answer (ChatGPT / Gemini / Google AI Mode), Certificate logs, Analyst URL scan · <a href="/ui/findings/226b88f3-c048-4394-987b-32bc526c461c/#network" title="site & network investigation: servers, WHOIS history, urlscan">network</a> · <a href="/ui/candidates/fa7e6540-34b8-44c4-8ea7-22c057ebc4bc/" title="domain timeline on the watchlist">timeline</a></div></td>
+        <td class="mono" style="white-space:nowrap">81<span class="scorebar"><i data-w="81"></i></span>
+          <span style="margin-left:6px"><a class="pill" href="https://www.virustotal.com/gui/domain/shopnova-support-center.com" target="_blank" rel="noreferrer noopener" title="not in VirusTotal yet — unknown is never treated as clean" style="font-size:10px;color:var(--muted)">VT —</a></span></td>
+        <td><div class="ring sm" data-p="100" style="--c:var(--accent)" title="confidence in the evidence: 100%"><div>100</div></div></td>
+        <td class="small" style="max-width:360px"><span class="pill g-visual" title="favicon mmh3 -2029202433 equals the brand&#39;s favicon hash · +22 pts">identical favicon</span> <span class="pill g-infrastructure" title="shares server 203.0.113.133 with known phishing of this brand · +15 pts">shares a server with phishing</span> <span class="pill g-infrastructure" title="shares infrastructure with an investigated campaign of this brand · +15 pts">linked to a mapped attacker</span> <span class="pill g-behavior" title="page contains a password field · +14 pts">asks for a password</span> <a href="/ui/findings/226b88f3-c048-4394-987b-32bc526c461c/" class="muted small">+7 more</a></td>
+        <td><span class="badge state st-confirmed" title="an analyst confirmed it as phishing">confirmed phishing</span></td>
+        <td class="mono small muted" data-rel="2026-10-12T06:41:51.050267">2026-10-12 06:41</td>
+      </tr>
+      
       <tr class="sevrow critical" data-host="shopnova-login.com">
         <td class="selcol"></td>
-        <td class="shotcol"><img class="bigshot" data-src="/_r/1bd8eb7aacfe16.png" alt="screenshot of shopnova-login.com" title="click to enlarge" data-host="shopnova-login.com" data-href="/ui/findings/5d2ee722-749b-41e5-8f7d-d89bccda56f9/"></td>
+        <td class="shotcol"><img class="bigshot" data-src="/_r/3cd42cbbab2333.png" alt="screenshot of shopnova-login.com" title="click to enlarge" data-host="shopnova-login.com" data-href="/ui/findings/5d2ee722-749b-41e5-8f7d-d89bccda56f9/"></td>
         <td><span class="badge sev-critical">critical</span></td>
-        <td><a href="/ui/findings/5d2ee722-749b-41e5-8f7d-d89bccda56f9/"><span class="mono">shopnova-login.com</span></a><div class="small muted">domain name · found by Certificate logs, Analyst URL scan · <a href="/ui/findings/5d2ee722-749b-41e5-8f7d-d89bccda56f9/#network" title="site & network investigation: servers, WHOIS history, urlscan">network</a> · <a href="/ui/candidates/0e4c2f54-46e9-4eb8-88e8-5e8ec1e97ba9" title="domain timeline on the watchlist">timeline</a></div></td>
+        <td><a href="/ui/findings/5d2ee722-749b-41e5-8f7d-d89bccda56f9/"><span class="mono">shopnova-login.com</span></a><div class="small muted">domain name · found by AI answer (ChatGPT / Gemini / Google AI Mode), Certificate logs, Analyst URL scan · <a href="/ui/findings/5d2ee722-749b-41e5-8f7d-d89bccda56f9/#network" title="site & network investigation: servers, WHOIS history, urlscan">network</a> · <a href="/ui/candidates/0e4c2f54-46e9-4eb8-88e8-5e8ec1e97ba9/" title="domain timeline on the watchlist">timeline</a></div></td>
         <td class="mono" style="white-space:nowrap">81<span class="scorebar"><i data-w="81"></i></span>
           <span style="margin-left:6px"><a class="pill" href="https://www.virustotal.com/gui/domain/shopnova-login.com" target="_blank" rel="noreferrer noopener" title="not in VirusTotal yet — unknown is never treated as clean" style="font-size:10px;color:var(--muted)">VT —</a></span></td>
         <td><div class="ring sm" data-p="100" style="--c:var(--accent)" title="confidence in the evidence: 100%"><div>100</div></div></td>
-        <td class="small" style="max-width:360px"><span class="pill g-visual" title="favicon mmh3 -2029202433 equals the brand&#39;s favicon hash · +22 pts">identical favicon</span> <span class="pill g-visual" title="homepage screenshot is 99% similar to the brand&#39;s (pHash) · +18 pts">looks like the real site</span> <span class="pill g-infrastructure" title="shares server 203.0.113.66 with known phishing of this brand · +15 pts">shares a server with phishing</span> <span class="pill g-infrastructure" title="shares infrastructure with an investigated campaign of this brand · +15 pts">linked to a mapped attacker</span> <a href="/ui/findings/5d2ee722-749b-41e5-8f7d-d89bccda56f9/" class="muted small">+12 more</a></td>
+        <td class="small" style="max-width:360px"><span class="pill g-visual" title="favicon mmh3 -2029202433 equals the brand&#39;s favicon hash · +22 pts">identical favicon</span> <span class="pill g-visual" title="homepage screenshot is 99% similar to the brand&#39;s (pHash) · +18 pts">looks like the real site</span> <span class="pill g-infrastructure" title="shares server 203.0.113.66 with known phishing of this brand · +15 pts">shares a server with phishing</span> <span class="pill g-infrastructure" title="shares infrastructure with an investigated campaign of this brand · +15 pts">linked to a mapped attacker</span> <a href="/ui/findings/5d2ee722-749b-41e5-8f7d-d89bccda56f9/" class="muted small">+13 more</a></td>
         <td><span class="badge state st-confirmed" title="an analyst confirmed it as phishing">confirmed phishing</span></td>
         <td class="mono small muted" data-rel="2026-10-12T06:41:50.263533">2026-10-12 06:41</td>
-      </tr>
-      
-      <tr class="sevrow critical" data-host="shopnova-support-center.com">
-        <td class="selcol"></td>
-        <td class="shotcol"><img class="bigshot" data-src="/_r/a283ceea470e34.png" alt="screenshot of shopnova-support-center.com" title="click to enlarge" data-host="shopnova-support-center.com" data-href="/ui/findings/226b88f3-c048-4394-987b-32bc526c461c/"></td>
-        <td><span class="badge sev-critical">critical</span></td>
-        <td><a href="/ui/findings/226b88f3-c048-4394-987b-32bc526c461c/"><span class="mono">shopnova-support-center.com</span></a><div class="small muted">domain name · found by Certificate logs, Analyst URL scan · <a href="/ui/findings/226b88f3-c048-4394-987b-32bc526c461c/#network" title="site & network investigation: servers, WHOIS history, urlscan">network</a> · <a href="/ui/candidates/fa7e6540-34b8-44c4-8ea7-22c057ebc4bc" title="domain timeline on the watchlist">timeline</a></div></td>
-        <td class="mono" style="white-space:nowrap">77<span class="scorebar"><i data-w="77"></i></span>
-          <span style="margin-left:6px"><a class="pill" href="https://www.virustotal.com/gui/domain/shopnova-support-center.com" target="_blank" rel="noreferrer noopener" title="not in VirusTotal yet — unknown is never treated as clean" style="font-size:10px;color:var(--muted)">VT —</a></span></td>
-        <td><div class="ring sm" data-p="100" style="--c:var(--accent)" title="confidence in the evidence: 100%"><div>100</div></div></td>
-        <td class="small" style="max-width:360px"><span class="pill g-visual" title="favicon mmh3 -2029202433 equals the brand&#39;s favicon hash · +22 pts">identical favicon</span> <span class="pill g-infrastructure" title="shares server 203.0.113.133 with known phishing of this brand · +15 pts">shares a server with phishing</span> <span class="pill g-behavior" title="page contains a password field · +14 pts">asks for a password</span> <span class="pill g-identity" title="brand &#39;shopnova&#39; appears inside the domain label &#39;shopnova-support-center&#39; · +12 pts">brand name in the domain</span> <a href="/ui/findings/226b88f3-c048-4394-987b-32bc526c461c/" class="muted small">+6 more</a></td>
-        <td><span class="badge state st-confirmed" title="an analyst confirmed it as phishing">confirmed phishing</span></td>
-        <td class="mono small muted" data-rel="2026-10-12T06:41:51.050267">2026-10-12 06:41</td>
       </tr>
       
       <tr class="sevrow critical" data-host="xn--shopnov-8fg.com">
@@ -609,7 +611,7 @@ header nav{display:flex;align-items:center;min-width:0}
         <td class="selcol"></td>
         <td class="shotcol"><img class="bigshot" data-src="/_r/9ef8fb5bbec362.png" alt="screenshot of stylehub-israel.com" title="click to enlarge" data-host="stylehub-israel.com" data-href="/ui/findings/b6632f16-c5cf-49dd-a2b0-bc049197479e/"></td>
         <td><span class="badge sev-high">high</span><div style="margin-top:4px"><span class="badge" style="border:1px solid var(--crit);color:var(--crit)" title="Likely counterfeit seller — independent evidence about the goods and about the seller point to counterfeits">shop · likely fake</span></div></td>
-        <td><a href="/ui/findings/b6632f16-c5cf-49dd-a2b0-bc049197479e/"><span class="mono">stylehub-israel.com</span></a><div class="small muted">URL path · found by Facebook / Instagram ads · <a href="/ui/findings/b6632f16-c5cf-49dd-a2b0-bc049197479e/#network" title="site & network investigation: servers, WHOIS history, urlscan">network</a> · <a href="/ui/candidates/b5907bf1-2eb7-49fc-b302-c81a611162fe" title="domain timeline on the watchlist">timeline</a></div></td>
+        <td><a href="/ui/findings/b6632f16-c5cf-49dd-a2b0-bc049197479e/"><span class="mono">stylehub-israel.com</span></a><div class="small muted">URL path · found by Facebook / Instagram ads · <a href="/ui/findings/b6632f16-c5cf-49dd-a2b0-bc049197479e/#network" title="site & network investigation: servers, WHOIS history, urlscan">network</a> · <a href="/ui/candidates/b5907bf1-2eb7-49fc-b302-c81a611162fe/" title="domain timeline on the watchlist">timeline</a></div></td>
         <td class="mono" style="white-space:nowrap">57<span class="scorebar"><i data-w="57"></i></span>
           <span style="margin-left:6px"><a class="pill" href="https://www.virustotal.com/gui/domain/stylehub-israel.com" target="_blank" rel="noreferrer noopener" title="not in VirusTotal yet — unknown is never treated as clean" style="font-size:10px;color:var(--muted)">VT —</a></span></td>
         <td><div class="ring sm" data-p="90" style="--c:var(--accent)" title="confidence in the evidence: 90%"><div>90</div></div></td>
@@ -635,7 +637,7 @@ header nav{display:flex;align-items:center;min-width:0}
         <td class="selcol"></td>
         <td class="shotcol"><div class="noshot">Kaspersky shows its phishing warning instead of the site</div></td>
         <td><span class="badge sev-high">high</span></td>
-        <td><a href="/ui/findings/60292b11-724b-4b3f-bf1f-262976b5659f/"><span class="mono">shopnova-id-check.com</span></a><div class="small muted">domain name · found by Certificate logs · <a href="/ui/findings/60292b11-724b-4b3f-bf1f-262976b5659f/#network" title="site & network investigation: servers, WHOIS history, urlscan">network</a> · <a href="/ui/candidates/0c006a3c-1616-4784-a476-ac3f45637acd/" title="domain timeline on the watchlist">timeline</a></div></td>
+        <td><a href="/ui/findings/60292b11-724b-4b3f-bf1f-262976b5659f/"><span class="mono">shopnova-id-check.com</span></a><div class="small muted">domain name · found by Certificate logs · <a href="/ui/findings/60292b11-724b-4b3f-bf1f-262976b5659f/#network" title="site & network investigation: servers, WHOIS history, urlscan">network</a> · <a href="/ui/candidates/0c006a3c-1616-4784-a476-ac3f45637acd" title="domain timeline on the watchlist">timeline</a></div></td>
         <td class="mono" style="white-space:nowrap">50<span class="scorebar"><i data-w="50"></i></span>
           <span style="margin-left:6px"><a class="pill" href="https://www.virustotal.com/gui/domain/shopnova-id-check.com" target="_blank" rel="noreferrer noopener" title="VirusTotal engines do not flag it (yet)" style="font-size:10px;color:var(--muted)">VT clean</a></span></td>
         <td><div class="ring sm" data-p="100" style="--c:var(--accent)" title="confidence in the evidence: 100%"><div>100</div></div></td>

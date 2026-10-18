@@ -191,6 +191,9 @@ header nav{display:flex;align-items:center;min-width:0}
 
 
 
+
+
+
 <style>
   .flag{vertical-align:-3px;border-radius:2px;box-shadow:0 0 0 1px rgba(255,255,255,.12);margin-right:4px}
   .flag-none{display:inline-block}
@@ -317,7 +320,7 @@ header nav{display:flex;align-items:center;min-width:0}
 
 
 
-<div class="crumbs"><a href="/ui/brands/">Brands &amp; Scans</a><span class="sep">›</span><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/">ShopNova</a><span class="sep">›</span><a href="/ui/findings/_9e35fa5890/">Findings</a><span class="sep">›</span><span class="cur">stylehub-israel.com</span><span class="side"><a href="/ui/candidates/b5907bf1-2eb7-49fc-b302-c81a611162fe">Domain timeline</a><a href="/ui/campaigns/bc6afe63-d8ed-415c-b87c-901499c73d25/">Attack infrastructure map</a></span></div>
+<div class="crumbs"><a href="/ui/brands/">Brands &amp; Scans</a><span class="sep">›</span><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/">ShopNova</a><span class="sep">›</span><a href="/ui/findings/_9e35fa5890/">Findings</a><span class="sep">›</span><span class="cur">stylehub-israel.com</span><span class="side"><a href="/ui/candidates/b5907bf1-2eb7-49fc-b302-c81a611162fe/">Domain timeline</a><a href="/ui/campaigns/bc6afe63-d8ed-415c-b87c-901499c73d25/">Attack infrastructure map</a></span></div>
 
 
 <div class="panel fhead">
@@ -329,6 +332,7 @@ header nav{display:flex;align-items:center;min-width:0}
     <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
       <span class="badge sev-high">high</span>
       <span class="badge lvl lvl-likely_counterfeit" title="independent evidence about the goods and about the seller point to counterfeits · concluded by admin">likely counterfeit seller</span>
+      
       
       <span class="badge state" title="an analyst confirmed it as phishing">confirmed · likely fake</span>
       
@@ -414,7 +418,7 @@ header nav{display:flex;align-items:center;min-width:0}
       <form method="post" action="/ui/findings/b6632f16-c5cf-49dd-a2b0-bc049197479e/report"><button type="submit" title="HTML + JSON with screenshots and SHA-256 of every piece of evidence">Generate evidence package</button></form>
       <button type="button" onclick="document.getElementById('rescan').submit()" title="visit the site again now">Re-scan now</button>
     
-    <a class="small" href="/ui/candidates/b5907bf1-2eb7-49fc-b302-c81a611162fe" style="margin-left:4px">domain timeline</a>
+    <a class="small" href="/ui/candidates/b5907bf1-2eb7-49fc-b302-c81a611162fe/" style="margin-left:4px">domain timeline</a>
     <span class="small muted" style="margin-left:6px">evidence packages:</span><a href="/api/reports/b66f9461-9e6f-49fe-b896-57c966a50a67" target="_blank" class="pill">json · 2026-10-14 09:52</a><a href="/api/reports/3a04a041-1f93-469e-9414-3bfa7bafe07d" target="_blank" class="pill">html · 2026-10-14 09:52</a>
   </div>
 </div>
@@ -422,6 +426,7 @@ header nav{display:flex;align-items:center;min-width:0}
 
 
 <nav class="tabs" role="tablist" id="tabs" aria-label="Finding details">
+  
   
   <button role="tab" data-tab="shop">Shop checks <span class="n bad">8 warnings</span></button>
   <button role="tab" data-tab="why">Why flagged <span class="n">7 signals</span></button>
@@ -618,6 +623,7 @@ Ad: https://www.facebook.com/ads/library/?id=3239326333285059 — page “StyleH
 </div>
 </div>
 </section>
+
 
 
 <section class="tabpane" id="tab-why">
@@ -841,7 +847,7 @@ Name Server: NS2.MOCK-DNS.EXAMPLE</div></details></td></tr>
       
       <dl class="kv"><dt>Common name</dt><dd class="mono">stylehub-israel.com</dd>
         <dt>Issuer</dt><dd>C=US O=Mock Trust Services CN=MT1</dd>
-        <dt>Valid</dt><dd class="mono small">2026-09-20 00:00:00 → 2026-12-19 00:00:00<div class="vbar"><i style="width:27%"></i></div><span class="muted">27% of the validity period elapsed</span></dd>
+        <dt>Valid</dt><dd class="mono small">2026-09-20 00:00:00 → 2026-12-19 00:00:00<div class="vbar"><i style="width:31%"></i></div><span class="muted">31% of the validity period elapsed</span></dd>
         <dt>Alt names (2)</dt><dd><span class="pill mono">stylehub-israel.com</span> <span class="pill mono">www.stylehub-israel.com</span> </dd>
         <dt>SHA-256</dt><dd class="mono small">e22df4fa7ed35954775f91c20ba8c6d79fb5b25e38620223b466759c9f668411 · <a href="https://crt.sh/?sha256=e22df4fa7ed35954775f91c20ba8c6d79fb5b25e38620223b466759c9f668411" target="_blank" rel="noreferrer noopener">crt.sh ↗</a></dd></dl>
       <details><summary>serial, signature, key, TLS and the full certificate</summary>
@@ -1119,7 +1125,7 @@ abuse-mailbox: abuse@mock.example
           · HTTP 200 · state new · datacenter
           · <span style="color:var(--high)">content changed</span>
           · <span class="mono muted small">12591006be01</span>
-          · <a href="/api/evidence/a6b2f5c6-8f7b-4ab9-ac31-3ec1df75574b/artifact" target="_blank">screenshot</a></li>
+          · <a href="/_r/2fbef3d4327deb.png" target="_blank">screenshot</a></li>
         
         <li class=""><span class="mono small">2026-10-12 06:46:01</span>
           · HTTP 200 · state flagged · datacenter
@@ -1271,7 +1277,7 @@ abuse-mailbox: abuse@mock.example
         <td class="small" title="collected by brandwatch.enrichment@0.0.1">mock:playwright</td>
         <td class="mono small muted" title="32c298340f5babe40e26804f203f30de912d5b716e134c7836f75354b12c3f38">32c298340f5babe4</td>
         <td class="small"><span class="pill" title="phash: c1067d1e6a571567">phash: c1067d1e6a571567</span> <span class="pill" title="dhash: bb93d2d3d99a9393">dhash: bb93d2d3d99a9393</span> <span class="pill" title="palette: [&#39;#469590&#39;, &#39;#36384a&#39;, &#39;#ae3b82&#39;, &#39;#917e7b&#39;, &#39;#aeac58&#39;, &#39;#98646b&#39;]">palette: [&#39;#469590&#39;, &#39;#36384a&#39;, &#39;#ae…</span> </td>
-        <td><a href="/api/evidence/a6b2f5c6-8f7b-4ab9-ac31-3ec1df75574b/artifact" target="_blank">artifact</a></td>
+        <td><a href="/_r/2fbef3d4327deb.png" target="_blank">artifact</a></td>
       </tr><tr>
         <td class="mono small">2026-10-12 06:41:47</td>
         <td class="mono">html <span class="muted">· datacenter view</span></td>

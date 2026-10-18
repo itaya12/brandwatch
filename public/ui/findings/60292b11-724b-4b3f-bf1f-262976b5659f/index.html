@@ -191,6 +191,9 @@ header nav{display:flex;align-items:center;min-width:0}
 
 
 
+
+
+
 <style>
   .flag{vertical-align:-3px;border-radius:2px;box-shadow:0 0 0 1px rgba(255,255,255,.12);margin-right:4px}
   .flag-none{display:inline-block}
@@ -317,7 +320,7 @@ header nav{display:flex;align-items:center;min-width:0}
 
 
 
-<div class="crumbs"><a href="/ui/brands/">Brands &amp; Scans</a><span class="sep">›</span><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/">ShopNova · Israel</a><span class="sep">›</span><a href="/ui/findings/_be3dfbc9dc/">Findings</a><span class="sep">›</span><span class="cur">shopnova-id-check.com</span><span class="side"><a href="/ui/candidates/0c006a3c-1616-4784-a476-ac3f45637acd/">Domain timeline</a><a href="/ui/campaigns/892f1586-8229-40cb-bd40-1d37816f98f4/">Attack infrastructure map</a></span></div>
+<div class="crumbs"><a href="/ui/brands/">Brands &amp; Scans</a><span class="sep">›</span><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/">ShopNova · Israel</a><span class="sep">›</span><a href="/ui/findings/_be3dfbc9dc/">Findings</a><span class="sep">›</span><span class="cur">shopnova-id-check.com</span><span class="side"><a href="/ui/candidates/0c006a3c-1616-4784-a476-ac3f45637acd">Domain timeline</a><a href="/ui/campaigns/892f1586-8229-40cb-bd40-1d37816f98f4/">Attack infrastructure map</a></span></div>
 
 
 <div class="panel fhead">
@@ -328,6 +331,7 @@ header nav{display:flex;align-items:center;min-width:0}
   <div style="min-width:0">
     <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
       <span class="badge sev-high">high</span>
+      
       
       
       <span class="badge state" title="an analyst confirmed it as phishing">confirmed phishing</span>
@@ -406,7 +410,7 @@ header nav{display:flex;align-items:center;min-width:0}
       <form method="post" action="/ui/findings/60292b11-724b-4b3f-bf1f-262976b5659f/report"><button type="submit" title="HTML + JSON with screenshots and SHA-256 of every piece of evidence">Generate evidence package</button></form>
       <button type="button" onclick="document.getElementById('rescan').submit()" title="visit the site again now">Re-scan now</button>
     
-    <a class="small" href="/ui/candidates/0c006a3c-1616-4784-a476-ac3f45637acd/" style="margin-left:4px">domain timeline</a>
+    <a class="small" href="/ui/candidates/0c006a3c-1616-4784-a476-ac3f45637acd" style="margin-left:4px">domain timeline</a>
     <span class="small muted" style="margin-left:6px">evidence packages:</span><a href="/api/reports/22f0a3e8-57b8-49c4-b20d-140b27090f51" target="_blank" class="pill">json · 2026-10-14 09:52</a><a href="/api/reports/1319446d-e6e8-4a56-b6d9-2f9302b9bc12" target="_blank" class="pill">html · 2026-10-14 09:52</a>
   </div>
 </div>
@@ -414,6 +418,7 @@ header nav{display:flex;align-items:center;min-width:0}
 
 
 <nav class="tabs" role="tablist" id="tabs" aria-label="Finding details">
+  
   
   
   <button role="tab" data-tab="why">Why flagged <span class="n">7 signals</span></button>
@@ -446,6 +451,7 @@ header nav{display:flex;align-items:center;min-width:0}
     <div class="msg"><span id="prog-msg">Starting the investigation…</span><small>VirusTotal's free API allows 4 requests a minute, so a full run takes 1–3 minutes.</small></div>
   </div>
 </div>
+
 
 
 
@@ -683,7 +689,7 @@ Name Server: NS2.MOCK-DNS.EXAMPLE</div></details></td></tr>
       
       <dl class="kv"><dt>Common name</dt><dd class="mono">shopnova-id-check.com</dd>
         <dt>Issuer</dt><dd>C=US O=Mock Trust Services CN=MT1</dd>
-        <dt>Valid</dt><dd class="mono small">2026-09-20 00:00:00 → 2026-12-19 00:00:00<div class="vbar"><i style="width:27%"></i></div><span class="muted">27% of the validity period elapsed</span></dd>
+        <dt>Valid</dt><dd class="mono small">2026-09-20 00:00:00 → 2026-12-19 00:00:00<div class="vbar"><i style="width:31%"></i></div><span class="muted">31% of the validity period elapsed</span></dd>
         <dt>Alt names (2)</dt><dd><span class="pill mono">shopnova-id-check.com</span> <span class="pill mono">www.shopnova-id-check.com</span> </dd>
         <dt>SHA-256</dt><dd class="mono small">3d3d72c9209e94f99729f4999239559307966ded79d6cd21ae41b18b5bdf6421 · <a href="https://crt.sh/?sha256=3d3d72c9209e94f99729f4999239559307966ded79d6cd21ae41b18b5bdf6421" target="_blank" rel="noreferrer noopener">crt.sh ↗</a></dd></dl>
       <details><summary>serial, signature, key, TLS and the full certificate</summary>

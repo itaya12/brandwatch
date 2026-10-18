@@ -194,6 +194,13 @@ header nav{display:flex;align-items:center;min-width:0}
   .scanhero{display:grid;grid-template-columns:1fr auto;gap:18px;align-items:center;padding:18px 22px;margin-top:14px;
     border:1px solid rgba(53,199,242,.35);background:linear-gradient(120deg,rgba(53,199,242,.10),rgba(14,20,32,.96) 50%,rgba(167,139,250,.10))}
   .scanhero h2{margin-top:0}
+  .scanhero .socsw{display:inline;margin:0}
+  .scanhero .socsw button.pill{cursor:pointer;font:inherit;background:transparent}
+  .scanhero .socsw button.pill:hover{border-color:var(--accent);color:var(--accent2)!important}
+  .scanhero .onlybar{margin-top:14px;padding-top:12px;border-top:1px dashed var(--border);text-align:center}
+  .scanhero .onlybtns{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
+  .scanhero .onlybtns form{margin:0}
+  .scanhero .onlybtns .btn{text-decoration:none}
   .scanhero .track{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:13px}
   .scanhero .track b{font-family:var(--display);font-size:22px;letter-spacing:.04em}
   .tr-basic{color:var(--low)}.tr-standard{color:var(--accent2)}.tr-enterprise{color:var(--magenta)}
@@ -257,18 +264,18 @@ header nav{display:flex;align-items:center;min-width:0}
 
 
 <div class="kpis">
-  <a class="kpi lnk crit" href="/ui/findings/_aff32a360b/"><div class="v" data-count="4">0</div><div class="l"><span class="pulse"></span> critical open</div></a>
-  <a class="kpi lnk hi" href="/ui/findings/_9e35fa5890/"><div class="v" data-count="2">0</div><div class="l">open findings</div></a>
+  <a class="kpi lnk crit" href="/ui/findings/_aff32a360b/"><div class="v" data-count="7">0</div><div class="l"><span class="pulse"></span> critical open</div></a>
+  <a class="kpi lnk hi" href="/ui/findings/_9e35fa5890/"><div class="v" data-count="6">0</div><div class="l">open findings</div></a>
   <a class="kpi lnk ok" href="/ui/findings/_501d656cbb/"><div class="v" data-count="28">0</div><div class="l">confirmed</div></a>
-  <a class="kpi lnk cy" href="/ui/candidates/_9e35fa5890/"><div class="v" data-count="192">0</div><div class="l">domains examined</div></a>
+  <a class="kpi lnk cy" href="/ui/candidates/_9e35fa5890/"><div class="v" data-count="196">0</div><div class="l">domains examined</div></a>
   <a class="kpi lnk vi" href="/ui/candidates/_a5a20d5b22/"><div class="v" data-count="40">0</div><div class="l">on watchlist</div></a>
   <a class="kpi lnk mg" href="/ui/campaigns/_9e35fa5890/"><div class="v" data-count="21">0</div><div class="l">infrastructure maps</div></a>
   <a class="kpi lnk" href="#whitelist"><div class="v" data-count="1">0</div><div class="l">whitelisted</div></a>
-  <div class="kpi"><div class="v">v1</div><div class="l">baseline · Deep · custom</div></div>
+  <div class="kpi"><div class="v">v3</div><div class="l">baseline · Deep · custom</div></div>
 </div>
 
 
-<div class="panel scanhero">
+<div class="panel scanhero" id="scan">
   <div style="min-width:0">
     <h2>Scan this brand</h2>
     <div class="track"><span class="muted">track</span> <b class="tr-enterprise">Deep</b>
@@ -281,13 +288,22 @@ header nav{display:flex;align-items:center;min-width:0}
       <span class="pill" style="color:var(--low)">cloaking on</span>
       <span class="pill" style="color:var(--low)">AI on</span>
       <span class="pill">re-check every 6h</span>
-      <span class="pill" style="color:var(--low)" title="Facebook pages / Instagram profiles under the brand's name">social media on</span>
+      <form method="post" action="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/social" class="socsw"><input type="hidden" name="on" value="0">
+        <button type="submit" class="pill" style="color:var(--low)" title="Facebook pages / Instagram profiles under the brand's name — click to switch off for every scan of this brand">social media on · turn off</button></form>
+      
+      <form method="post" action="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/ai-answers" class="socsw"><input type="hidden" name="on" value="0">
+        <button type="submit" class="pill" style="color:var(--low)" title="what ChatGPT, Gemini and Google AI Mode tell users about the brand's phone, e-mail and login — click to switch off">AI answers on · turn off</button></form>
+      
       <a class="pill" href="#schedule" style="color:var(--muted)">automatic: off</a>
       <a class="pill" href="#queries" style="color:var(--low)">Google queries approved</a>
     </div>
     
     
-    <p class="small muted" style="margin:10px 0 0">The official site is fingerprinted (baseline v1).
+    
+    
+    
+    
+    <p class="small muted" style="margin:10px 0 0">The official site is fingerprinted (baseline v3).
       Then every stream looks for look-alikes, each candidate is visited in a sandboxed browser, compared with the real site and scored. You follow every step live.</p>
     
     <details class="urls" style="margin-top:10px"><summary>scan specific URLs instead ▾</summary>
@@ -318,6 +334,22 @@ header nav{display:flex;align-items:center;min-width:0}
         <div class="small muted" style="margin-top:4px">no scan visits more than <b>500</b> sites — the workspace limit · <a href="/ui/settings/#budget">change it in Settings → Workspace &amp; budget</a></div>
         
       </form>
+    
+    
+    
+    <div class="onlybar">
+      <div class="small muted" style="margin-bottom:6px">or scan now, <b>only one part</b> — the rest of the track does not run</div>
+      <div class="onlybtns">
+        <form method="post" action="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/scan"><input type="hidden" name="only" value="lookalike"><button type="submit" class="small" title="only the domain streams: dnstwist, ct, urlscan — then every site found is visited and scored">🔎 Look-alike sites</button></form>
+        <form method="post" action="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/scan"><input type="hidden" name="only" value="search"><button type="submit" class="small" title="only Google, with the 6 approved queries">🌐 Google search</button></form>
+        
+        <form method="post" action="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/scan"><input type="hidden" name="only" value="social"><button type="submit" class="small" title="only Facebook pages and Instagram profiles under the brand's name">👥 Social media</button></form>
+        
+        <form method="post" action="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/scan"><input type="hidden" name="only" value="ai"><button type="submit" class="small" title="only the AI assistants: 12 question(s), about $0.1">🤖 AI answers</button></form>
+        
+        <form method="post" action="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/scan"><input type="hidden" name="only" value="ads"><button type="submit" class="small" title="only Facebook / Instagram ads that sell the brand's products">📣 Ads</button></form>
+      </div>
+    </div>
     
   </div>
 </div>
@@ -366,6 +398,292 @@ header nav{display:flex;align-items:center;min-width:0}
   
   
 </div>
+
+
+
+
+<style>
+  #sitelinks{scroll-margin-top:90px}
+  #sitelinks .grp{margin-top:12px}
+  #sitelinks .grp h3{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:0 0 4px}
+  #sitelinks .lrow{display:flex;flex-wrap:wrap;gap:6px 12px;align-items:center;padding:7px 0;border-top:1px solid var(--border)}
+  #sitelinks .lrow:first-of-type{border-top:0}
+  #sitelinks .lrow .what{min-width:0;flex:1 1 260px;overflow-wrap:anywhere}
+  #sitelinks .lrow .acts{display:inline-flex;gap:6px;flex-wrap:wrap;margin-left:auto}
+  #sitelinks .lrow form{display:inline;margin:0}
+  #sitelinks .ok{color:var(--low)}
+  #sitelinks .newb{border:1px solid var(--accent);color:var(--accent2);border-radius:999px;padding:0 8px;font-size:11px}
+</style>
+<div class="panel" style="margin-top:14px" id="sitelinks">
+  <h2>Links on the official site <span class="muted">· every other site shopnova.com links to — a country site, another official site, a social account or something else · <b style="color:var(--accent2)">5 to decide</b></span></h2>
+  
+  
+  
+  <div class="grp"><h3>Country sites · 1 <span style="text-transform:none;letter-spacing:0;font-weight:400">— the brand on another country domain</span></h3>
+    
+    <div class="lrow">
+      <div class="what">
+        <span class="mono">shopnova.co.il</span> <span class="small muted">· Israel (he-IL)</span>
+        
+      </div>
+      <span class="small ok">✓ an official domain of the brand</span>
+      
+    </div>
+    
+  </div>
+  
+  <div class="grp"><h3>Other official sites · 2 <span style="text-transform:none;letter-spacing:0;font-weight:400">— a domain that carries the brand name, or its own page on a service platform</span></h3>
+    
+    <div class="lrow">
+      <div class="what">
+        <span class="mono">shopnova-business.com</span> <span class="small muted">· the domain carries the brand&#39;s name</span>
+        <span class="small muted"> · “ShopNova for Business”</span>
+      </div>
+      <span class="newb">new</span>
+        <span class="acts">
+          
+            <form method="post" action="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/site-links"><input type="hidden" name="key" value="site:shopnova-business.com"><button name="action" value="official" class="primary small" title="another official domain of this brand: never a suspect, and a copy of it is">Add as an official domain</button></form>
+            <form method="post" action="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/site-links"><input type="hidden" name="key" value="site:shopnova-business.com"><button name="action" value="partner" class="small" title="a partner, payment provider or service of the brand: never a suspect">Whitelist (partner)</button></form>
+          
+          <form method="post" action="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/site-links"><input type="hidden" name="key" value="site:shopnova-business.com"><button name="action" value="ignore" class="ghost small">Ignore</button></form>
+        </span>
+      
+    </div>
+    
+    <div class="lrow">
+      <div class="what">
+        <span class="mono">shopnova.zendesk.com</span> <span class="small muted">· the brand&#39;s own page on zendesk.com</span>
+        <span class="small muted"> · “Help center”</span>
+      </div>
+      <span class="newb">new</span>
+        <span class="acts">
+          
+            <form method="post" action="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/site-links"><input type="hidden" name="key" value="site:shopnova.zendesk.com"><button name="action" value="official" class="primary small" title="another official domain of this brand: never a suspect, and a copy of it is">Add as an official domain</button></form>
+            <form method="post" action="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/site-links"><input type="hidden" name="key" value="site:shopnova.zendesk.com"><button name="action" value="partner" class="small" title="a partner, payment provider or service of the brand: never a suspect">Whitelist (partner)</button></form>
+          
+          <form method="post" action="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/site-links"><input type="hidden" name="key" value="site:shopnova.zendesk.com"><button name="action" value="ignore" class="ghost small">Ignore</button></form>
+        </span>
+      
+    </div>
+    
+  </div>
+  
+  <div class="grp"><h3>Social accounts · 5 <span style="text-transform:none;letter-spacing:0;font-weight:400">— accounts the homepage links to</span></h3>
+    
+    <div class="lrow">
+      <div class="what">
+        <b>Facebook</b> <a class="mono" href="https://www.facebook.com/shopnova" target="_blank" rel="noopener noreferrer">shopnova</a>
+        
+        <span class="small muted"> · “Facebook”</span>
+      </div>
+      <span class="small ok">✓ a known account of the brand</span>
+      
+    </div>
+    
+    <div class="lrow">
+      <div class="what">
+        <b>Instagram</b> <a class="mono" href="https://www.instagram.com/shopnova/" target="_blank" rel="noopener noreferrer">shopnova</a>
+        
+        <span class="small muted"> · “Instagram”</span>
+      </div>
+      <span class="small ok">✓ a known account of the brand</span>
+      
+    </div>
+    
+    <div class="lrow">
+      <div class="what">
+        <b>LinkedIn</b> <a class="mono" href="https://www.linkedin.com/company/shopnova/" target="_blank" rel="noopener noreferrer">company/shopnova</a>
+        
+        <span class="small muted"> · “LinkedIn”</span>
+      </div>
+      <span class="newb">new</span>
+        <span class="acts">
+          
+            <form method="post" action="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/site-links"><input type="hidden" name="key" value="social:linkedin:company/shopnova"><button name="action" value="ours" class="primary small" title="the brand's own account: a look-alike of it is a fake">This is our account</button></form>
+          
+          <form method="post" action="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/site-links"><input type="hidden" name="key" value="social:linkedin:company/shopnova"><button name="action" value="ignore" class="ghost small">Ignore</button></form>
+        </span>
+      
+    </div>
+    
+    <div class="lrow">
+      <div class="what">
+        <b>X (Twitter)</b> <a class="mono" href="https://x.com/shopnova" target="_blank" rel="noopener noreferrer">shopnova</a>
+        
+        <span class="small muted"> · “X”</span>
+      </div>
+      <span class="small ok">✓ a known account of the brand</span>
+      
+    </div>
+    
+    <div class="lrow">
+      <div class="what">
+        <b>YouTube</b> <a class="mono" href="https://www.youtube.com/@shopnova" target="_blank" rel="noopener noreferrer">@shopnova</a>
+        
+        <span class="small muted"> · “YouTube”</span>
+      </div>
+      <span class="newb">new</span>
+        <span class="acts">
+          
+            <form method="post" action="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/site-links"><input type="hidden" name="key" value="social:youtube:@shopnova"><button name="action" value="ours" class="primary small" title="the brand's own account: a look-alike of it is a fake">This is our account</button></form>
+          
+          <form method="post" action="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/site-links"><input type="hidden" name="key" value="social:youtube:@shopnova"><button name="action" value="ignore" class="ghost small">Ignore</button></form>
+        </span>
+      
+    </div>
+    
+  </div>
+  
+  <div class="grp"><h3>Apps · 1 <span style="text-transform:none;letter-spacing:0;font-weight:400">— app-store listings — known to the brand automatically</span></h3>
+    
+    <div class="lrow">
+      <div class="what">
+        <a class="mono" href="https://apps.apple.com/us/app/shopnova/id1600000001" target="_blank" rel="noopener noreferrer">https://apps.apple.com/us/app/shopnova/id1600000001</a>
+        
+        <span class="small muted"> · “Get the app”</span>
+      </div>
+      <span class="small ok">✓ a known app of the brand</span>
+      
+    </div>
+    
+  </div>
+  
+  <details class="grp"><summary style="cursor:pointer"><h3 style="display:inline">Other links · 1</h3> <span class="small muted">— payment providers, partners, news — usually nothing to do</span></summary>
+  
+    
+    <div class="lrow">
+      <div class="what">
+        <span class="mono">stripe.com</span>
+        <span class="small muted"> · “Payments by Stripe”</span>
+      </div>
+      <span class="newb">new</span>
+        <span class="acts">
+          
+            <form method="post" action="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/site-links"><input type="hidden" name="key" value="site:stripe.com"><button name="action" value="official" class="small" title="another official domain of this brand: never a suspect, and a copy of it is">Add as an official domain</button></form>
+            <form method="post" action="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/site-links"><input type="hidden" name="key" value="site:stripe.com"><button name="action" value="partner" class="small" title="a partner, payment provider or service of the brand: never a suspect">Whitelist (partner)</button></form>
+          
+          <form method="post" action="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/site-links"><input type="hidden" name="key" value="site:stripe.com"><button name="action" value="ignore" class="ghost small">Ignore</button></form>
+        </span>
+      
+    </div>
+    
+  </details>
+  
+  
+  
+</div>
+
+
+
+
+<style>
+  #ai-answers{scroll-margin-top:90px}
+  #ai-answers .cols{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:16px;margin-top:10px}
+  @media (max-width:900px){ #ai-answers .cols{grid-template-columns:minmax(0,1fr)} }
+  #ai-answers .box{border:1px solid var(--border);border-radius:12px;padding:12px 14px}
+  #ai-answers .box h3{margin:0 0 6px;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+  #ai-answers .prow{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:6px;align-items:center;margin:4px 0}
+  #ai-answers .prow input[name=q]{margin:0}
+  #ai-answers .chip{display:inline-flex;gap:6px;align-items:center;border:1px solid var(--border);border-radius:999px;padding:3px 10px;font-size:12.5px;margin:0 6px 6px 0;cursor:pointer;text-transform:none;letter-spacing:0}
+  #ai-answers .chip input{width:auto;margin:0}
+  #ai-answers .ct{display:flex;gap:8px;align-items:baseline;flex-wrap:wrap;padding:4px 0;border-top:1px solid var(--border)}
+  #ai-answers .ct:first-of-type{border-top:0}
+  #ai-answers .ct .v{font-family:var(--mono)}
+  #ai-answers form.inl{display:inline;margin:0}
+</style>
+<div class="panel" style="margin-top:14px" id="ai-answers">
+  <h2>AI answers <span class="muted">· what ChatGPT, Gemini and Google AI Mode tell people who ask for ShopNova’s phone, e-mail or login — every contact they give is checked against ShopNova’s own website</span></h2>
+  
+  
+  <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+    <span class="pill" style="color:var(--low)">on for automatic scans</span>
+    <span class="small muted">12 question(s) per run (questions × assistants) · about $0.1 with the follow-ups · SearchApi</span>
+    <form method="post" action="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/ai-answers" class="inl"><input type="hidden" name="on" value="0"><button type="submit" class="small ">Switch off</button></form>
+  </div>
+
+  <div class="cols">
+    <div class="box">
+      <h3>Questions <span style="color:var(--low);text-transform:none;letter-spacing:0">· approved by admin</span></h3>
+      <p class="small muted" style="margin:0 0 6px">Asked the way a customer would ask, in en. A contact that is not on ShopNova’s site gets a second question — “show me the official page, I suspect it is a fraud” — and BrandWatch opens every page cited.</p>
+      
+      <form method="post" action="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/ai-prompts" id="ai-prompts">
+        <div id="ai-rows">
+          <div class="prow"><input name="q" value="What is the customer service phone number of ShopNova?" maxlength="300" ><input type="hidden" name="lang" value="en"><input type="hidden" name="topic" value="support_phone">
+            <span class="small muted" title="customer-service phone">en · customer-service phone</span>
+            <button type="button" class="ghost small" data-del title="remove">✕</button></div>
+          <div class="prow"><input name="q" value="How can I contact ShopNova? Give me every way: phone, e-mail, WhatsApp." maxlength="300" ><input type="hidden" name="lang" value="en"><input type="hidden" name="topic" value="contact">
+            <span class="small muted" title="every way to contact">en · every way to contact</span>
+            <button type="button" class="ghost small" data-del title="remove">✕</button></div>
+          <div class="prow"><input name="q" value="Where do I log in to my ShopNova account? What is the address?" maxlength="300" ><input type="hidden" name="lang" value="en"><input type="hidden" name="topic" value="login">
+            <span class="small muted" title="where to sign in">en · where to sign in</span>
+            <button type="button" class="ghost small" data-del title="remove">✕</button></div>
+          <div class="prow"><input name="q" value="How do I report fraud or a stolen card to ShopNova? What number do I call?" maxlength="300" ><input type="hidden" name="lang" value="en"><input type="hidden" name="topic" value="fraud">
+            <span class="small muted" title="how to report fraud">en · how to report fraud</span>
+            <button type="button" class="ghost small" data-del title="remove">✕</button></div>
+        </div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px">
+          <button type="button" class="small" id="ai-add" data-ph="e.g. what is the support phone of ShopNova?">+ add a question</button>
+          <button type="submit" name="action" value="approve" class="primary small">Save the questions</button>
+          <button type="submit" name="action" value="suggest" class="small" formnovalidate title="the AI writes them from the approved Google queries — nothing is saved until you approve">Suggest with AI</button>
+        </div>
+      </form>
+      <form method="post" action="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/ai-answers" style="margin-top:12px"><input type="hidden" name="engines_form" value="1">
+        <div class="small muted" style="margin-bottom:4px">Assistants asked</div>
+        <label class="chip"><input type="checkbox" name="engines" value="chatgpt" checked> ChatGPT</label><label class="chip"><input type="checkbox" name="engines" value="gemini" checked> Gemini</label><label class="chip"><input type="checkbox" name="engines" value="google_ai_mode" checked> Google AI Mode</label>
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:4px">
+          <label class="small muted" style="margin:0">questions per run <input name="ai_prompts_max" type="number" min="1" max="20" value="8" style="width:70px;padding:4px 6px"></label>
+          <label class="small muted" style="margin:0">official pages read <input name="contacts_pages_max" type="number" min="1" max="150" value="40" style="width:70px;padding:4px 6px"></label>
+          <button type="submit" class="small">Save</button></div>
+      </form>
+    </div>
+
+    <div class="box" id="contacts">
+      <h3>ShopNova’s real contacts <span style="text-transform:none;letter-spacing:0;font-weight:400">· read from its website — 4 page(s), 2026-10-18 07:32</span></h3>
+      
+      
+        
+        <div class="ct"><span class="v">*6700</span><span class="small muted">short code</span>
+          <a class="small" href="https://shopnova.com/contact" target="_blank" rel="noopener noreferrer" title="https://shopnova.com/contact · https://www.shopnova.com/contact">shopnova.com/contact +1</a>
+          </div>
+        
+        <div class="ct"><span class="v">*6711</span><span class="small muted">short code</span>
+          <a class="small" href="https://shopnova.com/contact" target="_blank" rel="noopener noreferrer" title="https://shopnova.com/contact · https://www.shopnova.com/contact">shopnova.com/contact +1</a>
+          </div>
+        
+        <div class="ct"><span class="v">03-6000000</span><span class="small muted">phone</span>
+          <a class="small" href="https://shopnova.com/contact" target="_blank" rel="noopener noreferrer" title="https://shopnova.com/contact · https://www.shopnova.com/contact">shopnova.com/contact +1</a>
+          </div>
+        
+        <div class="ct"><span class="v">+972506000000</span><span class="small muted">WhatsApp</span>
+          <a class="small" href="https://shopnova.com/contact" target="_blank" rel="noopener noreferrer" title="https://shopnova.com/contact · https://www.shopnova.com/contact">shopnova.com/contact +1</a>
+          </div>
+        
+        <div class="ct"><span class="v">support@shopnova.com</span><span class="small muted">e-mail</span>
+          <a class="small" href="https://shopnova.com/contact" target="_blank" rel="noopener noreferrer" title="https://shopnova.com/contact · https://www.shopnova.com/contact">shopnova.com/contact +1</a>
+          </div>
+        
+      
+      <form method="post" action="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/scan" style="margin-top:8px"><input type="hidden" name="only" value="contacts"><button type="submit" class="small">Read them again</button> <span class="small muted">up to 40 pages · free</span></form>
+      <div class="small muted" style="margin:12px 0 4px">Contacts ShopNova uses that the site does not show <span title="an SMS sender, an app-only line, a number on printed cards">ⓘ</span></div>
+      
+      <form method="post" action="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/known-contacts" style="display:flex;gap:6px;margin-top:6px">
+        <input name="value" placeholder="*1234 · 03-1234567 · help@brand.com" maxlength="200" style="margin:0"><button name="action" value="add" class="small">Add</button></form>
+    </div>
+  </div>
+</div>
+<script>
+(function () {
+  const rows = document.getElementById('ai-rows'), add = document.getElementById('ai-add');
+  if (!rows || !add) return;
+  rows.addEventListener('click', e => { const b = e.target.closest('[data-del]'); if (b) b.closest('.prow').remove(); });
+  add.addEventListener('click', () => {
+    const d = document.createElement('div'); d.className = 'prow';
+    d.innerHTML = '<input name="q" maxlength="300"><input type="hidden" name="lang" value=""><input type="hidden" name="topic" value="custom"><span class="small muted">your own</span><button type="button" class="ghost small" data-del>✕</button>';
+    d.querySelector('input').placeholder = add.dataset.ph || '';
+    rows.appendChild(d); d.querySelector('input').focus();
+  });
+})();
+</script>
 
 
 <style>
@@ -463,6 +781,14 @@ header nav{display:flex;align-items:center;min-width:0}
         </div></label>
       
       
+      <label class="task "><input type="checkbox" name="tasks" value="ai_answers" checked >
+        <div><b>AI answers</b><span>what ChatGPT, Gemini and Google AI Mode tell users about the brand&#39;s phone, e-mail and login</span>
+          
+          
+          
+        </div></label>
+      
+      
       <label class="task "><input type="checkbox" name="tasks" value="watchlist" checked >
         <div><b>Re-check the watchlist</b><span>visit suspicious sites and open findings again to catch changes</span>
           
@@ -482,7 +808,7 @@ header nav{display:flex;align-items:center;min-width:0}
     <div class="stat">
       <span>last automatic scan: <b>none yet</b></span>
       <span>next: <b>—</b></span>
-      <span title="Google search ≈ $0.06 · Facebook / Instagram ads ≈ $0.32 · Fake social accounts ≈ $0.09">cost: up to <b>$0.48</b> a run · <b>$14.25</b> a month at this frequency</span>
+      <span title="Google search ≈ $0.06 · Facebook / Instagram ads ≈ $0.32 · Fake social accounts ≈ $0.09 · AI answers ≈ $0.23">cost: up to <b>$0.70</b> a run · <b>$21.09</b> a month at this frequency</span>
     </div>
     <p class="small muted" style="margin:6px 0 0">Paid calls (Google search, Facebook / Instagram ads and accounts) count against the workspace's daily spend limit; DNS, certificate logs, new domains and urlscan are free. Every automatic scan appears under “Recent scans” with its own console.</p>
     <div class="actions" style="margin-top:12px"><button type="submit" class="primary">Save automatic scans</button></div>
@@ -810,7 +1136,8 @@ header nav{display:flex;align-items:center;min-width:0}
     </div>
     <label style="margin-top:12px">The brand's own Facebook / Instagram accounts <span class="muted small">· one per line, URL or platform:handle — never flagged as fake; accounts linked from the official site are added automatically</span></label>
     <textarea name="official_social" rows="2" placeholder="https://www.facebook.com/shopnova&#10;instagram:shopnova" >facebook:shopnova
-instagram:shopnova</textarea>
+instagram:shopnova
+x:shopnova</textarea>
     <div class="sugg" id="sugg" hidden></div>
     
     <div class="actions" style="margin-top:12px">
@@ -945,7 +1272,7 @@ instagram:shopnova</textarea>
           <label>Search countries · languages <span style="text-transform:none">(each country, in one or more languages)</span></label>
           
 
-<div class="mkt" id="mk325506" data-markets='[{"country": "us", "langs": ["en"]}]' data-disabled="0">
+<div class="mkt" id="mk507034" data-markets='[{"country": "us", "langs": ["en"]}]' data-disabled="0">
   <input type="hidden" name="search_geo" value="us">
   <input type="hidden" name="search_lang" value="en">
   <input type="hidden" name="search_markets" value='[{"country": "us", "langs": ["en"]}]'>
@@ -976,7 +1303,7 @@ instagram:shopnova</textarea>
 </style>
 <script>
 (function(){
-  const root = document.getElementById('mk325506');
+  const root = document.getElementById('mk507034');
   if (!root) return;
   const D = {"countries": [{"code": "al", "name": "Albania"}, {"code": "dz", "name": "Algeria"}, {"code": "ar", "name": "Argentina"}, {"code": "am", "name": "Armenia"}, {"code": "au", "name": "Australia"}, {"code": "at", "name": "Austria"}, {"code": "az", "name": "Azerbaijan"}, {"code": "bh", "name": "Bahrain"}, {"code": "bd", "name": "Bangladesh"}, {"code": "by", "name": "Belarus"}, {"code": "be", "name": "Belgium"}, {"code": "bo", "name": "Bolivia"}, {"code": "ba", "name": "Bosnia and Herzegovina"}, {"code": "br", "name": "Brazil"}, {"code": "bg", "name": "Bulgaria"}, {"code": "kh", "name": "Cambodia"}, {"code": "ca", "name": "Canada"}, {"code": "cl", "name": "Chile"}, {"code": "cn", "name": "China"}, {"code": "co", "name": "Colombia"}, {"code": "cr", "name": "Costa Rica"}, {"code": "hr", "name": "Croatia"}, {"code": "cy", "name": "Cyprus"}, {"code": "cz", "name": "Czechia"}, {"code": "dk", "name": "Denmark"}, {"code": "do", "name": "Dominican Republic"}, {"code": "ec", "name": "Ecuador"}, {"code": "eg", "name": "Egypt"}, {"code": "ee", "name": "Estonia"}, {"code": "fi", "name": "Finland"}, {"code": "fr", "name": "France"}, {"code": "ge", "name": "Georgia"}, {"code": "de", "name": "Germany"}, {"code": "gh", "name": "Ghana"}, {"code": "gr", "name": "Greece"}, {"code": "gt", "name": "Guatemala"}, {"code": "hk", "name": "Hong Kong"}, {"code": "hu", "name": "Hungary"}, {"code": "is", "name": "Iceland"}, {"code": "in", "name": "India"}, {"code": "id", "name": "Indonesia"}, {"code": "ir", "name": "Iran"}, {"code": "iq", "name": "Iraq"}, {"code": "ie", "name": "Ireland"}, {"code": "il", "name": "Israel"}, {"code": "it", "name": "Italy"}, {"code": "jm", "name": "Jamaica"}, {"code": "jp", "name": "Japan"}, {"code": "jo", "name": "Jordan"}, {"code": "kz", "name": "Kazakhstan"}, {"code": "ke", "name": "Kenya"}, {"code": "kw", "name": "Kuwait"}, {"code": "lv", "name": "Latvia"}, {"code": "lb", "name": "Lebanon"}, {"code": "lt", "name": "Lithuania"}, {"code": "lu", "name": "Luxembourg"}, {"code": "my", "name": "Malaysia"}, {"code": "mt", "name": "Malta"}, {"code": "mx", "name": "Mexico"}, {"code": "md", "name": "Moldova"}, {"code": "ma", "name": "Morocco"}, {"code": "np", "name": "Nepal"}, {"code": "nl", "name": "Netherlands"}, {"code": "nz", "name": "New Zealand"}, {"code": "ng", "name": "Nigeria"}, {"code": "mk", "name": "North Macedonia"}, {"code": "no", "name": "Norway"}, {"code": "om", "name": "Oman"}, {"code": "pk", "name": "Pakistan"}, {"code": "pa", "name": "Panama"}, {"code": "py", "name": "Paraguay"}, {"code": "pe", "name": "Peru"}, {"code": "ph", "name": "Philippines"}, {"code": "pl", "name": "Poland"}, {"code": "pt", "name": "Portugal"}, {"code": "pr", "name": "Puerto Rico"}, {"code": "qa", "name": "Qatar"}, {"code": "ro", "name": "Romania"}, {"code": "ru", "name": "Russia"}, {"code": "sa", "name": "Saudi Arabia"}, {"code": "rs", "name": "Serbia"}, {"code": "sc", "name": "Seychelles"}, {"code": "sg", "name": "Singapore"}, {"code": "sk", "name": "Slovakia"}, {"code": "si", "name": "Slovenia"}, {"code": "za", "name": "South Africa"}, {"code": "kr", "name": "South Korea"}, {"code": "es", "name": "Spain"}, {"code": "lk", "name": "Sri Lanka"}, {"code": "se", "name": "Sweden"}, {"code": "ch", "name": "Switzerland"}, {"code": "tw", "name": "Taiwan"}, {"code": "tz", "name": "Tanzania"}, {"code": "th", "name": "Thailand"}, {"code": "tn", "name": "Tunisia"}, {"code": "tr", "name": "T\u00fcrkiye"}, {"code": "ug", "name": "Uganda"}, {"code": "ua", "name": "Ukraine"}, {"code": "ae", "name": "United Arab Emirates"}, {"code": "gb", "name": "United Kingdom"}, {"code": "us", "name": "United States"}, {"code": "uy", "name": "Uruguay"}, {"code": "uz", "name": "Uzbekistan"}, {"code": "ve", "name": "Venezuela"}, {"code": "vn", "name": "Vietnam"}], "defaults": {"ae": "ar", "ar": "es", "at": "de", "au": "en", "bd": "bn", "be": "fr", "bg": "bg", "br": "pt", "by": "ru", "ca": "en", "ch": "de", "cl": "es", "cn": "zh", "co": "es", "cy": "el", "cz": "cs", "de": "de", "dk": "da", "ee": "et", "eg": "ar", "es": "es", "fi": "fi", "fr": "fr", "gb": "en", "gr": "el", "hk": "zh", "hr": "hr", "hu": "hu", "id": "id", "ie": "en", "il": "he", "in": "en", "ir": "fa", "it": "it", "jp": "ja", "ke": "en", "kr": "ko", "kz": "ru", "lt": "lt", "lu": "fr", "lv": "lv", "md": "ro", "mx": "es", "my": "ms", "ng": "en", "nl": "nl", "no": "no", "nz": "en", "ph": "en", "pk": "ur", "pl": "pl", "pt": "pt", "ro": "ro", "rs": "sr", "ru": "ru", "sa": "ar", "se": "sv", "sg": "en", "si": "sl", "sk": "sk", "th": "th", "tr": "tr", "tw": "zh", "ua": "uk", "us": "en", "vn": "vi", "za": "en"}, "languages": [{"code": "en", "name": "English"}, {"code": "es", "name": "Spanish"}, {"code": "he", "name": "Hebrew"}, {"code": "ar", "name": "Arabic"}, {"code": "fr", "name": "French"}, {"code": "de", "name": "German"}, {"code": "it", "name": "Italian"}, {"code": "pt", "name": "Portuguese"}, {"code": "nl", "name": "Dutch"}, {"code": "ru", "name": "Russian"}, {"code": "pl", "name": "Polish"}, {"code": "tr", "name": "Turkish"}, {"code": "uk", "name": "Ukrainian"}, {"code": "cs", "name": "Czech"}, {"code": "sv", "name": "Swedish"}, {"code": "no", "name": "Norwegian"}, {"code": "da", "name": "Danish"}, {"code": "fi", "name": "Finnish"}, {"code": "el", "name": "Greek"}, {"code": "hu", "name": "Hungarian"}, {"code": "ro", "name": "Romanian"}, {"code": "bg", "name": "Bulgarian"}, {"code": "sr", "name": "Serbian"}, {"code": "hr", "name": "Croatian"}, {"code": "sk", "name": "Slovak"}, {"code": "sl", "name": "Slovenian"}, {"code": "lt", "name": "Lithuanian"}, {"code": "lv", "name": "Latvian"}, {"code": "et", "name": "Estonian"}, {"code": "ja", "name": "Japanese"}, {"code": "ko", "name": "Korean"}, {"code": "zh", "name": "Chinese"}, {"code": "hi", "name": "Hindi"}, {"code": "bn", "name": "Bengali"}, {"code": "ur", "name": "Urdu"}, {"code": "fa", "name": "Persian"}, {"code": "id", "name": "Indonesian"}, {"code": "ms", "name": "Malay"}, {"code": "th", "name": "Thai"}, {"code": "vi", "name": "Vietnamese"}, {"code": "tl", "name": "Filipino"}, {"code": "sw", "name": "Swahili"}, {"code": "af", "name": "Afrikaans"}]};
   const cname = Object.fromEntries(D.countries.map(c => [c.code, c.name])), lname = Object.fromEntries(D.languages.map(l => [l.code, l.name]));
@@ -1248,12 +1575,12 @@ instagram:shopnova</textarea>
   <div class="panel">
     <h2>Threat mix · open</h2>
     
-    <div class="donut-wrap"><svg class="donut" data-donut='[{"color": "#FF4D4D", "label": "critical", "value": 4}]' data-center="open"></svg>
-      <div class="legend"><div><i style="background:#FF4D4D"></i>critical<b>4</b></div></div></div>
+    <div class="donut-wrap"><svg class="donut" data-donut='[{"color": "#FF4D4D", "label": "critical", "value": 7}, {"color": "#FF9F1C", "label": "high", "value": 1}]' data-center="open"></svg>
+      <div class="legend"><div><i style="background:#FF4D4D"></i>critical<b>7</b></div><div><i style="background:#FF9F1C"></i>high<b>1</b></div></div></div>
   </div>
   <div class="panel">
     <h2>Activity · 14 days</h2>
-    <svg class="spark" data-spark='{"series": [{"color": "#35C7F2", "values": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 2]}, {"color": "#FF4D4D", "values": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 30, 0, 4]}]}'></svg>
+    <svg class="spark" data-spark='{"series": [{"color": "#35C7F2", "values": [0, 0, 0, 0, 0, 0, 0, 4, 0, 2, 0, 0, 0, 5]}, {"color": "#FF4D4D", "values": [0, 0, 0, 0, 0, 0, 0, 30, 0, 4, 0, 0, 0, 4]}]}'></svg>
     <div class="small muted" style="margin-top:6px"><span style="color:#35C7F2">■</span> scans &nbsp; <span style="color:#FF4D4D">■</span> new findings</div>
   </div>
   <div class="panel">
@@ -1273,7 +1600,11 @@ instagram:shopnova</textarea>
     </div>
     
     <div style="display:grid;grid-template-columns:72px 1fr 52px;gap:8px;align-items:center;margin:6px 0">
-      <span class="small" title="social">Facebook pages / Instagram profiles</span><div class="bar" style="height:6px"><i data-w="6"></i></div><span class="mono small right">4/6</span>
+      <span class="small" title="social">Facebook pages / Instagram profiles</span><div class="bar" style="height:6px"><i data-w="8"></i></div><span class="mono small right">6/8</span>
+    </div>
+    
+    <div style="display:grid;grid-template-columns:72px 1fr 52px;gap:8px;align-items:center;margin:6px 0">
+      <span class="small" title="ai_answer">AI answer (ChatGPT / Gemini / Google AI Mode)</span><div class="bar" style="height:6px"><i data-w="5"></i></div><span class="mono small right">5/5</span>
     </div>
     
     <div style="display:grid;grid-template-columns:72px 1fr 52px;gap:8px;align-items:center;margin:6px 0">
@@ -1295,15 +1626,15 @@ instagram:shopnova</textarea>
     </div>
     
     <div style="display:grid;grid-template-columns:82px 1fr 34px;gap:8px;align-items:center;margin:6px 0">
-      <span class="small" title="visited, below the finding threshold: re-checked on a schedule">watching</span><div class="bar" style="height:6px"><i data-w="21" style="background:#35C7F2"></i></div><span class="mono small right">40</span>
+      <span class="small" title="visited, below the finding threshold: re-checked on a schedule">watching</span><div class="bar" style="height:6px"><i data-w="20" style="background:#35C7F2"></i></div><span class="mono small right">40</span>
     </div>
     
     <div style="display:grid;grid-template-columns:82px 1fr 34px;gap:8px;align-items:center;margin:6px 0">
-      <span class="small" title="scored Medium or higher: there is a finding for it">flagged (finding)</span><div class="bar" style="height:6px"><i data-w="17" style="background:#FF4D4D"></i></div><span class="mono small right">32</span>
+      <span class="small" title="scored Medium or higher: there is a finding for it">flagged (finding)</span><div class="bar" style="height:6px"><i data-w="18" style="background:#FF4D4D"></i></div><span class="mono small right">36</span>
     </div>
     
     <div style="display:grid;grid-template-columns:82px 1fr 34px;gap:8px;align-items:center;margin:6px 0">
-      <span class="small" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span><div class="bar" style="height:6px"><i data-w="56" style="background:#3a4658"></i></div><span class="mono small right">108</span>
+      <span class="small" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span><div class="bar" style="height:6px"><i data-w="55" style="background:#3a4658"></i></div><span class="mono small right">108</span>
     </div>
     
   </div>
@@ -1369,7 +1700,7 @@ instagram:shopnova</textarea>
   </div>
   <span class="sa-msg" id="sa-msg"></span>
 </div>
-<script type="application/json" id="sa-init">{}</script>
+<script type="application/json" id="sa-init">{"at": "2026-10-18T06:30:01.059053+00:00", "attempts": [{"kind": "ok", "ok": true, "status": 200, "vendor": null, "via": "datacenter"}], "kind": "ok", "ok": true, "reason": "HTTP 200", "source": "site", "status": 200, "title": null, "url": "https://shopnova.com/", "vendor": null, "via": "datacenter"}</script>
 <script>
 (function(){
   const box = document.getElementById('siteacc'); if (!box) return;
@@ -1472,7 +1803,7 @@ instagram:shopnova</textarea>
     
     <table>
       <tr><th>Official domains</th><td class="mono">shopnova.com, www.shopnova.com</td></tr>
-      
+      <tr><th>Fetched</th><td class="small"><span class="mono">https://shopnova.com/</span> · HTTP 200</td></tr>
       <tr><th>Brand key</th><td class="mono">shopnova</td></tr>
       <tr><th>Favicon mmh3</th><td class="mono">-2029202433 <img src="/_r/898245abf65780.png" alt="" style="width:16px;height:16px;vertical-align:middle;margin-left:6px"></td></tr>
       <tr><th>Screenshot pHash</th><td class="mono">be37c1cd4c483137</td></tr>
@@ -1493,6 +1824,31 @@ instagram:shopnova</textarea>
     
     <table>
       <tr><th>Started</th><th>Kind</th><th>State</th><th class="right">Cost</th></tr>
+      
+      <tr><td class="mono small"><a href="/ui/jobs/add4c607-69e3-40f1-a14b-92a326cd31b0/">2026-10-18 07:32:12</a></td>
+          <td>brand scan</td>
+          <td><span class="badge sev-low">done</span></td>
+          <td class="right mono">$0.0000</td></tr>
+      
+      <tr><td class="mono small"><a href="/ui/jobs/83304658-0ee3-419c-8bab-fb9b4730af9b/">2026-10-18 07:32:06</a></td>
+          <td>brand scan</td>
+          <td><span class="badge sev-low">done</span></td>
+          <td class="right mono">$0.0000</td></tr>
+      
+      <tr><td class="mono small"><a href="/ui/jobs/c6235eee-88a6-40cf-aeb3-f1a46a2f6eba/">2026-10-18 07:29:25</a></td>
+          <td>brand scan</td>
+          <td><span class="badge sev-low">done</span></td>
+          <td class="right mono">$0.0000</td></tr>
+      
+      <tr><td class="mono small"><a href="/ui/jobs/9279aa02-4e5a-49ba-9a34-f0b6f5cd0b9d/">2026-10-18 07:29:19</a></td>
+          <td>brand scan</td>
+          <td><span class="badge sev-low">done</span></td>
+          <td class="right mono">$0.0000</td></tr>
+      
+      <tr><td class="mono small"><a href="/ui/jobs/e0e299ac-e32b-4844-b9c9-b460344dfae2/">2026-10-18 06:29:19</a></td>
+          <td>brand scan</td>
+          <td><span class="badge sev-low">done</span></td>
+          <td class="right mono">$0.0000</td></tr>
       
       <tr><td class="mono small"><a href="/ui/jobs/f72e1005-5ba0-487f-9fc1-c1064aec1a7e/">2026-10-14 09:53:07</a></td>
           <td>site intel</td>
@@ -1529,22 +1885,22 @@ instagram:shopnova</textarea>
           <td><span class="badge sev-low">done</span></td>
           <td class="right mono">$0.0000</td></tr>
       
-      <tr><td class="mono small"><a href="/ui/jobs/7dff8a77-fc17-4fa7-b073-4d56f165b183/">2026-10-14 09:52:57</a></td>
+      <tr><td class="mono small"><a href="/ui/jobs/7dff8a77-fc17-4fa7-b073-4d56f165b183">2026-10-14 09:52:57</a></td>
           <td>infrastructure map</td>
           <td><span class="badge sev-low">done</span></td>
           <td class="right mono">$0.0000</td></tr>
       
-      <tr><td class="mono small"><a href="/ui/jobs/344ef24d-c84c-43be-a4e0-17e80243a08c/">2026-10-14 09:52:53</a></td>
+      <tr><td class="mono small"><a href="/ui/jobs/344ef24d-c84c-43be-a4e0-17e80243a08c">2026-10-14 09:52:53</a></td>
           <td>infrastructure map</td>
           <td><span class="badge sev-low">done</span></td>
           <td class="right mono">$0.0000</td></tr>
       
-      <tr><td class="mono small"><a href="/ui/jobs/17d284e4-bb08-4b19-ac7d-48f5dff5b864/">2026-10-14 09:52:54</a></td>
+      <tr><td class="mono small"><a href="/ui/jobs/17d284e4-bb08-4b19-ac7d-48f5dff5b864">2026-10-14 09:52:54</a></td>
           <td>site intel</td>
           <td><span class="badge sev-low">done</span></td>
           <td class="right mono">$0.0000</td></tr>
       
-      <tr><td class="mono small"><a href="/ui/jobs/4cf57413-7636-4950-b05f-e5a124a11405/">2026-10-14 09:52:51</a></td>
+      <tr><td class="mono small"><a href="/ui/jobs/4cf57413-7636-4950-b05f-e5a124a11405">2026-10-14 09:52:51</a></td>
           <td>infrastructure map</td>
           <td><span class="badge sev-low">done</span></td>
           <td class="right mono">$0.0000</td></tr>
@@ -1569,35 +1925,10 @@ instagram:shopnova</textarea>
           <td><span class="badge sev-low">done</span></td>
           <td class="right mono">$0.0000</td></tr>
       
-      <tr><td class="mono small"><a href="/ui/jobs/c685be9a-587d-426e-b352-383bb07dfea2">2026-10-14 09:52:44</a></td>
-          <td>site intel</td>
-          <td><span class="badge sev-low">done</span></td>
-          <td class="right mono">$0.0000</td></tr>
-      
-      <tr><td class="mono small"><a href="/ui/jobs/0997829b-06c7-4cbd-99ef-afedd2e757e1">2026-10-14 09:52:40</a></td>
-          <td>infrastructure map</td>
-          <td><span class="badge sev-low">done</span></td>
-          <td class="right mono">$0.0000</td></tr>
-      
-      <tr><td class="mono small"><a href="/ui/jobs/6cc5897e-c1bd-4893-b207-dc2bd1c86e3f">2026-10-14 09:52:41</a></td>
-          <td>site intel</td>
-          <td><span class="badge sev-low">done</span></td>
-          <td class="right mono">$0.0000</td></tr>
-      
-      <tr><td class="mono small"><a href="/ui/jobs/e9333f72-7c3a-4144-9f65-1eb8228c9e3e">2026-10-14 09:52:37</a></td>
-          <td>infrastructure map</td>
-          <td><span class="badge sev-low">done</span></td>
-          <td class="right mono">$0.0000</td></tr>
-      
-      <tr><td class="mono small"><a href="/ui/jobs/aa1bf68a-e758-4a36-a500-f02f9ce760ba">2026-10-14 09:52:37</a></td>
-          <td>site intel</td>
-          <td><span class="badge sev-low">done</span></td>
-          <td class="right mono">$0.0000</td></tr>
-      
     </table>
     
     <h2>Latest findings</h2>
-    <div style="padding:4px 0;border-bottom:1px solid var(--border)"><span class="badge sev-critical">critical</span> <a href="/ui/findings/aa855f45-18cf-4272-ac1c-effbe5955f9c/"><span class="mono">facebook.com/shopnova.support.help</span></a> <span class="muted small"> · open</span></div><div style="padding:4px 0;border-bottom:1px solid var(--border)"><span class="badge sev-critical">critical</span> <a href="/ui/findings/2e59c045-14b0-4c09-baac-28046be16ff5/"><span class="mono">facebook.com/shopnova.support.help</span></a> <span class="muted small"> · open</span></div><div style="padding:4px 0;border-bottom:1px solid var(--border)"><span class="badge sev-critical">critical</span> <a href="/ui/findings/d3cddf21-a088-4189-9f17-2cf8dba61ab0/"><span class="mono">shopnova-verification.com</span></a> <span class="muted small"> · confirmed</span></div><div style="padding:4px 0;border-bottom:1px solid var(--border)"><span class="badge sev-critical">critical</span> <a href="/ui/findings/1bcfbce5-b1c6-44d8-b534-f678beefe1d5/"><span class="mono">shopnova-giftcard.com</span></a> <span class="muted small"> · confirmed</span></div><div style="padding:4px 0;border-bottom:1px solid var(--border)"><span class="badge sev-critical">critical</span> <a href="/ui/findings/3ef032cc-e0af-4d14-a4b1-f1bde6e033e9/"><span class="mono">instagram.com/shopnova.israel.official</span></a> <span class="muted small"> · confirmed</span></div><div style="padding:4px 0;border-bottom:1px solid var(--border)"><span class="badge sev-critical">critical</span> <a href="/ui/findings/d89d7f73-509b-4dab-b831-7ebdd96d6c06/"><span class="mono">instagram.com/shopnova.israel.official</span></a> <span class="muted small"> · open</span></div><div style="padding:4px 0;border-bottom:1px solid var(--border)"><span class="badge sev-critical">critical</span> <a href="/ui/findings/570ae512-6ffc-4714-8115-deadd322f8ee/"><span class="mono">shopn0va.com</span></a> <span class="muted small"> · confirmed</span></div><div style="padding:4px 0;border-bottom:1px solid var(--border)"><span class="badge sev-critical">critical</span> <a href="/ui/findings/b50eb843-fe14-4db8-92ed-7cb9a6a6ddb6/"><span class="mono">runnerhub-sale.com</span></a> <span class="muted small"> · confirmed</span></div><div style="padding:4px 0;border-bottom:1px solid var(--border)"><span class="badge sev-critical">critical</span> <a href="/ui/findings/3f10d506-29e2-4c08-bfce-bfb343c7d5f1/"><span class="mono">onestyle-shopping.com</span></a> <span class="muted small"> · confirmed</span></div><div style="padding:4px 0;border-bottom:1px solid var(--border)"><span class="badge sev-critical">critical</span> <a href="/ui/findings/ffe7670f-a966-4921-b136-231284e94c4a/"><span class="mono">secure-shopnova.com</span></a> <span class="muted small"> · confirmed</span></div>
+    <div style="padding:4px 0;border-bottom:1px solid var(--border)"><span class="badge sev-critical">critical</span> <a href="/ui/findings/6d7c2f47-cf77-4992-9dce-622f09bbf0bf/"><span class="mono">shopnova-login.com</span></a> <span class="muted small"> · open</span></div><div style="padding:4px 0;border-bottom:1px solid var(--border)"><span class="badge sev-critical">critical</span> <a href="/ui/findings/27ceca7f-5129-4f1d-ad51-b194ed5448f9/"><span class="mono">03-9817777</span></a> <span class="muted small"> · open</span></div><div style="padding:4px 0;border-bottom:1px solid var(--border)"><span class="badge sev-critical">critical</span> <a href="/ui/findings/aa855f45-18cf-4272-ac1c-effbe5955f9c/"><span class="mono">facebook.com/shopnova.support.help</span></a> <span class="muted small"> · open</span></div><div style="padding:4px 0;border-bottom:1px solid var(--border)"><span class="badge sev-critical">critical</span> <a href="/ui/findings/2e59c045-14b0-4c09-baac-28046be16ff5/"><span class="mono">facebook.com/shopnova.support.help</span></a> <span class="muted small"> · open</span></div><div style="padding:4px 0;border-bottom:1px solid var(--border)"><span class="badge sev-critical">critical</span> <a href="/ui/findings/d3cddf21-a088-4189-9f17-2cf8dba61ab0/"><span class="mono">shopnova-verification.com</span></a> <span class="muted small"> · confirmed</span></div><div style="padding:4px 0;border-bottom:1px solid var(--border)"><span class="badge sev-critical">critical</span> <a href="/ui/findings/6fc97f7b-606c-4e8f-89dd-19b57358c6ff/"><span class="mono">shopnova-refund.net</span></a> <span class="muted small"> · open</span></div><div style="padding:4px 0;border-bottom:1px solid var(--border)"><span class="badge sev-critical">critical</span> <a href="/ui/findings/1bcfbce5-b1c6-44d8-b534-f678beefe1d5/"><span class="mono">shopnova-giftcard.com</span></a> <span class="muted small"> · confirmed</span></div><div style="padding:4px 0;border-bottom:1px solid var(--border)"><span class="badge sev-critical">critical</span> <a href="/ui/findings/3ef032cc-e0af-4d14-a4b1-f1bde6e033e9/"><span class="mono">instagram.com/shopnova.israel.official</span></a> <span class="muted small"> · confirmed</span></div><div style="padding:4px 0;border-bottom:1px solid var(--border)"><span class="badge sev-critical">critical</span> <a href="/ui/findings/d89d7f73-509b-4dab-b831-7ebdd96d6c06/"><span class="mono">instagram.com/shopnova.israel.official</span></a> <span class="muted small"> · open</span></div><div style="padding:4px 0;border-bottom:1px solid var(--border)"><span class="badge sev-critical">critical</span> <a href="/ui/findings/570ae512-6ffc-4714-8115-deadd322f8ee/"><span class="mono">shopn0va.com</span></a> <span class="muted small"> · confirmed</span></div>
     
   </div>
 </div>

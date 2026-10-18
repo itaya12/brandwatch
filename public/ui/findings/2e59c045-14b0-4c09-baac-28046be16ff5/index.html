@@ -191,6 +191,9 @@ header nav{display:flex;align-items:center;min-width:0}
 
 
 
+
+
+
 <style>
   .flag{vertical-align:-3px;border-radius:2px;box-shadow:0 0 0 1px rgba(255,255,255,.12);margin-right:4px}
   .flag-none{display:inline-block}
@@ -330,6 +333,7 @@ header nav{display:flex;align-items:center;min-width:0}
       <span class="badge sev-critical">critical</span>
       
       <span class="badge" style="border:1px solid var(--accent);color:var(--accent2)" title="a Facebook page or Instagram profile that poses as ShopNova — scored by the social checks">fake social account</span>
+      
       <span class="badge state" title="a finding no analyst has judged yet">awaiting verdict</span>
       
       
@@ -371,6 +375,7 @@ header nav{display:flex;align-items:center;min-width:0}
           data-confirm="Add this account to ShopNova’s own accounts and close the finding?" data-confirm-title="The brand\'s own account" data-confirm-ok="Add and close">
       <button type="submit" class="ghost" title="one of the brand's real accounts: added to the official list, never flagged again">✓ This is our account</button>
       <span class="muted">— a real ShopNova account: never flagged again</span></form>
+    
     <p class="hint">
       
       Several independent signs that this account poses as ShopNova → confirm, then report the account to Meta (Social account tab).
@@ -396,13 +401,14 @@ header nav{display:flex;align-items:center;min-width:0}
 
 
 <nav class="tabs" role="tablist" id="tabs" aria-label="Finding details">
+  
   <button role="tab" data-tab="social">Social account <span class="n bad">9 signs</span></button>
   
   <button role="tab" data-tab="why">Why flagged <span class="n">9 signals</span></button>
   
   <span class="grp" aria-hidden="true"></span>
-  <button role="tab" data-tab="timeline">Timeline <span class="n">2</span></button>
-  <button role="tab" data-tab="evidence">Evidence <span class="n">4</span></button>
+  <button role="tab" data-tab="timeline">Timeline <span class="n">3</span></button>
+  <button role="tab" data-tab="evidence">Evidence <span class="n">6</span></button>
   
 </nav>
 
@@ -421,6 +427,7 @@ header nav{display:flex;align-items:center;min-width:0}
     <div class="msg"><span id="prog-msg">Starting the investigation…</span><small>VirusTotal's free API allows 4 requests a minute, so a full run takes 1–3 minutes.</small></div>
   </div>
 </div>
+
 
 
 <section class="tabpane" id="tab-social">
@@ -467,8 +474,8 @@ header nav{display:flex;align-items:center;min-width:0}
       </div>
       <div class="soc-facts">
         
-        <div class="bad"><div class="k">Created</div><div class="v">2026-09-24</div></div>
-        <div class="bad"><div class="k">Name changes</div><div class="v">1 · last 2026-10-03</div></div>
+        <div class="bad"><div class="k">Created</div><div class="v">2026-09-30</div></div>
+        <div class="bad"><div class="k">Name changes</div><div class="v">1 · last 2026-10-09</div></div>
         <div class="bad"><div class="k">Admins in</div><div class="v">VN</div></div>
         
         <div class="bad"><div class="k">Followers / likes</div><div class="v">340</div></div>
@@ -506,7 +513,7 @@ header nav{display:flex;align-items:center;min-width:0}
       <div class="small muted">Links</div>
         <div style="margin:4px 0 10px"><div class="mono small" style="overflow-wrap:anywhere">https://shopnova-refund.net/claim</div><div class="mono small" style="overflow-wrap:anywhere">https://shopnova-refund.net/</div></div>
       <div class="small muted">Recent posts</div>
-        <ul class="soc-posts"><li><div dir="auto">Refunds open for 48 hours only. Claim yours at the link in bio.</div><div class="m">2026-10-11 · <a href="https://www.instagram.com/p/demo0/" target="_blank" rel="noreferrer noopener">open ↗</a></div></li><li><div dir="auto">Winners of the ShopNova giveaway: check your DMs and verify your card.</div><div class="m">2026-10-08 · <a href="https://www.instagram.com/p/demo1/" target="_blank" rel="noreferrer noopener">open ↗</a></div></li></ul>
+        <ul class="soc-posts"><li><div dir="auto">Refunds open for 48 hours only. Claim yours at the link in bio.</div><div class="m">2026-10-17 · <a href="https://www.instagram.com/p/demo0/" target="_blank" rel="noreferrer noopener">open ↗</a></div></li><li><div dir="auto">Winners of the ShopNova giveaway: check your DMs and verify your card.</div><div class="m">2026-10-14 · <a href="https://www.instagram.com/p/demo1/" target="_blank" rel="noreferrer noopener">open ↗</a></div></li></ul>
       
     </div>
   </div>
@@ -607,7 +614,7 @@ A Facebook page named “ShopNova Support”, created 18 days ago, renamed since
       <p class="small" style="margin-top:0"><a class="pill cap" href="/ui/how-it-works/#golden" title="same evidence + same config ⇒ same score; the scoring version is a hash of the weights, caps and rules; a golden dataset gates every change">⚙ deterministic · versioned</a> Raw <b class="mono">100</b> of 100 → normalised to <b class="mono">100</b> / 100.
         <span class="muted">Thresholds: Medium 25 · High 50 · Critical 75 · scoring <span class="mono">social-v1-6ace7e14</span></span>
         
-        <br><a href="/api/jobs/9235913e-f1e4-420c-9f46-080472915c0e/trace?host=facebook.com/shopnova.support.help" target="_blank" rel="noopener">open the arithmetic ↗</a> <span class="muted">— this site's section of the scan trace</span></p>
+        <br><a href="/api/jobs/e0e299ac-e32b-4844-b9c9-b460344dfae2/trace?host=facebook.com/shopnova.support.help" target="_blank" rel="noopener">open the arithmetic ↗</a> <span class="muted">— this site's section of the scan trace</span></p>
       <h2>Group caps <span class="help" tabindex="0" role="link" data-href="/ui/how-it-works/#g-group-cap" data-tip="Each group can add at most its cap, so ten weak visual hints never outweigh one strong behaviour signal." title="Each group can add at most its cap, so ten weak visual hints never outweigh one strong behaviour signal." aria-label="What is this? Each group can add at most its cap, so ten weak visual hints never outweigh one strong behaviour signal.">?</span> <span class="muted">· stop correlated evidence from double counting</span></h2>
       
       <div style="display:grid;grid-template-columns:100px 1fr 96px;gap:10px;align-items:center;margin:5px 0">
@@ -742,13 +749,19 @@ A Facebook page named “ShopNova Support”, created 18 days ago, renamed since
           · <span class="mono muted small">5f8f48c77ee2</span>
           </li>
         
+        <li class="changed"><span class="mono small">2026-10-18 06:29:19</span>
+          · HTTP — · state flagged · datacenter
+          · <span style="color:var(--high)">content changed</span>
+          · <span class="mono muted small">460d05bf98df</span>
+          </li>
+        
       </ul>
-      <p class="small muted">first seen 2026-10-12 06:41 · scans 2 · next — · candidate state flagged · <a href="#history" data-goto="history">WHOIS history →</a></p>
+      <p class="small muted">first seen 2026-10-12 06:41 · scans 3 · next — · candidate state flagged · <a href="#history" data-goto="history">WHOIS history →</a></p>
     </div>
     <div class="panel">
       <h2>Score history</h2>
       <table class="small"><tr><th>When</th><th class="right">Score</th><th>Severity</th><th class="right">Confidence</th><th>Version</th></tr>
-        <tr><td class="mono">2026-10-12 06:41:46</td><td class="right mono">100</td><td>critical</td><td class="right mono">85%</td><td class="mono">social-v1-6ace7e14</td></tr><tr><td class="mono">2026-10-12 06:46:00 <span class="pill">current</span></td><td class="right mono">100</td><td>critical</td><td class="right mono">85%</td><td class="mono">social-v1-6ace7e14</td></tr>
+        <tr><td class="mono">2026-10-12 06:41:46</td><td class="right mono">100</td><td>critical</td><td class="right mono">85%</td><td class="mono">social-v1-6ace7e14</td></tr><tr><td class="mono">2026-10-12 06:46:00</td><td class="right mono">100</td><td>critical</td><td class="right mono">85%</td><td class="mono">social-v1-6ace7e14</td></tr><tr><td class="mono">2026-10-18 06:29:19 <span class="pill">current</span></td><td class="right mono">100</td><td>critical</td><td class="right mono">85%</td><td class="mono">social-v1-6ace7e14</td></tr>
       </table>
     </div>
   </div>
@@ -764,6 +777,22 @@ A Facebook page named “ShopNova Support”, created 18 days ago, renamed since
     <table>
       <tr><th>Observed (UTC)</th><th>Type</th><th>Role</th><th>Source</th><th>SHA-256</th><th>Details</th><th></th></tr>
       <tr>
+        <td class="mono small">2026-10-18 06:29:19</td>
+        <td class="mono">favicon</td>
+        <td><span class="badge state">context</span></td>
+        <td class="small" title="collected by brandwatch.social@0.0.1">facebook:profile_picture</td>
+        <td class="mono small muted" title="ffd6e7f7b2b08577ffb9c8582e156333cc8737fdb6f60ecab703b9dab6ac817e">ffd6e7f7b2b08577</td>
+        <td class="small"><span class="pill" title="phash: dc966349c3693c96">phash: dc966349c3693c96</span> <span class="pill" title="profile_picture: True">profile_picture: True</span> </td>
+        <td><a href="/api/evidence/24281ffa-6011-43e1-a11e-b21bba2c6124/artifact" target="_blank">artifact</a></td>
+      </tr><tr>
+        <td class="mono small">2026-10-18 06:29:19</td>
+        <td class="mono">http</td>
+        <td><span class="badge state">supporting</span></td>
+        <td class="small" title="collected by brandwatch.social@0.0.1">searchapi:social</td>
+        <td class="mono small muted" title="460d05bf98df3954f72ff4a7a3f4d5fbe53a5eba165bab32d33538788dcc430c">460d05bf98df3954</td>
+        <td class="small"><span class="pill" title="status: positive">status: positive</span> <span class="pill" title="platform: facebook">platform: facebook</span> <span class="pill" title="name: ShopNova Support">name: ShopNova Support</span> <span class="muted small" title="url: https://www.facebook.com/shopnova.support.help&#10;">+1</span></td>
+        <td><a href="/api/evidence/61e98c8a-21eb-4f9b-8fda-69e6882557c3/artifact" target="_blank">artifact</a></td>
+      </tr><tr>
         <td class="mono small">2026-10-12 06:46:00</td>
         <td class="mono">favicon</td>
         <td><span class="badge state">context</span></td>

@@ -207,11 +207,11 @@ header nav{display:flex;align-items:center;min-width:0}
 <p class="intro">The append-only audit trail: who did what, when, old → new, and why. The database itself refuses to edit or delete it.</p>
 
 <div class="kpis">
-  <div class="kpi"><div class="v" data-count="280">0</div><div class="l">events (latest)</div></div>
-  <div class="kpi"><div class="v" data-count="89">0</div><div class="l">analyst actions</div></div>
-  <div class="kpi"><div class="v" data-count="191">0</div><div class="l">system actions</div></div>
+  <div class="kpi"><div class="v" data-count="275">0</div><div class="l">events (latest)</div></div>
+  <div class="kpi"><div class="v" data-count="68">0</div><div class="l">analyst actions</div></div>
+  <div class="kpi"><div class="v" data-count="207">0</div><div class="l">system actions</div></div>
   <div class="kpi"><div class="v" data-count="36">0</div><div class="l">verdicts recorded</div></div>
-  <div class="kpi"><div class="v" data-count="5">0</div><div class="l">logins (24h)</div></div>
+  <div class="kpi"><div class="v" data-count="6">0</div><div class="l">logins (24h)</div></div>
 </div>
 
 <div class="grid" style="grid-template-columns:2.2fr 1fr;margin-top:14px">
@@ -224,20 +224,736 @@ header nav{display:flex;align-items:center;min-width:0}
     <div class="feed" id="feed">
       
       
-      <div class="day" data-day="2026-10-14">2026-10-14</div>
+      <div class="day" data-day="2026-10-18">2026-10-18</div>
       <div class="ev " data-cat="user" data-notable="0" style="--r:0;display:none">
         <div class="av " title="admin">AD</div>
         <div>
-          <div class="what"><span class="muted">admin</span> <b>user</b> · login <span class="pill" title="17 consecutive events, first 2026-10-14 10:24">×17</span>
+          <div class="what"><span class="muted">admin</span> <b>user</b> · login <span class="pill" title="5 consecutive events, first 2026-10-18 07:32">×5</span>
             
             <span class="muted small">user bc089017</span></div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T14:39:43.419439+00:00" title="2026-10-14T14:39:43.419439+00:00">2026-10-14 14:39:43</div>
+        <div class="when" data-rel="2026-10-18T08:15:35.968674+00:00" title="2026-10-18T08:15:35.968674+00:00">2026-10-18 08:15:35</div>
       </div>
       
       
-      <div class="ev " data-cat="report" data-notable="1" style="--r:1">
+      <div class="ev " data-cat="notification" data-notable="1" style="--r:1">
+        <div class="av sys" title="system">SYS</div>
+        <div>
+          <div class="what"><span class="muted">system</span> <b>notification</b> · sent
+            
+            <span class="muted small">notification shopnova-login.com</span></div>
+          
+          
+          <div class="diff"><span class="new">channel: log · subject: [BrandWatch] CRITICAL rescored: shopnova-login.com impersonates ShopNova · kind: finding</span>
+            </div>
+          
+        </div>
+        <div class="when" data-rel="2026-10-18T07:32:13.769318+00:00" title="2026-10-18T07:32:13.769318+00:00">2026-10-18 07:32:13</div>
+      </div>
+      
+      
+      <div class="ev " data-cat="finding" data-notable="1" style="--r:2">
+        <div class="av sys" title="system">SYS</div>
+        <div>
+          <div class="what"><span class="muted">system</span> <b>finding</b> · rescored
+            
+            <span class="muted small">finding <a href="/ui/findings/5d2ee722-749b-41e5-8f7d-d89bccda56f9/" class="mono">shopnova-login.com ↗</a></span></div>
+          
+          
+          <div class="diff"><span class="old">severity: critical · confidence: 100.0</span> → <span class="new">severity: critical · score: 81 · confidence: 100.0 · scoring version: v7-7e02b8b1</span>
+            <div style="color:var(--text);opacity:.8;margin-top:2px">“17 signals fired; rules: [&#39;pixel_clone_login&#39;, &#39;fresh_lookalike_login&#39;, &#39;brand_title_login&#39;, &#39;campaign_linked_login&#39;, &#39;looks_like_brand_verdict&#39;]; already confirmed by an analyst — score history appended”</div></div>
+          
+        </div>
+        <div class="when" data-rel="2026-10-18T07:32:13.756289+00:00" title="2026-10-18T07:32:13.756289+00:00">2026-10-18 07:32:13</div>
+      </div>
+      
+      
+      <div class="ev " data-cat="notification" data-notable="1" style="--r:3">
+        <div class="av sys" title="system">SYS</div>
+        <div>
+          <div class="what"><span class="muted">system</span> <b>notification</b> · sent
+            
+            <span class="muted small">notification shopnova-support-center.com</span></div>
+          
+          
+          <div class="diff"><span class="new">channel: log · subject: [BrandWatch] CRITICAL rescored: shopnova-support-center.com impersonates ShopNova · kind: finding</span>
+            </div>
+          
+        </div>
+        <div class="when" data-rel="2026-10-18T07:32:13.349904+00:00" title="2026-10-18T07:32:13.349904+00:00">2026-10-18 07:32:13</div>
+      </div>
+      
+      
+      <div class="ev " data-cat="finding" data-notable="1" style="--r:4">
+        <div class="av sys" title="system">SYS</div>
+        <div>
+          <div class="what"><span class="muted">system</span> <b>finding</b> · rescored
+            
+            <span class="muted small">finding <a href="/ui/findings/226b88f3-c048-4394-987b-32bc526c461c/" class="mono">shopnova-support-center.com ↗</a></span></div>
+          
+          
+          <div class="diff"><span class="old">severity: critical · confidence: 100.0</span> → <span class="new">severity: critical · score: 81 · confidence: 100.0 · scoring version: v7-7e02b8b1</span>
+            <div style="color:var(--text);opacity:.8;margin-top:2px">“11 signals fired; rules: [&#39;brand_title_login&#39;, &#39;campaign_linked_login&#39;]; already confirmed by an analyst — score history appended”</div></div>
+          
+        </div>
+        <div class="when" data-rel="2026-10-18T07:32:13.322714+00:00" title="2026-10-18T07:32:13.322714+00:00">2026-10-18 07:32:13</div>
+      </div>
+      
+      
+      <div class="ev " data-cat="notification" data-notable="1" style="--r:5">
+        <div class="av sys" title="system">SYS</div>
+        <div>
+          <div class="what"><span class="muted">system</span> <b>notification</b> · sent
+            
+            <span class="muted small">notification shopnova-login.com</span></div>
+          
+          
+          <div class="diff"><span class="new">channel: log · subject: [BrandWatch] CRITICAL rescored: shopnova-login.com impersonates ShopNova · kind: finding</span>
+            </div>
+          
+        </div>
+        <div class="when" data-rel="2026-10-18T07:32:12.949459+00:00" title="2026-10-18T07:32:12.949459+00:00">2026-10-18 07:32:12</div>
+      </div>
+      
+      
+      <div class="ev " data-cat="finding" data-notable="1" style="--r:6">
+        <div class="av sys" title="system">SYS</div>
+        <div>
+          <div class="what"><span class="muted">system</span> <b>finding</b> · rescored
+            
+            <span class="muted small">finding <a href="/ui/findings/6d7c2f47-cf77-4992-9dce-622f09bbf0bf/" class="mono">shopnova-login.com ↗</a></span></div>
+          
+          
+          <div class="diff"><span class="old">severity: critical · confidence: 70.0</span> → <span class="new">severity: critical · score: 100 · confidence: 70 · scoring version: aianswer-v1-e26ad54f</span>
+            <div style="color:var(--text);opacity:.8;margin-top:2px">“3 signals fired; rules: []”</div></div>
+          
+        </div>
+        <div class="when" data-rel="2026-10-18T07:32:12.939844+00:00" title="2026-10-18T07:32:12.939844+00:00">2026-10-18 07:32:12</div>
+      </div>
+      
+      
+      <div class="ev " data-cat="notification" data-notable="1" style="--r:7">
+        <div class="av sys" title="system">SYS</div>
+        <div>
+          <div class="what"><span class="muted">system</span> <b>notification</b> · sent
+            
+            <span class="muted small">notification help@shopnova-care.net</span></div>
+          
+          
+          <div class="diff"><span class="new">channel: log · subject: [BrandWatch] HIGH rescored: help@shopnova-care.net impersonates ShopNova · kind: finding</span>
+            </div>
+          
+        </div>
+        <div class="when" data-rel="2026-10-18T07:32:12.926460+00:00" title="2026-10-18T07:32:12.926460+00:00">2026-10-18 07:32:12</div>
+      </div>
+      
+      
+      <div class="ev " data-cat="finding" data-notable="1" style="--r:8">
+        <div class="av sys" title="system">SYS</div>
+        <div>
+          <div class="what"><span class="muted">system</span> <b>finding</b> · rescored
+            
+            <span class="muted small">finding <a href="/ui/findings/de838d76-5b19-4caf-9212-8d9a60589653/" class="mono">help@shopnova-care.net ↗</a></span></div>
+          
+          
+          <div class="diff"><span class="old">severity: high · confidence: 75.0</span> → <span class="new">severity: high · score: 70 · confidence: 75 · scoring version: aianswer-v1-e26ad54f</span>
+            <div style="color:var(--text);opacity:.8;margin-top:2px">“3 signals fired; rules: []”</div></div>
+          
+        </div>
+        <div class="when" data-rel="2026-10-18T07:32:12.913865+00:00" title="2026-10-18T07:32:12.913865+00:00">2026-10-18 07:32:12</div>
+      </div>
+      
+      
+      <div class="ev " data-cat="notification" data-notable="1" style="--r:9">
+        <div class="av sys" title="system">SYS</div>
+        <div>
+          <div class="what"><span class="muted">system</span> <b>notification</b> · sent
+            
+            <span class="muted small">notification 03-9817777</span></div>
+          
+          
+          <div class="diff"><span class="new">channel: log · subject: [BrandWatch] CRITICAL rescored: 03-9817777 impersonates ShopNova · kind: finding</span>
+            </div>
+          
+        </div>
+        <div class="when" data-rel="2026-10-18T07:32:12.894461+00:00" title="2026-10-18T07:32:12.894461+00:00">2026-10-18 07:32:12</div>
+      </div>
+      
+      
+      <div class="ev " data-cat="finding" data-notable="1" style="--r:10">
+        <div class="av sys" title="system">SYS</div>
+        <div>
+          <div class="what"><span class="muted">system</span> <b>finding</b> · rescored
+            
+            <span class="muted small">finding <a href="/ui/findings/27ceca7f-5129-4f1d-ad51-b194ed5448f9/" class="mono">03-9817777 ↗</a></span></div>
+          
+          
+          <div class="diff"><span class="old">severity: critical · confidence: 85.0</span> → <span class="new">severity: critical · score: 100 · confidence: 85 · scoring version: aianswer-v1-e26ad54f</span>
+            <div style="color:var(--text);opacity:.8;margin-top:2px">“4 signals fired; rules: []”</div></div>
+          
+        </div>
+        <div class="when" data-rel="2026-10-18T07:32:12.883415+00:00" title="2026-10-18T07:32:12.883415+00:00">2026-10-18 07:32:12</div>
+      </div>
+      
+      
+      <div class="ev " data-cat="scan" data-notable="1" style="--r:11">
+        <div class="av " title="admin">AD</div>
+        <div>
+          <div class="what"><span class="muted">admin</span> <b>scan</b> · started
+            
+            <span class="muted small">scan job <a href="/ui/jobs/add4c607-69e3-40f1-a14b-92a326cd31b0/" class="mono">brand scan add4c607 ↗</a></span></div>
+          
+          
+          <div class="diff"><span class="new">kind: brand_scan · brand: ShopNova</span>
+            </div>
+          
+        </div>
+        <div class="when" data-rel="2026-10-18T07:32:12.572608+00:00" title="2026-10-18T07:32:12.572608+00:00">2026-10-18 07:32:12</div>
+      </div>
+      
+      
+      <div class="ev " data-cat="brand" data-notable="1" style="--r:12">
+        <div class="av " title="admin">AD</div>
+        <div>
+          <div class="what"><span class="muted">admin</span> <b>brand</b> · ai prompts approved
+            
+            <span class="muted small">brand <a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/" class="mono">ShopNova ↗</a></span></div>
+          
+          
+          <div class="diff"><span class="old">approved: {&#39;text&#39;: &#39;What is the customer service phone number of ShopNova?&#39;, &#39;topic&#39;: &#39;support_phone&#39;, &#39;lang&#39;: &#39;en&#39;}, {&#39;text&#39;: &#39;How can I contact ShopNova? Give me every way: phone, e-mail, WhatsApp.&#39;, &#39;topic&#39;: &#39;contact&#39;, &#39;lang&#39;: &#39;en&#39;}, {&#39;text&#39;: &#39;Where do I log in to my ShopNova account? What is the address?&#39;, &#39;topic&#39;: &#39;login&#39;, &#39;lang&#39;: &#39;en&#39;}, {&#39;text&#39;: &#39;How do I report fraud or a stolen card to ShopNova? What number do I call?&#39;, &#39;topic&#39;: &#39;fraud&#39;, &#39;lang&#39;: &#39;en&#39;}</span> → <span class="new">approved: {&#39;text&#39;: &#39;What is the customer service phone number of ShopNova?&#39;, &#39;topic&#39;: &#39;support_phone&#39;, &#39;lang&#39;: &#39;en&#39;}, {&#39;text&#39;: &#39;How can I contact ShopNova? Give me every way: phone, e-mail, WhatsApp.&#39;, &#39;topic&#39;: &#39;contact&#39;, &#39;lang&#39;: &#39;en&#39;}, {&#39;text&#39;: &#39;Where do I log in to my ShopNova account? What is the address?&#39;, &#39;topic&#39;: &#39;login&#39;, &#39;lang&#39;: &#39;en&#39;}, {&#39;text&#39;: &#39;How do I report fraud or a stolen card to ShopNova? What number do I call?&#39;, &#39;topic&#39;: &#39;fraud&#39;, &#39;lang&#39;: &#39;en&#39;}</span>
+            </div>
+          
+        </div>
+        <div class="when" data-rel="2026-10-18T07:32:09.694731+00:00" title="2026-10-18T07:32:09.694731+00:00">2026-10-18 07:32:09</div>
+      </div>
+      
+      
+      <div class="ev " data-cat="scan" data-notable="1" style="--r:13">
+        <div class="av " title="admin">AD</div>
+        <div>
+          <div class="what"><span class="muted">admin</span> <b>scan</b> · started
+            
+            <span class="muted small">scan job <a href="/ui/jobs/83304658-0ee3-419c-8bab-fb9b4730af9b/" class="mono">brand scan 83304658 ↗</a></span></div>
+          
+          
+          <div class="diff"><span class="new">kind: brand_scan · brand: ShopNova</span>
+            </div>
+          
+        </div>
+        <div class="when" data-rel="2026-10-18T07:32:06.133868+00:00" title="2026-10-18T07:32:06.133868+00:00">2026-10-18 07:32:06</div>
+      </div>
+      
+      
+      <div class="ev " data-cat="user" data-notable="0" style="--r:14;display:none">
+        <div class="av " title="admin">AD</div>
+        <div>
+          <div class="what"><span class="muted">admin</span> <b>user</b> · login <span class="pill" title="2 consecutive events, first 2026-10-18 07:29">×2</span>
+            
+            <span class="muted small">user bc089017</span></div>
+          
+        </div>
+        <div class="when" data-rel="2026-10-18T07:32:01.827694+00:00" title="2026-10-18T07:32:01.827694+00:00">2026-10-18 07:32:01</div>
+      </div>
+      
+      
+      <div class="ev " data-cat="notification" data-notable="1" style="--r:15">
+        <div class="av sys" title="system">SYS</div>
+        <div>
+          <div class="what"><span class="muted">system</span> <b>notification</b> · sent
+            
+            <span class="muted small">notification shopnova-login.com</span></div>
+          
+          
+          <div class="diff"><span class="new">channel: log · subject: [BrandWatch] CRITICAL rescored: shopnova-login.com impersonates ShopNova · kind: finding</span>
+            </div>
+          
+        </div>
+        <div class="when" data-rel="2026-10-18T07:29:26.280085+00:00" title="2026-10-18T07:29:26.280085+00:00">2026-10-18 07:29:26</div>
+      </div>
+      
+      
+      <div class="ev " data-cat="finding" data-notable="1" style="--r:16">
+        <div class="av sys" title="system">SYS</div>
+        <div>
+          <div class="what"><span class="muted">system</span> <b>finding</b> · rescored
+            
+            <span class="muted small">finding <a href="/ui/findings/5d2ee722-749b-41e5-8f7d-d89bccda56f9/" class="mono">shopnova-login.com ↗</a></span></div>
+          
+          
+          <div class="diff"><span class="old">severity: critical · confidence: 100.0</span> → <span class="new">severity: critical · score: 81 · confidence: 100.0 · scoring version: v7-7e02b8b1</span>
+            <div style="color:var(--text);opacity:.8;margin-top:2px">“17 signals fired; rules: [&#39;pixel_clone_login&#39;, &#39;fresh_lookalike_login&#39;, &#39;brand_title_login&#39;, &#39;campaign_linked_login&#39;, &#39;looks_like_brand_verdict&#39;]; already confirmed by an analyst — score history appended”</div></div>
+          
+        </div>
+        <div class="when" data-rel="2026-10-18T07:29:26.271442+00:00" title="2026-10-18T07:29:26.271442+00:00">2026-10-18 07:29:26</div>
+      </div>
+      
+      
+      <div class="ev " data-cat="notification" data-notable="1" style="--r:17">
+        <div class="av sys" title="system">SYS</div>
+        <div>
+          <div class="what"><span class="muted">system</span> <b>notification</b> · sent
+            
+            <span class="muted small">notification shopnova-support-center.com</span></div>
+          
+          
+          <div class="diff"><span class="new">channel: log · subject: [BrandWatch] CRITICAL rescored: shopnova-support-center.com impersonates ShopNova · kind: finding</span>
+            </div>
+          
+        </div>
+        <div class="when" data-rel="2026-10-18T07:29:25.998527+00:00" title="2026-10-18T07:29:25.998527+00:00">2026-10-18 07:29:25</div>
+      </div>
+      
+      
+      <div class="ev " data-cat="finding" data-notable="1" style="--r:18">
+        <div class="av sys" title="system">SYS</div>
+        <div>
+          <div class="what"><span class="muted">system</span> <b>finding</b> · rescored
+            
+            <span class="muted small">finding <a href="/ui/findings/226b88f3-c048-4394-987b-32bc526c461c/" class="mono">shopnova-support-center.com ↗</a></span></div>
+          
+          
+          <div class="diff"><span class="old">severity: critical · confidence: 100.0</span> → <span class="new">severity: critical · score: 81 · confidence: 100.0 · scoring version: v7-7e02b8b1</span>
+            <div style="color:var(--text);opacity:.8;margin-top:2px">“11 signals fired; rules: [&#39;brand_title_login&#39;, &#39;campaign_linked_login&#39;]; already confirmed by an analyst — score history appended”</div></div>
+          
+        </div>
+        <div class="when" data-rel="2026-10-18T07:29:25.993528+00:00" title="2026-10-18T07:29:25.993528+00:00">2026-10-18 07:29:25</div>
+      </div>
+      
+      
+      <div class="ev " data-cat="notification" data-notable="1" style="--r:19">
+        <div class="av sys" title="system">SYS</div>
+        <div>
+          <div class="what"><span class="muted">system</span> <b>notification</b> · sent
+            
+            <span class="muted small">notification shopnova-login.com</span></div>
+          
+          
+          <div class="diff"><span class="new">channel: log · subject: [BrandWatch] CRITICAL new finding: shopnova-login.com impersonates ShopNova · kind: finding</span>
+            </div>
+          
+        </div>
+        <div class="when" data-rel="2026-10-18T07:29:25.760151+00:00" title="2026-10-18T07:29:25.760151+00:00">2026-10-18 07:29:25</div>
+      </div>
+      
+      
+      <div class="ev " data-cat="finding" data-notable="1" style="--r:20">
+        <div class="av sys" title="system">SYS</div>
+        <div>
+          <div class="what"><span class="muted">system</span> <b>finding</b> · created
+            
+            <span class="muted small">finding <a href="/ui/findings/6d7c2f47-cf77-4992-9dce-622f09bbf0bf/" class="mono">shopnova-login.com ↗</a></span></div>
+          
+          
+          <div class="diff"><span class="new">severity: critical · score: 100 · confidence: 70 · scoring version: aianswer-v1-e26ad54f</span>
+            <div style="color:var(--text);opacity:.8;margin-top:2px">“3 signals fired; rules: []”</div></div>
+          
+        </div>
+        <div class="when" data-rel="2026-10-18T07:29:25.749620+00:00" title="2026-10-18T07:29:25.749620+00:00">2026-10-18 07:29:25</div>
+      </div>
+      
+      
+      <div class="ev " data-cat="notification" data-notable="1" style="--r:21">
+        <div class="av sys" title="system">SYS</div>
+        <div>
+          <div class="what"><span class="muted">system</span> <b>notification</b> · sent
+            
+            <span class="muted small">notification help@shopnova-care.net</span></div>
+          
+          
+          <div class="diff"><span class="new">channel: log · subject: [BrandWatch] HIGH new finding: help@shopnova-care.net impersonates ShopNova · kind: finding</span>
+            </div>
+          
+        </div>
+        <div class="when" data-rel="2026-10-18T07:29:25.730573+00:00" title="2026-10-18T07:29:25.730573+00:00">2026-10-18 07:29:25</div>
+      </div>
+      
+      
+      <div class="ev " data-cat="finding" data-notable="1" style="--r:22">
+        <div class="av sys" title="system">SYS</div>
+        <div>
+          <div class="what"><span class="muted">system</span> <b>finding</b> · created
+            
+            <span class="muted small">finding <a href="/ui/findings/de838d76-5b19-4caf-9212-8d9a60589653/" class="mono">help@shopnova-care.net ↗</a></span></div>
+          
+          
+          <div class="diff"><span class="new">severity: high · score: 70 · confidence: 75 · scoring version: aianswer-v1-e26ad54f</span>
+            <div style="color:var(--text);opacity:.8;margin-top:2px">“3 signals fired; rules: []”</div></div>
+          
+        </div>
+        <div class="when" data-rel="2026-10-18T07:29:25.721526+00:00" title="2026-10-18T07:29:25.721526+00:00">2026-10-18 07:29:25</div>
+      </div>
+      
+      
+      <div class="ev " data-cat="notification" data-notable="1" style="--r:23">
+        <div class="av sys" title="system">SYS</div>
+        <div>
+          <div class="what"><span class="muted">system</span> <b>notification</b> · sent
+            
+            <span class="muted small">notification 03-9817777</span></div>
+          
+          
+          <div class="diff"><span class="new">channel: log · subject: [BrandWatch] CRITICAL new finding: 03-9817777 impersonates ShopNova · kind: finding</span>
+            </div>
+          
+        </div>
+        <div class="when" data-rel="2026-10-18T07:29:25.699446+00:00" title="2026-10-18T07:29:25.699446+00:00">2026-10-18 07:29:25</div>
+      </div>
+      
+      
+      <div class="ev " data-cat="finding" data-notable="1" style="--r:24">
+        <div class="av sys" title="system">SYS</div>
+        <div>
+          <div class="what"><span class="muted">system</span> <b>finding</b> · created
+            
+            <span class="muted small">finding <a href="/ui/findings/27ceca7f-5129-4f1d-ad51-b194ed5448f9/" class="mono">03-9817777 ↗</a></span></div>
+          
+          
+          <div class="diff"><span class="new">severity: critical · score: 100 · confidence: 85 · scoring version: aianswer-v1-e26ad54f</span>
+            <div style="color:var(--text);opacity:.8;margin-top:2px">“4 signals fired; rules: []”</div></div>
+          
+        </div>
+        <div class="when" data-rel="2026-10-18T07:29:25.688339+00:00" title="2026-10-18T07:29:25.688339+00:00">2026-10-18 07:29:25</div>
+      </div>
+      
+      
+      <div class="ev " data-cat="scan" data-notable="1" style="--r:25">
+        <div class="av " title="admin">AD</div>
+        <div>
+          <div class="what"><span class="muted">admin</span> <b>scan</b> · started
+            
+            <span class="muted small">scan job <a href="/ui/jobs/c6235eee-88a6-40cf-aeb3-f1a46a2f6eba/" class="mono">brand scan c6235eee ↗</a></span></div>
+          
+          
+          <div class="diff"><span class="new">kind: brand_scan · brand: ShopNova</span>
+            </div>
+          
+        </div>
+        <div class="when" data-rel="2026-10-18T07:29:25.488991+00:00" title="2026-10-18T07:29:25.488991+00:00">2026-10-18 07:29:25</div>
+      </div>
+      
+      
+      <div class="ev " data-cat="brand" data-notable="1" style="--r:26">
+        <div class="av " title="admin">AD</div>
+        <div>
+          <div class="what"><span class="muted">admin</span> <b>brand</b> · ai prompts approved
+            
+            <span class="muted small">brand <a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/" class="mono">ShopNova ↗</a></span></div>
+          
+          
+          <div class="diff"><span class="old">approved: None</span> → <span class="new">approved: {&#39;text&#39;: &#39;What is the customer service phone number of ShopNova?&#39;, &#39;topic&#39;: &#39;support_phone&#39;, &#39;lang&#39;: &#39;en&#39;}, {&#39;text&#39;: &#39;How can I contact ShopNova? Give me every way: phone, e-mail, WhatsApp.&#39;, &#39;topic&#39;: &#39;contact&#39;, &#39;lang&#39;: &#39;en&#39;}, {&#39;text&#39;: &#39;Where do I log in to my ShopNova account? What is the address?&#39;, &#39;topic&#39;: &#39;login&#39;, &#39;lang&#39;: &#39;en&#39;}, {&#39;text&#39;: &#39;How do I report fraud or a stolen card to ShopNova? What number do I call?&#39;, &#39;topic&#39;: &#39;fraud&#39;, &#39;lang&#39;: &#39;en&#39;}</span>
+            </div>
+          
+        </div>
+        <div class="when" data-rel="2026-10-18T07:29:22.955941+00:00" title="2026-10-18T07:29:22.955941+00:00">2026-10-18 07:29:22</div>
+      </div>
+      
+      
+      <div class="ev " data-cat="scan" data-notable="1" style="--r:27">
+        <div class="av " title="admin">AD</div>
+        <div>
+          <div class="what"><span class="muted">admin</span> <b>scan</b> · started
+            
+            <span class="muted small">scan job <a href="/ui/jobs/9279aa02-4e5a-49ba-9a34-f0b6f5cd0b9d/" class="mono">brand scan 9279aa02 ↗</a></span></div>
+          
+          
+          <div class="diff"><span class="new">kind: brand_scan · brand: ShopNova</span>
+            </div>
+          
+        </div>
+        <div class="when" data-rel="2026-10-18T07:29:19.593400+00:00" title="2026-10-18T07:29:19.593400+00:00">2026-10-18 07:29:19</div>
+      </div>
+      
+      
+      <div class="ev " data-cat="brand" data-notable="1" style="--r:28">
+        <div class="av " title="admin">AD</div>
+        <div>
+          <div class="what"><span class="muted">admin</span> <b>brand</b> · config updated
+            
+            <span class="muted small">brand <a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/" class="mono">ShopNova ↗</a></span></div>
+          
+          
+          <div class="diff"><span class="old">preset: enterprise · scoring version: v7-7e02b8b1</span> → <span class="new">preset: enterprise · scoring version: v7-7e02b8b1 · rescored: 0 · changed: detection</span>
+            </div>
+          
+        </div>
+        <div class="when" data-rel="2026-10-18T07:29:18.590986+00:00" title="2026-10-18T07:29:18.590986+00:00">2026-10-18 07:29:18</div>
+      </div>
+      
+      
+      <div class="ev " data-cat="user" data-notable="0" style="--r:29;display:none">
+        <div class="av " title="admin">AD</div>
+        <div>
+          <div class="what"><span class="muted">admin</span> <b>user</b> · login
+            
+            <span class="muted small">user bc089017</span></div>
+          
+        </div>
+        <div class="when" data-rel="2026-10-18T07:29:12.527700+00:00" title="2026-10-18T07:29:12.527700+00:00">2026-10-18 07:29:12</div>
+      </div>
+      
+      
+      <div class="ev " data-cat="brand" data-notable="1" style="--r:30">
+        <div class="av " title="admin">AD</div>
+        <div>
+          <div class="what"><span class="muted">admin</span> <b>brand</b> · baseline built
+            
+            <span class="muted small">brand <a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/" class="mono">ShopNova ↗</a></span></div>
+          
+          
+          <div class="diff"><span class="new">{"fetch": {"kind": "ok", "ok": true, "status": 200, "url": "https://shopnova.com/", "vendor": null}, "unavailable": [], "version": 3, "via": "datacenter"}</span>
+            </div>
+          
+        </div>
+        <div class="when" data-rel="2026-10-18T06:30:01.062059+00:00" title="2026-10-18T06:30:01.062059+00:00">2026-10-18 06:30:01</div>
+      </div>
+      
+      
+      <div class="ev " data-cat="user" data-notable="0" style="--r:30;display:none">
+        <div class="av " title="admin">AD</div>
+        <div>
+          <div class="what"><span class="muted">admin</span> <b>user</b> · login <span class="pill" title="2 consecutive events, first 2026-10-18 06:29">×2</span>
+            
+            <span class="muted small">user bc089017</span></div>
+          
+        </div>
+        <div class="when" data-rel="2026-10-18T06:29:59.651413+00:00" title="2026-10-18T06:29:59.651413+00:00">2026-10-18 06:29:59</div>
+      </div>
+      
+      
+      <div class="ev " data-cat="notification" data-notable="1" style="--r:30">
+        <div class="av sys" title="system">SYS</div>
+        <div>
+          <div class="what"><span class="muted">system</span> <b>notification</b> · sent
+            
+            <span class="muted small">notification shopnova-refund.net</span></div>
+          
+          
+          <div class="diff"><span class="new">channel: log · subject: [BrandWatch] CRITICAL new finding: shopnova-refund.net impersonates ShopNova · kind: finding</span>
+            </div>
+          
+        </div>
+        <div class="when" data-rel="2026-10-18T06:29:19.948811+00:00" title="2026-10-18T06:29:19.948811+00:00">2026-10-18 06:29:19</div>
+      </div>
+      
+      
+      <div class="ev " data-cat="finding" data-notable="1" style="--r:30">
+        <div class="av sys" title="system">SYS</div>
+        <div>
+          <div class="what"><span class="muted">system</span> <b>finding</b> · created
+            
+            <span class="muted small">finding <a href="/ui/findings/6fc97f7b-606c-4e8f-89dd-19b57358c6ff/" class="mono">shopnova-refund.net ↗</a></span></div>
+          
+          
+          <div class="diff"><span class="new">severity: critical · score: 89 · confidence: 100.0 · scoring version: v7-7e02b8b1</span>
+            <div style="color:var(--text);opacity:.8;margin-top:2px">“15 signals fired; rules: [&#39;pixel_clone_login&#39;, &#39;fresh_lookalike_login&#39;, &#39;brand_title_login&#39;, &#39;campaign_linked_login&#39;, &#39;looks_like_brand_verdict&#39;]”</div></div>
+          
+        </div>
+        <div class="when" data-rel="2026-10-18T06:29:19.940619+00:00" title="2026-10-18T06:29:19.940619+00:00">2026-10-18 06:29:19</div>
+      </div>
+      
+      
+      <div class="ev " data-cat="notification" data-notable="1" style="--r:30">
+        <div class="av sys" title="system">SYS</div>
+        <div>
+          <div class="what"><span class="muted">system</span> <b>notification</b> · sent
+            
+            <span class="muted small">notification onestyle-shopping.com</span></div>
+          
+          
+          <div class="diff"><span class="new">channel: log · subject: [BrandWatch] CRITICAL rescored: onestyle-shopping.com impersonates ShopNova · kind: finding</span>
+            </div>
+          
+        </div>
+        <div class="when" data-rel="2026-10-18T06:29:19.586387+00:00" title="2026-10-18T06:29:19.586387+00:00">2026-10-18 06:29:19</div>
+      </div>
+      
+      
+      <div class="ev " data-cat="finding" data-notable="1" style="--r:30">
+        <div class="av sys" title="system">SYS</div>
+        <div>
+          <div class="what"><span class="muted">system</span> <b>finding</b> · rescored
+            
+            <span class="muted small">finding <a href="/ui/findings/3f10d506-29e2-4c08-bfce-bfb343c7d5f1/" class="mono">onestyle-shopping.com ↗</a></span></div>
+          
+          
+          <div class="diff"><span class="old">severity: critical · confidence: 90.0</span> → <span class="new">severity: critical · score: 85 · confidence: 90 · scoring version: shop-v2-d92668ce</span>
+            <div style="color:var(--text);opacity:.8;margin-top:2px">“10 signals fired; rules: []; already confirmed by an analyst — score history appended”</div></div>
+          
+        </div>
+        <div class="when" data-rel="2026-10-18T06:29:19.572661+00:00" title="2026-10-18T06:29:19.572661+00:00">2026-10-18 06:29:19</div>
+      </div>
+      
+      
+      <div class="ev " data-cat="notification" data-notable="1" style="--r:30">
+        <div class="av sys" title="system">SYS</div>
+        <div>
+          <div class="what"><span class="muted">system</span> <b>notification</b> · sent
+            
+            <span class="muted small">notification facebook.com/shopnova.support.help</span></div>
+          
+          
+          <div class="diff"><span class="new">channel: log · subject: [BrandWatch] CRITICAL rescored: facebook.com/shopnova.support.help impersonates ShopNova · kind: finding</span>
+            </div>
+          
+        </div>
+        <div class="when" data-rel="2026-10-18T06:29:19.289273+00:00" title="2026-10-18T06:29:19.289273+00:00">2026-10-18 06:29:19</div>
+      </div>
+      
+      
+      <div class="ev " data-cat="finding" data-notable="1" style="--r:30">
+        <div class="av sys" title="system">SYS</div>
+        <div>
+          <div class="what"><span class="muted">system</span> <b>finding</b> · rescored
+            
+            <span class="muted small">finding <a href="/ui/findings/2e59c045-14b0-4c09-baac-28046be16ff5/" class="mono">facebook.com/shopnova.support.help ↗</a></span></div>
+          
+          
+          <div class="diff"><span class="old">severity: critical · confidence: 85.0</span> → <span class="new">severity: critical · score: 100 · confidence: 85 · scoring version: social-v1-6ace7e14</span>
+            <div style="color:var(--text);opacity:.8;margin-top:2px">“9 signals fired; rules: []”</div></div>
+          
+        </div>
+        <div class="when" data-rel="2026-10-18T06:29:19.284167+00:00" title="2026-10-18T06:29:19.284167+00:00">2026-10-18 06:29:19</div>
+      </div>
+      
+      
+      <div class="ev " data-cat="notification" data-notable="1" style="--r:30">
+        <div class="av sys" title="system">SYS</div>
+        <div>
+          <div class="what"><span class="muted">system</span> <b>notification</b> · sent
+            
+            <span class="muted small">notification instagram.com/shopnova.israel.official</span></div>
+          
+          
+          <div class="diff"><span class="new">channel: log · subject: [BrandWatch] CRITICAL rescored: instagram.com/shopnova.israel.official impersonates ShopNova · kind: finding</span>
+            </div>
+          
+        </div>
+        <div class="when" data-rel="2026-10-18T06:29:19.269985+00:00" title="2026-10-18T06:29:19.269985+00:00">2026-10-18 06:29:19</div>
+      </div>
+      
+      
+      <div class="ev " data-cat="finding" data-notable="1" style="--r:30">
+        <div class="av sys" title="system">SYS</div>
+        <div>
+          <div class="what"><span class="muted">system</span> <b>finding</b> · rescored
+            
+            <span class="muted small">finding <a href="/ui/findings/d89d7f73-509b-4dab-b831-7ebdd96d6c06/" class="mono">instagram.com/shopnova.israel.official ↗</a></span></div>
+          
+          
+          <div class="diff"><span class="old">severity: critical · confidence: 80.0</span> → <span class="new">severity: critical · score: 86 · confidence: 80 · scoring version: social-v1-6ace7e14</span>
+            <div style="color:var(--text);opacity:.8;margin-top:2px">“5 signals fired; rules: []”</div></div>
+          
+        </div>
+        <div class="when" data-rel="2026-10-18T06:29:19.260104+00:00" title="2026-10-18T06:29:19.260104+00:00">2026-10-18 06:29:19</div>
+      </div>
+      
+      
+      <div class="ev " data-cat="scan" data-notable="1" style="--r:30">
+        <div class="av " title="admin">AD</div>
+        <div>
+          <div class="what"><span class="muted">admin</span> <b>scan</b> · started
+            
+            <span class="muted small">scan job <a href="/ui/jobs/e0e299ac-e32b-4844-b9c9-b460344dfae2/" class="mono">brand scan e0e299ac ↗</a></span></div>
+          
+          
+          <div class="diff"><span class="new">kind: brand_scan · brand: ShopNova</span>
+            </div>
+          
+        </div>
+        <div class="when" data-rel="2026-10-18T06:29:19.150585+00:00" title="2026-10-18T06:29:19.150585+00:00">2026-10-18 06:29:19</div>
+      </div>
+      
+      
+      <div class="ev " data-cat="brand" data-notable="1" style="--r:30">
+        <div class="av " title="admin">AD</div>
+        <div>
+          <div class="what"><span class="muted">admin</span> <b>brand</b> · config updated
+            
+            <span class="muted small">brand <a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/" class="mono">ShopNova ↗</a></span></div>
+          
+          
+          <div class="diff"><span class="old">preset: enterprise · scoring version: v7-7e02b8b1</span> → <span class="new">preset: enterprise · scoring version: v7-7e02b8b1 · rescored: 0 · changed: detection</span>
+            </div>
+          
+        </div>
+        <div class="when" data-rel="2026-10-18T06:29:17.417077+00:00" title="2026-10-18T06:29:17.417077+00:00">2026-10-18 06:29:17</div>
+      </div>
+      
+      
+      <div class="ev " data-cat="brand" data-notable="1" style="--r:30">
+        <div class="av " title="admin">AD</div>
+        <div>
+          <div class="what"><span class="muted">admin</span> <b>brand</b> · config updated
+            
+            <span class="muted small">brand <a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/" class="mono">ShopNova ↗</a></span></div>
+          
+          
+          <div class="diff"><span class="old">preset: enterprise · scoring version: v2-c213b21d</span> → <span class="new">preset: enterprise · scoring version: v7-7e02b8b1 · rescored: 0 · changed: detection</span>
+            </div>
+          
+        </div>
+        <div class="when" data-rel="2026-10-18T06:29:16.392939+00:00" title="2026-10-18T06:29:16.392939+00:00">2026-10-18 06:29:16</div>
+      </div>
+      
+      
+      <div class="ev " data-cat="brand" data-notable="1" style="--r:30">
+        <div class="av " title="admin">AD</div>
+        <div>
+          <div class="what"><span class="muted">admin</span> <b>brand</b> · site link ours
+            
+            <span class="muted small">brand <a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/" class="mono">ShopNova ↗</a></span></div>
+          
+          
+          <div class="diff"><span class="new">key: social:x:shopnova · kind: social</span>
+            </div>
+          
+        </div>
+        <div class="when" data-rel="2026-10-18T06:29:14.689456+00:00" title="2026-10-18T06:29:14.689456+00:00">2026-10-18 06:29:14</div>
+      </div>
+      
+      
+      <div class="ev " data-cat="user" data-notable="0" style="--r:30;display:none">
+        <div class="av " title="admin">AD</div>
+        <div>
+          <div class="what"><span class="muted">admin</span> <b>user</b> · login
+            
+            <span class="muted small">user bc089017</span></div>
+          
+        </div>
+        <div class="when" data-rel="2026-10-18T06:29:10.982860+00:00" title="2026-10-18T06:29:10.982860+00:00">2026-10-18 06:29:10</div>
+      </div>
+      
+      
+      <div class="ev " data-cat="brand" data-notable="1" style="--r:30">
+        <div class="av " title="admin">AD</div>
+        <div>
+          <div class="what"><span class="muted">admin</span> <b>brand</b> · baseline built
+            
+            <span class="muted small">brand <a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/" class="mono">ShopNova ↗</a></span></div>
+          
+          
+          <div class="diff"><span class="new">{"fetch": {"kind": "ok", "ok": true, "status": 200, "url": "https://shopnova.com/", "vendor": null}, "unavailable": [], "version": 2, "via": "datacenter"}</span>
+            </div>
+          
+        </div>
+        <div class="when" data-rel="2026-10-18T06:16:04.046867+00:00" title="2026-10-18T06:16:04.046867+00:00">2026-10-18 06:16:04</div>
+      </div>
+      
+      
+      <div class="ev " data-cat="user" data-notable="0" style="--r:30;display:none">
+        <div class="av " title="admin">AD</div>
+        <div>
+          <div class="what"><span class="muted">admin</span> <b>user</b> · login <span class="pill" title="20 consecutive events, first 2026-10-14 10:24">×20</span>
+            
+            <span class="muted small">user bc089017</span></div>
+          
+        </div>
+        <div class="when" data-rel="2026-10-18T06:16:01.378105+00:00" title="2026-10-18T06:16:01.378105+00:00">2026-10-18 06:16:01</div>
+      </div>
+      
+      <div class="day" data-day="2026-10-14">2026-10-14</div>
+      <div class="ev " data-cat="report" data-notable="1" style="--r:30">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>report</b> · generated
@@ -253,7 +969,7 @@ header nav{display:flex;align-items:center;min-width:0}
       </div>
       
       
-      <div class="ev " data-cat="campaign" data-notable="1" style="--r:2">
+      <div class="ev " data-cat="campaign" data-notable="1" style="--r:30">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>campaign</b> · investigated
@@ -269,7 +985,7 @@ header nav{display:flex;align-items:center;min-width:0}
       </div>
       
       
-      <div class="ev " data-cat="intel" data-notable="1" style="--r:3">
+      <div class="ev " data-cat="intel" data-notable="1" style="--r:30">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>intel</b> · started
@@ -285,7 +1001,7 @@ header nav{display:flex;align-items:center;min-width:0}
       </div>
       
       
-      <div class="ev " data-cat="investigation" data-notable="1" style="--r:4">
+      <div class="ev " data-cat="investigation" data-notable="1" style="--r:30">
         <div class="av sys" title="admin">SYS</div>
         <div>
           <div class="what"><span class="muted">admin</span> <b>investigation</b> · started
@@ -301,7 +1017,7 @@ header nav{display:flex;align-items:center;min-width:0}
       </div>
       
       
-      <div class="ev t-crit" data-cat="finding" data-notable="1" style="--r:5">
+      <div class="ev t-crit" data-cat="finding" data-notable="1" style="--r:30">
         <div class="av " title="admin">AD</div>
         <div>
           <div class="what"><span class="muted">admin</span> <b>finding</b> · confirmed
@@ -317,7 +1033,7 @@ header nav{display:flex;align-items:center;min-width:0}
       </div>
       
       
-      <div class="ev " data-cat="report" data-notable="1" style="--r:6">
+      <div class="ev " data-cat="report" data-notable="1" style="--r:30">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>report</b> · generated
@@ -333,7 +1049,7 @@ header nav{display:flex;align-items:center;min-width:0}
       </div>
       
       
-      <div class="ev " data-cat="campaign" data-notable="1" style="--r:7">
+      <div class="ev " data-cat="campaign" data-notable="1" style="--r:30">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>campaign</b> · investigated
@@ -349,7 +1065,7 @@ header nav{display:flex;align-items:center;min-width:0}
       </div>
       
       
-      <div class="ev " data-cat="intel" data-notable="1" style="--r:8">
+      <div class="ev " data-cat="intel" data-notable="1" style="--r:30">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>intel</b> · started
@@ -365,7 +1081,7 @@ header nav{display:flex;align-items:center;min-width:0}
       </div>
       
       
-      <div class="ev " data-cat="investigation" data-notable="1" style="--r:9">
+      <div class="ev " data-cat="investigation" data-notable="1" style="--r:30">
         <div class="av sys" title="admin">SYS</div>
         <div>
           <div class="what"><span class="muted">admin</span> <b>investigation</b> · started
@@ -381,7 +1097,7 @@ header nav{display:flex;align-items:center;min-width:0}
       </div>
       
       
-      <div class="ev t-crit" data-cat="finding" data-notable="1" style="--r:10">
+      <div class="ev t-crit" data-cat="finding" data-notable="1" style="--r:30">
         <div class="av " title="admin">AD</div>
         <div>
           <div class="what"><span class="muted">admin</span> <b>finding</b> · confirmed
@@ -397,7 +1113,7 @@ header nav{display:flex;align-items:center;min-width:0}
       </div>
       
       
-      <div class="ev " data-cat="campaign" data-notable="1" style="--r:11">
+      <div class="ev " data-cat="campaign" data-notable="1" style="--r:30">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>campaign</b> · investigated
@@ -413,7 +1129,7 @@ header nav{display:flex;align-items:center;min-width:0}
       </div>
       
       
-      <div class="ev " data-cat="report" data-notable="1" style="--r:12">
+      <div class="ev " data-cat="report" data-notable="1" style="--r:30">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>report</b> · generated
@@ -429,7 +1145,7 @@ header nav{display:flex;align-items:center;min-width:0}
       </div>
       
       
-      <div class="ev " data-cat="intel" data-notable="1" style="--r:13">
+      <div class="ev " data-cat="intel" data-notable="1" style="--r:30">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>intel</b> · started
@@ -445,7 +1161,7 @@ header nav{display:flex;align-items:center;min-width:0}
       </div>
       
       
-      <div class="ev " data-cat="investigation" data-notable="1" style="--r:14">
+      <div class="ev " data-cat="investigation" data-notable="1" style="--r:30">
         <div class="av sys" title="admin">SYS</div>
         <div>
           <div class="what"><span class="muted">admin</span> <b>investigation</b> · started
@@ -461,7 +1177,7 @@ header nav{display:flex;align-items:center;min-width:0}
       </div>
       
       
-      <div class="ev t-crit" data-cat="finding" data-notable="1" style="--r:15">
+      <div class="ev t-crit" data-cat="finding" data-notable="1" style="--r:30">
         <div class="av " title="admin">AD</div>
         <div>
           <div class="what"><span class="muted">admin</span> <b>finding</b> · confirmed
@@ -477,7 +1193,7 @@ header nav{display:flex;align-items:center;min-width:0}
       </div>
       
       
-      <div class="ev " data-cat="report" data-notable="1" style="--r:16">
+      <div class="ev " data-cat="report" data-notable="1" style="--r:30">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>report</b> · generated
@@ -493,7 +1209,7 @@ header nav{display:flex;align-items:center;min-width:0}
       </div>
       
       
-      <div class="ev " data-cat="campaign" data-notable="1" style="--r:17">
+      <div class="ev " data-cat="campaign" data-notable="1" style="--r:30">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>campaign</b> · investigated
@@ -509,7 +1225,7 @@ header nav{display:flex;align-items:center;min-width:0}
       </div>
       
       
-      <div class="ev " data-cat="intel" data-notable="1" style="--r:18">
+      <div class="ev " data-cat="intel" data-notable="1" style="--r:30">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>intel</b> · started
@@ -525,7 +1241,7 @@ header nav{display:flex;align-items:center;min-width:0}
       </div>
       
       
-      <div class="ev " data-cat="investigation" data-notable="1" style="--r:19">
+      <div class="ev " data-cat="investigation" data-notable="1" style="--r:30">
         <div class="av sys" title="admin">SYS</div>
         <div>
           <div class="what"><span class="muted">admin</span> <b>investigation</b> · started
@@ -541,7 +1257,7 @@ header nav{display:flex;align-items:center;min-width:0}
       </div>
       
       
-      <div class="ev t-crit" data-cat="finding" data-notable="1" style="--r:20">
+      <div class="ev t-crit" data-cat="finding" data-notable="1" style="--r:30">
         <div class="av " title="admin">AD</div>
         <div>
           <div class="what"><span class="muted">admin</span> <b>finding</b> · confirmed
@@ -557,7 +1273,7 @@ header nav{display:flex;align-items:center;min-width:0}
       </div>
       
       
-      <div class="ev " data-cat="report" data-notable="1" style="--r:21">
+      <div class="ev " data-cat="report" data-notable="1" style="--r:30">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>report</b> · generated
@@ -573,7 +1289,7 @@ header nav{display:flex;align-items:center;min-width:0}
       </div>
       
       
-      <div class="ev " data-cat="campaign" data-notable="1" style="--r:22">
+      <div class="ev " data-cat="campaign" data-notable="1" style="--r:30">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>campaign</b> · investigated
@@ -589,7 +1305,7 @@ header nav{display:flex;align-items:center;min-width:0}
       </div>
       
       
-      <div class="ev " data-cat="intel" data-notable="1" style="--r:23">
+      <div class="ev " data-cat="intel" data-notable="1" style="--r:30">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>intel</b> · started
@@ -605,7 +1321,7 @@ header nav{display:flex;align-items:center;min-width:0}
       </div>
       
       
-      <div class="ev " data-cat="investigation" data-notable="1" style="--r:24">
+      <div class="ev " data-cat="investigation" data-notable="1" style="--r:30">
         <div class="av sys" title="admin">SYS</div>
         <div>
           <div class="what"><span class="muted">admin</span> <b>investigation</b> · started
@@ -621,7 +1337,7 @@ header nav{display:flex;align-items:center;min-width:0}
       </div>
       
       
-      <div class="ev t-crit" data-cat="finding" data-notable="1" style="--r:25">
+      <div class="ev t-crit" data-cat="finding" data-notable="1" style="--r:30">
         <div class="av " title="admin">AD</div>
         <div>
           <div class="what"><span class="muted">admin</span> <b>finding</b> · confirmed
@@ -637,7 +1353,7 @@ header nav{display:flex;align-items:center;min-width:0}
       </div>
       
       
-      <div class="ev " data-cat="report" data-notable="1" style="--r:26">
+      <div class="ev " data-cat="report" data-notable="1" style="--r:30">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>report</b> · generated
@@ -653,7 +1369,7 @@ header nav{display:flex;align-items:center;min-width:0}
       </div>
       
       
-      <div class="ev " data-cat="campaign" data-notable="1" style="--r:27">
+      <div class="ev " data-cat="campaign" data-notable="1" style="--r:30">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>campaign</b> · investigated
@@ -669,7 +1385,7 @@ header nav{display:flex;align-items:center;min-width:0}
       </div>
       
       
-      <div class="ev " data-cat="intel" data-notable="1" style="--r:28">
+      <div class="ev " data-cat="intel" data-notable="1" style="--r:30">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>intel</b> · started
@@ -685,7 +1401,7 @@ header nav{display:flex;align-items:center;min-width:0}
       </div>
       
       
-      <div class="ev " data-cat="investigation" data-notable="1" style="--r:29">
+      <div class="ev " data-cat="investigation" data-notable="1" style="--r:30">
         <div class="av sys" title="admin">SYS</div>
         <div>
           <div class="what"><span class="muted">admin</span> <b>investigation</b> · started
@@ -3877,806 +4593,6 @@ header nav{display:flex;align-items:center;min-width:0}
       </div>
       
       
-      <div class="ev " data-cat="finding" data-notable="1" style="--r:30">
-        <div class="av sys" title="system">SYS</div>
-        <div>
-          <div class="what"><span class="muted">system</span> <b>finding</b> · created
-            
-            <span class="muted small">finding <a href="/ui/findings/4aa4555a-8a52-4bab-a6da-8427753c97d3/" class="mono">koinpilot.io ↗</a></span></div>
-          
-          
-          <div class="diff"><span class="new">severity: critical · score: 75 · confidence: 90.0 · scoring version: v7-f1ba3ebf</span>
-            <div style="color:var(--text);opacity:.8;margin-top:2px">“11 signals fired; rules: [&#39;pixel_clone_login&#39;, &#39;affiliate_redirect_verdict&#39;, &#39;redirect_service_verdict&#39;]”</div></div>
-          
-        </div>
-        <div class="when" data-rel="2026-10-14T09:46:22.942631+00:00" title="2026-10-14T09:46:22.942631+00:00">2026-10-14 09:46:22</div>
-      </div>
-      
-      
-      <div class="ev " data-cat="notification" data-notable="1" style="--r:30">
-        <div class="av sys" title="system">SYS</div>
-        <div>
-          <div class="what"><span class="muted">system</span> <b>notification</b> · sent
-            
-            <span class="muted small">notification coinplot.io</span></div>
-          
-          
-          <div class="diff"><span class="new">channel: log · subject: [BrandWatch] CRITICAL new finding: coinplot.io impersonates CoinPilot · kind: finding</span>
-            </div>
-          
-        </div>
-        <div class="when" data-rel="2026-10-14T09:46:22.851413+00:00" title="2026-10-14T09:46:22.851413+00:00">2026-10-14 09:46:22</div>
-      </div>
-      
-      
-      <div class="ev " data-cat="finding" data-notable="1" style="--r:30">
-        <div class="av sys" title="system">SYS</div>
-        <div>
-          <div class="what"><span class="muted">system</span> <b>finding</b> · created
-            
-            <span class="muted small">finding <a href="/ui/findings/fd5a72c5-532f-4614-a113-c4d848d99888/" class="mono">coinplot.io ↗</a></span></div>
-          
-          
-          <div class="diff"><span class="new">severity: critical · score: 75 · confidence: 100.0 · scoring version: v7-f1ba3ebf</span>
-            <div style="color:var(--text);opacity:.8;margin-top:2px">“11 signals fired; rules: [&#39;pixel_clone_login&#39;, &#39;affiliate_redirect_verdict&#39;, &#39;redirect_service_verdict&#39;]”</div></div>
-          
-        </div>
-        <div class="when" data-rel="2026-10-14T09:46:22.845184+00:00" title="2026-10-14T09:46:22.845184+00:00">2026-10-14 09:46:22</div>
-      </div>
-      
-      
-      <div class="ev " data-cat="notification" data-notable="1" style="--r:30">
-        <div class="av sys" title="system">SYS</div>
-        <div>
-          <div class="what"><span class="muted">system</span> <b>notification</b> · sent
-            
-            <span class="muted small">notification coinpllot.io</span></div>
-          
-          
-          <div class="diff"><span class="new">channel: log · subject: [BrandWatch] CRITICAL new finding: coinpllot.io impersonates CoinPilot · kind: finding</span>
-            </div>
-          
-        </div>
-        <div class="when" data-rel="2026-10-14T09:46:22.689295+00:00" title="2026-10-14T09:46:22.689295+00:00">2026-10-14 09:46:22</div>
-      </div>
-      
-      
-      <div class="ev " data-cat="finding" data-notable="1" style="--r:30">
-        <div class="av sys" title="system">SYS</div>
-        <div>
-          <div class="what"><span class="muted">system</span> <b>finding</b> · created
-            
-            <span class="muted small">finding <a href="/ui/findings/198e2d54-3884-47d5-a887-1d328cce77c2/" class="mono">coinpllot.io ↗</a></span></div>
-          
-          
-          <div class="diff"><span class="new">severity: critical · score: 75 · confidence: 90.0 · scoring version: v7-f1ba3ebf</span>
-            <div style="color:var(--text);opacity:.8;margin-top:2px">“11 signals fired; rules: [&#39;pixel_clone_login&#39;, &#39;affiliate_redirect_verdict&#39;, &#39;redirect_service_verdict&#39;]”</div></div>
-          
-        </div>
-        <div class="when" data-rel="2026-10-14T09:46:22.664398+00:00" title="2026-10-14T09:46:22.664398+00:00">2026-10-14 09:46:22</div>
-      </div>
-      
-      
-      <div class="ev " data-cat="notification" data-notable="1" style="--r:30">
-        <div class="av sys" title="system">SYS</div>
-        <div>
-          <div class="what"><span class="muted">system</span> <b>notification</b> · sent
-            
-            <span class="muted small">notification coinpilott.io</span></div>
-          
-          
-          <div class="diff"><span class="new">channel: log · subject: [BrandWatch] CRITICAL new finding: coinpilott.io impersonates CoinPilot · kind: finding</span>
-            </div>
-          
-        </div>
-        <div class="when" data-rel="2026-10-14T09:46:22.493581+00:00" title="2026-10-14T09:46:22.493581+00:00">2026-10-14 09:46:22</div>
-      </div>
-      
-      
-      <div class="ev " data-cat="finding" data-notable="1" style="--r:30">
-        <div class="av sys" title="system">SYS</div>
-        <div>
-          <div class="what"><span class="muted">system</span> <b>finding</b> · created
-            
-            <span class="muted small">finding <a href="/ui/findings/5da0ffd7-d892-4cfd-9f55-c87b543dfac7/" class="mono">coinpilott.io ↗</a></span></div>
-          
-          
-          <div class="diff"><span class="new">severity: critical · score: 75 · confidence: 90.0 · scoring version: v7-f1ba3ebf</span>
-            <div style="color:var(--text);opacity:.8;margin-top:2px">“10 signals fired; rules: [&#39;pixel_clone_login&#39;, &#39;affiliate_redirect_verdict&#39;, &#39;redirect_service_verdict&#39;]”</div></div>
-          
-        </div>
-        <div class="when" data-rel="2026-10-14T09:46:22.478579+00:00" title="2026-10-14T09:46:22.478579+00:00">2026-10-14 09:46:22</div>
-      </div>
-      
-      
-      <div class="ev " data-cat="scan" data-notable="1" style="--r:30">
-        <div class="av " title="admin">AD</div>
-        <div>
-          <div class="what"><span class="muted">admin</span> <b>scan</b> · started
-            
-            <span class="muted small">scan job <a href="/ui/jobs/f358cb03-973d-48a8-925a-07f8346453e2" class="mono">URL scan f358cb03 ↗</a></span></div>
-          
-          
-          <div class="diff"><span class="new">kind: url_scan · brand: CoinPilot · urls: 7</span>
-            </div>
-          
-        </div>
-        <div class="when" data-rel="2026-10-14T09:46:21.923467+00:00" title="2026-10-14T09:46:21.923467+00:00">2026-10-14 09:46:21</div>
-      </div>
-      
-      
-      <div class="ev " data-cat="brand" data-notable="1" style="--r:30">
-        <div class="av " title="admin">AD</div>
-        <div>
-          <div class="what"><span class="muted">admin</span> <b>brand</b> · config updated
-            
-            <span class="muted small">brand <a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/" class="mono">CoinPilot ↗</a></span></div>
-          
-          
-          <div class="diff"><span class="old">preset: standard · scoring version: v7</span> → <span class="new">preset: standard · scoring version: v7-f1ba3ebf · rescored: 0 · changed: detection</span>
-            </div>
-          
-        </div>
-        <div class="when" data-rel="2026-10-14T09:46:21.873128+00:00" title="2026-10-14T09:46:21.873128+00:00">2026-10-14 09:46:21</div>
-      </div>
-      
-      
-      <div class="ev " data-cat="brand" data-notable="1" style="--r:30">
-        <div class="av " title="admin">AD</div>
-        <div>
-          <div class="what"><span class="muted">admin</span> <b>brand</b> · created
-            
-            <span class="muted small">brand <a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/" class="mono">CoinPilot ↗</a></span></div>
-          
-          
-          <div class="diff"><span class="new">{"custom": false, "domains": ["coinpilot.io", "www.coinpilot.io"], "kind": "service", "name": "CoinPilot", "official_apps": [], "preset": "standard"}</span>
-            </div>
-          
-        </div>
-        <div class="when" data-rel="2026-10-14T09:46:21.852127+00:00" title="2026-10-14T09:46:21.852127+00:00">2026-10-14 09:46:21</div>
-      </div>
-      
-      
-      <div class="ev " data-cat="user" data-notable="0" style="--r:30;display:none">
-        <div class="av " title="admin">AD</div>
-        <div>
-          <div class="what"><span class="muted">admin</span> <b>user</b> · login
-            
-            <span class="muted small">user bc089017</span></div>
-          
-        </div>
-        <div class="when" data-rel="2026-10-14T09:46:21.817739+00:00" title="2026-10-14T09:46:21.817739+00:00">2026-10-14 09:46:21</div>
-      </div>
-      
-      
-      <div class="ev " data-cat="report" data-notable="1" style="--r:30">
-        <div class="av sys" title="system">SYS</div>
-        <div>
-          <div class="what"><span class="muted">system</span> <b>report</b> · generated
-            
-            <span class="muted small">finding <a href="/ui/findings/5d2ee722-749b-41e5-8f7d-d89bccda56f9/" class="mono">shopnova-login.com ↗</a></span></div>
-          
-          
-          <div class="diff"><span class="new">{"reports": {"html": "92e67f24-197c-4a11-b937-cbfe0961c9b3", "json": "82afa35d-86ef-453f-834a-b0c3513d74fa"}}</span>
-            </div>
-          
-        </div>
-        <div class="when" data-rel="2026-10-14T07:49:56.576304+00:00" title="2026-10-14T07:49:56.576304+00:00">2026-10-14 07:49:56</div>
-      </div>
-      
-      
-      <div class="ev " data-cat="intel" data-notable="1" style="--r:30">
-        <div class="av sys" title="system">SYS</div>
-        <div>
-          <div class="what"><span class="muted">system</span> <b>intel</b> · started
-            
-            <span class="muted small">finding <a href="/ui/findings/5d2ee722-749b-41e5-8f7d-d89bccda56f9/" class="mono">shopnova-login.com ↗</a></span></div>
-          
-          
-          <div class="diff"><span class="new">force: no · light: yes · package: yes · auto: yes</span>
-            </div>
-          
-        </div>
-        <div class="when" data-rel="2026-10-14T07:49:55.976176+00:00" title="2026-10-14T07:49:55.976176+00:00">2026-10-14 07:49:55</div>
-      </div>
-      
-      
-      <div class="ev " data-cat="campaign" data-notable="1" style="--r:30">
-        <div class="av sys" title="system">SYS</div>
-        <div>
-          <div class="what"><span class="muted">system</span> <b>campaign</b> · investigated
-            
-            <span class="muted small">campaign <a href="/ui/campaigns/ed261645-3852-41ef-b1ec-685edfa64648/" class="mono">ShopNova campaign 2CB73388 ↗</a></span></div>
-          
-          
-          <div class="diff"><span class="new">{"api_calls": 5, "budget_exhausted": null, "edges": 3, "included": 3, "iocs": 5, "nodes": 4}</span>
-            </div>
-          
-        </div>
-        <div class="when" data-rel="2026-10-14T07:49:46.767782+00:00" title="2026-10-14T07:49:46.767782+00:00">2026-10-14 07:49:46</div>
-      </div>
-      
-      
-      <div class="ev " data-cat="investigation" data-notable="1" style="--r:30">
-        <div class="av " title="admin">AD</div>
-        <div>
-          <div class="what"><span class="muted">admin</span> <b>investigation</b> · started
-            
-            <span class="muted small">finding <a href="/ui/findings/2cb73388-b4b7-4b89-bb02-e10192947e09/" class="mono">shopnova-refund.net ↗</a></span></div>
-          
-          
-          <div class="diff"><span class="new">auto: no</span>
-            </div>
-          
-        </div>
-        <div class="when" data-rel="2026-10-14T07:49:46.460599+00:00" title="2026-10-14T07:49:46.460599+00:00">2026-10-14 07:49:46</div>
-      </div>
-      
-      
-      <div class="ev " data-cat="user" data-notable="0" style="--r:30;display:none">
-        <div class="av " title="admin">AD</div>
-        <div>
-          <div class="what"><span class="muted">admin</span> <b>user</b> · login <span class="pill" title="2 consecutive events, first 2026-10-13 12:59">×2</span>
-            
-            <span class="muted small">user bc089017</span></div>
-          
-        </div>
-        <div class="when" data-rel="2026-10-14T07:48:43.370503+00:00" title="2026-10-14T07:48:43.370503+00:00">2026-10-14 07:48:43</div>
-      </div>
-      
-      <div class="day" data-day="2026-10-13">2026-10-13</div>
-      <div class="ev " data-cat="brand" data-notable="1" style="--r:30">
-        <div class="av " title="admin">AD</div>
-        <div>
-          <div class="what"><span class="muted">admin</span> <b>brand</b> · purged
-            
-            <span class="muted small">brand <span class="mono" title="this object no longer exists (e.g. its brand was deleted with Start over)">Size a987 · deleted</span></span></div>
-          
-          
-          <div class="diff"><span class="old">name: Size a987 · domains: sizetest-demo.com</span> → <span class="new">{"deleted_rows": {"artifact_files": 0, "brand_domains": 1, "brands": 1, "configs": 1}}</span>
-            </div>
-          
-        </div>
-        <div class="when" data-rel="2026-10-13T08:26:04.401273+00:00" title="2026-10-13T08:26:04.401273+00:00">2026-10-13 08:26:04</div>
-      </div>
-      
-      
-      <div class="ev " data-cat="brand" data-notable="1" style="--r:30">
-        <div class="av " title="admin">AD</div>
-        <div>
-          <div class="what"><span class="muted">admin</span> <b>brand</b> · purged
-            
-            <span class="muted small">brand <span class="mono" title="this object no longer exists (e.g. its brand was deleted with Start over)">Known 5fa8 · deleted</span></span></div>
-          
-          
-          <div class="diff"><span class="old">name: Known 5fa8 · domains: shopnova.com</span> → <span class="new">{"deleted_rows": {"artifact_files": 3, "brand_domains": 1, "brand_fingerprints": 1, "brands": 1, "candidate_sources": 3, "candidates": 3, "configs": 1, "dns_observations": 3, "evidence": 28, "finding_evidence": 28,...</span>
-            </div>
-          
-        </div>
-        <div class="when" data-rel="2026-10-13T08:26:04.327819+00:00" title="2026-10-13T08:26:04.327819+00:00">2026-10-13 08:26:04</div>
-      </div>
-      
-      
-      <div class="ev " data-cat="brand" data-notable="1" style="--r:30">
-        <div class="av " title="admin">AD</div>
-        <div>
-          <div class="what"><span class="muted">admin</span> <b>brand</b> · purged
-            
-            <span class="muted small">brand <span class="mono" title="this object no longer exists (e.g. its brand was deleted with Start over)">MetaMask aad3 · deleted</span></span></div>
-          
-          
-          <div class="diff"><span class="old">name: MetaMask aad3 · domains: metamask.io</span> → <span class="new">{"deleted_rows": {"artifact_files": 0, "brand_domains": 1, "brands": 1, "configs": 1}}</span>
-            </div>
-          
-        </div>
-        <div class="when" data-rel="2026-10-13T08:26:04.146918+00:00" title="2026-10-13T08:26:04.146918+00:00">2026-10-13 08:26:04</div>
-      </div>
-      
-      
-      <div class="ev " data-cat="brand" data-notable="1" style="--r:30">
-        <div class="av " title="admin">AD</div>
-        <div>
-          <div class="what"><span class="muted">admin</span> <b>brand</b> · purged
-            
-            <span class="muted small">brand <span class="mono" title="this object no longer exists (e.g. its brand was deleted with Start over)">MetaMask 83ad · deleted</span></span></div>
-          
-          
-          <div class="diff"><span class="old">name: MetaMask 83ad · domains: metamask.io</span> → <span class="new">{"deleted_rows": {"artifact_files": 0, "brand_domains": 1, "brands": 1, "configs": 1}}</span>
-            </div>
-          
-        </div>
-        <div class="when" data-rel="2026-10-13T08:26:03.942211+00:00" title="2026-10-13T08:26:03.942211+00:00">2026-10-13 08:26:03</div>
-      </div>
-      
-      
-      <div class="ev " data-cat="brand" data-notable="1" style="--r:30">
-        <div class="av " title="admin">AD</div>
-        <div>
-          <div class="what"><span class="muted">admin</span> <b>brand</b> · purged
-            
-            <span class="muted small">brand <span class="mono" title="this object no longer exists (e.g. its brand was deleted with Start over)">MetaMask 05b2 · deleted</span></span></div>
-          
-          
-          <div class="diff"><span class="old">name: MetaMask 05b2 · domains: metamask.io</span> → <span class="new">{"deleted_rows": {"artifact_files": 0, "brand_domains": 1, "brands": 1, "configs": 1}}</span>
-            </div>
-          
-        </div>
-        <div class="when" data-rel="2026-10-13T08:26:03.823220+00:00" title="2026-10-13T08:26:03.823220+00:00">2026-10-13 08:26:03</div>
-      </div>
-      
-      
-      <div class="ev " data-cat="brand" data-notable="1" style="--r:30">
-        <div class="av " title="admin">AD</div>
-        <div>
-          <div class="what"><span class="muted">admin</span> <b>brand</b> · purged
-            
-            <span class="muted small">brand <span class="mono" title="this object no longer exists (e.g. its brand was deleted with Start over)">Snap 0bcc · deleted</span></span></div>
-          
-          
-          <div class="diff"><span class="old">name: Snap 0bcc · domains: shopnova.com</span> → <span class="new">{"deleted_rows": {"artifact_files": 4, "brand_domains": 1, "brand_fingerprints": 1, "brands": 1, "candidate_sources": 2, "candidates": 2, "configs": 1, "dns_observations": 2, "evidence": 23, "finding_evidence": 14,...</span>
-            </div>
-          
-        </div>
-        <div class="when" data-rel="2026-10-13T08:26:03.730694+00:00" title="2026-10-13T08:26:03.730694+00:00">2026-10-13 08:26:03</div>
-      </div>
-      
-      
-      <div class="ev " data-cat="brand" data-notable="1" style="--r:30">
-        <div class="av " title="admin">AD</div>
-        <div>
-          <div class="what"><span class="muted">admin</span> <b>brand</b> · purged
-            
-            <span class="muted small">brand <span class="mono" title="this object no longer exists (e.g. its brand was deleted with Start over)">Trailmark 6c1a · deleted</span></span></div>
-          
-          
-          <div class="diff"><span class="old">name: Trailmark 6c1a · domains: trailmark.com</span> → <span class="new">{"deleted_rows": {"artifact_files": 0, "brand_domains": 1, "brands": 1, "configs": 1}}</span>
-            </div>
-          
-        </div>
-        <div class="when" data-rel="2026-10-13T08:26:03.593784+00:00" title="2026-10-13T08:26:03.593784+00:00">2026-10-13 08:26:03</div>
-      </div>
-      
-      
-      <div class="ev " data-cat="brand" data-notable="1" style="--r:30">
-        <div class="av " title="admin">AD</div>
-        <div>
-          <div class="what"><span class="muted">admin</span> <b>brand</b> · purged
-            
-            <span class="muted small">brand <span class="mono" title="this object no longer exists (e.g. its brand was deleted with Start over)">Ironvale 2ac6 · deleted</span></span></div>
-          
-          
-          <div class="diff"><span class="old">name: Ironvale 2ac6 · domains: ironvale.com</span> → <span class="new">{"deleted_rows": {"artifact_files": 0, "brand_domains": 1, "brand_fingerprints": 1, "brands": 1, "candidate_sources": 1, "candidates": 1, "configs": 1, "dns_observations": 1, "evidence": 1, "observations": 1,...</span>
-            </div>
-          
-        </div>
-        <div class="when" data-rel="2026-10-13T08:26:03.502153+00:00" title="2026-10-13T08:26:03.502153+00:00">2026-10-13 08:26:03</div>
-      </div>
-      
-      
-      <div class="ev " data-cat="brand" data-notable="1" style="--r:30">
-        <div class="av " title="admin">AD</div>
-        <div>
-          <div class="what"><span class="muted">admin</span> <b>brand</b> · purged
-            
-            <span class="muted small">brand <span class="mono" title="this object no longer exists (e.g. its brand was deleted with Start over)">Trailmark 2ac6 · deleted</span></span></div>
-          
-          
-          <div class="diff"><span class="old">name: Trailmark 2ac6 · domains: trailmark.com</span> → <span class="new">{"deleted_rows": {"artifact_files": 0, "brand_domains": 1, "brand_fingerprints": 1, "brands": 1, "candidate_sources": 1, "candidates": 1, "configs": 1, "dns_observations": 1, "evidence": 1, "observations": 1,...</span>
-            </div>
-          
-        </div>
-        <div class="when" data-rel="2026-10-13T08:26:03.372563+00:00" title="2026-10-13T08:26:03.372563+00:00">2026-10-13 08:26:03</div>
-      </div>
-      
-      
-      <div class="ev " data-cat="brand" data-notable="1" style="--r:30">
-        <div class="av " title="admin">AD</div>
-        <div>
-          <div class="what"><span class="muted">admin</span> <b>brand</b> · purged
-            
-            <span class="muted small">brand <span class="mono" title="this object no longer exists (e.g. its brand was deleted with Start over)">Peakline 2ac6 · deleted</span></span></div>
-          
-          
-          <div class="diff"><span class="old">name: Peakline 2ac6 · domains: peakline.com</span> → <span class="new">{"deleted_rows": {"artifact_files": 0, "brand_domains": 1, "brand_fingerprints": 1, "brands": 1, "candidate_sources": 1, "candidates": 1, "configs": 1, "dns_observations": 1, "evidence": 1, "observations": 1,...</span>
-            </div>
-          
-        </div>
-        <div class="when" data-rel="2026-10-13T08:26:03.214057+00:00" title="2026-10-13T08:26:03.214057+00:00">2026-10-13 08:26:03</div>
-      </div>
-      
-      
-      <div class="ev " data-cat="brand" data-notable="1" style="--r:30">
-        <div class="av " title="admin">AD</div>
-        <div>
-          <div class="what"><span class="muted">admin</span> <b>brand</b> · purged
-            
-            <span class="muted small">brand <span class="mono" title="this object no longer exists (e.g. its brand was deleted with Start over)">MyParams 2ac6 · deleted</span></span></div>
-          
-          
-          <div class="diff"><span class="old">name: MyParams 2ac6 · domains: myparams-demo.com</span> → <span class="new">{"deleted_rows": {"artifact_files": 0, "brand_domains": 1, "brands": 1, "configs": 1}}</span>
-            </div>
-          
-        </div>
-        <div class="when" data-rel="2026-10-13T08:26:03.103520+00:00" title="2026-10-13T08:26:03.103520+00:00">2026-10-13 08:26:03</div>
-      </div>
-      
-      
-      <div class="ev " data-cat="brand" data-notable="1" style="--r:30">
-        <div class="av " title="admin">AD</div>
-        <div>
-          <div class="what"><span class="muted">admin</span> <b>brand</b> · purged
-            
-            <span class="muted small">brand <span class="mono" title="this object no longer exists (e.g. its brand was deleted with Start over)">Ironvale aa03 · deleted</span></span></div>
-          
-          
-          <div class="diff"><span class="old">name: Ironvale aa03 · domains: ironvale.com</span> → <span class="new">{"deleted_rows": {"artifact_files": 1, "brand_domains": 1, "brand_fingerprints": 1, "brands": 1, "candidate_sources": 1, "candidates": 1, "configs": 1, "dns_observations": 1, "evidence": 1, "observations": 1,...</span>
-            </div>
-          
-        </div>
-        <div class="when" data-rel="2026-10-13T08:26:02.965680+00:00" title="2026-10-13T08:26:02.965680+00:00">2026-10-13 08:26:02</div>
-      </div>
-      
-      
-      <div class="ev " data-cat="brand" data-notable="1" style="--r:30">
-        <div class="av " title="admin">AD</div>
-        <div>
-          <div class="what"><span class="muted">admin</span> <b>brand</b> · purged
-            
-            <span class="muted small">brand <span class="mono" title="this object no longer exists (e.g. its brand was deleted with Start over)">Trailmark aa03 · deleted</span></span></div>
-          
-          
-          <div class="diff"><span class="old">name: Trailmark aa03 · domains: trailmark.com</span> → <span class="new">{"deleted_rows": {"artifact_files": 2, "brand_domains": 1, "brand_fingerprints": 1, "brands": 1, "candidate_sources": 1, "candidates": 1, "configs": 1, "dns_observations": 1, "evidence": 1, "observations": 1,...</span>
-            </div>
-          
-        </div>
-        <div class="when" data-rel="2026-10-13T08:26:02.814406+00:00" title="2026-10-13T08:26:02.814406+00:00">2026-10-13 08:26:02</div>
-      </div>
-      
-      
-      <div class="ev " data-cat="brand" data-notable="1" style="--r:30">
-        <div class="av " title="admin">AD</div>
-        <div>
-          <div class="what"><span class="muted">admin</span> <b>brand</b> · purged
-            
-            <span class="muted small">brand <span class="mono" title="this object no longer exists (e.g. its brand was deleted with Start over)">Peakline aa03 · deleted</span></span></div>
-          
-          
-          <div class="diff"><span class="old">name: Peakline aa03 · domains: peakline.com</span> → <span class="new">{"deleted_rows": {"artifact_files": 0, "brand_domains": 1, "brand_fingerprints": 1, "brands": 1, "candidate_sources": 1, "candidates": 1, "configs": 1, "dns_observations": 1, "evidence": 1, "observations": 1,...</span>
-            </div>
-          
-        </div>
-        <div class="when" data-rel="2026-10-13T08:26:02.642248+00:00" title="2026-10-13T08:26:02.642248+00:00">2026-10-13 08:26:02</div>
-      </div>
-      
-      
-      <div class="ev " data-cat="brand" data-notable="1" style="--r:30">
-        <div class="av " title="admin">AD</div>
-        <div>
-          <div class="what"><span class="muted">admin</span> <b>brand</b> · purged
-            
-            <span class="muted small">brand <span class="mono" title="this object no longer exists (e.g. its brand was deleted with Start over)">MyParams aa03 · deleted</span></span></div>
-          
-          
-          <div class="diff"><span class="old">name: MyParams aa03 · domains: myparams-demo.com</span> → <span class="new">{"deleted_rows": {"artifact_files": 0, "brand_domains": 1, "brands": 1, "configs": 1}}</span>
-            </div>
-          
-        </div>
-        <div class="when" data-rel="2026-10-13T08:26:02.419270+00:00" title="2026-10-13T08:26:02.419270+00:00">2026-10-13 08:26:02</div>
-      </div>
-      
-      
-      <div class="ev " data-cat="brand" data-notable="1" style="--r:30">
-        <div class="av " title="admin">AD</div>
-        <div>
-          <div class="what"><span class="muted">admin</span> <b>brand</b> · purged
-            
-            <span class="muted small">brand <span class="mono" title="this object no longer exists (e.g. its brand was deleted with Start over)">Peakline left e652 · deleted</span></span></div>
-          
-          
-          <div class="diff"><span class="old">name: Peakline left e652 · domains: peakline.com</span> → <span class="new">{"deleted_rows": {"artifact_files": 0, "brand_domains": 1, "brand_fingerprints": 1, "brands": 1, "configs": 1}}</span>
-            </div>
-          
-        </div>
-        <div class="when" data-rel="2026-10-13T08:26:02.320990+00:00" title="2026-10-13T08:26:02.320990+00:00">2026-10-13 08:26:02</div>
-      </div>
-      
-      
-      <div class="ev " data-cat="brand" data-notable="1" style="--r:30">
-        <div class="av " title="admin">AD</div>
-        <div>
-          <div class="what"><span class="muted">admin</span> <b>brand</b> · purged
-            
-            <span class="muted small">brand <span class="mono" title="this object no longer exists (e.g. its brand was deleted with Start over)">Peakline direct e652 · deleted</span></span></div>
-          
-          
-          <div class="diff"><span class="old">name: Peakline direct e652 · domains: peakline.co.il, peakline.com</span> → <span class="new">{"deleted_rows": {"artifact_files": 0, "brand_domains": 2, "brand_fingerprints": 2, "brands": 1, "configs": 1}}</span>
-            </div>
-          
-        </div>
-        <div class="when" data-rel="2026-10-13T08:26:02.222606+00:00" title="2026-10-13T08:26:02.222606+00:00">2026-10-13 08:26:02</div>
-      </div>
-      
-      
-      <div class="ev " data-cat="brand" data-notable="1" style="--r:30">
-        <div class="av " title="admin">AD</div>
-        <div>
-          <div class="what"><span class="muted">admin</span> <b>brand</b> · purged
-            
-            <span class="muted small">brand <span class="mono" title="this object no longer exists (e.g. its brand was deleted with Start over)">Peakline e652 · deleted</span></span></div>
-          
-          
-          <div class="diff"><span class="old">name: Peakline e652 · domains: peakline.com</span> → <span class="new">{"deleted_rows": {"artifact_files": 0, "brand_domains": 1, "brand_fingerprints": 1, "brands": 1, "configs": 1}}</span>
-            </div>
-          
-        </div>
-        <div class="when" data-rel="2026-10-13T08:26:02.108362+00:00" title="2026-10-13T08:26:02.108362+00:00">2026-10-13 08:26:02</div>
-      </div>
-      
-      
-      <div class="ev " data-cat="brand" data-notable="1" style="--r:30">
-        <div class="av " title="admin">AD</div>
-        <div>
-          <div class="what"><span class="muted">admin</span> <b>brand</b> · purged
-            
-            <span class="muted small">brand <span class="mono" title="this object no longer exists (e.g. its brand was deleted with Start over)">Peakline left 5d75 · deleted</span></span></div>
-          
-          
-          <div class="diff"><span class="old">name: Peakline left 5d75 · domains: peakline.com</span> → <span class="new">{"deleted_rows": {"artifact_files": 0, "brand_domains": 1, "brand_fingerprints": 1, "brands": 1, "configs": 1}}</span>
-            </div>
-          
-        </div>
-        <div class="when" data-rel="2026-10-13T08:26:01.968121+00:00" title="2026-10-13T08:26:01.968121+00:00">2026-10-13 08:26:01</div>
-      </div>
-      
-      
-      <div class="ev " data-cat="brand" data-notable="1" style="--r:30">
-        <div class="av " title="admin">AD</div>
-        <div>
-          <div class="what"><span class="muted">admin</span> <b>brand</b> · purged
-            
-            <span class="muted small">brand <span class="mono" title="this object no longer exists (e.g. its brand was deleted with Start over)">Peakline direct 5d75 · deleted</span></span></div>
-          
-          
-          <div class="diff"><span class="old">name: Peakline direct 5d75 · domains: peakline.co.il, peakline.com</span> → <span class="new">{"deleted_rows": {"artifact_files": 0, "brand_domains": 2, "brand_fingerprints": 2, "brands": 1, "configs": 1}}</span>
-            </div>
-          
-        </div>
-        <div class="when" data-rel="2026-10-13T08:26:01.863932+00:00" title="2026-10-13T08:26:01.863932+00:00">2026-10-13 08:26:01</div>
-      </div>
-      
-      
-      <div class="ev " data-cat="brand" data-notable="1" style="--r:30">
-        <div class="av " title="admin">AD</div>
-        <div>
-          <div class="what"><span class="muted">admin</span> <b>brand</b> · purged
-            
-            <span class="muted small">brand <span class="mono" title="this object no longer exists (e.g. its brand was deleted with Start over)">Peakline 5d75 · deleted</span></span></div>
-          
-          
-          <div class="diff"><span class="old">name: Peakline 5d75 · domains: peakline.com</span> → <span class="new">{"deleted_rows": {"artifact_files": 0, "brand_domains": 1, "brand_fingerprints": 1, "brands": 1, "configs": 1}}</span>
-            </div>
-          
-        </div>
-        <div class="when" data-rel="2026-10-13T08:26:01.749607+00:00" title="2026-10-13T08:26:01.749607+00:00">2026-10-13 08:26:01</div>
-      </div>
-      
-      
-      <div class="ev " data-cat="brand" data-notable="1" style="--r:30">
-        <div class="av " title="admin">AD</div>
-        <div>
-          <div class="what"><span class="muted">admin</span> <b>brand</b> · purged
-            
-            <span class="muted small">brand <span class="mono" title="this object no longer exists (e.g. its brand was deleted with Start over)">Peakline left f4ce · deleted</span></span></div>
-          
-          
-          <div class="diff"><span class="old">name: Peakline left f4ce · domains: peakline.com</span> → <span class="new">{"deleted_rows": {"artifact_files": 0, "brand_domains": 1, "brand_fingerprints": 1, "brands": 1, "configs": 1}}</span>
-            </div>
-          
-        </div>
-        <div class="when" data-rel="2026-10-13T08:26:01.646550+00:00" title="2026-10-13T08:26:01.646550+00:00">2026-10-13 08:26:01</div>
-      </div>
-      
-      
-      <div class="ev " data-cat="brand" data-notable="1" style="--r:30">
-        <div class="av " title="admin">AD</div>
-        <div>
-          <div class="what"><span class="muted">admin</span> <b>brand</b> · purged
-            
-            <span class="muted small">brand <span class="mono" title="this object no longer exists (e.g. its brand was deleted with Start over)">Peakline direct f4ce · deleted</span></span></div>
-          
-          
-          <div class="diff"><span class="old">name: Peakline direct f4ce · domains: peakline.co.il, peakline.com</span> → <span class="new">{"deleted_rows": {"artifact_files": 0, "brand_domains": 2, "brand_fingerprints": 2, "brands": 1, "configs": 1}}</span>
-            </div>
-          
-        </div>
-        <div class="when" data-rel="2026-10-13T08:26:01.512283+00:00" title="2026-10-13T08:26:01.512283+00:00">2026-10-13 08:26:01</div>
-      </div>
-      
-      
-      <div class="ev " data-cat="brand" data-notable="1" style="--r:30">
-        <div class="av " title="admin">AD</div>
-        <div>
-          <div class="what"><span class="muted">admin</span> <b>brand</b> · purged
-            
-            <span class="muted small">brand <span class="mono" title="this object no longer exists (e.g. its brand was deleted with Start over)">Peakline f4ce · deleted</span></span></div>
-          
-          
-          <div class="diff"><span class="old">name: Peakline f4ce · domains: peakline.com</span> → <span class="new">{"deleted_rows": {"artifact_files": 0, "brand_domains": 1, "brand_fingerprints": 1, "brands": 1, "configs": 1}}</span>
-            </div>
-          
-        </div>
-        <div class="when" data-rel="2026-10-13T08:26:01.365254+00:00" title="2026-10-13T08:26:01.365254+00:00">2026-10-13 08:26:01</div>
-      </div>
-      
-      
-      <div class="ev " data-cat="brand" data-notable="1" style="--r:30">
-        <div class="av " title="admin">AD</div>
-        <div>
-          <div class="what"><span class="muted">admin</span> <b>brand</b> · purged
-            
-            <span class="muted small">brand <span class="mono" title="this object no longer exists (e.g. its brand was deleted with Start over)">Peakline direct 9728 · deleted</span></span></div>
-          
-          
-          <div class="diff"><span class="old">name: Peakline direct 9728 · domains: peakline.com</span> → <span class="new">{"deleted_rows": {"artifact_files": 0, "brand_domains": 1, "brand_fingerprints": 1, "brands": 1, "configs": 1}}</span>
-            </div>
-          
-        </div>
-        <div class="when" data-rel="2026-10-13T08:26:01.261651+00:00" title="2026-10-13T08:26:01.261651+00:00">2026-10-13 08:26:01</div>
-      </div>
-      
-      
-      <div class="ev " data-cat="brand" data-notable="1" style="--r:30">
-        <div class="av " title="admin">AD</div>
-        <div>
-          <div class="what"><span class="muted">admin</span> <b>brand</b> · purged
-            
-            <span class="muted small">brand <span class="mono" title="this object no longer exists (e.g. its brand was deleted with Start over)">Peakline 9728 · deleted</span></span></div>
-          
-          
-          <div class="diff"><span class="old">name: Peakline 9728 · domains: peakline.com</span> → <span class="new">{"deleted_rows": {"artifact_files": 0, "brand_domains": 1, "brand_fingerprints": 1, "brands": 1, "configs": 1}}</span>
-            </div>
-          
-        </div>
-        <div class="when" data-rel="2026-10-13T08:26:01.173281+00:00" title="2026-10-13T08:26:01.173281+00:00">2026-10-13 08:26:01</div>
-      </div>
-      
-      
-      <div class="ev " data-cat="brand" data-notable="1" style="--r:30">
-        <div class="av " title="admin">AD</div>
-        <div>
-          <div class="what"><span class="muted">admin</span> <b>brand</b> · purged
-            
-            <span class="muted small">brand <span class="mono" title="this object no longer exists (e.g. its brand was deleted with Start over)">Peakline direct 4f56 · deleted</span></span></div>
-          
-          
-          <div class="diff"><span class="old">name: Peakline direct 4f56 · domains: peakline.com</span> → <span class="new">{"deleted_rows": {"artifact_files": 0, "brand_domains": 1, "brand_fingerprints": 1, "brands": 1, "configs": 1}}</span>
-            </div>
-          
-        </div>
-        <div class="when" data-rel="2026-10-13T08:26:01.057667+00:00" title="2026-10-13T08:26:01.057667+00:00">2026-10-13 08:26:01</div>
-      </div>
-      
-      
-      <div class="ev " data-cat="brand" data-notable="1" style="--r:30">
-        <div class="av " title="admin">AD</div>
-        <div>
-          <div class="what"><span class="muted">admin</span> <b>brand</b> · purged
-            
-            <span class="muted small">brand <span class="mono" title="this object no longer exists (e.g. its brand was deleted with Start over)">Peakline 4f56 · deleted</span></span></div>
-          
-          
-          <div class="diff"><span class="old">name: Peakline 4f56 · domains: peakline.com</span> → <span class="new">{"deleted_rows": {"artifact_files": 2, "brand_domains": 1, "brand_fingerprints": 1, "brands": 1, "configs": 1}}</span>
-            </div>
-          
-        </div>
-        <div class="when" data-rel="2026-10-13T08:26:00.931641+00:00" title="2026-10-13T08:26:00.931641+00:00">2026-10-13 08:26:00</div>
-      </div>
-      
-      
-      <div class="ev " data-cat="brand" data-notable="1" style="--r:30">
-        <div class="av " title="admin">AD</div>
-        <div>
-          <div class="what"><span class="muted">admin</span> <b>brand</b> · purged
-            
-            <span class="muted small">brand <span class="mono" title="this object no longer exists (e.g. its brand was deleted with Start over)">Peakline 5bb9 · deleted</span></span></div>
-          
-          
-          <div class="diff"><span class="old">name: Peakline 5bb9 · domains: peakline.com</span> → <span class="new">{"deleted_rows": {"artifact_files": 0, "brand_domains": 1, "brands": 1, "configs": 1}}</span>
-            </div>
-          
-        </div>
-        <div class="when" data-rel="2026-10-13T08:26:00.606589+00:00" title="2026-10-13T08:26:00.606589+00:00">2026-10-13 08:26:00</div>
-      </div>
-      
-      
-      <div class="ev " data-cat="user" data-notable="0" style="--r:30;display:none">
-        <div class="av " title="admin">AD</div>
-        <div>
-          <div class="what"><span class="muted">admin</span> <b>user</b> · login <span class="pill" title="4 consecutive events, first 2026-10-12 12:10">×4</span>
-            
-            <span class="muted small">user bc089017</span></div>
-          
-        </div>
-        <div class="when" data-rel="2026-10-13T08:26:00.319450+00:00" title="2026-10-13T08:26:00.319450+00:00">2026-10-13 08:26:00</div>
-      </div>
-      
-      <div class="day" data-day="2026-10-12">2026-10-12</div>
-      <div class="ev " data-cat="brand" data-notable="1" style="--r:30">
-        <div class="av " title="admin">AD</div>
-        <div>
-          <div class="what"><span class="muted">admin</span> <b>brand</b> · config updated
-            
-            <span class="muted small">brand <span class="mono" title="this object no longer exists (e.g. its brand was deleted with Start over)">042a1d2a · deleted</span></span></div>
-          
-          
-          <div class="diff"><span class="old">preset: enterprise · scoring version: v3</span> → <span class="new">preset: enterprise · scoring version: v3-cfc56da0 · rescored: 0 · changed: preset, detection, scoring</span>
-            </div>
-          
-        </div>
-        <div class="when" data-rel="2026-10-12T12:10:21.728326+00:00" title="2026-10-12T12:10:21.728326+00:00">2026-10-12 12:10:21</div>
-      </div>
-      
-      
-      <div class="ev " data-cat="brand" data-notable="1" style="--r:30">
-        <div class="av " title="admin">AD</div>
-        <div>
-          <div class="what"><span class="muted">admin</span> <b>brand</b> · created
-            
-            <span class="muted small">brand <span class="mono" title="this object no longer exists (e.g. its brand was deleted with Start over)">042a1d2a · deleted</span></span></div>
-          
-          
-          <div class="diff"><span class="new">{"custom": true, "domains": ["sizetest-demo.com"], "kind": "service", "name": "Size a987", "official_apps": [], "preset": "enterprise"}</span>
-            </div>
-          
-        </div>
-        <div class="when" data-rel="2026-10-12T12:10:21.694956+00:00" title="2026-10-12T12:10:21.694956+00:00">2026-10-12 12:10:21</div>
-      </div>
-      
-      
-      <div class="ev " data-cat="user" data-notable="0" style="--r:30;display:none">
-        <div class="av " title="admin">AD</div>
-        <div>
-          <div class="what"><span class="muted">admin</span> <b>user</b> · login
-            
-            <span class="muted small">user bc089017</span></div>
-          
-        </div>
-        <div class="when" data-rel="2026-10-12T12:10:17.793795+00:00" title="2026-10-12T12:10:17.793795+00:00">2026-10-12 12:10:17</div>
-      </div>
-      
-      
-      <div class="ev " data-cat="notification" data-notable="1" style="--r:30">
-        <div class="av sys" title="system">SYS</div>
-        <div>
-          <div class="what"><span class="muted">system</span> <b>notification</b> · sent
-            
-            <span class="muted small">notification d56c7900</span></div>
-          
-          
-          <div class="diff"><span class="new">channel: log · subject: [BrandWatch] CRITICAL new finding: shopn0va.com impersonates Known 5fa8 · kind: finding</span>
-            </div>
-          
-        </div>
-        <div class="when" data-rel="2026-10-12T11:55:23.735387+00:00" title="2026-10-12T11:55:23.735387+00:00">2026-10-12 11:55:23</div>
-      </div>
-      
-      
-      <div class="ev " data-cat="finding" data-notable="1" style="--r:30">
-        <div class="av sys" title="system">SYS</div>
-        <div>
-          <div class="what"><span class="muted">system</span> <b>finding</b> · created
-            
-            <span class="muted small">finding <span class="mono" title="this object no longer exists (e.g. its brand was deleted with Start over)">d56c7900 · deleted</span></span></div>
-          
-          
-          <div class="diff"><span class="new">severity: critical · score: 75 · confidence: 100.0 · scoring version: v3</span>
-            <div style="color:var(--text);opacity:.8;margin-top:2px">“14 signals fired; rules: [&#39;pixel_clone_login&#39;, &#39;fresh_lookalike_login&#39;, &#39;brand_title_login&#39;, &#39;known_phishing_verdict&#39;]”</div></div>
-          
-        </div>
-        <div class="when" data-rel="2026-10-12T11:55:23.729666+00:00" title="2026-10-12T11:55:23.729666+00:00">2026-10-12 11:55:23</div>
-      </div>
-      
-      
     </div>
     <div class="more"><button type="button" id="more" style="display:none">Show older events</button></div>
   </div>
@@ -4685,38 +4601,38 @@ header nav{display:flex;align-items:center;min-width:0}
       <h2>By category</h2>
       
       
-      <div class="hbar"><span>finding</span><div class="bar"><i data-w="100"></i></div><b>64</b></div>
+      <div class="hbar"><span>finding</span><div class="bar"><i data-w="100"></i></div><b>73</b></div>
       
-      <div class="hbar"><span>report</span><div class="bar"><i data-w="58"></i></div><b>37</b></div>
+      <div class="hbar"><span>notification</span><div class="bar"><i data-w="52"></i></div><b>38</b></div>
       
-      <div class="hbar"><span>intel</span><div class="bar"><i data-w="58"></i></div><b>37</b></div>
+      <div class="hbar"><span>report</span><div class="bar"><i data-w="49"></i></div><b>36</b></div>
       
-      <div class="hbar"><span>Brand use</span><div class="bar"><i data-w="58"></i></div><b>37</b></div>
+      <div class="hbar"><span>intel</span><div class="bar"><i data-w="49"></i></div><b>36</b></div>
       
-      <div class="hbar"><span>campaign</span><div class="bar"><i data-w="56"></i></div><b>36</b></div>
+      <div class="hbar"><span>campaign</span><div class="bar"><i data-w="48"></i></div><b>35</b></div>
       
-      <div class="hbar"><span>investigation</span><div class="bar"><i data-w="44"></i></div><b>28</b></div>
+      <div class="hbar"><span>user</span><div class="bar"><i data-w="45"></i></div><b>33</b></div>
       
-      <div class="hbar"><span>notification</span><div class="bar"><i data-w="44"></i></div><b>28</b></div>
+      <div class="hbar"><span>investigation</span><div class="bar"><i data-w="37"></i></div><b>27</b></div>
       
-      <div class="hbar"><span>user</span><div class="bar"><i data-w="42"></i></div><b>27</b></div>
+      <div class="hbar"><span>Brand use</span><div class="bar"><i data-w="16"></i></div><b>12</b></div>
       
     </div>
     <div class="panel" style="margin-top:14px">
       <h2>Activity · 14 days</h2>
-      <svg class="spark" data-spark='{"series": [{"color": "#35C7F2", "values": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 30, 245]}]}'></svg>
+      <svg class="spark" data-spark='{"series": [{"color": "#35C7F2", "values": [0, 0, 0, 0, 0, 0, 0, 0, 0, 228, 0, 0, 0, 47]}]}'></svg>
     </div>
     <div class="panel" style="margin-top:14px">
       <h2>Most active</h2>
       
       <div style="display:grid;grid-template-columns:1fr 40px;gap:8px;align-items:center;margin:8px 0">
         <div><div class="small mono">system</div><div class="bar" style="height:6px;margin-top:3px"><i data-w="100"></i></div></div>
-        <div class="mono small right">166</div>
+        <div class="mono small right">182</div>
       </div>
       
       <div style="display:grid;grid-template-columns:1fr 40px;gap:8px;align-items:center;margin:8px 0">
-        <div><div class="small mono">admin</div><div class="bar" style="height:6px;margin-top:3px"><i data-w="81"></i></div></div>
-        <div class="mono small right">134</div>
+        <div><div class="small mono">admin</div><div class="bar" style="height:6px;margin-top:3px"><i data-w="65"></i></div></div>
+        <div class="mono small right">118</div>
       </div>
       
     </div>

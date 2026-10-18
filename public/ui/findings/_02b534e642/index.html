@@ -191,19 +191,19 @@ header nav{display:flex;align-items:center;min-width:0}
   .hbar .bar{height:6px}.hbar b{font-family:var(--mono);font-weight:400;color:var(--muted);text-align:right}
 </style>
 <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:12px">
-  <h1 style="margin:0">FINDINGS <span class="muted">· ranked by severity, then score · 4 shown</span></h1>
+  <h1 style="margin:0">FINDINGS <span class="muted">· ranked by severity, then score · 8 shown</span></h1>
 </div>
 <p class="intro">A finding is a look-alike that scored Medium or higher and waits for an analyst&#39;s verdict. Everything below the threshold stays on the Watchlist and is re-checked on a schedule.</p>
 
 <div class="kpis">
-  <a class="kpi crit " href="?state=open&severity=critical"><div class="v" data-count="4">0</div><div class="l"><span class="pulse"></span> critical open</div></a>
-  <a class="kpi hi " href="?state=open&severity=high"><div class="v" data-count="0">0</div><div class="l">high open</div></a>
+  <a class="kpi crit " href="?state=open&severity=critical"><div class="v" data-count="7">0</div><div class="l"><span class="pulse"></span> critical open</div></a>
+  <a class="kpi hi " href="?state=open&severity=high"><div class="v" data-count="1">0</div><div class="l">high open</div></a>
   <a class="kpi med " href="?state=open&severity=medium"><div class="v" data-count="0">0</div><div class="l">medium open</div></a>
-  <a class="kpi cy on" href="?state=open"><div class="v" data-count="4">0</div><div class="l">awaiting verdict</div></a>
+  <a class="kpi cy on" href="?state=open"><div class="v" data-count="8">0</div><div class="l">awaiting verdict</div></a>
   <a class="kpi ok " href="?state=confirmed"><div class="v" data-count="39">0</div><div class="l">confirmed phishing</div></a>
   <a class="kpi " href="?state=dismissed"><div class="v" data-count="2">0</div><div class="l">dismissed</div></a>
-  <div class="kpi vi"><div class="v" data-count="92" data-suffix="%">0</div><div class="l">avg confidence</div></div>
-  <div class="kpi mg"><div class="v" data-count="15">0</div><div class="l">new in 24h</div></div>
+  <div class="kpi vi"><div class="v" data-count="91" data-suffix="%">0</div><div class="l">avg confidence</div></div>
+  <div class="kpi mg"><div class="v" data-count="4">0</div><div class="l">new in 24h</div></div>
 </div>
 
 <h2 style="margin:18px 0 8px">Statistics <span class="muted">· across open findings</span></h2>
@@ -211,8 +211,8 @@ header nav{display:flex;align-items:center;min-width:0}
   <div class="panel">
     <h2>Open by severity <span class="muted">· Medium ≥ 25 · High ≥ 50 · Critical ≥ 75</span></h2>
     <div class="donut-wrap">
-      <svg class="donut" data-donut='[{"color": "#FF4D4D", "key": "critical", "label": "critical", "value": 4}]' data-center="open"></svg>
-      <div class="legend"><div><i style="background:#FF4D4D"></i>critical<b>4</b></div>
+      <svg class="donut" data-donut='[{"color": "#FF4D4D", "key": "critical", "label": "critical", "value": 7}, {"color": "#FF9F1C", "key": "high", "label": "high", "value": 1}]' data-center="open"></svg>
+      <div class="legend"><div><i style="background:#FF4D4D"></i>critical<b>7</b></div><div><i style="background:#FF9F1C"></i>high<b>1</b></div>
         </div>
     </div>
   </div>
@@ -220,29 +220,31 @@ header nav{display:flex;align-items:center;min-width:0}
     <h2>Why things are flagged <span class="muted">· signals fired per group across open findings</span></h2>
     
     
-    <div class="hbar"><span>Behaviour</span><div class="bar"><i data-w="100"></i></div><b>125</b></div>
+    <div class="hbar"><span>Behaviour</span><div class="bar"><i data-w="100"></i></div><b>129</b></div>
     
-    <div class="hbar"><span>Visual</span><div class="bar"><i data-w="90"></i></div><b>112</b></div>
+    <div class="hbar"><span>Visual</span><div class="bar"><i data-w="91"></i></div><b>118</b></div>
     
-    <div class="hbar"><span>Infrastructure</span><div class="bar"><i data-w="56"></i></div><b>70</b></div>
+    <div class="hbar"><span>Infrastructure</span><div class="bar"><i data-w="59"></i></div><b>76</b></div>
     
-    <div class="hbar"><span>Identity</span><div class="bar"><i data-w="46"></i></div><b>58</b></div>
+    <div class="hbar"><span>Identity</span><div class="bar"><i data-w="49"></i></div><b>63</b></div>
     
-    <div class="hbar"><span>Freshness</span><div class="bar"><i data-w="27"></i></div><b>34</b></div>
+    <div class="hbar"><span>Freshness</span><div class="bar"><i data-w="27"></i></div><b>35</b></div>
     
-    <div class="hbar"><span>Reputation</span><div class="bar"><i data-w="14"></i></div><b>17</b></div>
+    <div class="hbar"><span>Reputation</span><div class="bar"><i data-w="15"></i></div><b>19</b></div>
     
-    <div class="hbar"><span>Seller</span><div class="bar"><i data-w="14"></i></div><b>17</b></div>
+    <div class="hbar"><span>Seller</span><div class="bar"><i data-w="13"></i></div><b>17</b></div>
     
-    <div class="hbar"><span>Contact &amp; policies</span><div class="bar"><i data-w="10"></i></div><b>12</b></div>
+    <div class="hbar"><span>Contact &amp; policies</span><div class="bar"><i data-w="9"></i></div><b>12</b></div>
     
     <div class="hbar"><span>Offer</span><div class="bar"><i data-w="8"></i></div><b>10</b></div>
     
+    <div class="hbar"><span>Evasion</span><div class="bar"><i data-w="4"></i></div><b>5</b></div>
+    
     <div class="hbar"><span>AI reading</span><div class="bar"><i data-w="3"></i></div><b>4</b></div>
     
-    <div class="hbar"><span>Evasion</span><div class="bar"><i data-w="3"></i></div><b>4</b></div>
-    
     <div class="hbar"><span>Brand use</span><div class="bar"><i data-w="2"></i></div><b>2</b></div>
+    
+    <div class="hbar"><span>Proof</span><div class="bar"><i data-w="2"></i></div><b>2</b></div>
     
     
   </div>
@@ -258,69 +260,69 @@ header nav{display:flex;align-items:center;min-width:0}
       <i data-h="24" style="--c:#FF9F1C" title="50–59: 4"><b>4</b><span>50</span></i>
       <i data-h="12" style="--c:#FF9F1C" title="60–69: 2"><b>2</b><span>60</span></i>
       <i data-h="100" style="--c:#FF4D4D" title="70–79: 17"><b>17</b><span>70</span></i>
-      <i data-h="71" style="--c:#FF4D4D" title="80–89: 12"><b>12</b><span>80</span></i>
-      <i data-h="18" style="--c:#FF4D4D" title="90–99: 3"><b>3</b><span>90</span></i>
+      <i data-h="82" style="--c:#FF4D4D" title="80–89: 14"><b>14</b><span>80</span></i>
+      <i data-h="29" style="--c:#FF4D4D" title="90–99: 5"><b>5</b><span>90</span></i>
     </div>
   </div>
   <div class="panel">
     <h2>New findings · 14 days</h2>
-    <svg class="spark" data-spark='{"series": [{"color": "#35C7F2", "values": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 30, 0, 15]}]}'></svg>
-    <div class="small muted" style="display:flex;justify-content:space-between;margin-top:6px"><span>14 days ago</span><span>today · 15</span></div>
+    <svg class="spark" data-spark='{"series": [{"color": "#35C7F2", "values": [0, 0, 0, 0, 0, 0, 0, 30, 0, 15, 0, 0, 0, 4]}]}'></svg>
+    <div class="small muted" style="display:flex;justify-content:space-between;margin-top:6px"><span>14 days ago</span><span>today · 4</span></div>
     <h2>Surface <span class="muted">· where the brand appears: domain name · subdomain · URL path</span></h2>
-    <div class="stack"><i data-w="83.7" style="background:#35C7F2" title="domain name: 36"></i><i data-w="9.3" style="background:#8A97A8" title="content: 4"></i><i data-w="7.0" style="background:#1a5f78" title="URL path: 3"></i></div>
-    <div class="small muted" style="margin-top:6px"><span style="color:#35C7F2">■</span> domain name 36 &nbsp;<span style="color:#8A97A8">■</span> content 4 &nbsp;<span style="color:#1a5f78">■</span> URL path 3 &nbsp;</div>
+    <div class="stack"><i data-w="76.6" style="background:#35C7F2" title="domain name: 36"></i><i data-w="14.9" style="background:#8A97A8" title="content: 7"></i><i data-w="8.5" style="background:#1a5f78" title="URL path: 4"></i></div>
+    <div class="small muted" style="margin-top:6px"><span style="color:#35C7F2">■</span> domain name 36 &nbsp;<span style="color:#8A97A8">■</span> content 7 &nbsp;<span style="color:#1a5f78">■</span> URL path 4 &nbsp;</div>
   </div>
   <div class="panel">
     <h2>Top fired signals</h2>
     
     <div style="display:grid;grid-template-columns:1fr 34px;gap:8px;align-items:center;margin:6px 0">
       <div><div class="small" title="brand_keywords_in_content">brand words in the text</div><div class="bar" style="height:6px;margin-top:3px"><i data-w="100"></i></div></div>
-      <div class="mono small right">31</div>
+      <div class="mono small right">32</div>
     </div>
     
     <div style="display:grid;grid-template-columns:1fr 34px;gap:8px;align-items:center;margin:6px 0">
-      <div><div class="small" title="favicon_exact">identical favicon</div><div class="bar" style="height:6px;margin-top:3px"><i data-w="87"></i></div></div>
-      <div class="mono small right">27</div>
+      <div><div class="small" title="favicon_exact">identical favicon</div><div class="bar" style="height:6px;margin-top:3px"><i data-w="88"></i></div></div>
+      <div class="mono small right">28</div>
     </div>
     
     <div style="display:grid;grid-template-columns:1fr 34px;gap:8px;align-items:center;margin:6px 0">
       <div><div class="small" title="login_dom_similarity">cloned login form</div><div class="bar" style="height:6px;margin-top:3px"><i data-w="84"></i></div></div>
-      <div class="mono small right">26</div>
+      <div class="mono small right">27</div>
     </div>
     
     <div style="display:grid;grid-template-columns:1fr 34px;gap:8px;align-items:center;margin:6px 0">
       <div><div class="small" title="credential_form">asks for a password</div><div class="bar" style="height:6px;margin-top:3px"><i data-w="84"></i></div></div>
-      <div class="mono small right">26</div>
+      <div class="mono small right">27</div>
     </div>
     
     <div style="display:grid;grid-template-columns:1fr 34px;gap:8px;align-items:center;margin:6px 0">
       <div><div class="small" title="screenshot_similarity_ge_90">looks like the real site</div><div class="bar" style="height:6px;margin-top:3px"><i data-w="81"></i></div></div>
-      <div class="mono small right">25</div>
+      <div class="mono small right">26</div>
     </div>
     
     <div style="display:grid;grid-template-columns:1fr 34px;gap:8px;align-items:center;margin:6px 0">
       <div><div class="small" title="palette_match">same colours</div><div class="bar" style="height:6px;margin-top:3px"><i data-w="81"></i></div></div>
+      <div class="mono small right">26</div>
+    </div>
+    
+    <div style="display:grid;grid-template-columns:1fr 34px;gap:8px;align-items:center;margin:6px 0">
+      <div><div class="small" title="title_claims_brand">page title claims the brand</div><div class="bar" style="height:6px;margin-top:3px"><i data-w="78"></i></div></div>
       <div class="mono small right">25</div>
     </div>
     
     <div style="display:grid;grid-template-columns:1fr 34px;gap:8px;align-items:center;margin:6px 0">
-      <div><div class="small" title="title_claims_brand">page title claims the brand</div><div class="bar" style="height:6px;margin-top:3px"><i data-w="77"></i></div></div>
-      <div class="mono small right">24</div>
+      <div><div class="small" title="brand_exact_in_domain">brand name in the domain</div><div class="bar" style="height:6px;margin-top:3px"><i data-w="72"></i></div></div>
+      <div class="mono small right">23</div>
     </div>
     
     <div style="display:grid;grid-template-columns:1fr 34px;gap:8px;align-items:center;margin:6px 0">
-      <div><div class="small" title="brand_exact_in_domain">brand name in the domain</div><div class="bar" style="height:6px;margin-top:3px"><i data-w="71"></i></div></div>
+      <div><div class="small" title="combosquat">brand + extra word</div><div class="bar" style="height:6px;margin-top:3px"><i data-w="69"></i></div></div>
       <div class="mono small right">22</div>
     </div>
     
     <div style="display:grid;grid-template-columns:1fr 34px;gap:8px;align-items:center;margin:6px 0">
-      <div><div class="small" title="combosquat">brand + extra word</div><div class="bar" style="height:6px;margin-top:3px"><i data-w="68"></i></div></div>
+      <div><div class="small" title="lure_language">urgent lure wording</div><div class="bar" style="height:6px;margin-top:3px"><i data-w="66"></i></div></div>
       <div class="mono small right">21</div>
-    </div>
-    
-    <div style="display:grid;grid-template-columns:1fr 34px;gap:8px;align-items:center;margin:6px 0">
-      <div><div class="small" title="lure_language">urgent lure wording</div><div class="bar" style="height:6px;margin-top:3px"><i data-w="65"></i></div></div>
-      <div class="mono small right">20</div>
     </div>
     
     
@@ -332,14 +334,14 @@ header nav{display:flex;align-items:center;min-width:0}
     
     
     <div class="bchips" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px">
-      <a class="btn primary" style="padding:4px 12px;font-size:12.5px;border-color:var(--accent);color:var(--accent2)" href="/ui/findings/_02b534e642/">All brands <b>4</b></a>
-      <a class="btn" style="padding:4px 12px;font-size:12.5px;" href="/ui/findings/_3cda4daff0/">ShopNova <b>4</b></a><a class="btn" style="padding:4px 12px;font-size:12.5px;" href="/ui/findings/_d7f4bf6d60/">ShopNova · Israel <b>2</b></a><a class="btn" style="padding:4px 12px;font-size:12.5px;" href="/ui/findings/_2c04326d9f/">CoinPilot <b>0</b></a><a class="btn" style="padding:4px 12px;font-size:12.5px;" href="/ui/findings/_47ac248c26/">VaultPay <b>0</b></a>
+      <a class="btn primary" style="padding:4px 12px;font-size:12.5px;border-color:var(--accent);color:var(--accent2)" href="/ui/findings/_02b534e642/">All brands <b>8</b></a>
+      <a class="btn" style="padding:4px 12px;font-size:12.5px;" href="/ui/findings/_3cda4daff0/">ShopNova <b>8</b></a><a class="btn" style="padding:4px 12px;font-size:12.5px;" href="/ui/findings/_d7f4bf6d60/">ShopNova · Israel <b>2</b></a><a class="btn" style="padding:4px 12px;font-size:12.5px;" href="/ui/findings/_2c04326d9f/">CoinPilot <b>0</b></a><a class="btn" style="padding:4px 12px;font-size:12.5px;" href="/ui/findings/_47ac248c26/">VaultPay <b>0</b></a>
     </div>
     <form method="get" action="/ui/findings/" class="actions" style="margin-bottom:8px">
       <div><label>Brand</label><select name="brand_id" onchange="this.form.submit()"><option value="">all</option><option value="eb019060-41b6-4160-871c-14094ad558a4" >ShopNova</option><option value="1909c3e0-295d-4d38-bb7e-a2b05c9287d4" >ShopNova · Israel</option><option value="f46bffed-4795-4cdd-ad8f-abd3d26fcc60" >CoinPilot</option><option value="a7b5cb5c-e4a0-495d-b6c9-3ac5209ac3b2" >VaultPay</option></select></div>
       <div><label>State</label><select name="state" onchange="this.form.submit()"><option value="">all</option><option value="open" selected>open</option><option value="confirmed" >confirmed</option><option value="dismissed" >dismissed</option></select></div>
       <div><label>Severity</label><select name="severity" onchange="this.form.submit()"><option value="">all</option><option value="low" >low</option><option value="medium" >medium</option><option value="high" >high</option><option value="critical" >critical</option></select></div>
-      <div><label>Kind</label><select name="kind" onchange="this.form.submit()"><option value="">all</option><option value="phishing" >phishing</option><option value="shop" >suspicious shop</option><option value="social" >fake social account</option></select></div>
+      <div><label>Kind</label><select name="kind" onchange="this.form.submit()"><option value="">all</option><option value="phishing" >phishing</option><option value="shop" >suspicious shop</option><option value="social" >fake social account</option><option value="ai_answer" >AI answer</option></select></div>
       <div><label>Search host</label><input id="q" placeholder="type to filter…" autocomplete="off"></div>
       <div><label>View</label><label class="shotsw" title="a screenshot next to every site (off by default: the list stays short)"><input type="checkbox" id="t-shots"> show screenshots</label></div>
       <div><button type="submit">Apply</button></div>
@@ -357,6 +359,32 @@ header nav{display:flex;align-items:center;min-width:0}
     
     <table id="ftable">
       <tr><th class="selcol"><input type="checkbox" id="selall" title="select every finding shown"></th><th class="shotcol">Screenshot</th><th>Severity</th><th>Host</th><th>Score</th><th>Conf.</th><th>Signals</th><th>State</th><th>Found</th></tr>
+      
+      <tr class="sevrow critical" data-host="shopnova-login.com">
+        <td class="selcol"><input type="checkbox" class="sel" name="ids" value="6d7c2f47-cf77-4992-9dce-622f09bbf0bf" form="bulkform" title="select for a verdict on many at once"></td>
+        <td class="shotcol"><div class="noshot">no screenshot (the page did not load)</div></td>
+        <td><span class="badge sev-critical">critical</span><div style="margin-top:4px"><span class="badge" style="border:1px solid var(--accent);color:var(--accent2)" title="a contact an AI assistant gives for the brand that is not on its website">AI answer</span></div></td>
+        <td><a href="/ui/findings/6d7c2f47-cf77-4992-9dce-622f09bbf0bf/"><span class="mono">shopnova-login.com</span></a> <span class="pill" style="font-size:10.5px;padding:0 7px" title="the brand this finding is about">ShopNova</span><div class="small muted">content · found by AI answer (ChatGPT / Gemini / Google AI Mode) · <a href="/ui/findings/6d7c2f47-cf77-4992-9dce-622f09bbf0bf/#aianswer" title="what the assistants said and what the pages say">answers</a> · <a href="/ui/candidates/a53b1e5e-736f-457b-a797-848fa573f88b/" title="domain timeline on the watchlist">timeline</a></div></td>
+        <td class="mono" style="white-space:nowrap">100<span class="scorebar"><i data-w="100"></i></span>
+          </td>
+        <td><div class="ring sm" data-p="70" style="--c:var(--muted)" title="confidence in the evidence: 70%"><div>70</div></div></td>
+        <td class="small" style="max-width:360px"><span class="pill g-" title="shopnova-login.com is a phishing site BrandWatch confirmed · +40 pts">a known phishing site</span> <span class="pill g-" title="Gemini sent users to shopnova-login.com, which is not a site of ShopNova · +40 pts">sends users elsewhere</span> <span class="pill g-" title="shopnova-login.com carries the brand&#39;s name but is not one of its domains · +30 pts">published by a look-alike</span> </td>
+        <td><span class="badge state st-open" title="a finding no analyst has judged yet">awaiting verdict</span></td>
+        <td class="mono small muted" data-rel="2026-10-18T07:29:25.743100">2026-10-18 07:29</td>
+      </tr>
+      
+      <tr class="sevrow critical" data-host="03-9817777">
+        <td class="selcol"><input type="checkbox" class="sel" name="ids" value="27ceca7f-5129-4f1d-ad51-b194ed5448f9" form="bulkform" title="select for a verdict on many at once"></td>
+        <td class="shotcol"><div class="noshot">no screenshot (the page did not load)</div></td>
+        <td><span class="badge sev-critical">critical</span><div style="margin-top:4px"><span class="badge" style="border:1px solid var(--accent);color:var(--accent2)" title="a contact an AI assistant gives for the brand that is not on its website">AI answer</span></div></td>
+        <td><a href="/ui/findings/27ceca7f-5129-4f1d-ad51-b194ed5448f9/"><span class="mono">03-9817777</span></a> <span class="pill" style="font-size:10.5px;padding:0 7px" title="the brand this finding is about">ShopNova</span><div class="small muted">content · found by AI answer (ChatGPT / Gemini / Google AI Mode) · <a href="/ui/findings/27ceca7f-5129-4f1d-ad51-b194ed5448f9/#aianswer" title="what the assistants said and what the pages say">answers</a> · <a href="/ui/candidates/1ad285cd-0586-4728-b94d-4123d1caec94/" title="domain timeline on the watchlist">timeline</a></div></td>
+        <td class="mono" style="white-space:nowrap">100<span class="scorebar"><i data-w="100"></i></span>
+          </td>
+        <td><div class="ring sm" data-p="85" style="--c:var(--accent)" title="confidence in the evidence: 85%"><div>85</div></div></td>
+        <td class="small" style="max-width:360px"><span class="pill g-" title="ChatGPT gave the phone 03-9817777 — it is on none of ShopNova&#39;s pages · +40 pts">not on the brand&#39;s site</span> <span class="pill g-" title="shopnova-support-center.com (a phishing site BrandWatch confirmed) · +40 pts">a known phishing site</span> <span class="pill g-" title="shopnova-support-center.com carries the brand&#39;s name: a look-alike publishes the number · +30 pts">published by a look-alike</span> <span class="pill g-" title="03-9817777 is published on shopnova-support-center.com — not a site of ShopNova · +20 pts">published off the brand&#39;s site</span> </td>
+        <td><span class="badge state st-open" title="a finding no analyst has judged yet">awaiting verdict</span></td>
+        <td class="mono small muted" data-rel="2026-10-18T07:29:25.679268">2026-10-18 07:29</td>
+      </tr>
       
       <tr class="sevrow critical" data-host="facebook.com/shopnova.support.help">
         <td class="selcol"><input type="checkbox" class="sel" name="ids" value="aa855f45-18cf-4272-ac1c-effbe5955f9c" form="bulkform" title="select for a verdict on many at once"></td>
@@ -384,6 +412,19 @@ header nav{display:flex;align-items:center;min-width:0}
         <td class="mono small muted" data-rel="2026-10-12T06:41:46.237749">2026-10-12 06:41</td>
       </tr>
       
+      <tr class="sevrow critical" data-host="shopnova-refund.net">
+        <td class="selcol"><input type="checkbox" class="sel" name="ids" value="6fc97f7b-606c-4e8f-89dd-19b57358c6ff" form="bulkform" title="select for a verdict on many at once"></td>
+        <td class="shotcol"><img class="bigshot" data-src="/_r/600495f586e323.png" alt="screenshot of shopnova-refund.net" title="click to enlarge" data-host="shopnova-refund.net" data-href="/ui/findings/6fc97f7b-606c-4e8f-89dd-19b57358c6ff/"></td>
+        <td><span class="badge sev-critical">critical</span><div style="margin-top:4px"><span class="badge" style="border:1px solid rgba(230,237,245,.35);color:var(--text);background:rgba(230,237,245,.05)" title="the kit hides from scanners: BrandWatch revealed the real page with its cloaking probes">CLOAKED KIT</span></div></td>
+        <td><a href="/ui/findings/6fc97f7b-606c-4e8f-89dd-19b57358c6ff/"><span class="mono">shopnova-refund.net</span></a> <span class="pill" style="font-size:10.5px;padding:0 7px" title="the brand this finding is about">ShopNova</span><div class="small muted">URL path · found by Facebook pages / Instagram profiles · <a href="/ui/findings/6fc97f7b-606c-4e8f-89dd-19b57358c6ff/#network" title="site & network investigation: servers, WHOIS history, urlscan">network</a> · <a href="/ui/candidates/c1a549d4-c861-446e-8919-15dc44930f73/" title="domain timeline on the watchlist">timeline</a></div></td>
+        <td class="mono" style="white-space:nowrap">89<span class="scorebar"><i data-w="89"></i></span>
+          <span style="margin-left:6px"><a class="pill" href="https://www.virustotal.com/gui/domain/shopnova-refund.net" target="_blank" rel="noreferrer noopener" title="not in VirusTotal yet — unknown is never treated as clean" style="font-size:10px;color:var(--muted)">VT —</a></span></td>
+        <td><div class="ring sm" data-p="100" style="--c:var(--accent)" title="confidence in the evidence: 100%"><div>100</div></div></td>
+        <td class="small" style="max-width:360px"><span class="pill g-visual" title="favicon mmh3 -2029202433 equals the brand&#39;s favicon hash · +22 pts">identical favicon</span> <span class="pill g-visual" title="homepage screenshot is 99% similar to the brand&#39;s (pHash) · +18 pts">looks like the real site</span> <span class="pill g-infrastructure" title="shares server 203.0.113.102 with known phishing of this brand · +15 pts">shares a server with phishing</span> <span class="pill g-infrastructure" title="shares infrastructure with an investigated campaign of this brand · +15 pts">linked to a mapped attacker</span> <a href="/ui/findings/6fc97f7b-606c-4e8f-89dd-19b57358c6ff/" class="muted small">+11 more</a></td>
+        <td><span class="badge state st-open" title="a finding no analyst has judged yet">awaiting verdict</span></td>
+        <td class="mono small muted" data-rel="2026-10-18T06:29:19.925092">2026-10-18 06:29</td>
+      </tr>
+      
       <tr class="sevrow critical" data-host="instagram.com/shopnova.israel.official">
         <td class="selcol"><input type="checkbox" class="sel" name="ids" value="d89d7f73-509b-4dab-b831-7ebdd96d6c06" form="bulkform" title="select for a verdict on many at once"></td>
         <td class="shotcol"><div class="noshot">no screenshot (the page did not load)</div></td>
@@ -408,6 +449,19 @@ header nav{display:flex;align-items:center;min-width:0}
         <td class="small" style="max-width:360px"><span class="pill g-visual" title="favicon mmh3 -2029202433 equals the brand&#39;s favicon hash · +22 pts">identical favicon</span> <span class="pill g-visual" title="homepage screenshot is 100% similar to the brand&#39;s (pHash) · +18 pts">looks like the real site</span> <span class="pill g-behavior" title="page contains a password field · +14 pts">asks for a password</span> <span class="pill g-identity" title="brand &#39;shopnova&#39; appears inside the domain label &#39;shopnova-eu&#39; · +12 pts">brand name in the domain</span> <a href="/ui/findings/6ed451ca-2fd1-464b-b381-03f8df804f34/" class="muted small">+10 more</a></td>
         <td><span class="badge state st-open" title="a finding no analyst has judged yet">awaiting verdict</span></td>
         <td class="mono small muted" data-rel="2026-10-14T09:48:39.782456">2026-10-14 09:48</td>
+      </tr>
+      
+      <tr class="sevrow high" data-host="help@shopnova-care.net">
+        <td class="selcol"><input type="checkbox" class="sel" name="ids" value="de838d76-5b19-4caf-9212-8d9a60589653" form="bulkform" title="select for a verdict on many at once"></td>
+        <td class="shotcol"><div class="noshot">no screenshot (the page did not load)</div></td>
+        <td><span class="badge sev-high">high</span><div style="margin-top:4px"><span class="badge" style="border:1px solid var(--accent);color:var(--accent2)" title="a contact an AI assistant gives for the brand that is not on its website">AI answer</span></div></td>
+        <td><a href="/ui/findings/de838d76-5b19-4caf-9212-8d9a60589653/"><span class="mono">help@shopnova-care.net</span></a> <span class="pill" style="font-size:10.5px;padding:0 7px" title="the brand this finding is about">ShopNova</span><div class="small muted">content · found by AI answer (ChatGPT / Gemini / Google AI Mode) · <a href="/ui/findings/de838d76-5b19-4caf-9212-8d9a60589653/#aianswer" title="what the assistants said and what the pages say">answers</a> · <a href="/ui/candidates/e8314377-bba0-4c1d-b458-94a1304d87d5/" title="domain timeline on the watchlist">timeline</a></div></td>
+        <td class="mono" style="white-space:nowrap">70<span class="scorebar"><i data-w="70"></i></span>
+          </td>
+        <td><div class="ring sm" data-p="75" style="--c:var(--muted)" title="confidence in the evidence: 75%"><div>75</div></div></td>
+        <td class="small" style="max-width:360px"><span class="pill g-" title="Gemini gave the e-mail help@shopnova-care.net — it is on none of ShopNova&#39;s pages · +40 pts">not on the brand&#39;s site</span> <span class="pill g-" title="2 page(s) the AI cited were opened: none of them carries help@shopnova-care.net · +15 pts">the cited page does not say it</span> <span class="pill g-" title="asked for the proof, the AI took it back · +15 pts">the AI took it back</span> </td>
+        <td><span class="badge state st-open" title="a finding no analyst has judged yet">awaiting verdict</span></td>
+        <td class="mono small muted" data-rel="2026-10-18T07:29:25.715979">2026-10-18 07:29</td>
       </tr>
       
     </table>

@@ -1,0 +1,1322 @@
+<!doctype html>
+<html lang="en">
+<head><script>window.__BW_GITHUB="https://github.com/itaya12/brandwatch"</script><script src="/_demo/map.js"></script><script src="/_demo/shim.js"></script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>shopnova-login.com · BrandWatch</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=JetBrains+Mono:wght@400;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#080B14;--panel:#0E1420;--panel2:#121A2B;--border:#1E2A3D;--accent:#35C7F2;--accent2:#5FE3FF;
+--crit:#FF4D4D;--high:#FF9F1C;--med:#F5C518;--low:#2ECC71;--violet:#5b9bb5;--magenta:#c9d3df;--text:#E6EDF5;--muted:#8A97A8;
+--mono:"JetBrains Mono",ui-monospace,Consolas,monospace;--sans:Inter,system-ui,Segoe UI,Roboto,sans-serif;--display:Rajdhani,var(--mono)}
+@property --p{syntax:'<number>';inherits:false;initial-value:0}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14px;line-height:1.45;min-height:100vh}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:repeating-linear-gradient(0deg,rgba(53,199,242,.022) 0 1px,transparent 1px 3px),
+             radial-gradient(ellipse at 50% -10%,rgba(53,199,242,.10),transparent 55%)}
+body::after{content:"";position:fixed;left:0;right:0;top:-40%;height:40%;pointer-events:none;z-index:0;
+  background:linear-gradient(180deg,transparent,rgba(53,199,242,.035),transparent);animation:sweep 9s linear infinite}
+@keyframes sweep{to{transform:translateY(350%)}}
+a{color:var(--accent);text-decoration:none;transition:color .2s}a:hover{color:var(--accent2)}
+header{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:24px;padding:10px 20px;border-bottom:1px solid var(--border);
+  background:rgba(14,20,32,.86);backdrop-filter:blur(8px)}
+header .logo{font-family:var(--mono);font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);display:flex;align-items:center;gap:8px}
+header .logo::before{content:"";width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 10px var(--accent);animation:beat 2.2s ease-in-out infinite}
+@keyframes beat{0%,100%{opacity:.45;transform:scale(.85)}50%{opacity:1;transform:scale(1.1)}}
+header nav a{position:relative;font-family:var(--mono);font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-right:16px;padding:4px 0}
+header nav a::after{content:"";position:absolute;left:0;right:0;bottom:-2px;height:2px;background:var(--accent);transform:scaleX(0);transform-origin:left;transition:transform .3s}
+header nav a.active,header nav a:hover{color:var(--text)}header nav a.active::after,header nav a:hover::after{transform:scaleX(1)}
+header nav a.active::after{box-shadow:0 0 8px var(--accent)}
+header .who{margin-left:auto;color:var(--muted);font-size:12px}
+main{position:relative;z-index:1;padding:20px;max-width:1440px;margin:0 auto}
+h1{font-family:var(--display);font-size:26px;letter-spacing:.04em;margin:0 0 14px;font-weight:700;
+  background:linear-gradient(90deg,#E6EDF5 0%,#E6EDF5 55%,var(--accent2) 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+h1 .muted,h1 .small{-webkit-text-fill-color:var(--muted);font-family:var(--sans);font-size:13px;letter-spacing:0;font-weight:400}
+h2{font-size:12px;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);font-family:var(--mono);margin:22px 0 10px;line-height:1.5}
+h2::before{content:"";width:6px;height:6px;background:var(--accent);display:inline-block;margin-right:8px;vertical-align:2px}
+h2 .muted{text-transform:none;letter-spacing:.02em;font-family:var(--sans);font-size:12px;opacity:.85}
+.panel{position:relative;background:linear-gradient(180deg,rgba(18,26,43,.92),rgba(14,20,32,.92));border:1px solid var(--border);border-radius:10px;padding:14px 16px;
+  transition:border-color .3s,box-shadow .3s,transform .3s;animation:fadeUp .6s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(var(--i,0)*70ms)}
+.panel:hover{border-color:rgba(53,199,242,.35);box-shadow:0 0 0 1px rgba(53,199,242,.08),0 8px 30px rgba(0,0,0,.35)}
+.panel > h2:first-child{margin-top:0}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+@keyframes rowIn{from{opacity:0;transform:translateX(-6px)}to{opacity:1;transform:none}}
+.grid{display:grid;gap:14px}.grid.two{grid-template-columns:1fr 1fr}.grid.three{grid-template-columns:repeat(3,1fr)}.grid.four{grid-template-columns:repeat(4,1fr)}
+table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:8px 8px;border-bottom:1px solid var(--border);vertical-align:middle}
+th{font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:500}
+tbody tr,table tr{animation:rowIn .45s ease both;animation-delay:calc(var(--r,0)*28ms)}
+tr:hover td{background:rgba(53,199,242,.05)}
+.mono{font-family:var(--mono)}.muted{color:var(--muted)}.small{font-size:12px}.right{text-align:right}
+.badge{display:inline-block;padding:2px 8px;border-radius:999px;font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.06em;font-weight:600;white-space:nowrap}
+.sev-critical{background:rgba(255,77,77,.15);color:var(--crit);border:1px solid var(--crit)}
+.sev-high{background:rgba(255,159,28,.15);color:var(--high);border:1px solid var(--high)}
+.sev-medium{background:rgba(245,197,24,.15);color:var(--med);border:1px solid var(--med)}
+.sev-low{background:rgba(46,204,113,.15);color:var(--low);border:1px solid var(--low)}
+.state{background:var(--panel2);color:var(--muted);border:1px solid var(--border)}
+.st-open,.st-new{color:var(--text)}.st-confirmed,.st-flagged{color:var(--crit);border-color:rgba(255,77,77,.5)}
+.st-dismissed{color:#5a6678}.st-watching{color:var(--accent);border-color:rgba(53,199,242,.4)}.st-long_watch{color:var(--muted)}
+.pill{background:var(--panel2);border:1px solid var(--border);border-radius:6px;padding:1px 6px;font-family:var(--mono);font-size:11px;color:var(--text);white-space:nowrap}
+/* signal pills: one neutral style for every group (the group is in the tooltip and the Explain table) */
+.pill[class*="g-"]{border-color:var(--border);color:#c9d3df}
+button,.btn{background:var(--panel2);color:var(--text);border:1px solid var(--border);border-radius:6px;padding:7px 12px;font:inherit;cursor:pointer;transition:all .2s}
+button:hover,.btn:hover{border-color:var(--accent);box-shadow:0 0 12px rgba(53,199,242,.2)}button.primary{background:rgba(53,199,242,.15);border-color:var(--accent);color:var(--accent2)}
+button.danger{border-color:var(--crit);color:var(--crit)}button.ok{border-color:var(--low);color:var(--low)}
+input,select,textarea{background:#0b1220;color:var(--text);border:1px solid var(--border);border-radius:6px;padding:7px 9px;font:inherit;width:100%;transition:border-color .2s,box-shadow .2s}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(53,199,242,.15)}
+label{display:block;font-size:12px;color:var(--muted);margin:8px 0 4px;font-family:var(--mono);text-transform:uppercase;letter-spacing:.06em}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.kpi{position:relative;overflow:hidden;background:linear-gradient(180deg,rgba(18,26,43,.95),rgba(14,20,32,.95));border:1px solid var(--border);border-radius:10px;padding:12px 14px;
+  animation:fadeUp .55s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(var(--i,0)*55ms);transition:transform .25s,border-color .25s,box-shadow .25s}
+.kpi::after{content:"";position:absolute;right:-28px;top:-28px;width:86px;height:86px;border-radius:50%;background:radial-gradient(circle,rgba(53,199,242,.07),transparent 70%)}
+.kpi:hover{transform:translateY(-2px);border-color:rgba(53,199,242,.4);box-shadow:0 6px 24px rgba(0,0,0,.35)}
+.kpi .v{font-family:var(--display);font-size:34px;line-height:1;font-weight:700;letter-spacing:.02em}
+.kpi .l{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-top:4px}
+/* number colors carry meaning: severity only (critical / high / medium); every other number is plain */
+.kpi.crit .v{color:var(--crit)}.kpi.hi .v{color:var(--high)}.kpi.med .v{color:var(--med)}
+.kpi.ok .v,.kpi.cy .v,.kpi.vi .v,.kpi.mg .v{color:var(--text)}
+a.kpi{color:inherit;display:block}a.kpi.on{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent) inset}
+.ring{--c:var(--accent);width:96px;height:96px;border-radius:50%;background:conic-gradient(var(--c) calc(var(--p)*1%),#1E2A3D 0);display:grid;place-items:center;transition:--p 1.4s cubic-bezier(.2,.8,.2,1)}
+.ring>div{width:76px;height:76px;border-radius:50%;background:var(--panel);display:grid;place-items:center;font-family:var(--display);font-size:28px;font-weight:700}
+.ring.sm{width:38px;height:38px}.ring.sm>div{width:28px;height:28px;font-size:11px;font-family:var(--mono)}
+.bar{height:8px;background:#1E2A3D;border-radius:4px;overflow:hidden}.bar>i{display:block;height:100%;background:var(--accent);transition:width 1.3s cubic-bezier(.2,.8,.2,1)}
+.bar>i[data-w]{width:0}
+.scorebar{height:6px;width:90px;background:#1E2A3D;border-radius:3px;overflow:hidden;display:inline-block;vertical-align:middle;margin-left:8px}
+.scorebar>i{display:block;height:100%;width:0;border-radius:3px;background:rgba(230,237,245,.55);transition:width 1.3s cubic-bezier(.2,.8,.2,1)}
+.stack{display:flex;height:10px;border-radius:5px;overflow:hidden;background:#1E2A3D}.stack>i{display:block;height:100%;width:0;transition:width 1.3s cubic-bezier(.2,.8,.2,1)}
+.hist{display:flex;align-items:flex-end;gap:5px;height:110px;padding-bottom:18px}
+.hist i{flex:1;position:relative;border-radius:4px 4px 0 0;min-height:2px;height:0;transition:height 1.2s cubic-bezier(.2,.8,.2,1);background:linear-gradient(180deg,var(--c,var(--accent2)),rgba(53,199,242,.15))}
+.hist i span{position:absolute;bottom:-17px;left:0;right:0;text-align:center;font-size:10px;color:var(--muted);font-family:var(--mono)}
+.hist i b{position:absolute;top:-16px;left:0;right:0;text-align:center;font-size:10px;color:var(--text);font-family:var(--mono);font-weight:400}
+svg.donut{width:150px;height:150px;flex:none}svg.spark{width:100%;height:64px;display:block}
+.donut-wrap{display:flex;gap:16px;align-items:center}.legend{display:grid;gap:5px;font-size:12px}
+.legend div{display:flex;align-items:center;gap:8px}.legend i{width:9px;height:9px;border-radius:2px;flex:none}.legend b{margin-left:auto;font-family:var(--mono);font-weight:400;color:var(--muted)}
+.pulse{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--crit);box-shadow:0 0 0 0 rgba(255,77,77,.7);animation:pulse 1.6s infinite;vertical-align:middle}
+.pulse.cy{background:var(--accent);animation-name:pulsecy}.pulse.ok{background:var(--low);animation-name:pulseok}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(255,77,77,.7)}70%{box-shadow:0 0 0 10px rgba(255,77,77,0)}100%{box-shadow:0 0 0 0 rgba(255,77,77,0)}}
+@keyframes pulsecy{0%{box-shadow:0 0 0 0 rgba(53,199,242,.7)}70%{box-shadow:0 0 0 10px rgba(53,199,242,0)}100%{box-shadow:0 0 0 0 rgba(53,199,242,0)}}
+@keyframes pulseok{0%{box-shadow:0 0 0 0 rgba(46,204,113,.7)}70%{box-shadow:0 0 0 10px rgba(46,204,113,0)}100%{box-shadow:0 0 0 0 rgba(46,204,113,0)}}
+.sevrow td:first-child{box-shadow:inset 3px 0 0 var(--sc,var(--border))}
+.sevrow.critical{--sc:var(--crit)}.sevrow.high{--sc:var(--high)}.sevrow.medium{--sc:var(--med)}.sevrow.low{--sc:var(--low)}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border:1px solid var(--border);border-radius:999px;font-family:var(--mono);font-size:11px;color:var(--muted);cursor:pointer;background:var(--panel2);transition:all .2s;user-select:none}
+.chip i{display:none}.chip.on{color:var(--text);border-color:var(--accent);box-shadow:0 0 10px rgba(53,199,242,.18)}
+.radar{width:14px;height:14px;border-radius:50%;border:1px solid var(--accent);position:relative;display:inline-block;vertical-align:middle;overflow:hidden}
+.radar::after{content:"";position:absolute;inset:0;background:conic-gradient(rgba(53,199,242,.8),transparent 40%);animation:spin 1.2s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.error{color:var(--crit);border:1px solid var(--crit);background:rgba(255,77,77,.08);padding:8px 10px;border-radius:6px;margin-bottom:12px}
+.console{font-family:var(--mono);font-size:12px;background:#060910;border:1px solid var(--border);border-radius:8px;padding:12px;height:420px;overflow:auto;white-space:pre-wrap}
+.console .running{color:var(--accent)}.console .done{color:var(--low)}.console .error{color:var(--crit);border:0;background:none;padding:0;margin:0}.console .warn{color:var(--high)}
+.console div{animation:rowIn .3s ease both}
+.timeline{list-style:none;padding:0;margin:0}.timeline li{padding:6px 0 6px 14px;border-left:2px solid var(--border);position:relative;animation:fadeUp .5s ease both;animation-delay:calc(var(--r,0)*40ms)}
+.timeline li::before{content:"";position:absolute;left:-6px;top:11px;width:10px;height:10px;border-radius:50%;background:var(--accent);box-shadow:0 0 8px var(--accent)}
+.timeline li.changed::before{background:var(--high);box-shadow:0 0 8px var(--high)}
+img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:#000;image-rendering:pixelated}
+.thumb{width:64px;height:40px;object-fit:cover;border:1px solid var(--border);border-radius:4px;background:#000;transition:transform .25s,box-shadow .25s,filter .25s;position:relative;filter:saturate(.2) brightness(.8)}
+.thumb:hover{transform:scale(2.6);z-index:5;box-shadow:0 10px 30px rgba(0,0,0,.7);border-color:var(--accent);filter:none}
+.actions{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.fade{animation:fadeUp .6s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(var(--i,0)*70ms)}
+/* ---- responsive layer: grid children may shrink, wide tables scroll inside their own box ---- */
+.grid>*,.cols>*{min-width:0}
+.tw{overflow-x:auto;-webkit-overflow-scrolling:touch;max-width:100%;overscroll-behavior-x:contain}
+.tw>table{min-width:100%}
+header nav{display:flex;align-items:center;min-width:0}
+@media (max-width:1100px){.grid.four{grid-template-columns:1fr 1fr}}
+@media (max-width:900px){
+  .grid,.grid.two,.grid.three,.grid.four,.cols{grid-template-columns:1fr!important}
+  header{flex-wrap:wrap;gap:6px 14px;padding:10px 12px 0}
+  header nav{order:3;flex:1 0 100%;overflow-x:auto;scrollbar-width:none;white-space:nowrap;padding:4px 0 8px;
+    -webkit-mask-image:linear-gradient(90deg,#000 88%,transparent);mask-image:linear-gradient(90deg,#000 88%,transparent)}
+  header nav::-webkit-scrollbar{display:none}
+  header nav a{margin-right:18px;padding:6px 0}
+  header .who .email{display:none}
+  main{padding:14px 12px 28px}
+  h1{font-size:22px;line-height:1.2}
+  h1 .muted,h1 .small{display:block;margin-top:4px;font-size:12px;line-height:1.4}
+  .kpis{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+  .kpi{padding:10px 12px}.kpi .v{font-size:28px}
+  .panel{padding:12px}
+  h2{line-height:1.45}
+  th,td{padding:7px 6px}
+  .thumb:hover{transform:none}
+  .console{height:320px}
+  .pill{white-space:normal;overflow-wrap:anywhere;display:inline-block;max-width:100%}
+}
+@media (max-width:520px){
+  svg.donut{width:118px;height:118px}.donut-wrap{gap:12px}
+  .actions>div,.actions>input,.actions>select{flex:1 1 140px}
+}
+.help{display:inline-grid;place-items:center;width:15px;height:15px;margin-left:4px;border-radius:50%;border:1px solid var(--border);color:var(--muted);font:600 10px/1 var(--mono);text-decoration:none;cursor:help;position:relative;vertical-align:1px;text-transform:none;letter-spacing:0}
+.help:hover,.help:focus-visible{color:var(--accent2);border-color:var(--accent);outline:none}
+.help::after{content:attr(data-tip);display:none;position:absolute;left:50%;bottom:calc(100% + 8px);transform:translateX(-50%);width:max-content;max-width:min(320px,80vw);padding:8px 10px;border-radius:8px;background:#0b1220;border:1px solid var(--accent);color:var(--text);font:400 12px/1.45 var(--sans);text-align:left;white-space:normal;box-shadow:0 10px 30px rgba(0,0,0,.5);opacity:0;pointer-events:none;transition:opacity .15s;z-index:50}
+.help:hover::after,.help:focus-visible::after{display:block;opacity:1}
+.help[data-href]{cursor:pointer}
+@media (max-width:600px){.help::after{left:auto;right:-8px;transform:none}}
+.pill.cap{font-size:10px;color:var(--muted);border-color:var(--border);text-decoration:none;font-family:var(--mono);letter-spacing:.02em;vertical-align:2px}
+.pill.cap:hover{color:var(--accent2);border-color:var(--accent)}
+.intro{margin:4px 0 14px;max-width:980px;color:var(--muted);font-size:13px;line-height:1.55}
+.crumbs{display:flex;flex-wrap:wrap;align-items:center;gap:4px;font-size:12px;color:var(--muted);margin:0 0 8px;font-family:var(--mono)}
+.crumbs a{color:var(--accent2);text-decoration:none}.crumbs a:hover{text-decoration:underline}.crumbs .sep{opacity:.55;margin:0 4px}.crumbs .cur{color:var(--text)}
+.crumbs .side{margin-left:auto;display:flex;flex-wrap:wrap;gap:4px 12px}.crumbs .side a::before{content:"→ ";opacity:.6}
+.kpi.lnk{text-decoration:none;color:inherit;display:block}.kpi.lnk:hover{border-color:var(--accent)}
+@media (max-width:700px){.crumbs .side{margin-left:0;width:100%}}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<header>
+  <a class="logo" href="/ui/dashboard/">BrandWatch</a>
+  
+  <nav>
+    <a href="/ui/dashboard/" class="">Dashboard</a>
+    <a href="/ui/how-it-works/" class="">How it works</a>
+    <a href="/ui/brands/" class="">Brands &amp; Scans</a>
+    <a href="/ui/findings/" class="active">Findings</a>
+    <a href="/ui/candidates/" class="">Watchlist</a>
+    <a href="/ui/campaigns/" class="">Attack infrastructure</a>
+    <a href="/ui/takedowns/" class="">Takedowns</a>
+    <a href="/ui/activity/" class="">Activity</a>
+    <a href="/ui/settings/" class="">Settings</a>
+    <a href="/docs" target="_blank">API</a>
+  </nav>
+  <span class="who"><span class="email">admin · </span>admin · <a href="/ui/logout">logout</a></span>
+  
+</header>
+<main>
+
+
+
+
+
+
+
+
+
+
+<style>
+  .flag{vertical-align:-3px;border-radius:2px;box-shadow:0 0 0 1px rgba(255,255,255,.12);margin-right:4px}
+  .flag-none{display:inline-block}
+  .links{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+  .links a{font-size:12px;padding:4px 9px;border:1px solid var(--border);border-radius:999px;background:var(--panel2);color:var(--text);text-decoration:none}
+  .links a:hover{border-color:var(--accent);color:var(--accent2)}
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+  .card{background:var(--panel2);border:1px solid var(--border);border-radius:12px;padding:14px;min-width:0}
+  .card h3{margin:0 0 8px;font:600 11px var(--mono);letter-spacing:.1em;color:var(--muted);text-transform:uppercase}
+  .kv{display:grid;grid-template-columns:minmax(110px,160px) minmax(0,1fr);gap:5px 12px;font-size:13px}
+  .kv dt{color:var(--muted)}.kv dd{margin:0;word-break:break-all}
+  .det{display:inline-flex;align-items:baseline;gap:3px;font-family:var(--mono);font-size:13px;padding:2px 8px;border-radius:7px;border:1px solid var(--border);background:var(--panel)}
+  .det b{font-size:14px}.det i{font-style:normal;color:var(--muted);font-size:11px}
+  .det.bad{color:var(--crit);border-color:rgba(255,77,77,.45)}.det.ok{color:var(--low)}
+  .det.none{color:var(--muted)}.det.big{font-size:18px;padding:6px 14px}.det.big b{font-size:26px}
+  .pill.warn{color:var(--high);border-color:rgba(255,159,28,.5)}.pill.err{color:var(--crit);border-color:rgba(255,77,77,.5)}
+  .ring.lg{--s:120px;width:var(--s);height:var(--s)}
+  .vbar{height:8px;border-radius:99px;background:var(--panel);border:1px solid var(--border);overflow:hidden;margin:6px 0}
+  .vbar i{display:block;height:100%;background:var(--accent)}
+  .mono-block{font:12px/1.5 var(--mono);white-space:pre-wrap;word-break:break-all;background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:12px;max-height:380px;overflow:auto}
+  details summary{cursor:pointer;color:var(--accent2);font-size:13px;margin:8px 0}
+  .ipcard{border:1px solid var(--border);border-radius:14px;padding:16px;background:var(--panel);margin-bottom:14px}
+  .ipcard .top{display:flex;flex-wrap:wrap;gap:14px;align-items:center}
+  .ipcard .top h2{margin:0;font-size:22px}
+  .ipcard .top .ring{--s:64px;width:64px;height:64px;font-size:16px}
+  .progress{display:flex;gap:12px;align-items:center;margin-top:12px;border-color:rgba(53,199,242,.5)}
+  .progress[hidden]{display:none}  /* the class sets display:flex, which would override the hidden attribute */
+  .progress .radar{width:22px;height:22px;flex:0 0 22px}
+  .progress .msg{flex:1;font-size:13px}.progress .msg small{display:block;color:var(--muted);margin-top:2px}
+  .btnrow{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-left:auto}
+  .btnrow button,.btnrow a.btn{padding:8px 14px}
+  .shot-us{max-width:100%;border:1px solid var(--border);border-radius:10px;background:#000}
+  .cols>*{min-width:0}  /* grid children must be allowed to shrink below their tables' width on a phone */
+  .sim-group{margin-bottom:16px}.sim-group h3 .q{font:11px var(--mono);color:var(--muted);letter-spacing:0;text-transform:none;margin-left:8px;word-break:break-all}
+  table.compact td,table.compact th{padding:6px 8px;font-size:13px}
+  .why{font-size:12px;color:var(--muted);margin:0 0 10px}
+  .subh{font:600 11px var(--mono);letter-spacing:.1em;color:var(--muted);text-transform:uppercase;margin:0 0 6px}
+  @media (max-width:700px){.kv{grid-template-columns:minmax(0,1fr)}.kv dt{margin-top:6px}.btnrow{margin-left:0;width:100%}}
+  /* WHOIS history */
+  .wh-sum{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin:12px 0}
+  .wh-sum .card .v{font-size:16px;font-weight:600;margin-top:2px}.wh-sum .card .d{font-size:12px;color:var(--muted);margin-top:2px}
+  .leak{border:1px solid var(--accent);border-radius:12px;padding:14px 16px;background:rgba(53,199,242,.05);margin:4px 0 14px}
+  .leak h3{margin:0 0 4px;font:600 13px var(--sans);color:var(--text)}.leak .why{margin:0 0 10px}
+  .wtl{list-style:none;margin:0;padding:0 0 0 4px}
+  .wtl li{position:relative;padding:4px 0 12px 22px;border-left:1px solid var(--border);margin-left:6px}
+  .wtl li::before{content:"";position:absolute;left:-5px;top:9px;width:9px;height:9px;border-radius:50%;background:var(--panel2);border:1px solid var(--muted)}
+  .wtl li.key::before{background:var(--accent);border-color:var(--accent)}
+  .wtl .t{font-weight:600;font-size:13px}.wtl .d{font-size:12px;color:var(--muted);margin-top:2px;word-break:break-word}
+  .wtl .when{font:11px var(--mono);color:var(--muted)}
+  td.chg{box-shadow:inset 2px 0 0 var(--accent)}
+</style>
+<style>
+  .lv-pick{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(210px,100%),1fr));gap:8px}
+  .lv-pick .lv{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--border);border-radius:10px;padding:9px 11px;background:var(--panel);cursor:pointer;text-transform:none;letter-spacing:0;font-family:var(--sans)}
+  .lv-pick .lv *{text-transform:none;letter-spacing:0;font-family:var(--sans)}
+  .lv-pick .lv input{width:auto;margin-top:3px;flex:0 0 auto}
+  .lv-pick .lv b{font-size:13.5px;color:var(--text)}.lv-pick .lv span{display:block;font-size:12px;color:var(--muted)}
+  .lv-pick .lv span.pill{display:inline-block;font-size:10.5px;color:var(--accent2)}
+  .lv-pick .lv:has(input:checked){border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+  .badge.lvl{border:1px solid var(--high);color:var(--high)}
+  .badge.lvl-likely_counterfeit{border-color:var(--crit);color:var(--crit)}
+  .badge.lvl-confirmed_counterfeit{border-color:var(--crit);color:#fff;background:rgba(255,77,77,.25)}
+  .lead{font-size:15px;line-height:1.55;margin:8px 0 2px;max-width:860px}
+  .shots3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}@media (max-width:700px){.shots3{grid-template-columns:1fr}}
+  .shots3 .cap{font-size:11px;color:var(--muted);font-family:var(--mono);margin-bottom:4px}
+  .btn-intel{display:flex;align-items:center;gap:12px;margin:0;padding:12px 14px;border-radius:12px;text-decoration:none;color:#06101c;
+    background:linear-gradient(135deg,var(--accent2),var(--accent) 55%,var(--violet));box-shadow:0 10px 30px rgba(53,199,242,.22);transition:transform .15s,box-shadow .15s}
+  .btn-intel:hover{transform:translateY(-1px);box-shadow:0 14px 36px rgba(53,199,242,.35)}
+  .btn-intel .ico{font-size:22px;line-height:1}.btn-intel b{display:block;font-family:var(--display);letter-spacing:.06em;font-size:14px}
+  .btn-intel small{display:block;opacity:.8;font-size:11px;margin-top:2px}.btn-intel .arr{margin-left:auto;font-size:20px}
+  /* header */
+  .fhead{display:grid;grid-template-columns:auto minmax(0,1fr);gap:24px;align-items:start}
+  .fhead .ringwrap{text-align:center;padding-top:6px}
+  .fhead .ringwrap .lbl{font:600 10px var(--mono);letter-spacing:.1em;color:var(--muted);margin-top:8px;text-transform:uppercase}
+  .facts{display:flex;flex-wrap:wrap;gap:6px 22px;font-size:13px;color:var(--muted);margin-top:10px}
+  .facts b{color:var(--text);font-weight:500}
+  .facts > span{min-width:0;overflow-wrap:anywhere}
+  .facts .meter{display:inline-block;width:60px;height:5px;border-radius:3px;background:#1E2A3D;vertical-align:middle;margin:0 6px;overflow:hidden}
+  .facts .meter i{display:block;height:100%;background:var(--accent)}
+  .ti{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:8px;margin-top:14px;max-width:980px}
+  .ti a,.ti .t{display:block;padding:9px 12px;border:1px solid var(--border);border-radius:10px;background:var(--panel2);color:var(--text);text-decoration:none}
+  .ti a:hover{border-color:var(--accent)}
+  .ti .k{font:600 10px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);display:flex;justify-content:space-between}
+  .ti .v{font-size:13px;margin-top:3px}
+  .ti .bad{border-color:rgba(255,77,77,.55)}.ti .bad .v{color:var(--crit)}
+  .ti .off .v{color:var(--muted)}
+  .tinote{font-size:12px;color:var(--muted);margin-top:6px}
+  .tilabel{margin-top:16px;font-size:11px}.tilabel .mono{letter-spacing:.12em;color:var(--muted);font-weight:600}
+  .tilabel + .ti{margin-top:6px}
+  /* next step */
+  .nextstep{margin-top:14px}
+  .verdict-form{display:grid;grid-template-columns:minmax(0,2fr) minmax(160px,1fr) auto auto;gap:10px;align-items:end}
+  .verdict-form label{margin-top:0}
+  .done-box{border:1px solid rgba(46,204,113,.45);border-radius:12px;padding:12px 14px;background:rgba(46,204,113,.05)}
+  .sec-actions{display:flex;flex-wrap:wrap;gap:8px 10px;margin-top:12px;align-items:center}
+  .sec-actions form{margin:0}
+  .hint{font-size:12.5px;color:var(--muted);margin:10px 0 0}
+  /* tabs */
+  .tabs{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;margin:18px 0 0;border-bottom:1px solid var(--border)}
+  @media (min-width:701px){.tabs{flex-wrap:wrap;overflow:visible}}  /* eight tabs: wrap on a desktop rather than hide the last ones */
+  .tabs::-webkit-scrollbar{display:none}
+  .tabs button{flex:0 0 auto;background:transparent;border:0;border-bottom:2px solid transparent;color:var(--muted);padding:10px 14px;cursor:pointer;font:600 13px var(--sans);letter-spacing:.03em;border-radius:0;display:flex;gap:7px;align-items:center;box-shadow:none}
+  .tabs button:hover{color:var(--text);box-shadow:none}
+  .tabs button[aria-selected=true]{color:var(--accent2);border-bottom-color:var(--accent)}
+  .tabs .n{font:600 11px var(--mono);padding:1px 7px;border-radius:999px;background:var(--panel2);border:1px solid var(--border);color:var(--muted)}
+  .tabpane{display:none;margin-top:12px}.tabpane.on{display:block}
+  .tabpane > h2:first-child{margin-top:0}
+  .tabs .n.bad{color:var(--crit);border-color:rgba(255,77,77,.5)}
+  .tabs .grp{flex:0 0 auto;align-self:center;width:1px;height:18px;background:var(--border);margin:0 6px}
+  /* investigation bar: shown on the three investigation tabs */
+  .invbar{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;margin-top:12px}
+  .invbar[hidden]{display:none}
+  .invbar .ib-t{flex:1;min-width:min(320px,100%)}
+  .invbar .ib-t b{font-size:14px}
+  .invbar .progress{flex:0 0 100%;margin-top:0}
+  .jump{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:0 0 12px;color:var(--muted)}
+  .jump a{padding:3px 10px;border:1px solid var(--border);border-radius:999px;background:var(--panel2);color:var(--text);text-decoration:none}
+  .jump a:hover{border-color:var(--accent)}
+  .inv-empty{border-style:dashed}
+  .why-grid{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:18px}
+  .why-grid>*,.fhead>*{min-width:0}
+  @media (max-width:900px){.why-grid,.verdict-form,.fhead{grid-template-columns:minmax(0,1fr)}.fhead .ringwrap{text-align:left}}
+</style>
+
+
+
+<div class="crumbs"><a href="/ui/brands/">Brands &amp; Scans</a><span class="sep">›</span><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/">ShopNova</a><span class="sep">›</span><a href="/ui/findings/_9e35fa5890/">Findings</a><span class="sep">›</span><span class="cur">shopnova-login.com</span><span class="side"><a href="/ui/candidates/a53b1e5e-736f-457b-a797-848fa573f88b/">Domain timeline</a></span></div>
+
+
+<div class="panel fhead">
+  <div class="ringwrap">
+    <div class="ring" style="--p:100;--c:var(--crit)"><div>100</div></div>
+    <div class="lbl">risk <span class="help" tabindex="0" role="link" data-href="/ui/how-it-works/#g-risk" data-tip="How dangerous the site is, 0–100. Medium ≥ 25, High ≥ 50, Critical ≥ 75. Combination rules can raise the severity." title="How dangerous the site is, 0–100. Medium ≥ 25, High ≥ 50, Critical ≥ 75. Combination rules can raise the severity." aria-label="What is this? How dangerous the site is, 0–100. Medium ≥ 25, High ≥ 50, Critical ≥ 75. Combination rules can raise the severity.">?</span></div>
+  </div>
+  <div style="min-width:0">
+    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+      <span class="badge sev-critical">critical</span>
+      
+      
+      <span class="badge" style="border:1px solid var(--accent);color:var(--accent2)" title="a contact an AI assistant gives for ShopNova that is not on its website — scored by the AI-answer checks">AI answer · sends users to a site that is not the brand&#39;s</span>
+      <span class="badge state" title="a finding no analyst has judged yet">awaiting verdict</span>
+      
+      
+      <span class="muted small">brand <a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/">ShopNova</a></span>
+    </div>
+    <h1 class="mono" style="margin:8px 0 2px;word-break:break-all"><span class="mono">shopnova-login.com</span></h1>
+    <p class="lead">Gemini sends users who ask about ShopNova to shopnova-login.com, which is not one of ShopNova&#39;s sites.</p>
+    <div class="facts">
+      
+      <span title="AI answer (ChatGPT / Gemini / Google AI Mode): AI answer: Gemini">found by <b>AI answer (ChatGPT / Gemini / Google AI Mode)</b></span>
+      <span>confidence <span class="help" tabindex="0" role="link" data-href="/ui/how-it-works/#g-confidence" data-tip="How complete and consistent the evidence is (breadth, completeness, provider agreement) — separate from risk." title="How complete and consistent the evidence is (breadth, completeness, provider agreement) — separate from risk." aria-label="What is this? How complete and consistent the evidence is (breadth, completeness, provider agreement) — separate from risk.">?</span><span class="meter"><i style="width:70%"></i></span><b>70%</b></span>
+      <span>web address · given by 1 assistant</span>
+      
+      <span>hosted <a class="mono" href="#ips" data-goto="ips" title="Netherlands · BulletproofHost BV"><img class="flag" src="https://flagcdn.com/w20/nl.png" width="16" height="12" alt="NL" title="Netherlands" loading="lazy" onerror="this.replaceWith(document.createTextNode(this.alt))">203.0.113.66</a></span>
+      <span>registrar <b>Mock Registrar LLC</b></span>
+    </div>
+    
+    
+
+    
+    <div class="tinote">A web address an AI assistant gives for ShopNova, not a website: what the assistants said and what the pages say are in the <a href="#aianswer" data-goto="aianswer">AI answer</a> tab.</div>
+    
+    
+  </div>
+</div>
+
+
+<div class="panel nextstep" id="verdict">
+  <h2 style="margin-top:0">What do I do <span class="muted">· review the evidence below, then give a verdict</span></h2>
+  <form method="post" id="rescan" action="/ui/candidates/a53b1e5e-736f-457b-a797-848fa573f88b/rescan" hidden></form>
+
+  
+    <form method="post" action="/ui/findings/6d7c2f47-cf77-4992-9dce-622f09bbf0bf/verdict" class="verdict-form"><input type="hidden" name="next" value="">
+      <div><label for="reason">Reason · goes to the audit log and the training data</label><input id="reason" name="reason" placeholder="e.g. cloned login, exfil form"></div>
+      <div><label for="verdict">If dismissing, verdict</label><select id="verdict" name="verdict"><option value="legitimate">legitimate</option><option value="suspicious">suspicious</option><option value="unknown">unknown</option></select></div>
+      <button class="ok" name="action" value="confirm" type="submit">Confirm wrong contact</button>
+      <button class="danger" name="action" value="dismiss" type="submit">Dismiss</button>
+    </form>
+    
+    
+    
+    <p class="hint">
+      
+      The answer sends users to a site that is not ShopNova’s → confirm; that site is checked as a suspect of its own.
+      
+      
+    </p>
+  
+  
+
+  <div class="sec-actions">
+    <button type="button" class="primary" data-goto="aianswer">◎ WHAT THE AI SAID AND WHAT THE PAGES SAY ↓</button>
+    
+    
+      
+      <form method="post" action="/ui/findings/6d7c2f47-cf77-4992-9dce-622f09bbf0bf/report"><button type="submit" title="HTML + JSON with screenshots and SHA-256 of every piece of evidence">Generate evidence package</button></form>
+      
+    
+    <a class="small" href="/ui/candidates/a53b1e5e-736f-457b-a797-848fa573f88b/" style="margin-left:4px">domain timeline</a>
+    
+  </div>
+</div>
+
+
+
+<nav class="tabs" role="tablist" id="tabs" aria-label="Finding details">
+  <button role="tab" data-tab="aianswer">AI answer <span class="n bad">1 assistant</span></button>
+  
+  
+  <button role="tab" data-tab="why">Why flagged <span class="n">3 signals</span></button>
+  
+  <span class="grp" aria-hidden="true"></span>
+  <button role="tab" data-tab="timeline">Timeline <span class="n">2</span></button>
+  <button role="tab" data-tab="evidence">Evidence <span class="n">2</span></button>
+  
+</nav>
+
+<div class="panel invbar" id="invbar" hidden>
+  <div class="ib-t">
+    <b>Site &amp; network investigation</b>
+    <span class="small muted">· VirusTotal · RDAP · WHOIS history · DNS · certificate · AbuseIPDB · urlscan · passive DNS</span>
+    <div class="small muted" style="margin-top:3px">fetched <span data-rel="2026-10-14T07:49:56.473412+00:00"></span> · cached 24 h
+      </div>
+  </div>
+  <div class="btnrow">
+    <button id="refresh" class="" type="button" >Refresh</button>
+    
+  </div>
+  <div id="progress" class="progress" hidden>
+    <div class="radar"></div>
+    <div class="msg"><span id="prog-msg">Starting the investigation…</span><small>VirusTotal's free API allows 4 requests a minute, so a full run takes 1–3 minutes.</small></div>
+  </div>
+</div>
+
+
+<section class="tabpane" id="tab-aianswer">
+
+
+
+
+
+<style>
+  .aia .head{display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+  .aia .contact{font:700 24px/1.2 var(--mono);letter-spacing:.02em}
+  .aia .eng{display:inline-block;border:1px solid var(--border);border-radius:999px;padding:1px 10px;font-size:12px;margin-right:4px}
+  .aia .turn{border:1px solid var(--border);border-radius:12px;padding:12px 14px;margin-top:10px;background:var(--panel2)}
+  .aia .q{font-size:13px;color:var(--muted);margin-bottom:6px}
+  .aia .q b{color:var(--text)}
+  .aia .a{white-space:pre-wrap;line-height:1.55;font-size:14px}
+  .aia mark{background:rgba(255,77,77,.22);color:inherit;border-radius:4px;padding:0 3px;outline:1px solid rgba(255,77,77,.6)}
+  .aia .refs{margin:8px 0 0;font-size:12px;padding-left:18px}
+  .aia .refs li{margin:2px 0;overflow-wrap:anywhere}
+  .aia h2{margin:18px 0 4px}
+  .aia table{width:100%}
+  .aia td,.aia th{vertical-align:top;overflow-wrap:anywhere}
+  .aia .ok{color:var(--low)} .aia .bad{color:var(--crit)}
+  .aia .tag{display:inline-block;border:1px solid var(--border);border-radius:6px;padding:0 6px;font-size:11px;margin:0 4px 2px 0}
+  .aia .tag.bad{border-color:rgba(255,77,77,.6)}
+  .aia textarea{width:100%;min-height:110px;font:13px/1.5 var(--mono)}
+</style>
+<div class="aia">
+<div class="panel">
+  <div class="head">
+    <div><div class="small muted">WEB ADDRESS GIVEN BY</div>
+      <span class="eng">Gemini</span></div>
+    <div class="contact">shopnova-login.com</div>
+    <div class="small"><b class="bad">sends users to a site that is not the brand&#39;s</b></div>
+  </div>
+  <ul class="small" style="margin:10px 0 0;padding-left:18px"><li>Gemini sent users to shopnova-login.com, which is not a site of ShopNova</li><li>shopnova-login.com is a phishing site BrandWatch confirmed</li><li>shopnova-login.com carries the brand&#39;s name but is not one of its domains</li></ul>
+  <p class="small muted" style="margin:10px 0 0">The contacts ShopNova publishes on its own site:
+    <span class="mono">03-6000000</span> · <span class="mono">*6700</span> · <span class="mono">*6711</span> · <span class="mono">support@shopnova.com</span> · <span class="mono">+972506000000</span> — <a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/#ai-answers">all of them, with their pages</a></p>
+</div>
+
+<h2>What the assistants said</h2>
+
+
+<div class="turn">
+  <div class="q"><span class="eng">Gemini</span> asked <b>“Where do I log in to my ShopNova account? What is the address?”</b> <span class="tag">en</span></div>
+  <div class="a">You can log in to ShopNova at https://<mark>shopnova-login.com</mark>/ with your e-mail and password, or through the ShopNova app.</div>
+  <ul class="refs muted"><li>source: ShopNova — Sign in — <span class="mono">https://shopnova-login.com/</span></li></ul>
+  
+</div>
+
+
+
+
+<h2>What the pages really say <span class="muted" style="font-size:12px;letter-spacing:0;text-transform:none">· BrandWatch opened every page the assistants cited — their word is never taken</span></h2>
+
+<table class="small">
+  <tr><th>Page</th><th>The brand's?</th><th>Carries shopnova-login.com?</th><th></th></tr>
+  
+  <tr>
+    <td><span class="mono">https://shopnova-login.com/</span></td>
+    <td><span class="bad">no</span></td>
+    <td>—</td>
+    <td><span class="tag bad">carries the brand's name</span><span class="tag bad">a phishing site BrandWatch confirmed</span></td>
+  </tr>
+  
+</table>
+
+
+
+<h2>What to do</h2>
+<ol class="small" style="padding-left:18px;line-height:1.7">
+  <li>Take the page that publishes it down: it was sent to the website checks of this scan — see its own finding in <a href="/ui/findings/_9e35fa5890/">Findings</a>.</li>
+  <li>Report the answer to the assistant: in Gemini, ask the same question and use the answer's <b>thumbs-down / report</b> button with the text below. Nothing is sent from BrandWatch.</li>
+  <li>Make the real contacts easy for assistants to read: one contact page, the numbers as text (not only in images), and <span class="mono">schema.org ContactPoint</span> markup on it.</li>
+  
+</ol>
+<label class="small muted" for="aia-report">Ready text for the report</label>
+<textarea id="aia-report" readonly>Gemini gives "shopnova-login.com" as the web address of ShopNova. ShopNova does not publish it on its website. People who follow this answer reach someone who is not ShopNova. Please remove it and answer with the contacts on ShopNova's official website (03-6000000, *6700, *6711, support@shopnova.com).</textarea>
+</div></section>
+
+
+<section class="tabpane" id="tab-why">
+  
+  <div class="why-grid">
+    <div class="panel">
+      <h2>Explain Finding — why it was flagged <span class="muted">· every signal, its points and the evidence behind it</span></h2>
+      
+      <table>
+        <tr><th>Signal</th><th>Group</th><th class="right">Points</th><th>Evidence</th></tr>
+        <tr><td title="the page that publishes it (or the address given) is a phishing site BrandWatch already found">a known phishing site<div class="mono muted" style="font-size:10px">ai_known_suspect</div></td><td class="muted" title="do public blocklists already know it?">Reputation</td><td class="right mono">+40</td><td class="small">shopnova-login.com is a phishing site BrandWatch confirmed</td></tr><tr><td title="an AI assistant sends people who ask about the brand to a site that is not one of its domains">sends users elsewhere<div class="mono muted" style="font-size:10px">ai_url_not_official</div></td><td class="muted" title="does the name pretend to be the brand?">Identity</td><td class="right mono">+40</td><td class="small">Gemini sent users to shopnova-login.com, which is not a site of ShopNova</td></tr><tr><td title="the only page that carries it has the brand&#39;s name in a domain the brand does not own">published by a look-alike<div class="mono muted" style="font-size:10px">ai_offsite_lookalike</div></td><td class="muted" title="is it hosted alongside known phishing?">Infrastructure</td><td class="right mono">+30</td><td class="small">shopnova-login.com carries the brand&#39;s name but is not one of its domains</td></tr>
+      </table>
+      
+    </div>
+    <div class="panel">
+      <h2>How the score adds up</h2>
+      <p class="small" style="margin-top:0"><a class="pill cap" href="/ui/how-it-works/#golden" title="same evidence + same config ⇒ same score; the scoring version is a hash of the weights, caps and rules; a golden dataset gates every change">⚙ deterministic · versioned</a> Raw <b class="mono">100</b> of 100 → normalised to <b class="mono">100</b> / 100.
+        <span class="muted">Thresholds: Medium 25 · High 50 · Critical 75 · scoring <span class="mono">aianswer-v1-e26ad54f</span></span>
+        
+        <br><a href="/api/jobs/add4c607-69e3-40f1-a14b-92a326cd31b0/trace?host=shopnova-login.com" target="_blank" rel="noopener">open the arithmetic ↗</a> <span class="muted">— this site's section of the scan trace</span></p>
+      <h2>Group caps <span class="help" tabindex="0" role="link" data-href="/ui/how-it-works/#g-group-cap" data-tip="Each group can add at most its cap, so ten weak visual hints never outweigh one strong behaviour signal." title="Each group can add at most its cap, so ten weak visual hints never outweigh one strong behaviour signal." aria-label="What is this? Each group can add at most its cap, so ten weak visual hints never outweigh one strong behaviour signal.">?</span> <span class="muted">· stop correlated evidence from double counting</span></h2>
+      
+      <div style="display:grid;grid-template-columns:100px 1fr 96px;gap:10px;align-items:center;margin:5px 0">
+        <span class="small" title="does the name pretend to be the brand?">Identity</span>
+        <div class="bar" style="height:6px"><i style="width:40%"></i></div>
+        <span class="mono small right">40 / 100</span>
+      </div>
+      
+      <div style="display:grid;grid-template-columns:100px 1fr 96px;gap:10px;align-items:center;margin:5px 0">
+        <span class="small" title="do public blocklists already know it?">Reputation</span>
+        <div class="bar" style="height:6px"><i style="width:40%"></i></div>
+        <span class="mono small right">40 / 100</span>
+      </div>
+      
+      <div style="display:grid;grid-template-columns:100px 1fr 96px;gap:10px;align-items:center;margin:5px 0">
+        <span class="small" title="is it hosted alongside known phishing?">Infrastructure</span>
+        <div class="bar" style="height:6px"><i style="width:30%"></i></div>
+        <span class="mono small right">30 / 100</span>
+      </div>
+      
+      <h2>Confidence <span class="help" tabindex="0" role="link" data-href="/ui/how-it-works/#g-confidence" data-tip="How complete and consistent the evidence is (breadth, completeness, provider agreement) — separate from risk." title="How complete and consistent the evidence is (breadth, completeness, provider agreement) — separate from risk." aria-label="What is this? How complete and consistent the evidence is (breadth, completeness, provider agreement) — separate from risk.">?</span> <span class="muted">· 70%</span></h2>
+      
+      <table class="small">
+        <tr><td>Breadth (3 independent groups)</td><td class="right mono">+65</td></tr>
+        <tr><td>Hard confirmers </td><td class="right mono">+0</td></tr>
+        <tr><td>Evidence completeness</td><td class="right mono">+5</td></tr>
+        <tr><td>Provider agreement</td><td class="right mono">+0</td></tr>
+        <tr><td>Unavailable evidence </td><td class="right mono">0</td></tr>
+        <tr><td>Single weak signal</td><td class="right mono">0</td></tr>
+      </table>
+    </div>
+  </div>
+  
+</section>
+
+<section class="tabpane" id="tab-looks">
+  <div class="panel">
+    <h2>Suspect vs. official </h2>
+    
+    
+    
+    
+    <div class="cols">
+      
+      <div><div class="cap">shopnova-login.com</div>
+        <p class="muted small">No screenshot captured (unavailable — not "clean").</p></div>
+      <div><div class="cap">the real ShopNova <span class="help" tabindex="0" role="link" data-href="/ui/how-it-works/#g-baseline" data-tip="The fingerprint of the brand&#39;s real site — favicon hash, screenshot hash, colours, login pages, keywords. Every suspect is compared against it." title="The fingerprint of the brand&#39;s real site — favicon hash, screenshot hash, colours, login pages, keywords. Every suspect is compared against it." aria-label="What is this? The fingerprint of the brand&#39;s real site — favicon hash, screenshot hash, colours, login pages, keywords. Every suspect is compared against it.">?</span></div>
+        <img class="shot" src="/_r/4eee08c1c3ea76.png" alt="official"></div>
+    </div>
+    
+  </div>
+  
+  
+</section>
+
+
+
+
+
+
+<section class="tabpane" id="tab-reputation">
+  
+  <div class="cards">
+    <div class="card" style="display:flex;gap:18px;align-items:center">
+      <div class="ring lg" style="--p:0;--c:var(--low)"><div>0</div></div>
+      <div style="min-width:0">
+        <h3>VirusTotal · security vendors</h3>
+        <div style="font-size:14px"><b style="color:var(--low)">0</b> of 90 engines flag this domain</div>
+        <div class="small muted">malicious 0 · suspicious 0 · community reputation 0</div>
+        
+      </div>
+    </div>
+    <div class="card"><h3>Server reputation · AbuseIPDB</h3>
+      <div class="small" style="margin:5px 0;display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+        <a class="mono" href="#ips" data-goto="ips"><img class="flag" src="https://flagcdn.com/w20/nl.png" width="16" height="12" alt="NL" title="Netherlands" loading="lazy" onerror="this.replaceWith(document.createTextNode(this.alt))">203.0.113.66</a>
+        <span class="det bad"><b>87</b><i>/ 100</i></span><span class="muted">143 report(s)</span>
+        </div>
+      
+      <div class="small muted" style="margin-top:6px">25 or more = several defenders reported abuse from this server.</div>
+    </div>
+    <div class="card"><h3>Categories</h3>
+      <div class="small"><span class="pill">uncategorized</span> <span class="muted">Mock Category Service</span></div>
+      
+      <h3 style="margin-top:10px">JARM</h3><div class="mono small" style="word-break:break-all">3c26a40d85a2f3dc024ae9233efaa58f748f853c96856ed65c0b5de20054bd</div>
+    </div>
+  </div>
+  
+  <div class="panel" style="margin-top:12px"><h2>Engines <span class="muted small">flagged first</span></h2>
+    <div class="tw"><table class="compact"><tr><th>Engine</th><th>Category</th><th>Result</th><th>Method</th></tr>
+    <tr><td>BitDefender</td><td><span class="badge state">harmless</span></td><td class="mono small">clean</td><td class="muted small">blacklist</td></tr><tr><td>CRDF</td><td><span class="badge state">harmless</span></td><td class="mono small">clean</td><td class="muted small">blacklist</td></tr><tr><td>ESET</td><td><span class="badge state">harmless</span></td><td class="mono small">clean</td><td class="muted small">blacklist</td></tr><tr><td>Fortinet</td><td><span class="badge state">harmless</span></td><td class="mono small">clean</td><td class="muted small">blacklist</td></tr><tr><td>Google Safebrowsing</td><td><span class="badge state">harmless</span></td><td class="mono small">clean</td><td class="muted small">blacklist</td></tr><tr><td>Kaspersky</td><td><span class="badge state">harmless</span></td><td class="mono small">clean</td><td class="muted small">blacklist</td></tr><tr><td>Netcraft</td><td><span class="badge state">harmless</span></td><td class="mono small">clean</td><td class="muted small">blacklist</td></tr><tr><td>OpenPhish</td><td><span class="badge state">harmless</span></td><td class="mono small">clean</td><td class="muted small">blacklist</td></tr><tr><td>Phishtank</td><td><span class="badge state">harmless</span></td><td class="mono small">clean</td><td class="muted small">blacklist</td></tr><tr><td>Quttera</td><td><span class="badge state">harmless</span></td><td class="mono small">clean</td><td class="muted small">blacklist</td></tr><tr><td>Sophos</td><td><span class="badge state">harmless</span></td><td class="mono small">clean</td><td class="muted small">blacklist</td></tr><tr><td>Webroot</td><td><span class="badge state">harmless</span></td><td class="mono small">clean</td><td class="muted small">blacklist</td></tr>
+    </table></div></div>
+  
+  
+  
+  <div class="panel" style="margin-top:12px"><h2>Look it up elsewhere</h2>
+    <p class="why">Each link opens the external service's own page for this site — nothing is sent from here beyond the name in the URL.</p>
+    <div class="links" style="margin-top:0"><a href="https://www.virustotal.com/gui/domain/shopnova-login.com" target="_blank" rel="noreferrer noopener" title="https://www.virustotal.com/gui/domain/shopnova-login.com">VirusTotal domain ↗</a><a href="https://www.virustotal.com/gui/domain/shopnova-login.com/relations" target="_blank" rel="noreferrer noopener" title="https://www.virustotal.com/gui/domain/shopnova-login.com/relations">VirusTotal relations ↗</a><a href="https://urlscan.io/search/#page.domain:shopnova-login.com" target="_blank" rel="noreferrer noopener" title="https://urlscan.io/search/#page.domain:shopnova-login.com">urlscan search ↗</a><a href="https://urlhaus.abuse.ch/browse.php?search=shopnova-login.com" target="_blank" rel="noreferrer noopener" title="https://urlhaus.abuse.ch/browse.php?search=shopnova-login.com">URLhaus ↗</a><a href="https://crt.sh/?q=shopnova-login.com" target="_blank" rel="noreferrer noopener" title="https://crt.sh/?q=shopnova-login.com">crt.sh ↗</a><a href="https://transparencyreport.google.com/safe-browsing/search?url=shopnova-login.com" target="_blank" rel="noreferrer noopener" title="https://transparencyreport.google.com/safe-browsing/search?url=shopnova-login.com">Google Safe Browsing ↗</a><a href="https://web.archive.org/web/*/shopnova-login.com" target="_blank" rel="noreferrer noopener" title="https://web.archive.org/web/*/shopnova-login.com">Wayback Machine ↗</a><a href="https://search.censys.io/search?resource=hosts&amp;q=shopnova-login.com" target="_blank" rel="noreferrer noopener" title="https://search.censys.io/search?resource=hosts&amp;q=shopnova-login.com">Censys ↗</a><a href="https://www.virustotal.com/gui/search/ai-answer://url/shopnova-login.com" target="_blank" rel="noreferrer noopener" title="https://www.virustotal.com/gui/search/ai-answer://url/shopnova-login.com">VirusTotal URL ↗</a><a href="https://www.virustotal.com/gui/ip-address/203.0.113.66" target="_blank" rel="noreferrer noopener" title="https://www.virustotal.com/gui/ip-address/203.0.113.66">VirusTotal IP ↗</a><a href="https://www.shodan.io/host/203.0.113.66" target="_blank" rel="noreferrer noopener" title="https://www.shodan.io/host/203.0.113.66">Shodan ↗</a><a href="https://www.abuseipdb.com/check/203.0.113.66" target="_blank" rel="noreferrer noopener" title="https://www.abuseipdb.com/check/203.0.113.66">AbuseIPDB ↗</a><a href="https://search.censys.io/hosts/203.0.113.66" target="_blank" rel="noreferrer noopener" title="https://search.censys.io/hosts/203.0.113.66">Censys host ↗</a></div>
+  </div>
+  
+</section>
+
+
+<section class="tabpane" id="tab-domain">
+  
+  <div class="jump small">Jump to <a href="#registration" data-goto="registration">Registration</a><a href="#history" data-goto="history">WHOIS history</a><a href="#dns" data-goto="dns">DNS records</a><a href="#cert" data-goto="cert">Certificate</a></div>
+  
+  <div id="sec-registration" class="cards">
+    <div class="card"><h3>Registration data (RDAP) </h3>
+      <dl class="kv"><dt>Name</dt><dd class="mono">shopnova-login.com</dd>
+        
+        <dt>registration</dt><dd class="mono">2026-10-04</dd>
+        <dt>Status</dt><dd>—</dd>
+        <dt>DNSSEC</dt><dd>—</dd></dl></div>
+    <div class="card"><h3>Registrar &amp; abuse contact</h3>
+      <dl class="kv"><dt>Registrar</dt><dd><b>Mock Registrar LLC</b></dd>
+        
+        <dt>Abuse email</dt><dd>—</dd>
+        
+        <dt>registrant email</dt><dd>kitops@proton.example</dd></dl></div>
+    <div class="card"><h3>Nameservers</h3><span class="muted small">—</span>
+      </div>
+  </div>
+  <div class="panel" style="margin-top:12px"><details><summary>Current WHOIS record (VirusTotal)</summary><div class="mono-block">Domain Name: SHOPNOVA-LOGIN.COM
+Registrar: Mock Registrar LLC
+Registrar Abuse Contact Email: abuse@mock-registrar.example
+Creation Date: 2026-10-04T00:00:00Z
+Name Server: NS1.MOCK-DNS.EXAMPLE
+Registrant Country: US
+</div></details></div>
+
+  
+  <div class="panel" id="sec-history" style="margin-top:12px">
+    <h2>WHOIS history <span class="muted">· every WHOIS snapshot WhoisXML has recorded for shopnova-login.com</span></h2>
+    <p class="why">Who registered the domain, when, through which registrar, and every change since: transfers, new owners, re-registration after expiry, privacy switched on or off. Phishers often register with their real details and hide them a day later — that first snapshot is a lead.</p>
+    
+    <div class="wh-sum">
+      <div class="card"><h3>First registered</h3><div class="v mono">2026-10-04</div><div class="d">Mock Registrar LLC</div></div>
+      <div class="card"><h3>Snapshots</h3><div class="v">1</div><div class="d">2026-10-05 → 2026-10-05</div></div>
+      <div class="card"><h3>Owners seen</h3><div class="v">1 visible</div><div class="d">0 owner change(s)</div></div>
+      <div class="card"><h3>Registrars</h3><div class="v">1</div><div class="d">0 transfer(s) · Mock Registrar LLC</div></div>
+      <div class="card"><h3>Owner details now</h3><div class="v">Visible</div><div class="d">published in WHOIS</div></div>
+    </div>
+    
+    
+    <div class="card" style="margin-bottom:14px"><h3>Same owner e-mail on other domains in this workspace</h3>
+      <div class="small" style="margin:4px 0"><span class="mono">kitops@proton.example</span> → <span class="pill mono">secure-shopnova.com</span> <span class="pill mono">shopn0va.com</span> <span class="pill mono">shopnova.co</span> </div>
+      <p class="why" style="margin:6px 0 0">Found in other domains' WHOIS history and in the WHOIS evidence of your scans — no extra API call. One operator, several kits.</p></div>
+    
+    <div class="cols">
+      <div style="min-width:0"><h3 class="subh">TIMELINE</h3>
+        <ul class="wtl"><li class="key"><div class="when">2026-10-04</div><div class="t">Registered by kitops@proton.example</div><div class="d">via Mock Registrar LLC · first WHOIS snapshot 2026-10-05</div></li></ul></div>
+      <div style="min-width:0"><h3 class="subh">SNAPSHOTS · CHANGED FIELDS MARKED</h3>
+        <div class="tw"><table class="compact"><tr><th>Seen</th><th>Registrar</th><th>Registrant</th><th>Created · expires</th></tr>
+        <tr>
+          <td class="mono small">2026-10-05</td>
+          <td class="small ">Mock Registrar LLC</td>
+          <td class="small ">kitops@proton.example</td>
+          <td class="mono small ">2026-10-04 · 2027-10-04</td></tr>
+          <tr><td colspan="4" style="padding-top:0"><details><summary class="small">raw WHOIS · 2026-10-05</summary><div class="mono-block">Domain Name: SHOPNOVA-LOGIN.COM
+Registrar: Mock Registrar LLC
+Creation Date: 2026-10-04T00:00:00Z
+Updated Date: 2026-10-05T00:00:00Z
+Registry Expiry Date: 2027-10-04T00:00:00Z
+Registrant Organization: 
+Registrant Name: 
+Registrant Email: kitops@proton.example
+Name Server: NS1.MOCK-DNS.EXAMPLE
+Name Server: NS2.MOCK-DNS.EXAMPLE</div></details></td></tr>
+        </table></div></div>
+    </div>
+    <p class="small muted" style="margin:10px 0 0">Source: WhoisXML WHOIS History API (whois-history.whoisxmlapi.com) · cached 24 h · fetched <span data-rel="2026-10-14T07:49:56.157627+00:00"></span>.</p>
+    
+  </div>
+
+  <div class="cols" style="margin-top:12px">
+    <div class="panel" id="sec-dns"><h2>DNS records <span class="muted small">source: VirusTotal</span></h2>
+      <p class="why">A records are the servers hosting the site — click one to see everything else hosted there. NS tells you who runs its DNS (Cloudflare nameservers hide the real origin).</p>
+      
+      <div class="tw"><table class="compact"><tr><th>Type</th><th>TTL</th><th>Value</th></tr>
+        <tr><td class="mono"><b>A</b></td><td class="mono muted">300</td>
+          <td class="mono" style="word-break:break-all"><a href="/ui/intel/ip/203.0.113.66/">203.0.113.66</a></td></tr><tr><td class="mono"><b>AAAA</b></td><td class="mono muted">300</td>
+          <td class="mono" style="word-break:break-all">2001:db8::7696</td></tr><tr><td class="mono"><b>NS</b></td><td class="mono muted">21600</td>
+          <td class="mono" style="word-break:break-all">ns1.mock-dns.example</td></tr><tr><td class="mono"><b>NS</b></td><td class="mono muted">21600</td>
+          <td class="mono" style="word-break:break-all">ns2.mock-dns.example</td></tr><tr><td class="mono"><b>MX</b></td><td class="mono muted">3600</td>
+          <td class="mono" style="word-break:break-all">mail.shopnova-login.com <span class="muted small">prio 10</span></td></tr><tr><td class="mono"><b>SOA</b></td><td class="mono muted">1800</td>
+          <td class="mono" style="word-break:break-all">ns1.mock-dns.example <span class="muted small">rname hostmaster.shopnova-login.com · serial 2026100801</span></td></tr>
+      </table></div>
+    </div>
+    
+    <div class="panel" id="sec-cert"><h2>HTTPS certificate <span class="muted small">from VirusTotal</span></h2>
+      
+      <dl class="kv"><dt>Common name</dt><dd class="mono">shopnova-login.com</dd>
+        <dt>Issuer</dt><dd>C=US O=Mock Trust Services CN=MT1</dd>
+        <dt>Valid</dt><dd class="mono small">2026-09-20 00:00:00 → 2026-12-19 00:00:00<div class="vbar"><i style="width:31%"></i></div><span class="muted">31% of the validity period elapsed</span></dd>
+        <dt>Alt names (2)</dt><dd><span class="pill mono">shopnova-login.com</span> <span class="pill mono">www.shopnova-login.com</span> </dd>
+        <dt>SHA-256</dt><dd class="mono small">74be7b3bc11f151a0b1978f70ab475b4ca14ecd749d7424298545cf619cf1f3f · <a href="https://crt.sh/?sha256=74be7b3bc11f151a0b1978f70ab475b4ca14ecd749d7424298545cf619cf1f3f" target="_blank" rel="noreferrer noopener">crt.sh ↗</a></dd></dl>
+      <details><summary>serial, signature, key, TLS and the full certificate</summary>
+        <dl class="kv"><dt>Subject</dt><dd class="mono small">CN=shopnova-login.com</dd><dt>Serial</dt><dd class="mono small">c660b035</dd>
+          <dt>Signature</dt><dd class="mono small">sha256ECDSA</dd><dt>Public key</dt><dd class="mono small">EC secp256r1</dd>
+          
+          <dt>SHA-1</dt><dd class="mono small">8482d29c938af20bd147637ca22f9ace6b9869cb</dd></dl>
+        <div class="mono-block">{
+  "cert_signature": {
+    "signature_algorithm": "sha256ECDSA"
+  },
+  "extensions": {
+    "subject_alternative_name": [
+      "shopnova-login.com",
+      "www.shopnova-login.com"
+    ]
+  },
+  "issuer": {
+    "C": "US",
+    "CN": "MT1",
+    "O": "Mock Trust Services"
+  },
+  "public_key": {
+    "algorithm": "EC",
+    "ec": {
+      "oid": "secp256r1"
+    }
+  },
+  "serial_number": "c660b035",
+  "subject": {
+    "CN": "shopnova-login.com"
+  },
+  "thumbprint": "8482d29c938af20bd147637ca22f9ace6b9869cb",
+  "thumbprint_sha256": "74be7b3bc11f151a0b1978f70ab475b4ca14ecd749d7424298545cf619cf1f3f",
+  "validity": {
+    "not_after": "2026-12-19 00:00:00",
+    "not_before": "2026-09-20 00:00:00"
+  },
+  "version": "V3"
+}</div></details>
+      
+    </div>
+  </div>
+  
+</section>
+
+
+<section class="tabpane" id="tab-network">
+  
+  <div class="jump small">Jump to <a href="#ips" data-goto="ips">Servers</a><a href="#urlscan" data-goto="urlscan">urlscan &amp; similar sites</a><a href="#relations" data-goto="relations">Passive DNS &amp; relations</a></div>
+  <div id="sec-ips">
+    
+
+<div class="ipcard">
+  <div class="top">
+    <div class="ring" style="--p:3;--c:var(--crit)"><div>3</div></div>
+    <div style="flex:1;min-width:220px">
+      <h2 class="mono"><img class="flag" src="https://flagcdn.com/w40/nl.png" width="26" height="20" alt="NL" title="Netherlands" loading="lazy" onerror="this.replaceWith(document.createTextNode(this.alt))">203.0.113.66</h2>
+      <div class="small muted">Netherlands · Amsterdam · AS64531 · BulletproofHost BV · 203.0.113.0/24 · RIPE NCC</div>
+      <div class="small" style="margin-top:4px"><b style="color:var(--crit)">3</b> of 94 engines flag this IP
+        · <b>8</b> sites hosted, <b style="color:var(--crit)">3</b> flagged · <b>4</b> communicating files</div>
+    </div>
+    <div class="links" style="margin:0"><a href="https://www.virustotal.com/gui/ip-address/203.0.113.66" target="_blank" rel="noreferrer noopener">VirusTotal IP ↗</a><a href="https://www.shodan.io/host/203.0.113.66" target="_blank" rel="noreferrer noopener">Shodan ↗</a><a href="https://www.abuseipdb.com/check/203.0.113.66" target="_blank" rel="noreferrer noopener">AbuseIPDB ↗</a><a href="https://search.censys.io/hosts/203.0.113.66" target="_blank" rel="noreferrer noopener">Censys host ↗</a>
+      <a href="/ui/intel/ip/203.0.113.66/">open server page →</a></div>
+  </div>
+  
+  <div class="card" style="margin-top:14px;display:flex;flex-wrap:wrap;gap:10px 22px;align-items:center">
+    <h3 style="margin:0;flex:0 0 100%">Abuse reports · AbuseIPDB <span style="text-transform:none;letter-spacing:0;font-family:var(--sans);font-weight:400"> — what other defenders reported about this server in the last 90 days</span></h3>
+    
+      <div><span class="det bad big"><b>87</b><i>/ 100</i></span></div>
+      <div class="small"><b>143</b> report(s) from <b>38</b> reporter(s) · last <span data-rel="2026-10-14T01:49:56.401403+00:00">2026-10-14 01:49</span>
+        <div class="muted" style="margin-top:2px">Data Center/Web Hosting/Transit · BulletproofHost BV</div></div>
+      <div class="small muted" style="flex:1;min-width:220px">A score of 25 or more means several independent reporters saw abuse from this IP: phishing, scanning, spam or brute force. A fresh kit on a clean IP scores 0 — unknown, not clean.</div>
+    
+  </div>
+  <div class="cols" style="margin-top:14px">
+    <div style="min-width:0">
+      <h3 class="subh">SITES HOSTED ON THIS SERVER <span style="text-transform:none;letter-spacing:0;font-family:var(--sans);font-weight:400">(passive DNS, each with its own detections)</span> </h3>
+      <div class="tw"><table class="compact"><tr><th>Last resolved</th><th>Detections</th><th>Domain</th><th></th></tr>
+        <tr><td class="mono">2026-10-13</td><td><span class="det bad"><b>5</b><i>/ 95</i></span></td><td class="mono" style="word-break:break-all">shopn0va.com</td>
+          <td class="small"><a href="https://www.virustotal.com/gui/domain/shopn0va.com" target="_blank" rel="noreferrer noopener" title="VirusTotal">VT ↗</a> · <a href="https://urlscan.io/search/#page.domain:shopn0va.com" target="_blank" rel="noreferrer noopener">urlscan ↗</a></td></tr><tr><td class="mono">2026-10-07</td><td><span class="det bad"><b>5</b><i>/ 95</i></span></td><td class="mono" style="word-break:break-all">shopnova.co</td>
+          <td class="small"><a href="https://www.virustotal.com/gui/domain/shopnova.co" target="_blank" rel="noreferrer noopener" title="VirusTotal">VT ↗</a> · <a href="https://urlscan.io/search/#page.domain:shopnova.co" target="_blank" rel="noreferrer noopener">urlscan ↗</a></td></tr><tr><td class="mono">2026-10-01</td><td><span class="det bad"><b>5</b><i>/ 95</i></span></td><td class="mono" style="word-break:break-all">wallet-sync-1366.online</td>
+          <td class="small"><a href="https://www.virustotal.com/gui/domain/wallet-sync-1366.online" target="_blank" rel="noreferrer noopener" title="VirusTotal">VT ↗</a> · <a href="https://urlscan.io/search/#page.domain:wallet-sync-1366.online" target="_blank" rel="noreferrer noopener">urlscan ↗</a></td></tr><tr><td class="mono">2026-10-05</td><td><span class="det ok"><b>0</b><i>/ 90</i></span></td><td class="mono" style="word-break:break-all">secure-login-1366.top</td>
+          <td class="small"><a href="https://www.virustotal.com/gui/domain/secure-login-1366.top" target="_blank" rel="noreferrer noopener" title="VirusTotal">VT ↗</a> · <a href="https://urlscan.io/search/#page.domain:secure-login-1366.top" target="_blank" rel="noreferrer noopener">urlscan ↗</a></td></tr><tr><td class="mono">2026-10-09</td><td><span class="det ok"><b>0</b><i>/ 90</i></span></td><td class="mono" style="word-break:break-all">secure-shopnova.com</td>
+          <td class="small"><a href="https://www.virustotal.com/gui/domain/secure-shopnova.com" target="_blank" rel="noreferrer noopener" title="VirusTotal">VT ↗</a> · <a href="https://urlscan.io/search/#page.domain:secure-shopnova.com" target="_blank" rel="noreferrer noopener">urlscan ↗</a></td></tr><tr><td class="mono">2026-10-11</td><td><span class="det ok"><b>0</b><i>/ 90</i></span></td><td class="mono" style="word-break:break-all">shopnova-login.com</td>
+          <td class="small"><a href="https://www.virustotal.com/gui/domain/shopnova-login.com" target="_blank" rel="noreferrer noopener" title="VirusTotal">VT ↗</a> · <a href="https://urlscan.io/search/#page.domain:shopnova-login.com" target="_blank" rel="noreferrer noopener">urlscan ↗</a></td></tr><tr><td class="mono">2026-09-29</td><td><span class="det ok"><b>0</b><i>/ 90</i></span></td><td class="mono" style="word-break:break-all">support-desk-1366.site</td>
+          <td class="small"><a href="https://www.virustotal.com/gui/domain/support-desk-1366.site" target="_blank" rel="noreferrer noopener" title="VirusTotal">VT ↗</a> · <a href="https://urlscan.io/search/#page.domain:support-desk-1366.site" target="_blank" rel="noreferrer noopener">urlscan ↗</a></td></tr><tr><td class="mono">2026-10-03</td><td><span class="det ok"><b>0</b><i>/ 90</i></span></td><td class="mono" style="word-break:break-all">verify-account-1366.xyz</td>
+          <td class="small"><a href="https://www.virustotal.com/gui/domain/verify-account-1366.xyz" target="_blank" rel="noreferrer noopener" title="VirusTotal">VT ↗</a> · <a href="https://urlscan.io/search/#page.domain:verify-account-1366.xyz" target="_blank" rel="noreferrer noopener">urlscan ↗</a></td></tr></table></div>
+      
+    </div>
+    <div style="min-width:0">
+      <h3 class="subh">COMMUNICATING FILES </h3>
+      <div class="tw"><table class="compact"><tr><th>Scanned</th><th>Detections</th><th>Type</th><th>Name</th></tr>
+        <tr><td class="mono">2026-10-09</td><td><span class="det bad"><b>6</b><i>/ 66</i></span></td><td class="small">Android</td><td class="small" style="word-break:break-all"><a href="https://www.virustotal.com/gui/file/966c8fad52604995a14b485e0d5cc242999761166154849774e297c9b4d3f99e" target="_blank" rel="noreferrer noopener">Draky and the Twilight Castle.apk</a></td></tr><tr><td class="mono">2026-09-21</td><td><span class="det bad"><b>5</b><i>/ 66</i></span></td><td class="small">Android</td><td class="small" style="word-break:break-all"><a href="https://www.virustotal.com/gui/file/149f700d92ad0eda2898f2218f5ee816f7171d446be701105f10121b66e55618" target="_blank" rel="noreferrer noopener">Orbit - Igra s gravitaciey.apk</a></td></tr><tr><td class="mono">2026-09-12</td><td><span class="det bad"><b>4</b><i>/ 66</i></span></td><td class="small">PDF</td><td class="small" style="word-break:break-all"><a href="https://www.virustotal.com/gui/file/b9a3f64d0662fd11bb115ee519139da7056b63ed304bce1d14177c8764bc980c" target="_blank" rel="noreferrer noopener">invoice_4411.pdf</a></td></tr><tr><td class="mono">2026-09-30</td><td><span class="det ok"><b>0</b><i>/ 66</i></span></td><td class="small">PDF</td><td class="small" style="word-break:break-all"><a href="https://www.virustotal.com/gui/file/470b446143d3ca4ab0cb4c28881fdfa88eaf8f3b94e5ae0ca2f59cf7410d33d9" target="_blank" rel="noreferrer noopener">REMITTANCE 2-For-Cokecanada.pdf</a></td></tr></table></div>
+      
+      <h3 class="subh" style="margin-top:12px">HISTORICAL WHOIS (IP block)</h3>
+        <div class="small"><b class="mono">2026-09-12</b> · Mock Registrar LLC </div>
+      <details><summary>IP WHOIS record</summary><div class="mono-block">inetnum: 203.0.113.0 - 203.0.113.255
+org-name: BulletproofHost BV
+abuse-mailbox: abuse@bulletproofhost.example
+</div></details>
+    </div>
+  </div>
+  <details><summary>engine verdicts for this IP (12)</summary><div class="tw"><table class="compact"><tr><th>Engine</th><th>Category</th><th>Result</th></tr>
+    <tr><td>BitDefender</td><td><span class="badge sev-critical">malicious</span></td><td class="mono small">phishing</td></tr><tr><td>ESET</td><td><span class="badge sev-critical">malicious</span></td><td class="mono small">phishing</td></tr><tr><td>Fortinet</td><td><span class="badge sev-critical">malicious</span></td><td class="mono small">phishing</td></tr><tr><td>Google Safebrowsing</td><td><span class="badge sev-critical">malicious</span></td><td class="mono small">phishing</td></tr><tr><td>Kaspersky</td><td><span class="badge sev-critical">malicious</span></td><td class="mono small">phishing</td></tr><tr><td>OpenPhish</td><td><span class="badge sev-critical">malicious</span></td><td class="mono small">phishing</td></tr><tr><td>Phishtank</td><td><span class="badge sev-critical">malicious</span></td><td class="mono small">phishing</td></tr><tr><td>Sophos</td><td><span class="badge sev-critical">malicious</span></td><td class="mono small">phishing</td></tr><tr><td>CRDF</td><td><span class="badge state">harmless</span></td><td class="mono small">clean</td></tr><tr><td>Netcraft</td><td><span class="badge state">harmless</span></td><td class="mono small">clean</td></tr><tr><td>Quttera</td><td><span class="badge state">harmless</span></td><td class="mono small">clean</td></tr><tr><td>Webroot</td><td><span class="badge state">harmless</span></td><td class="mono small">clean</td></tr></table></div></details>
+</div>
+    
+  </div>
+
+  
+  <div class="cols" id="sec-urlscan">
+    <div class="panel"><h2>urlscan.io scan </h2>
+      
+      <div class="small" style="display:flex;flex-wrap:wrap;gap:8px 14px;margin-bottom:10px">
+        <span class="badge state">not flagged by urlscan</span>
+        
+        <span><img class="flag" src="https://flagcdn.com/w20/nl.png" width="20" height="15" alt="NL" title="Netherlands" loading="lazy" onerror="this.replaceWith(document.createTextNode(this.alt))">Netherlands</span>
+        <a class="mono" href="/ui/intel/ip/203.0.113.66/">203.0.113.66</a><span class="mono">AS64512 BulletproofHost BV</span>
+        <span>server nginx</span>
+        <span>23 requests · 2 domains · 1 IPs · 1 countries</span>
+        <span class="muted">scanned 2026-10-14 07:49</span>
+      </div>
+      <div class="small" style="margin-bottom:8px">title: <b>shopnova-login.com - Sign in</b></div>
+      <a href="https://urlscan.io/result/mock-shopnova-login.com/" target="_blank" rel="noreferrer noopener"><img class="shot-us" src="/_r/9f1e00221db46c.png" alt="urlscan screenshot" loading="lazy" onerror="this.style.display='none'"></a>
+      <div class="links"><a href="https://urlscan.io/result/mock-shopnova-login.com/" target="_blank" rel="noreferrer noopener">full urlscan result ↗</a><a href="https://urlscan.io/search/#page.domain:shopnova-login.com" target="_blank" rel="noreferrer noopener">all scans of shopnova-login.com ↗</a></div>
+      <details><summary>domains contacted by the page (2)</summary><div class="small mono" style="word-break:break-all">shopnova-login.com · cdn.mock-static.example</div></details>
+      
+    </div>
+    <div class="panel"><h2>Similar sites <span class="muted small">29</span></h2>
+      <p class="why">Other pages urlscan has seen that share this site's page hash (same kit), its server, or the brand name.</p>
+      
+      
+      
+      <div class="sim-group"><h3 class="subh">Same page (identical document hash) <span class="n">3</span><span class="q">hash:4585c68e5a2989efc1756ed0dce0f65bbb5bbb717c8f83908b3b382c9f450bf6</span></h3>
+        <p class="why" style="margin:0 0 6px">the same HTML served elsewhere — the same phishing kit</p>
+        <div class="tw"><table class="compact"><tr><th>Seen</th><th>Verdict</th><th>Domain</th><th></th><th>Title</th></tr>
+          <tr><td class="mono small">2026-09-16</td><td><span class="muted small">—</span></td>
+            <td class="mono small" style="word-break:break-all"><img class="flag" src="https://flagcdn.com/w20/nl.png" width="16" height="12" alt="NL" title="Netherlands" loading="lazy" onerror="this.replaceWith(document.createTextNode(this.alt))">shopn0va.com</td>
+            <td class="small"><a href="https://urlscan.io/result/mock-shopn0va.com/" target="_blank" rel="noreferrer noopener">urlscan ↗</a> · <a href="https://www.virustotal.com/gui/domain/shopn0va.com" target="_blank" rel="noreferrer noopener">VT ↗</a></td>
+            <td class="small muted">shopn0va.com - Sign in</td></tr><tr><td class="mono small">2026-09-14</td><td><span class="muted small">—</span></td>
+            <td class="mono small" style="word-break:break-all"><img class="flag" src="https://flagcdn.com/w20/nl.png" width="16" height="12" alt="NL" title="Netherlands" loading="lazy" onerror="this.replaceWith(document.createTextNode(this.alt))">secure-shopnova.com</td>
+            <td class="small"><a href="https://urlscan.io/result/mock-secure-shopnova.com/" target="_blank" rel="noreferrer noopener">urlscan ↗</a> · <a href="https://www.virustotal.com/gui/domain/secure-shopnova.com" target="_blank" rel="noreferrer noopener">VT ↗</a></td>
+            <td class="small muted">secure-shopnova.com - Sign in</td></tr><tr><td class="mono small">2026-09-08</td><td><span class="muted small">—</span></td>
+            <td class="mono small" style="word-break:break-all"><img class="flag" src="https://flagcdn.com/w20/nl.png" width="16" height="12" alt="NL" title="Netherlands" loading="lazy" onerror="this.replaceWith(document.createTextNode(this.alt))">shopnova.co</td>
+            <td class="small"><a href="https://urlscan.io/result/mock-shopnova.co/" target="_blank" rel="noreferrer noopener">urlscan ↗</a> · <a href="https://www.virustotal.com/gui/domain/shopnova.co" target="_blank" rel="noreferrer noopener">VT ↗</a></td>
+            <td class="small muted">shopnova.co - Sign in</td></tr></table></div>
+      </div>
+      
+      
+      <div class="sim-group"><h3 class="subh">Same server <span class="n">0</span><span class="q">page.ip:203.0.113.66</span></h3>
+        <p class="why" style="margin:0 0 6px">other pages scanned on the same IP</p>
+        <span class="muted small">none</span>
+      </div>
+      
+      
+      <div class="sim-group"><h3 class="subh">Same brand name <span class="n">26</span><span class="q">page.domain:*shopnova*</span></h3>
+        <p class="why" style="margin:0 0 6px">domains containing the brand name</p>
+        <div class="tw"><table class="compact"><tr><th>Seen</th><th>Verdict</th><th>Domain</th><th></th><th>Title</th></tr>
+          <tr><td class="mono small">2026-10-14</td><td><span class="muted small">—</span></td>
+            <td class="mono small" style="word-break:break-all"><img class="flag" src="https://flagcdn.com/w20/nl.png" width="16" height="12" alt="NL" title="Netherlands" loading="lazy" onerror="this.replaceWith(document.createTextNode(this.alt))">shopnova-partners.com</td>
+            <td class="small"><a href="https://urlscan.io/result/mock-shopnova-partners.com/" target="_blank" rel="noreferrer noopener">urlscan ↗</a> · <a href="https://www.virustotal.com/gui/domain/shopnova-partners.com" target="_blank" rel="noreferrer noopener">VT ↗</a></td>
+            <td class="small muted">shopnova-partners.com - Sign in</td></tr><tr><td class="mono small">2026-10-13</td><td><span class="muted small">—</span></td>
+            <td class="mono small" style="word-break:break-all"><img class="flag" src="https://flagcdn.com/w20/nl.png" width="16" height="12" alt="NL" title="Netherlands" loading="lazy" onerror="this.replaceWith(document.createTextNode(this.alt))">shopnova-blog.net</td>
+            <td class="small"><a href="https://urlscan.io/result/mock-shopnova-blog.net/" target="_blank" rel="noreferrer noopener">urlscan ↗</a> · <a href="https://www.virustotal.com/gui/domain/shopnova-blog.net" target="_blank" rel="noreferrer noopener">VT ↗</a></td>
+            <td class="small muted">shopnova-blog.net - Sign in</td></tr><tr><td class="mono small">2026-10-12</td><td><span class="muted small">—</span></td>
+            <td class="mono small" style="word-break:break-all"><img class="flag" src="https://flagcdn.com/w20/nl.png" width="16" height="12" alt="NL" title="Netherlands" loading="lazy" onerror="this.replaceWith(document.createTextNode(this.alt))">shopnovafans.com</td>
+            <td class="small"><a href="https://urlscan.io/result/mock-shopnovafans.com/" target="_blank" rel="noreferrer noopener">urlscan ↗</a> · <a href="https://www.virustotal.com/gui/domain/shopnovafans.com" target="_blank" rel="noreferrer noopener">VT ↗</a></td>
+            <td class="small muted">shopnovafans.com - Sign in</td></tr><tr><td class="mono small">2026-10-11</td><td><span class="muted small">—</span></td>
+            <td class="mono small" style="word-break:break-all"><img class="flag" src="https://flagcdn.com/w20/nl.png" width="16" height="12" alt="NL" title="Netherlands" loading="lazy" onerror="this.replaceWith(document.createTextNode(this.alt))">shopnova-reviews.com</td>
+            <td class="small"><a href="https://urlscan.io/result/mock-shopnova-reviews.com/" target="_blank" rel="noreferrer noopener">urlscan ↗</a> · <a href="https://www.virustotal.com/gui/domain/shopnova-reviews.com" target="_blank" rel="noreferrer noopener">VT ↗</a></td>
+            <td class="small muted">shopnova-reviews.com - Sign in</td></tr><tr><td class="mono small">2026-10-10</td><td><span class="muted small">—</span></td>
+            <td class="mono small" style="word-break:break-all"><img class="flag" src="https://flagcdn.com/w20/nl.png" width="16" height="12" alt="NL" title="Netherlands" loading="lazy" onerror="this.replaceWith(document.createTextNode(this.alt))">shopnova-careers.com</td>
+            <td class="small"><a href="https://urlscan.io/result/mock-shopnova-careers.com/" target="_blank" rel="noreferrer noopener">urlscan ↗</a> · <a href="https://www.virustotal.com/gui/domain/shopnova-careers.com" target="_blank" rel="noreferrer noopener">VT ↗</a></td>
+            <td class="small muted">shopnova-careers.com - Sign in</td></tr><tr><td class="mono small">2026-10-09</td><td><span class="muted small">—</span></td>
+            <td class="mono small" style="word-break:break-all"><img class="flag" src="https://flagcdn.com/w20/nl.png" width="16" height="12" alt="NL" title="Netherlands" loading="lazy" onerror="this.replaceWith(document.createTextNode(this.alt))">shopnova-deals.com</td>
+            <td class="small"><a href="https://urlscan.io/result/mock-shopnova-deals.com/" target="_blank" rel="noreferrer noopener">urlscan ↗</a> · <a href="https://www.virustotal.com/gui/domain/shopnova-deals.com" target="_blank" rel="noreferrer noopener">VT ↗</a></td>
+            <td class="small muted">shopnova-deals.com - Sign in</td></tr><tr><td class="mono small">2026-10-08</td><td><span class="muted small">—</span></td>
+            <td class="mono small" style="word-break:break-all"><img class="flag" src="https://flagcdn.com/w20/nl.png" width="16" height="12" alt="NL" title="Netherlands" loading="lazy" onerror="this.replaceWith(document.createTextNode(this.alt))">shopnova-status.com</td>
+            <td class="small"><a href="https://urlscan.io/result/mock-shopnova-status.com/" target="_blank" rel="noreferrer noopener">urlscan ↗</a> · <a href="https://www.virustotal.com/gui/domain/shopnova-status.com" target="_blank" rel="noreferrer noopener">VT ↗</a></td>
+            <td class="small muted">shopnova-status.com - Sign in</td></tr><tr><td class="mono small">2026-10-07</td><td><span class="muted small">—</span></td>
+            <td class="mono small" style="word-break:break-all"><img class="flag" src="https://flagcdn.com/w20/nl.png" width="16" height="12" alt="NL" title="Netherlands" loading="lazy" onerror="this.replaceWith(document.createTextNode(this.alt))">shopnova-community.org</td>
+            <td class="small"><a href="https://urlscan.io/result/mock-shopnova-community.org/" target="_blank" rel="noreferrer noopener">urlscan ↗</a> · <a href="https://www.virustotal.com/gui/domain/shopnova-community.org" target="_blank" rel="noreferrer noopener">VT ↗</a></td>
+            <td class="small muted">shopnova-community.org - Sign in</td></tr><tr><td class="mono small">2026-10-06</td><td><span class="muted small">—</span></td>
+            <td class="mono small" style="word-break:break-all"><img class="flag" src="https://flagcdn.com/w20/nl.png" width="16" height="12" alt="NL" title="Netherlands" loading="lazy" onerror="this.replaceWith(document.createTextNode(this.alt))">shopnova-press.com</td>
+            <td class="small"><a href="https://urlscan.io/result/mock-shopnova-press.com/" target="_blank" rel="noreferrer noopener">urlscan ↗</a> · <a href="https://www.virustotal.com/gui/domain/shopnova-press.com" target="_blank" rel="noreferrer noopener">VT ↗</a></td>
+            <td class="small muted">shopnova-press.com - Sign in</td></tr><tr><td class="mono small">2026-10-05</td><td><span class="muted small">—</span></td>
+            <td class="mono small" style="word-break:break-all"><img class="flag" src="https://flagcdn.com/w20/nl.png" width="16" height="12" alt="NL" title="Netherlands" loading="lazy" onerror="this.replaceWith(document.createTextNode(this.alt))">shopnova-events.com</td>
+            <td class="small"><a href="https://urlscan.io/result/mock-shopnova-events.com/" target="_blank" rel="noreferrer noopener">urlscan ↗</a> · <a href="https://www.virustotal.com/gui/domain/shopnova-events.com" target="_blank" rel="noreferrer noopener">VT ↗</a></td>
+            <td class="small muted">shopnova-events.com - Sign in</td></tr><tr><td class="mono small">2026-09-24</td><td><span class="muted small">—</span></td>
+            <td class="mono small" style="word-break:break-all"><img class="flag" src="https://flagcdn.com/w20/nl.png" width="16" height="12" alt="NL" title="Netherlands" loading="lazy" onerror="this.replaceWith(document.createTextNode(this.alt))">shopnova.com</td>
+            <td class="small"><a href="https://urlscan.io/result/mock-shopnova.com/" target="_blank" rel="noreferrer noopener">urlscan ↗</a> · <a href="https://www.virustotal.com/gui/domain/shopnova.com" target="_blank" rel="noreferrer noopener">VT ↗</a></td>
+            <td class="small muted">shopnova.com - Sign in</td></tr><tr><td class="mono small">2026-09-23</td><td><span class="muted small">—</span></td>
+            <td class="mono small" style="word-break:break-all"><img class="flag" src="https://flagcdn.com/w20/nl.png" width="16" height="12" alt="NL" title="Netherlands" loading="lazy" onerror="this.replaceWith(document.createTextNode(this.alt))">www.shopnova.com</td>
+            <td class="small"><a href="https://urlscan.io/result/mock-www.shopnova.com/" target="_blank" rel="noreferrer noopener">urlscan ↗</a> · <a href="https://www.virustotal.com/gui/domain/www.shopnova.com" target="_blank" rel="noreferrer noopener">VT ↗</a></td>
+            <td class="small muted">www.shopnova.com - Sign in</td></tr><tr><td class="mono small">2026-09-22</td><td><span class="muted small">—</span></td>
+            <td class="mono small" style="word-break:break-all"><img class="flag" src="https://flagcdn.com/w20/nl.png" width="16" height="12" alt="NL" title="Netherlands" loading="lazy" onerror="this.replaceWith(document.createTextNode(this.alt))">shopnova.co.il</td>
+            <td class="small"><a href="https://urlscan.io/result/mock-shopnova.co.il/" target="_blank" rel="noreferrer noopener">urlscan ↗</a> · <a href="https://www.virustotal.com/gui/domain/shopnova.co.il" target="_blank" rel="noreferrer noopener">VT ↗</a></td>
+            <td class="small muted">shopnova.co.il - Sign in</td></tr><tr><td class="mono small">2026-09-13</td><td><span class="muted small">—</span></td>
+            <td class="mono small" style="word-break:break-all"><img class="flag" src="https://flagcdn.com/w20/nl.png" width="16" height="12" alt="NL" title="Netherlands" loading="lazy" onerror="this.replaceWith(document.createTextNode(this.alt))">shopnova-verify.com</td>
+            <td class="small"><a href="https://urlscan.io/result/mock-shopnova-verify.com/" target="_blank" rel="noreferrer noopener">urlscan ↗</a> · <a href="https://www.virustotal.com/gui/domain/shopnova-verify.com" target="_blank" rel="noreferrer noopener">VT ↗</a></td>
+            <td class="small muted">shopnova-verify.com - Sign in</td></tr><tr><td class="mono small">2026-09-10</td><td><span class="muted small">—</span></td>
+            <td class="mono small" style="word-break:break-all"><img class="flag" src="https://flagcdn.com/w20/nl.png" width="16" height="12" alt="NL" title="Netherlands" loading="lazy" onerror="this.replaceWith(document.createTextNode(this.alt))">shopnova-account.net</td>
+            <td class="small"><a href="https://urlscan.io/result/mock-shopnova-account.net/" target="_blank" rel="noreferrer noopener">urlscan ↗</a> · <a href="https://www.virustotal.com/gui/domain/shopnova-account.net" target="_blank" rel="noreferrer noopener">VT ↗</a></td>
+            <td class="small muted">shopnova-account.net - Sign in</td></tr><tr><td class="mono small">2026-09-09</td><td><span class="muted small">—</span></td>
+            <td class="mono small" style="word-break:break-all"><img class="flag" src="https://flagcdn.com/w20/nl.png" width="16" height="12" alt="NL" title="Netherlands" loading="lazy" onerror="this.replaceWith(document.createTextNode(this.alt))">shopnova-support-center.com</td>
+            <td class="small"><a href="https://urlscan.io/result/mock-shopnova-support-center.com/" target="_blank" rel="noreferrer noopener">urlscan ↗</a> · <a href="https://www.virustotal.com/gui/domain/shopnova-support-center.com" target="_blank" rel="noreferrer noopener">VT ↗</a></td>
+            <td class="small muted">shopnova-support-center.com - Sign in</td></tr><tr><td class="mono small">2026-09-06</td><td><span class="muted small">—</span></td>
+            <td class="mono small" style="word-break:break-all"><img class="flag" src="https://flagcdn.com/w20/nl.png" width="16" height="12" alt="NL" title="Netherlands" loading="lazy" onerror="this.replaceWith(document.createTextNode(this.alt))">shopnova-giftcard.com</td>
+            <td class="small"><a href="https://urlscan.io/result/mock-shopnova-giftcard.com/" target="_blank" rel="noreferrer noopener">urlscan ↗</a> · <a href="https://www.virustotal.com/gui/domain/shopnova-giftcard.com" target="_blank" rel="noreferrer noopener">VT ↗</a></td>
+            <td class="small muted">shopnova-giftcard.com - Sign in</td></tr><tr><td class="mono small">2026-09-05</td><td><span class="muted small">—</span></td>
+            <td class="mono small" style="word-break:break-all"><img class="flag" src="https://flagcdn.com/w20/nl.png" width="16" height="12" alt="NL" title="Netherlands" loading="lazy" onerror="this.replaceWith(document.createTextNode(this.alt))">shopnova-refund.net</td>
+            <td class="small"><a href="https://urlscan.io/result/mock-shopnova-refund.net/" target="_blank" rel="noreferrer noopener">urlscan ↗</a> · <a href="https://www.virustotal.com/gui/domain/shopnova-refund.net" target="_blank" rel="noreferrer noopener">VT ↗</a></td>
+            <td class="small muted">shopnova-refund.net - Sign in</td></tr><tr><td class="mono small">2026-09-04</td><td><span class="muted small">—</span></td>
+            <td class="mono small" style="word-break:break-all"><img class="flag" src="https://flagcdn.com/w20/nl.png" width="16" height="12" alt="NL" title="Netherlands" loading="lazy" onerror="this.replaceWith(document.createTextNode(this.alt))">shopnova-verification.com</td>
+            <td class="small"><a href="https://urlscan.io/result/mock-shopnova-verification.com/" target="_blank" rel="noreferrer noopener">urlscan ↗</a> · <a href="https://www.virustotal.com/gui/domain/shopnova-verification.com" target="_blank" rel="noreferrer noopener">VT ↗</a></td>
+            <td class="small muted">shopnova-verification.com - Sign in</td></tr><tr><td class="mono small">2026-09-03</td><td><span class="muted small">—</span></td>
+            <td class="mono small" style="word-break:break-all"><img class="flag" src="https://flagcdn.com/w20/nl.png" width="16" height="12" alt="NL" title="Netherlands" loading="lazy" onerror="this.replaceWith(document.createTextNode(this.alt))">shopnova--sneakers.com</td>
+            <td class="small"><a href="https://urlscan.io/result/mock-shopnova--sneakers.com/" target="_blank" rel="noreferrer noopener">urlscan ↗</a> · <a href="https://www.virustotal.com/gui/domain/shopnova--sneakers.com" target="_blank" rel="noreferrer noopener">VT ↗</a></td>
+            <td class="small muted">shopnova--sneakers.com - Sign in</td></tr><tr><td class="mono small">2026-09-02</td><td><span class="muted small">—</span></td>
+            <td class="mono small" style="word-break:break-all"><img class="flag" src="https://flagcdn.com/w20/nl.png" width="16" height="12" alt="NL" title="Netherlands" loading="lazy" onerror="this.replaceWith(document.createTextNode(this.alt))">shopnova-eu.com</td>
+            <td class="small"><a href="https://urlscan.io/result/mock-shopnova-eu.com/" target="_blank" rel="noreferrer noopener">urlscan ↗</a> · <a href="https://www.virustotal.com/gui/domain/shopnova-eu.com" target="_blank" rel="noreferrer noopener">VT ↗</a></td>
+            <td class="small muted">shopnova-eu.com - Sign in</td></tr><tr><td class="mono small">2026-09-01</td><td><span class="muted small">—</span></td>
+            <td class="mono small" style="word-break:break-all"><img class="flag" src="https://flagcdn.com/w20/nl.png" width="16" height="12" alt="NL" title="Netherlands" loading="lazy" onerror="this.replaceWith(document.createTextNode(this.alt))">shopnova-id-check.com</td>
+            <td class="small"><a href="https://urlscan.io/result/mock-shopnova-id-check.com/" target="_blank" rel="noreferrer noopener">urlscan ↗</a> · <a href="https://www.virustotal.com/gui/domain/shopnova-id-check.com" target="_blank" rel="noreferrer noopener">VT ↗</a></td>
+            <td class="small muted">shopnova-id-check.com - Sign in</td></tr><tr><td class="mono small">2026-08-20</td><td><span class="muted small">—</span></td>
+            <td class="mono small" style="word-break:break-all"><img class="flag" src="https://flagcdn.com/w20/nl.png" width="16" height="12" alt="NL" title="Netherlands" loading="lazy" onerror="this.replaceWith(document.createTextNode(this.alt))">shopnova-support.com</td>
+            <td class="small"><a href="https://urlscan.io/result/mock-shopnova-support.com/" target="_blank" rel="noreferrer noopener">urlscan ↗</a> · <a href="https://www.virustotal.com/gui/domain/shopnova-support.com" target="_blank" rel="noreferrer noopener">VT ↗</a></td>
+            <td class="small muted">shopnova-support.com - Sign in</td></tr><tr><td class="mono small">2026-08-19</td><td><span class="muted small">—</span></td>
+            <td class="mono small" style="word-break:break-all"><img class="flag" src="https://flagcdn.com/w20/nl.png" width="16" height="12" alt="NL" title="Netherlands" loading="lazy" onerror="this.replaceWith(document.createTextNode(this.alt))">shopnova-review.com</td>
+            <td class="small"><a href="https://urlscan.io/result/mock-shopnova-review.com/" target="_blank" rel="noreferrer noopener">urlscan ↗</a> · <a href="https://www.virustotal.com/gui/domain/shopnova-review.com" target="_blank" rel="noreferrer noopener">VT ↗</a></td>
+            <td class="small muted">shopnova-review.com - Sign in</td></tr><tr><td class="mono small">2026-08-18</td><td><span class="muted small">—</span></td>
+            <td class="mono small" style="word-break:break-all"><img class="flag" src="https://flagcdn.com/w20/nl.png" width="16" height="12" alt="NL" title="Netherlands" loading="lazy" onerror="this.replaceWith(document.createTextNode(this.alt))">shopnova-coupons.com</td>
+            <td class="small"><a href="https://urlscan.io/result/mock-shopnova-coupons.com/" target="_blank" rel="noreferrer noopener">urlscan ↗</a> · <a href="https://www.virustotal.com/gui/domain/shopnova-coupons.com" target="_blank" rel="noreferrer noopener">VT ↗</a></td>
+            <td class="small muted">shopnova-coupons.com - Sign in</td></tr></table></div>
+      </div>
+      
+      
+    </div>
+  </div>
+
+  <div id="sec-relations">
+    <div class="panel" style="margin-top:12px"><h2>Passive DNS replication <span class="muted small">1</span> </h2>
+      <p class="why">Every IP this domain has resolved to, with how many engines flag that IP. Click an IP to see the other sites on it.</p>
+      <div class="tw"><table class="compact"><tr><th>Date resolved</th><th>Detections (IP)</th><th>IP</th></tr>
+        <tr><td class="mono">2026-09-27</td><td><span class="det bad"><b>3</b><i>/ 92</i></span></td><td class="mono"><a href="/ui/intel/ip/203.0.113.66/">203.0.113.66</a></td></tr></table></div>
+    </div>
+    <div class="cols" style="margin-top:12px">
+      <div class="panel"><h2>Subdomains <span class="muted small">3</span> </h2>
+        <div class="tw"><table class="compact"><tr><th>Host</th><th>Detections</th></tr><tr><td class="mono">login.shopnova-login.com</td><td><span class="det bad"><b>2</b><i>/ 92</i></span></td></tr><tr><td class="mono">mail.shopnova-login.com</td><td><span class="det ok"><b>0</b><i>/ 90</i></span></td></tr><tr><td class="mono">www.shopnova-login.com</td><td><span class="det ok"><b>0</b><i>/ 90</i></span></td></tr></table></div></div>
+      <div class="panel"><h2>Communicating files <span class="muted small">0</span> <span class="pill muted">not fetched yet</span></h2>
+        <p class="why">Malware samples that contacted this domain while being analysed.</p>
+        
+        
+      </div>
+    </div>
+    <div class="cols" style="margin-top:12px">
+      <div class="panel"><h2>Historical WHOIS · VirusTotal <span class="muted small">1</span> </h2>
+        <div class="card" style="margin-bottom:8px"><div class="small"><b class="mono">2026-09-14</b> · Mock Registrar LLC</div>
+          <dl class="kv small" style="margin-top:6px"><dt>Registrant Organization</dt><dd>REDACTED FOR PRIVACY</dd><dt>Registrant Country</dt><dd>US</dd><dt>Name Server</dt><dd>NS1.MOCK-DNS.EXAMPLE</dd></dl></div></div>
+      <div class="panel"><h2>Historical certificates <span class="muted small">0 VT · 2 CT</span> <span class="pill muted">not fetched yet</span></h2>
+        
+        <h3 class="subh" style="margin-top:10px">CERTIFICATE TRANSPARENCY (crt.sh / CertSpotter) — the registrable domain and its subdomains</h3>
+          <div class="tw"><table class="compact"><tr><th>Not before</th><th>Names</th><th>Issuer</th></tr>
+          <tr><td class="mono">2026-09-30</td><td class="mono small">shopnova-login.com, www.shopnova-login.com</td><td class="small">C=US, O=Let&#39;s Encrypt, CN=R3</td></tr><tr><td class="mono">2026-09-01</td><td class="mono small">mail0.shopnova-login.com-cdn.net</td><td class="small">Mock CA</td></tr></table></div>
+      </div>
+    </div>
+  </div>
+  
+</section>
+
+<section class="tabpane" id="tab-timeline">
+  <div class="cols">
+    <div class="panel">
+      <h2>Observation timeline</h2>
+      <ul class="timeline">
+        
+        <li class=""><span class="mono small">2026-10-18 07:29:25</span>
+          · HTTP — · state new · datacenter
+          
+          · <span class="mono muted small">efe86f7113b3</span>
+          </li>
+        
+        <li class=""><span class="mono small">2026-10-18 07:32:12</span>
+          · HTTP — · state flagged · datacenter
+          
+          · <span class="mono muted small">efe86f7113b3</span>
+          </li>
+        
+      </ul>
+      <p class="small muted">first seen 2026-10-18 07:29 · scans 2 · next — · candidate state flagged · <a href="#history" data-goto="history">WHOIS history →</a></p>
+    </div>
+    <div class="panel">
+      <h2>Score history</h2>
+      <table class="small"><tr><th>When</th><th class="right">Score</th><th>Severity</th><th class="right">Confidence</th><th>Version</th></tr>
+        <tr><td class="mono">2026-10-18 07:29:25</td><td class="right mono">100</td><td>critical</td><td class="right mono">70%</td><td class="mono">aianswer-v1-e26ad54f</td></tr><tr><td class="mono">2026-10-18 07:32:12 <span class="pill">current</span></td><td class="right mono">100</td><td>critical</td><td class="right mono">70%</td><td class="mono">aianswer-v1-e26ad54f</td></tr>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section class="tabpane" id="tab-evidence">
+  <div class="panel">
+    <h2>Evidence · chain of custody <span class="help" tabindex="0" role="link" data-href="/ui/how-it-works/#g-evidence" data-tip="Every screenshot, HTML page, DNS / WHOIS answer and reputation lookup, stored append-only with its SHA-256 — the database rejects edits and deletes." title="Every screenshot, HTML page, DNS / WHOIS answer and reputation lookup, stored append-only with its SHA-256 — the database rejects edits and deletes." aria-label="What is this? Every screenshot, HTML page, DNS / WHOIS answer and reputation lookup, stored append-only with its SHA-256 — the database rejects edits and deletes.">?</span> <a class="pill cap" href="/ui/how-it-works/#evidence" title="database triggers reject UPDATE and DELETE on evidence tables; artifacts are content-addressed by SHA-256">⚙ immutable · DB-enforced</a></h2>
+    <p class="small muted" style="margin:0 0 8px">Append-only by the database: UPDATE and DELETE are rejected by triggers, even for an admin. Every artifact is stored under its own SHA-256, so the hash is literally the file name — any tampering is visible.
+      Role: <b>primary</b> = proves a signal · <b>supporting</b> = corroborates · <b>contradicting</b> = argues the site is legitimate · <b>context</b> = background.</p>
+    
+    
+    <table>
+      <tr><th>Observed (UTC)</th><th>Type</th><th>Role</th><th>Source</th><th>SHA-256</th><th>Details</th><th></th></tr>
+      <tr>
+        <td class="mono small">2026-10-18 07:32:12</td>
+        <td class="mono">http</td>
+        <td><span class="badge state">supporting</span></td>
+        <td class="small" title="collected by brandwatch.ai_answers@0.0.1">searchapi:ai_answers</td>
+        <td class="mono small muted" title="efe86f7113b380e0b941f1d48f8494925cf39780d575780c3cbe4c5ed728d3c0">efe86f7113b380e0</td>
+        <td class="small"><span class="pill" title="status: positive">status: positive</span> <span class="pill" title="kind: url">kind: url</span> <span class="pill" title="value: shopnova-login.com">value: shopnova-login.com</span> <span class="muted small" title="verdict: url_not_official&#10;">+1</span></td>
+        <td><a href="/api/evidence/760e80f5-286a-46fd-8b82-a891ca733f81/artifact" target="_blank">artifact</a></td>
+      </tr><tr>
+        <td class="mono small">2026-10-18 07:29:25</td>
+        <td class="mono">http</td>
+        <td><span class="badge state">supporting</span></td>
+        <td class="small" title="collected by brandwatch.ai_answers@0.0.1">searchapi:ai_answers</td>
+        <td class="mono small muted" title="efe86f7113b380e0b941f1d48f8494925cf39780d575780c3cbe4c5ed728d3c0">efe86f7113b380e0</td>
+        <td class="small"><span class="pill" title="status: positive">status: positive</span> <span class="pill" title="kind: url">kind: url</span> <span class="pill" title="value: shopnova-login.com">value: shopnova-login.com</span> <span class="muted small" title="verdict: url_not_official&#10;">+1</span></td>
+        <td><a href="/api/evidence/a42bcb4b-4578-490a-b470-a3e7cce7fb5f/artifact" target="_blank">artifact</a></td>
+      </tr>
+    </table>
+    
+  </div>
+</section>
+
+
+
+<script>
+(function(){
+  const $ = id => document.getElementById(id);
+  const tabs = [...document.querySelectorAll('#tabs [role=tab]')];
+  const INV = ['reputation', 'domain', 'network'];
+  // old Site & network intel tab names, and the sections inside the investigation tabs
+  const ALIAS = {detections: 'reputation', links: 'reputation', registration: 'domain:sec-registration', history: 'domain:sec-history',
+                 dns: 'domain:sec-dns', cert: 'domain:sec-cert', ips: 'network:sec-ips', urlscan: 'network:sec-urlscan', relations: 'network:sec-relations'};
+  function select(name, push){
+    let section = null, hash = name;
+    if (ALIAS[name]) [name, section] = ALIAS[name].split(':');
+    if (!tabs.some(t => t.dataset.tab === name)) { name = tabs[0].dataset.tab; hash = name; section = null; }
+    tabs.forEach(t => t.setAttribute('aria-selected', t.dataset.tab === name));
+    document.querySelectorAll('.tabpane').forEach(p => p.classList.toggle('on', p.id === 'tab-' + name));
+    $('invbar').hidden = !INV.includes(name);
+    if (push) history.replaceState(null, '', '#' + hash);
+    const el = section && $(section);
+    if (el) setTimeout(() => el.scrollIntoView({behavior: 'smooth', block: 'start'}), 30);
+    return !!el;
+  }
+  tabs.forEach(t => t.addEventListener('click', () => select(t.dataset.tab, true)));
+  $('tabs').addEventListener('keydown', e => {
+    const i = tabs.findIndex(t => t.getAttribute('aria-selected') === 'true');
+    if (e.key === 'ArrowRight') { tabs[(i + 1) % tabs.length].click(); tabs[(i + 1) % tabs.length].focus(); }
+    if (e.key === 'ArrowLeft') { tabs[(i - 1 + tabs.length) % tabs.length].click(); tabs[(i - 1 + tabs.length) % tabs.length].focus(); }
+  });
+  document.querySelectorAll('[data-goto]').forEach(a => a.addEventListener('click', e => {
+    e.preventDefault();
+    if (!select(a.dataset.goto, true)) $('tabs').scrollIntoView({behavior: 'smooth', block: 'start'});
+  }));
+  select((location.hash || '').slice(1) || 'aianswer', false);
+  // back / forward and typed hashes (#history, #ips …) re-select without a reload
+  window.addEventListener('hashchange', () => select((location.hash || '').slice(1) || 'aianswer', false));
+
+  // --- the investigation job: start / refresh, stream its narration, reload as results land ---
+  const startUrl = "/api/findings/6d7c2f47-cf77-4992-9dce-622f09bbf0bf/intel";
+  const canWrite = true, hasData = true;
+  let running = false, done = false;
+  async function count(){
+    try { const r = await fetch(startUrl, {credentials: 'same-origin'}); const v = await r.json();
+      let n = 0; const st = v.status || {}; for (const k in st) if (st[k].status === 'ok') n++;
+      for (const ip of v.ips || []) for (const k in ip.status || {}) if (ip.status[k].status === 'ok') n++;
+      return n; } catch (e) { return null; }
+  }
+  function reload(){ if (done) return; done = true; location.reload(); }
+  async function watch(id){
+    running = true; $('invbar').hidden = false; $('progress').hidden = false;
+    const btn = $('refresh'); if (btn) { btn.disabled = true; btn.textContent = 'Running…'; }
+    const base = await count();
+    const tick = async () => { if (done) return; const n = await count(); if (n !== null && base !== null && n > base + 2) { reload(); return; } setTimeout(tick, 6000); };
+    setTimeout(tick, 6000);
+    const es = window.EventSource ? new EventSource(`/api/jobs/${id}/events/stream?from_seq=0`, {withCredentials: true}) : null;
+    if (es) {
+      es.addEventListener('scan', ev => { const e = JSON.parse(ev.data); if (e.message) $('prog-msg').textContent = e.message; });
+      es.addEventListener('end', () => { es.close(); setTimeout(reload, 400); });
+      es.onerror = () => { es.close(); poll(); };
+    } else poll();
+    async function poll(){
+      if (done) return;
+      try { const r = await fetch(`/api/jobs/${id}`, {credentials: 'same-origin'}); const j = await r.json();
+        if (['done', 'failed', 'cancelled'].includes(j.state)) { reload(); return; } } catch (e) {}
+      setTimeout(poll, 3000);
+    }
+  }
+  async function start(force){
+    if (!canWrite || running) return;
+    $('progress').hidden = false; $('prog-msg').textContent = force ? 'Re-fetching everything…' : 'Starting the investigation…';
+    try { const r = await fetch(startUrl + (force ? '?force=1' : ''), {method: 'POST', credentials: 'same-origin'});
+      if (r.status === 401) { location = '/ui/login?next=' + encodeURIComponent(location.pathname); return; }
+      const j = await r.json(); if (j.job_id) watch(j.job_id); else $('prog-msg').textContent = j.detail || 'could not start';
+    } catch (e) { $('prog-msg').textContent = 'could not start: ' + e; }
+  }
+  const btn = $('refresh'); if (btn) btn.addEventListener('click', () => start(hasData));
+  // the primary action: open the investigation tabs, and run it if it never ran for this site
+  const inv = $('investigate'); if (inv) inv.addEventListener('click', () => { if (!hasData) start(false); });
+  const jobId = null;
+  if (running && jobId) watch(jobId);
+})();
+</script>
+
+</main>
+<script>
+/* BrandWatch motion layer: count-ups, staggered entrances, animated bars / rings / histograms,
+   and auto-drawn donut + sparkline charts from data-* attributes. */
+(function(){
+  const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // wide tables scroll inside their own box instead of stretching the page
+  document.querySelectorAll('main table').forEach(t => { if (t.parentElement.classList.contains('tw')) return;
+    const w = document.createElement('div'); w.className = 'tw'; t.parentNode.insertBefore(w, t); w.appendChild(t); });
+  // keep the active tab visible in the scrollable mobile nav
+  const act = document.querySelector('header nav a.active'); if (act && act.scrollIntoView) act.scrollIntoView({block: 'nearest', inline: 'center'});
+  // stagger entrances
+  document.querySelectorAll('.kpis').forEach(g => [...g.children].forEach((el, i) => el.style.setProperty('--i', i)));
+  document.querySelectorAll('main .panel').forEach((el, i) => el.style.setProperty('--i', Math.min(i, 12)));
+  document.querySelectorAll('table').forEach(t => [...t.querySelectorAll('tr')].forEach((tr, i) => tr.style.setProperty('--r', Math.min(i, 30))));
+  document.querySelectorAll('.timeline').forEach(t => [...t.children].forEach((li, i) => li.style.setProperty('--r', Math.min(i, 30))));
+  // count-up numbers
+  const fmt = v => Number.isInteger(v) ? v.toLocaleString('en-US') : v.toFixed(1);
+  document.querySelectorAll('[data-count]').forEach(el => {
+    const target = parseFloat(el.dataset.count) || 0, suffix = el.dataset.suffix || '';
+    if (reduce) { el.textContent = fmt(target) + suffix; return; }
+    const t0 = performance.now(), dur = 1100 + Math.min(900, target * 4);
+    const tick = t => { const k = Math.min(1, (t - t0) / dur), e = 1 - Math.pow(1 - k, 3);
+      el.textContent = fmt(Number.isInteger(target) ? Math.round(target * e) : target * e) + suffix; if (k < 1) requestAnimationFrame(tick); };
+    requestAnimationFrame(tick);
+    setTimeout(() => { el.textContent = fmt(target) + suffix; }, dur + 400);  // final value even if rAF is paused
+  });
+  // grow bars, histograms, rings after first paint
+  const later = fn => { let ran = false; const go = () => { if (!ran) { ran = true; fn(); } };
+    requestAnimationFrame(() => requestAnimationFrame(go)); setTimeout(go, 350); };
+  const grow = () => {
+    document.querySelectorAll('[data-w]').forEach(el => el.style.width = Math.max(0, Math.min(100, +el.dataset.w)) + '%');
+    document.querySelectorAll('[data-h]').forEach(el => el.style.height = Math.max(2, Math.min(100, +el.dataset.h)) + '%');
+    document.querySelectorAll('[data-p]').forEach(el => el.style.setProperty('--p', +el.dataset.p));
+  };
+  later(grow);  // rAF is paused in hidden tabs: later() also has a timer fallback
+  // donuts: <svg class="donut" data-donut='[{"label","value","color"}]' data-center="label">
+  const NS = 'http://www.w3.org/2000/svg';
+  document.querySelectorAll('svg.donut[data-donut]').forEach(svg => {
+    const segs = JSON.parse(svg.dataset.donut || '[]'), total = segs.reduce((a, s) => a + s.value, 0);
+    svg.setAttribute('viewBox', '0 0 120 120');
+    const r = 46, C = 2 * Math.PI * r; let off = 0;
+    const bg = document.createElementNS(NS, 'circle'); bg.setAttribute('cx', 60); bg.setAttribute('cy', 60); bg.setAttribute('r', r);
+    bg.setAttribute('fill', 'none'); bg.setAttribute('stroke', '#1E2A3D'); bg.setAttribute('stroke-width', 13); svg.appendChild(bg);
+    segs.forEach((s, i) => {
+      const len = total ? s.value / total * C : 0, c = document.createElementNS(NS, 'circle');
+      c.setAttribute('cx', 60); c.setAttribute('cy', 60); c.setAttribute('r', r); c.setAttribute('fill', 'none');
+      c.setAttribute('stroke', s.color); c.setAttribute('stroke-width', 13); c.setAttribute('stroke-linecap', 'butt');
+      c.setAttribute('transform', 'rotate(-90 60 60)'); c.setAttribute('stroke-dasharray', `0 ${C}`); c.setAttribute('stroke-dashoffset', -off);
+      c.style.transition = `stroke-dasharray 1.1s cubic-bezier(.2,.8,.2,1) ${i * 120}ms`; c.style.filter = `drop-shadow(0 0 4px ${s.color}66)`;
+      const title = document.createElementNS(NS, 'title'); title.textContent = `${s.label}: ${s.value}`; c.appendChild(title);
+      svg.appendChild(c); off += len;
+      later(() => c.setAttribute('stroke-dasharray', `${Math.max(0, len - 1.5)} ${C}`));
+    });
+    const t1 = document.createElementNS(NS, 'text'); t1.setAttribute('x', 60); t1.setAttribute('y', 62); t1.setAttribute('text-anchor', 'middle');
+    t1.setAttribute('fill', '#E6EDF5'); t1.setAttribute('font-family', 'Rajdhani, monospace'); t1.setAttribute('font-size', 26); t1.setAttribute('font-weight', 700); t1.textContent = total;
+    const t2 = document.createElementNS(NS, 'text'); t2.setAttribute('x', 60); t2.setAttribute('y', 78); t2.setAttribute('text-anchor', 'middle');
+    t2.setAttribute('fill', '#8A97A8'); t2.setAttribute('font-family', 'JetBrains Mono, monospace'); t2.setAttribute('font-size', 7.5); t2.textContent = (svg.dataset.center || 'total').toUpperCase();
+    svg.appendChild(t1); svg.appendChild(t2);
+  });
+  // sparklines: <svg class="spark" data-spark='{"series":[{"values":[...],"color":"#..."}]}'>
+  document.querySelectorAll('svg.spark[data-spark]').forEach(svg => {
+    const spec = JSON.parse(svg.dataset.spark || '{}'), series = spec.series || [];
+    const W = 300, H = 64, mx = Math.max(1, ...series.flatMap(s => s.values));
+    svg.setAttribute('viewBox', `0 0 ${W} ${H}`); svg.setAttribute('preserveAspectRatio', 'none');
+    series.forEach((s, si) => {
+      const n = s.values.length, pts = s.values.map((v, i) => [n > 1 ? i / (n - 1) * W : 0, H - 4 - v / mx * (H - 10)]);
+      const d = pts.map((p, i) => (i ? 'L' : 'M') + p[0].toFixed(1) + ',' + p[1].toFixed(1)).join(' ');
+      const id = 'g' + Math.random().toString(36).slice(2);
+      const defs = document.createElementNS(NS, 'defs'); defs.innerHTML = `<linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${s.color}" stop-opacity=".35"/><stop offset="1" stop-color="${s.color}" stop-opacity="0"/></linearGradient>`;
+      svg.appendChild(defs);
+      if (si === 0) { const area = document.createElementNS(NS, 'path'); area.setAttribute('d', d + ` L${W},${H} L0,${H} Z`); area.setAttribute('fill', `url(#${id})`); area.style.opacity = 0; area.style.transition = 'opacity 1.2s ease .6s'; svg.appendChild(area); later(() => area.style.opacity = 1); }
+      const line = document.createElementNS(NS, 'path'); line.setAttribute('d', d); line.setAttribute('fill', 'none'); line.setAttribute('stroke', s.color);
+      line.setAttribute('stroke-width', 2); line.setAttribute('vector-effect', 'non-scaling-stroke'); line.style.filter = `drop-shadow(0 0 3px ${s.color})`;
+      svg.appendChild(line);
+      const L = line.getTotalLength ? line.getTotalLength() : 600; line.style.strokeDasharray = L; line.style.strokeDashoffset = L;
+      line.style.transition = `stroke-dashoffset 1.6s cubic-bezier(.2,.8,.2,1) ${si * 200}ms`;
+      later(() => line.style.strokeDashoffset = 0);
+      const last = pts[pts.length - 1]; if (last) { const dot = document.createElementNS(NS, 'circle'); dot.setAttribute('cx', last[0]); dot.setAttribute('cy', last[1]); dot.setAttribute('r', 3); dot.setAttribute('fill', s.color); svg.appendChild(dot); }
+    });
+  });
+  // '?' help tips open their glossary entry (a <span>, so it can sit inside a link or a card)
+  const openHelp = e => { const h = e.target.closest && e.target.closest('.help[data-href]'); if (!h) return;
+    if (e.type === 'keydown' && e.key !== 'Enter') return; e.preventDefault(); e.stopPropagation(); location.href = h.dataset.href; };
+  document.addEventListener('click', openHelp, true); document.addEventListener('keydown', openHelp, true);
+  // relative times: <span data-rel="iso">
+  // server timestamps are UTC; one without a zone (SQLite returns naive datetimes) would otherwise
+  // be read as the viewer's local time and be off by their UTC offset
+  const utc = iso => /T\d\d:\d\d/.test(iso) && !/(Z|[+-]\d\d:?\d\d)$/.test(iso) ? iso + 'Z' : iso;
+  const rel = iso => { const d = (new Date(utc(iso)) - Date.now()) / 1000, a = Math.abs(d), f = d > 0;
+    if (!isFinite(d)) return '';
+    const u = a < 60 ? [a, 's'] : a < 3600 ? [a / 60, 'm'] : a < 86400 ? [a / 3600, 'h'] : [a / 86400, 'd'];
+    return f ? `in ${Math.round(u[0])}${u[1]}` : `${Math.round(u[0])}${u[1]} ago`; };
+  // data-due: a scheduled time already past reads "due now", not "7h ago"
+  const tickRel = () => document.querySelectorAll('[data-rel]').forEach(el => {
+    if (el.dataset.due && new Date(utc(el.dataset.rel)) <= Date.now()) { el.textContent = 'due now'; return; }
+    const r = rel(el.dataset.rel); if (r) el.textContent = r; });
+  tickRel(); setInterval(tickRel, 15000);
+})();
+</script>
+<div id="bw-modal" hidden>
+  <div class="bw-dlg" role="dialog" aria-modal="true" aria-labelledby="bw-dlg-t">
+    <div class="bw-dlg-icon">!</div>
+    <div class="bw-dlg-body">
+      <h3 id="bw-dlg-t"></h3>
+      <div class="bw-dlg-m"></div>
+      <input class="bw-dlg-in" type="text" autocomplete="off" hidden>
+      <div class="bw-dlg-err small" hidden></div>
+    </div>
+    <div class="bw-dlg-btns"><button type="button" class="bw-cancel">Cancel</button><button type="button" class="bw-ok primary">OK</button></div>
+  </div>
+</div>
+<style>
+  #bw-modal{position:fixed;inset:0;z-index:1000;background:rgba(3,6,10,.72);backdrop-filter:blur(3px);display:flex;align-items:center;justify-content:center;padding:16px;animation:bwfade .15s ease-out}
+  #bw-modal[hidden]{display:none}
+  @keyframes bwfade{from{opacity:0}to{opacity:1}}
+  @keyframes bwpop{from{transform:translateY(8px) scale(.98);opacity:0}to{transform:none;opacity:1}}
+  .bw-dlg{width:min(480px,100%);background:linear-gradient(180deg,#121c2b,#0c131e);border:1px solid var(--border);border-top:3px solid var(--accent);border-radius:14px;box-shadow:0 20px 60px rgba(0,0,0,.6);padding:20px 22px 16px;display:grid;grid-template-columns:auto 1fr;gap:4px 14px;animation:bwpop .18s ease-out}
+  .bw-dlg.danger{border-top-color:var(--crit)}
+  .bw-dlg-icon{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;background:rgba(53,199,242,.15);color:var(--accent)}
+  .bw-dlg.danger .bw-dlg-icon{background:rgba(255,77,77,.15);color:var(--crit)}
+  .bw-dlg h3{margin:4px 0 6px;font-size:16px;letter-spacing:0;text-transform:none}
+  .bw-dlg-m{font-size:13.5px;line-height:1.55;color:var(--text);white-space:pre-line;word-break:break-word}
+  .bw-dlg-in{margin-top:10px;width:100%}
+  .bw-dlg-err{color:var(--crit);margin-top:6px}
+  .bw-dlg-btns{grid-column:1 / -1;display:flex;justify-content:flex-end;gap:8px;margin-top:16px}
+  .bw-dlg.danger .bw-ok{background:rgba(255,77,77,.15);border-color:var(--crit);color:var(--crit)}
+</style>
+<script>
+/* The interface's own dialog, instead of the browser's confirm() / prompt() boxes.
+   bwConfirm(message, {title, ok, cancel, danger})            -> Promise<boolean>
+   bwDialog({title, message, ok, cancel, danger, expect})     -> Promise<boolean>; with expect the analyst must type that text
+   Declarative: data-confirm="message" on a <form> (asked on submit) or on a submit button (asked when that button submits);
+   data-confirm-title, data-confirm-ok, data-confirm-danger, data-confirm-expect (type-to-confirm). "{n}" in the message is replaced by
+   the number of elements matching data-confirm-count (e.g. ".sel:checked"). */
+(function(){
+  const modal = document.getElementById('bw-modal'); if (!modal) return;
+  const dlg = modal.querySelector('.bw-dlg'), t = modal.querySelector('h3'), m = modal.querySelector('.bw-dlg-m'), inp = modal.querySelector('.bw-dlg-in'),
+        err = modal.querySelector('.bw-dlg-err'), ok = modal.querySelector('.bw-ok'), cancel = modal.querySelector('.bw-cancel');
+  let done = null, last = null;
+  function close(v){ modal.hidden = true; const d = done; done = null; if (last && last.focus) last.focus(); if (d) d(v); }
+  window.bwDialog = function(o){
+    o = o || {};
+    if (done) close(false);
+    last = document.activeElement;
+    t.textContent = o.title || (o.danger ? 'Are you sure?' : 'Please confirm');
+    m.textContent = o.message || '';
+    ok.textContent = o.ok || 'OK'; cancel.textContent = o.cancel || 'Cancel';
+    cancel.hidden = o.cancel === false;
+    dlg.classList.toggle('danger', !!o.danger);
+    inp.hidden = !o.expect; inp.value = ''; inp.placeholder = o.expect ? 'type: ' + o.expect : ''; err.hidden = true;
+    modal.hidden = false;
+    setTimeout(() => (o.expect ? inp : ok).focus(), 0);
+    return new Promise(res => { done = v => res(v); modal._expect = o.expect || null; });
+  };
+  window.bwConfirm = (message, o) => window.bwDialog({...(o || {}), message});
+  window.bwAlert = (message, o) => window.bwDialog({...(o || {}), message, cancel: false, ok: (o && o.ok) || 'OK'});
+  ok.addEventListener('click', () => {
+    if (modal._expect && inp.value.trim() !== modal._expect) { err.textContent = 'That is not it: type “' + modal._expect + '” exactly.'; err.hidden = false; inp.focus(); return; }
+    close(true);
+  });
+  cancel.addEventListener('click', () => close(false));
+  modal.addEventListener('click', ev => { if (ev.target === modal) close(false); });
+  document.addEventListener('keydown', ev => {
+    if (modal.hidden) return;
+    if (ev.key === 'Escape') { ev.preventDefault(); close(false); }
+    else if (ev.key === 'Enter' && document.activeElement !== cancel) { ev.preventDefault(); ok.click(); }
+  });
+  // forms and buttons that ask first
+  document.addEventListener('submit', ev => {
+    const form = ev.target, btn = ev.submitter;
+    const src = (btn && btn.dataset && btn.dataset.confirm !== undefined) ? btn : (form.dataset && form.dataset.confirm !== undefined ? form : null);
+    if (!src || form._bwOk) { form._bwOk = false; return; }
+    ev.preventDefault();
+    let msg = src.dataset.confirm || '';
+    if (src.dataset.confirmCount) msg = msg.replace('{n}', document.querySelectorAll(src.dataset.confirmCount).length);
+    window.bwDialog({message: msg, title: src.dataset.confirmTitle, ok: src.dataset.confirmOk, danger: src.dataset.confirmDanger !== undefined,
+                     expect: src.dataset.confirmExpect}).then(yes => {
+      if (!yes) return;
+      form._bwOk = true;
+      if (form.requestSubmit) form.requestSubmit(btn || undefined); else form.submit();
+    });
+  }, true);
+})();
+</script>
+</body>
+</html>

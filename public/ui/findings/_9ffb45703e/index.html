@@ -203,7 +203,7 @@ header nav{display:flex;align-items:center;min-width:0}
   <a class="kpi ok " href="?state=confirmed&amp;brand_id=f46bffed-4795-4cdd-ad8f-abd3d26fcc60"><div class="v" data-count="7">0</div><div class="l">confirmed phishing</div></a>
   <a class="kpi " href="?state=dismissed&amp;brand_id=f46bffed-4795-4cdd-ad8f-abd3d26fcc60"><div class="v" data-count="0">0</div><div class="l">dismissed</div></a>
   <div class="kpi vi"><div class="v" data-count="99" data-suffix="%">0</div><div class="l">avg confidence</div></div>
-  <div class="kpi mg"><div class="v" data-count="7">0</div><div class="l">new in 24h</div></div>
+  <div class="kpi mg"><div class="v" data-count="0">0</div><div class="l">new in 24h</div></div>
 </div>
 
 <h2 style="margin:18px 0 8px">Statistics <span class="muted">· across open findings of the chosen brand</span></h2>
@@ -250,8 +250,8 @@ header nav{display:flex;align-items:center;min-width:0}
   </div>
   <div class="panel">
     <h2>New findings · 14 days</h2>
-    <svg class="spark" data-spark='{"series": [{"color": "#35C7F2", "values": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7]}]}'></svg>
-    <div class="small muted" style="display:flex;justify-content:space-between;margin-top:6px"><span>14 days ago</span><span>today · 7</span></div>
+    <svg class="spark" data-spark='{"series": [{"color": "#35C7F2", "values": [0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 0, 0, 0, 0]}]}'></svg>
+    <div class="small muted" style="display:flex;justify-content:space-between;margin-top:6px"><span>14 days ago</span><span>today · 0</span></div>
     <h2>Surface <span class="muted">· where the brand appears: domain name · subdomain · URL path</span></h2>
     <div class="stack"><i data-w="100.0" style="background:#35C7F2" title="domain name: 7"></i></div>
     <div class="small muted" style="margin-top:6px"><span style="color:#35C7F2">■</span> domain name 7 &nbsp;</div>
@@ -318,14 +318,14 @@ header nav{display:flex;align-items:center;min-width:0}
     
     
     <div class="bchips" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px">
-      <a class="btn " style="padding:4px 12px;font-size:12.5px;" href="/ui/findings/_02b534e642/">All brands <b>4</b></a>
-      <a class="btn" style="padding:4px 12px;font-size:12.5px;" href="/ui/findings/_3cda4daff0/">ShopNova <b>4</b></a><a class="btn" style="padding:4px 12px;font-size:12.5px;" href="/ui/findings/_d7f4bf6d60/">ShopNova · Israel <b>2</b></a><a class="btn" style="padding:4px 12px;font-size:12.5px;border-color:var(--accent);color:var(--accent2)" href="/ui/findings/_2c04326d9f/">CoinPilot <b>0</b></a><a class="btn" style="padding:4px 12px;font-size:12.5px;" href="/ui/findings/_47ac248c26/">VaultPay <b>0</b></a>
+      <a class="btn " style="padding:4px 12px;font-size:12.5px;" href="/ui/findings/_02b534e642/">All brands <b>8</b></a>
+      <a class="btn" style="padding:4px 12px;font-size:12.5px;" href="/ui/findings/_3cda4daff0/">ShopNova <b>8</b></a><a class="btn" style="padding:4px 12px;font-size:12.5px;" href="/ui/findings/_d7f4bf6d60/">ShopNova · Israel <b>2</b></a><a class="btn" style="padding:4px 12px;font-size:12.5px;border-color:var(--accent);color:var(--accent2)" href="/ui/findings/_2c04326d9f/">CoinPilot <b>0</b></a><a class="btn" style="padding:4px 12px;font-size:12.5px;" href="/ui/findings/_47ac248c26/">VaultPay <b>0</b></a>
     </div>
     <form method="get" action="/ui/findings/" class="actions" style="margin-bottom:8px">
       <div><label>Brand</label><select name="brand_id" onchange="this.form.submit()"><option value="">all</option><option value="eb019060-41b6-4160-871c-14094ad558a4" >ShopNova</option><option value="1909c3e0-295d-4d38-bb7e-a2b05c9287d4" >ShopNova · Israel</option><option value="f46bffed-4795-4cdd-ad8f-abd3d26fcc60" selected>CoinPilot</option><option value="a7b5cb5c-e4a0-495d-b6c9-3ac5209ac3b2" >VaultPay</option></select></div>
       <div><label>State</label><select name="state" onchange="this.form.submit()"><option value="">all</option><option value="open" selected>open</option><option value="confirmed" >confirmed</option><option value="dismissed" >dismissed</option></select></div>
       <div><label>Severity</label><select name="severity" onchange="this.form.submit()"><option value="">all</option><option value="low" >low</option><option value="medium" >medium</option><option value="high" >high</option><option value="critical" >critical</option></select></div>
-      <div><label>Kind</label><select name="kind" onchange="this.form.submit()"><option value="">all</option><option value="phishing" >phishing</option><option value="shop" >suspicious shop</option><option value="social" >fake social account</option></select></div>
+      <div><label>Kind</label><select name="kind" onchange="this.form.submit()"><option value="">all</option><option value="phishing" >phishing</option><option value="shop" >suspicious shop</option><option value="social" >fake social account</option><option value="ai_answer" >AI answer</option></select></div>
       <div><label>Search host</label><input id="q" placeholder="type to filter…" autocomplete="off"></div>
       <div><label>View</label><label class="shotsw" title="a screenshot next to every site (off by default: the list stays short)"><input type="checkbox" id="t-shots"> show screenshots</label></div>
       <div><button type="submit">Apply</button></div>

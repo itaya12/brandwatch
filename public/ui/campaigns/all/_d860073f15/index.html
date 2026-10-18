@@ -313,6 +313,41 @@ header nav{display:flex;align-items:center;min-width:0}
 
 
 
+<div class="panel" style="margin-top:14px" id="mapviews">
+  <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+    <h2 style="margin:0">The map</h2>
+    <div class="vsw" id="vsw" title="the same data, drawn in different ways: pick what reads best for the number of sites">
+      <button type="button" class="on" data-v="graph" title="dots and lines: best up to about 25 sites">Graph</button><button type="button" data-v="connections" title="what is shared on the left, the sites on the right: best when there are many sites">Connections</button><button type="button" data-v="matrix" title="a row per site, a column per shared thing">Matrix</button><button type="button" data-v="flow" title="site → registrar → hosting → redirect host → operation">Flow</button><button type="button" data-v="timeline" title="when the domains were registered">Timeline</button></div>
+    <div class="tool">
+      <span id="hintbar" style="display:contents"><label id="lbl-hints" title="dashed lines: a real hint (a redirect host, an old server, a purchase day) that is not enough on its own"><input type="checkbox" id="t-hints"> show hints</label>
+      <label id="lbl-common" title="faint lines: a registrar, a name server, a favicon: many unrelated sites share them"><input type="checkbox" id="t-common"> show common things</label></span>
+      <span id="zoombar" style="display:contents"><button type="button" onclick="bwGraph.zoomBy(1.3)" title="zoom in">＋</button><button type="button" onclick="bwGraph.zoomBy(1/1.3)" title="zoom out">－</button><button type="button" onclick="bwGraph.reset()" title="back to the start (also releases pinned dots)">reset view</button></span></div>
+  </div>
+  <div class="gsel" id="gsel" style="margin-top:8px"><span class="small muted">Show:</span>
+    <button type="button" class="on" data-g="all">everything</button>
+    <button type="button" data-g="1" title="Phishing kit · sends data to collect.affnet-mail.example">Group 1 · 4 sites</button>
+    
+  </div>
+  
+  <div class="vw" id="view-graph">
+    <p class="small muted" style="margin:4px 0 8px">Big dot with a name = a site you confirmed (colour = severity) · small dot with a letter = something several sites have in common · line = “has that”, thicker = a stronger tie. Each operation sits in its own coloured area. <b>Point</b> at a dot to light up what it touches, <b>click</b> it for details. <b>Scroll</b> to zoom, <b>drag the background</b> to move the map, <b>drag a dot</b> to move it (double-click it to let go).</p>
+    <div class="mapwrap"><svg id="graph" width="100%" height="640" style="border:1px solid var(--border);border-radius:8px"></svg>
+      <aside id="drawer" hidden></aside></div>
+    <div class="legend">
+      <span><b style="border-color:#FF4D4D"></b>affiliate id · registrant · DNS token</span>
+      <span><b style="border-color:#35C7F2"></b>server</span>
+      <span><b style="border-color:#F5C518"></b>TLS certificate · page code</span>
+      <span><b style="border-color:#FF9F1C"></b>analytics ID · where the data goes</span>
+      <span><b style="border-color:#B388FF"></b>redirect host</span>
+      <span><b style="border-color:#2ECC71"></b>traffic campaign</span>
+      <span class="muted"><b style="border-color:#8A97A8;border-top-style:dashed"></b>dashed = a hint, not proof on its own</span>
+    </div>
+  </div>
+  <div class="vw" id="view-connections" hidden></div><div class="vw" id="view-matrix" hidden></div><div class="vw" id="view-flow" hidden></div><div class="vw" id="view-timeline" hidden></div>
+  
+  
+</div>
+
 <div class="panel" style="margin-top:14px" id="groups">
   <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><h2 style="margin:0">Which sites are connected <span class="muted">· one card per operation (a group of sites that belong to one attacker)</span></h2>
     <span style="margin-left:auto;display:flex;gap:6px"><button type="button" class="small" id="expall">expand all</button><button type="button" class="small" id="colall">collapse all</button></span></div>
@@ -564,41 +599,6 @@ vaultpay-verify.com">copy domains</button></div></div>
     
   </div>
   
-  
-  
-</div>
-
-<div class="panel" style="margin-top:14px" id="mapviews">
-  <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
-    <h2 style="margin:0">The map</h2>
-    <div class="vsw" id="vsw" title="the same data, drawn in different ways: pick what reads best for the number of sites">
-      <button type="button" class="on" data-v="graph" title="dots and lines: best up to about 25 sites">Graph</button><button type="button" data-v="connections" title="what is shared on the left, the sites on the right: best when there are many sites">Connections</button><button type="button" data-v="matrix" title="a row per site, a column per shared thing">Matrix</button><button type="button" data-v="flow" title="site → registrar → hosting → redirect host → operation">Flow</button><button type="button" data-v="timeline" title="when the domains were registered">Timeline</button></div>
-    <div class="tool">
-      <span id="hintbar" style="display:contents"><label id="lbl-hints" title="dashed lines: a real hint (a redirect host, an old server, a purchase day) that is not enough on its own"><input type="checkbox" id="t-hints"> show hints</label>
-      <label id="lbl-common" title="faint lines: a registrar, a name server, a favicon: many unrelated sites share them"><input type="checkbox" id="t-common"> show common things</label></span>
-      <span id="zoombar" style="display:contents"><button type="button" onclick="bwGraph.zoomBy(1.3)" title="zoom in">＋</button><button type="button" onclick="bwGraph.zoomBy(1/1.3)" title="zoom out">－</button><button type="button" onclick="bwGraph.reset()" title="back to the start (also releases pinned dots)">reset view</button></span></div>
-  </div>
-  <div class="gsel" id="gsel" style="margin-top:8px"><span class="small muted">Show:</span>
-    <button type="button" class="on" data-g="all">everything</button>
-    <button type="button" data-g="1" title="Phishing kit · sends data to collect.affnet-mail.example">Group 1 · 4 sites</button>
-    
-  </div>
-  
-  <div class="vw" id="view-graph">
-    <p class="small muted" style="margin:4px 0 8px">Big dot with a name = a site you confirmed (colour = severity) · small dot with a letter = something several sites have in common · line = “has that”, thicker = a stronger tie. Each operation sits in its own coloured area. <b>Point</b> at a dot to light up what it touches, <b>click</b> it for details. <b>Scroll</b> to zoom, <b>drag the background</b> to move the map, <b>drag a dot</b> to move it (double-click it to let go).</p>
-    <div class="mapwrap"><svg id="graph" width="100%" height="640" style="border:1px solid var(--border);border-radius:8px"></svg>
-      <aside id="drawer" hidden></aside></div>
-    <div class="legend">
-      <span><b style="border-color:#FF4D4D"></b>affiliate id · registrant · DNS token</span>
-      <span><b style="border-color:#35C7F2"></b>server</span>
-      <span><b style="border-color:#F5C518"></b>TLS certificate · page code</span>
-      <span><b style="border-color:#FF9F1C"></b>analytics ID · where the data goes</span>
-      <span><b style="border-color:#B388FF"></b>redirect host</span>
-      <span><b style="border-color:#2ECC71"></b>traffic campaign</span>
-      <span class="muted"><b style="border-color:#8A97A8;border-top-style:dashed"></b>dashed = a hint, not proof on its own</span>
-    </div>
-  </div>
-  <div class="vw" id="view-connections" hidden></div><div class="vw" id="view-matrix" hidden></div><div class="vw" id="view-flow" hidden></div><div class="vw" id="view-timeline" hidden></div>
   
   
 </div>
