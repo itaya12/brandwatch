@@ -416,3 +416,31 @@ def story(session: Session, user: User) -> dict[str, Any]:
         "portals": portals, "portal_groups": groups, "example": EXAMPLE,
     }  # fmt: skip
 
+
+
+# ------------------------------------------------------------------------------ the flow diagram
+def flow(session: Session, user: User) -> dict[str, int]:
+    """The live numbers on the How-it-works flow diagram, for the whole workspace."""
+    from brandwatch.db.enums import TakedownState
+
+    ws = user.workspace_id
+    brands = sa.select(Brand.id).where(Brand.workspace_id == ws)
+
+    def count(q: Any) -> int:
+        return int(session.scalar(q) or 0)
+
+    findings = sa.select(sa.func.count()).select_from(Finding).where(Finding.brand_id.in_(brands))
+    sent = (TakedownState.SENT, TakedownState.ACKNOWLEDGED, TakedownState.IN_PROGRESS, TakedownState.RESOLVED)
+    return {
+        "lookalikes": count(sa.select(sa.func.count()).select_from(Candidate).where(Candidate.brand_id.in_(brands),
+                                                                                     Candidate.canonical_domain != "ai-answer")),
+        "findings": count(findings),
+        "confirmed": count(findings.where(Finding.state == FindingState.CONFIRMED)),
+        "social": count(findings.where(Finding.kind == "social")),
+        "ai": count(findings.where(Finding.kind == "ai_answer")),
+        "networks": count(sa.select(sa.func.count()).select_from(Campaign).where(Campaign.brand_id.in_(brands))),
+        "takedowns": count(sa.select(sa.func.count()).select_from(TakedownDraft).join(Finding, Finding.id == TakedownDraft.finding_id)
+                           .where(Finding.brand_id.in_(brands), TakedownDraft.state.in_(sent))),
+        "drafted": count(sa.select(sa.func.count()).select_from(TakedownDraft).join(Finding, Finding.id == TakedownDraft.finding_id)
+                         .where(Finding.brand_id.in_(brands))),
+    }  # fmt: skip

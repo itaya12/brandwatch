@@ -502,10 +502,18 @@ def _white_png() -> bytes:
 
 
 def _mock_request(profile: str) -> tuple[str, dict[str, str]]:
-    """What a visit with this profile sends: the same headers the real browser would, the crawler's own User-Agent."""
-    ua = MOCK_MOBILE_UA if "mobile" in profile else (MOCK_BOT_UA if profile == "bot" else MOCK_BROWSER_UA)
-    headers = {"user-agent": ua, "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-               "accept-language": "en-US", "accept-encoding": "gzip, deflate, br", "upgrade-insecure-requests": "1"}  # fmt: skip
+    """What a visit with this profile sends: the same headers the real browser would (a person's Chrome, its client hints
+    included); the crawler its own User-Agent and none of what a person's browser adds."""
+    from brandwatch.providers.impl.browser_identity import identity
+
+    accept = "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
+    if profile == "bot":
+        return MOCK_BOT_UA, {"user-agent": MOCK_BOT_UA, "accept": accept, "accept-encoding": "gzip, deflate, br"}
+    person = identity("us", mobile="mobile" in profile)
+    ua = person.user_agent
+    headers = {"user-agent": ua, "accept": accept, "accept-encoding": "gzip, deflate, br", "upgrade-insecure-requests": "1",
+               **{k.lower(): v for k, v in person.headers().items()},
+               "sec-fetch-site": "none", "sec-fetch-mode": "navigate", "sec-fetch-dest": "document"}  # fmt: skip
     if profile == "referer":
         headers["referer"] = "https://www.google.com/"
     return ua, headers
@@ -515,7 +523,7 @@ def _cloaked_view(sc: Scenario, url: str, profile: str) -> bool:
     """True when this profile should get the kit's decoy page instead of the phishing page."""
     mode = (sc.cloak or {}).get("mode")
     if mode == "ip":
-        return not profile.startswith("residential")
+        return not profile.startswith(("residential", "carrier"))
     if mode == "device":  # the lure reaches a phone only
         return "mobile" not in profile
     if mode == "ua":
@@ -621,7 +629,7 @@ class MockBrowserFetcher(_MockBase):
             http = {**http, "status": 403}
         status = int(http.get("status", 200))
         blocked_for = http.get("blocked_for") or []
-        egress = "residential" if profile.startswith("residential") else ("datacenter" if profile == "mobile" else profile)
+        egress = "residential" if profile.startswith(("residential", "carrier")) else ("datacenter" if profile == "mobile" else profile)
         blocked = "*" in blocked_for or profile in blocked_for or egress in blocked_for  # bot protection refusing this kind of visitor ("*": all)
         if blocked:
             status, html = 403, http.get("block_html") or "<html><head><title>Access Denied</title></head><body>Access Denied</body></html>"

@@ -42,6 +42,7 @@ from urllib.parse import urljoin
 
 from brandwatch.db.enums import ProviderStatus
 from brandwatch.providers.base import ProviderError, ProviderResult
+from brandwatch.providers.impl import browser_identity
 from brandwatch.security.fetcher_guard import (
     SsrfBlocked,
     guard_message,
@@ -57,8 +58,8 @@ BOT_UA = "Mozilla/5.0 (compatible; BrandWatchBot/0.1; +https://example.invalid/b
 SEARCH_REFERER = "https://www.google.com/"
 # A phone: phishing kits that target mobile victims show the lure only to a mobile browser. Profile "mobile" is a phone from the
 # data-centre IP; "residential+mobile" a phone through the proxy (residential or mobile network, whichever is configured).
-MOBILE_UA = ("Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) "
-             "Chrome/124.0.0.0 Mobile Safari/537.36")
+# "carrier" / "carrier+mobile": through the second, mobile-network proxy, when both kinds are used.
+MOBILE_UA = browser_identity.MOBILE_UA
 MOBILE_VIEWPORT = (412, 915)
 
 
@@ -67,7 +68,7 @@ def is_mobile_profile(profile: str) -> bool:
 
 
 def uses_proxy(profile: str) -> bool:
-    return profile.startswith("residential")
+    return profile.startswith(("residential", "carrier"))
 
 # Speed knobs (the hard ceiling stays SYSTEM_LIMITS.BROWSER_OP_TIMEOUT): phishing kits answer in
 # seconds; big legitimate sites must not stall the pipeline for a minute each.
@@ -81,10 +82,7 @@ FORWARD_MIN_TEXT = 40  # characters of visible text below which a page is a gate
 _SKIPPED_RESOURCES = frozenset(
     {"media", "font", "websocket", "manifest", "texttrack", "eventsource"}
 )
-_UA = (
-    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) "
-    "Chrome/124.0.0.0 Safari/537.36"
-)
+_UA = browser_identity.DESKTOP_UA
 
 
 def _looks_like_challenge(title: str | None, html: str | None) -> bool:
@@ -159,8 +157,12 @@ class PlaywrightBrowserFetcher:
         launch_args: Sequence[str] = (),
         chromium_path: str | None = None,
         residential_proxy: str | None = None,
+        mobile_proxy: str | None = None,
+        country: str | None = None,
     ) -> None:
         self._residential_proxy = residential_proxy
+        self._mobile_proxy = mobile_proxy  # the second proxy when both kinds are used ("carrier" profiles)
+        self._country = country  # the proxy's country: the browser speaks its language and keeps its time
 
         self._resolver = resolver
 
@@ -225,17 +227,22 @@ class PlaywrightBrowserFetcher:
         policy = RoutePolicy(self._resolver, self._limits)
         proxy = None
         if uses_proxy(profile):
-            if not self._residential_proxy:
+            proxy_url = self._mobile_proxy if profile.startswith("carrier") else self._residential_proxy
+            if not proxy_url:
                 raise ProviderError("no residential / mobile proxy configured", retryable=False)
             from urllib.parse import urlsplit as _us
 
-            pu = _us(self._residential_proxy)
+            pu = _us(proxy_url)
             proxy = {"server": f"{pu.scheme}://{pu.hostname}:{pu.port}"}
             if pu.username:
                 proxy.update({"username": pu.username, "password": pu.password or ""})
         mobile = is_mobile_profile(profile)
-        user_agent = MOBILE_UA if mobile else (BOT_UA if profile == "bot" else _UA)
-        extra_headers = {"Referer": SEARCH_REFERER} if profile == "referer" else {}
+        # every visit but the crawler's is a person's Chrome: its headers, client hints, language and time zone agree
+        person = None if profile == "bot" else browser_identity.identity(self._country, mobile=mobile)
+        user_agent = person.user_agent if person else BOT_UA
+        extra_headers = dict(person.headers()) if person else {}
+        if profile == "referer":
+            extra_headers["Referer"] = SEARCH_REFERER
 
         started = time.monotonic()
 
@@ -264,6 +271,7 @@ class PlaywrightBrowserFetcher:
                     **device,
                     user_agent=user_agent,
                     extra_http_headers=extra_headers,
+                    **({"locale": person.locale, "timezone_id": person.timezone} if person else {}),
                     ignore_https_errors=True,  # bad certs are evidence, not a reason to look away
                     accept_downloads=False,
                     java_script_enabled=True,
@@ -272,11 +280,17 @@ class PlaywrightBrowserFetcher:
 
                 context.set_default_timeout(int(deadline * 1000))
 
-                # headless Chromium announces itself via navigator.webdriver; a plain browser does not
+                # headless Chromium announces itself via navigator.webdriver (and its languages, window.chrome); a plain browser does not
                 await context.add_init_script(
-                    "Object.defineProperty(navigator, 'webdriver', {get: () => undefined})"
+                    person.init_script() if person else "Object.defineProperty(navigator, 'webdriver', {get: () => undefined})"
                 )
                 page = await context.new_page()
+                if person:  # client hints and navigator.userAgentData say "Google Chrome", not "HeadlessChrome"
+                    try:
+                        cdp = await context.new_cdp_session(page)
+                        await cdp.send("Network.setUserAgentOverride", person.ua_override())
+                    except PlaywrightError:
+                        pass  # extra headers above still carry the hints
 
                 page.on("dialog", lambda d: asyncio.ensure_future(d.dismiss()))
 

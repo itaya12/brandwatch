@@ -755,7 +755,16 @@ Signals derived from the probes:
 
 **Phone visit** (Settings → Proxy → "Visit as", `devices` = `desktop` | `mobile` | `both`; default `desktop`)
 - Kits that target victims on phones show the lure to a mobile browser only. With `mobile` or `both` a Tier 3 probe `mobile` (profile `mobile`: an Android Chrome User-Agent, a 412×915 screen, touch, from the data-centre IP, free) is added. If the login form appears only there, `device_gating` fires (evasion group, 14 points: "the login form appears only to a mobile phone") and that view is the one scored.
-- In the browser, profile `mobile` is a phone and `residential+mobile` is a phone through the proxy (`is_mobile`, `has_touch`, 412×915, `MOBILE_UA`); `residential` is the desktop through the proxy.
+- In the browser, profile `mobile` is a phone and `residential+mobile` is a phone through the proxy (`is_mobile`, `has_touch`, 412×915, `MOBILE_UA`); `residential` is the desktop through the proxy; `carrier` / `carrier+mobile` the same through the second, mobile-network proxy (with "Both").
+
+**A person's Chrome** (`providers/impl/browser_identity.py`, every profile but `bot`)
+- Kits and the bot checks in front of them look past the User-Agent. Every visit except the crawler's is a Chrome 124 whose
+  signals agree: User-Agent (Windows or Android), `Accept-Language` and `navigator.languages`, the client hints `sec-ch-ua`
+  ("Google Chrome", not "HeadlessChrome"), `sec-ch-ua-mobile`, `sec-ch-ua-platform`, `navigator.userAgentData` (CDP
+  `Network.setUserAgentOverride`), `window.chrome`, no `navigator.webdriver`, and the **locale and time zone of the proxy's
+  country** (Israel → he-IL, Asia/Jerusalem; unknown → en-US, America/New_York).
+- The crawler probe `bot` stays an honest crawler (BrandWatchBot User-Agent, none of a person's headers): it is the control.
+- The evidence row of each probe keeps exactly what was sent (`request_profile.headers`).
 
 **Tier 4** (residential or mobile-network IP)
 - Runs when cloaking is suspected, or the preliminary score is Medium or above, and the allowance permits it.
@@ -766,7 +775,7 @@ Signals derived from the probes:
   - budget for 0.002 GB per fetch.
 - Each fetch writes an `api_usage` row (`residential`, $0.016).
 - `cloaking_ip_based` fires when the residential view is phishy where the datacenter view was not, and the param and referer probes don't explain the difference.
-- Which proxy: Settings → Proxy → "Which proxy the probe uses" (`proxy_kind`): **Residential** (the existing slot: off / Webshare / manual) or **Mobile** (a second slot, manual only: host, port, username, password stored as `mobile_proxy_password`; any provider's 4G / 5G proxy). `tenancy.resolve_proxy(kind)` builds it; `ProxyConfig.kind` says which. The visit is made once per device chosen: `residential` (desktop) and/or `residential-mobile` (a phone), each an `api_usage` row. The signal text and the console name the network ("a mobile-network IP gets the phishing page", "as a desktop browser and as a phone"), and an observation made through a mobile proxy is recorded as `ScannerProfile.MOBILE`.
+- Which proxy: Settings → Proxy → "Which proxy the probe uses" (`proxy_kind`): **Residential** (the existing slot: off / Webshare / manual), **Mobile** (a second slot, manual only: host, port, username, password stored as `mobile_proxy_password`; any provider's 4G / 5G proxy) or **Both** (one visit through each: probes `residential` / `residential-mobile` and `mobile-network` / `mobile-network-phone`, profiles `carrier` / `carrier+mobile`; `ctx.extra["proxy_nets"]` lists the networks; a slot that is off is skipped). `tenancy.resolve_proxy(kind)` builds it; `ProxyConfig.kind` says which. The visit is made once per device chosen: `residential` (desktop) and/or `residential-mobile` (a phone), each an `api_usage` row. The signal text and the console name the network ("a mobile-network IP gets the phishing page", "as a desktop browser and as a phone"), and an observation made through a mobile proxy is recorded as `ScannerProfile.MOBILE`.
 - Fixed on 2026-10-13: the allowance used to look only at the environment variable, so a proxy entered in the UI was never used and Tier 4 always said "no residential proxy configured".
 - **[FLAG]** `always` behaves the same as `gated`.
 
@@ -1856,12 +1865,26 @@ There is **no JSON audit endpoint**. The audit log is shown only on `/ui/activit
 
 ### 9.3 How it works (`/ui/how-it-works`)
 
-- **Hero:** "Someone copies {brand}'s website to steal passwords. BrandWatch finds it, proves it and gets it taken down."
-  - A **social callout**: "Websites — and social media too" (Facebook and Instagram pages, profiles and ads).
-  - Buttons: "Play the story · 1:22", scroll, or skip to details.
-  - A 6-card chapter map.
+Written for someone who skims (a recruiter opening the demo from a résumé): the first screen holds the headline and
+the whole product as one picture; every chapter is a headline, two lines, short bullets and a bold "why".
+
+- **Hero:** "Someone fakes {brand}'s site. BrandWatch finds it, proves it, takes it down.", one sub-line, and the
+  buttons "Play the story · 0:54", scroll, or skip to the details.
+- **Flow diagram** (`_flow_diagram.html`): the brand → "where impostors hide" (eight sources around BrandWatch:
+  look-alike domains, new domains, new certificates, Google & urlscan, ChatGPT · Gemini, ads, Facebook & Instagram,
+  redirects & bio links) → attacker footprint, takedown and reports → protected. Live badges from
+  `demo/story.py flow()`; every node jumps to its chapter. Two drawings of the same data: wide (left to right, fits
+  a 1440×900 screen with the headline) and tall (top to bottom) for screens ≤ 900px.
+- **Proof strip:** signals, providers, automated tests, report portals, "$0 demo" — read from the code.
+- **Author card:** "Built by Itay Azulay", the stack, and a case-study button when `CASE_STUDY_URL` is set. The site
+  never links to the repository (it is shared by hand); the static build's `--github` is empty by default.
+- **Link preview:** `<meta name="description">` and Open Graph tags on every page (`base.html` blocks); How it works
+  adds `og:image` = `/ui/assets/og-how-it-works.png` (1200×630, rendered by `scripts/render_og_image.py`).
+- "More info" on a step opens a centred window (backdrop, ✕, Escape): a bold "in short" block (calls, cost, keeps,
+  limit) first, the full detail folded under "All the details".
 - **Chapter rail:** sticky, with progress fills, Play/Pause and a countdown.
-- **The six chapters.** Each is animated, has a replay button, and is labelled "illustration" when there is no real data for it.
+- **The six chapters.** Each is animated, has a replay button, and is labelled "illustration" when there is no real
+  data for it. A chapter the reader scrolls to draws itself at 4× speed (`--speed: .25`); Play keeps narration pace.
 
 | # | Chapter | What it shows |
 |---|---|---|
@@ -1875,8 +1898,8 @@ There is **no JSON audit endpoint**. The audit log is shown only on `/ui/activit
 - **End section:** "Find → Prove → Decide → Map → Take down" with CTAs.
 - **About this project.** KPIs computed from the code: signals and groups, rules and penalties, providers, golden scenarios, immutable tables, tests, API operations, migrations.
 - **Go deeper** folds:
-  - **All 13 steps:** each with a "see it →" link to a real example and a "More info" popover. The popover covers external calls (name, key, cost, host, call, returns), fallback chain, what is computed locally, what is stored, limits, demo vs live, and the code location.
-  - **Demo walkthrough:** 8 stops.
+  - **The pipeline, step by step (13 stages):** each with a "see it →" link to a real example and a "More info" popover. The popover covers external calls (name, key, cost, host, call, returns), fallback chain, what is computed locally, what is stored, limits, demo vs live, and the code location.
+  - **Guided tour:** 8 stops.
   - **Under the hood:** 8 cards (SSRF, evidence, resilience, ledger, golden, events, keys, tests) plus a trust-and-safety list.
   - **Glossary:** 15 entries. These are the targets of every "?" tip.
 

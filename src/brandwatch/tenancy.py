@@ -110,7 +110,7 @@ def set_workspace_proxy(
     return clean
 
 
-PROXY_KINDS = ("residential", "mobile")
+PROXY_KINDS = ("residential", "mobile", "both")  # both: one visit through each proxy
 DEVICES = ("desktop", "mobile", "both")
 
 
@@ -132,7 +132,7 @@ def set_workspace_mobile_proxy(session: Session, workspace_id: uuid.UUID, cfg: d
 
 
 def workspace_probe_settings(session: Session, workspace_id: uuid.UUID) -> dict[str, str]:
-    """Which proxy the Tier-4 probe goes through (residential or mobile) and which device it pretends to be (desktop, a phone, or both)."""
+    """Which proxy the Tier-4 probe goes through (residential, mobile or both) and which device it pretends to be (desktop, a phone, or both)."""
     ws = session.get(Workspace, workspace_id)
     stored = ((ws.settings or {}).get("probe") or {}) if ws else {}
     return {"proxy_kind": stored.get("proxy_kind") if stored.get("proxy_kind") in PROXY_KINDS else "residential",
@@ -150,7 +150,7 @@ def set_workspace_probe(session: Session, workspace_id: uuid.UUID, proxy_kind: s
 async def resolve_proxy(session: Session, workspace_id: uuid.UUID, settings: Settings, kind: str | None = None):
     """Build the live ProxyConfig: the stored settings + decrypted secrets, resolving the Webshare
     token to proxy credentials when in webshare mode. ``kind`` (residential or mobile) defaults to the
-    workspace's choice. Returns a ``proxy.ProxyConfig``."""
+    workspace's choice ("both" → the residential one; the runner asks for the mobile one itself). Returns a ``proxy.ProxyConfig``."""
     from brandwatch import keys as keystore
     from brandwatch import proxy as proxy_mod
 

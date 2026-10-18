@@ -96,7 +96,7 @@ def test_the_settings_page_has_both_choices_and_saves_them(engine, tmp_path):
     with TestClient(app):
         ui = _ui(app)
         page = ui.get("/ui/settings").text
-        for needle in ('name="proxy_kind" value="residential"', 'name="proxy_kind" value="mobile"', 'name="devices" value="desktop"',
+        for needle in ('name="proxy_kind" value="residential"', 'name="proxy_kind" value="mobile"', 'name="proxy_kind" value="both"', 'name="devices" value="desktop"',
                        'name="devices" value="mobile"', 'name="devices" value="both"', "MOBILE PROXY", 'name="mobile_host"', 'name="mobile_password"'):
             assert needle in page, needle
         r = ui.post("/ui/settings/proxy", data={"mode": "off", "proxy_kind": "mobile", "devices": "both", "mobile_enabled": "on",
@@ -148,6 +148,32 @@ def test_the_proxy_visit_is_made_as_the_chosen_devices_and_says_which_network(en
     # phone only: no desktop visit through the proxy; residential choice: named so
     assert "residential" not in mob["shopnova-viaproxy.com"]["probes"] and "residential-mobile" in mob["shopnova-viaproxy.com"]["probes"]
     assert sorted(desk["shopnova-viaproxy.com"]["probes"]) == ["bot", "param", "referer", "residential"]  # JSONB keeps no key order
+
+
+def test_both_proxies_make_one_visit_each_and_the_mobile_one_is_named(engine, tmp_path):
+    with _Scenarios(("shopnova-bothnets.com", "shopn0va.com", {}, {"cloak": {"mode": "ip", "benign_html": "<html><body><h1>Under maintenance</h1></body></html>"}})):
+        _s, events, out = _scan(engine, tmp_path, ["https://shopnova-bothnets.com/"], devices="both", kind="both")
+    probes = out["shopnova-bothnets.com"]["probes"]
+    assert probes["residential"][0] == "residential" and probes["mobile-network"][0] == "carrier"  # one desktop visit through each
+    assert probes["residential-mobile"][0] == "residential+mobile" and probes["mobile-network-phone"][0] == "carrier+mobile"
+    assert "Android" in probes["mobile-network-phone"][1]
+    assert "cloaking_ip_based" in out["shopnova-bothnets.com"]["signals"]
+
+
+def test_every_visit_but_the_crawlers_is_a_person_s_chrome():
+    from brandwatch.providers.impl.browser_identity import accept_language, identity
+    from brandwatch.providers.mock import _mock_request
+
+    il = identity("il")
+    assert il.locale == "he-IL" and il.timezone == "Asia/Jerusalem" and il.languages[:2] == ["he-IL", "he"]
+    assert accept_language("he-IL") == "he-IL,he;q=0.9,en-US;q=0.8,en;q=0.7" and accept_language("en-US") == "en-US,en;q=0.9"
+    phone = identity("zz", mobile=True)  # an unknown country: a US browser
+    assert phone.locale == "en-US" and phone.headers()["sec-ch-ua-mobile"] == "?1" and phone.ua_override()["userAgentMetadata"]["model"] == "Pixel 8"
+    assert "HeadlessChrome" not in il.headers()["sec-ch-ua"] and "navigator, 'languages'" in il.init_script()
+    _ua, crawler = _mock_request("bot")
+    _ua, person = _mock_request("residential")
+    assert "accept-language" not in crawler and "sec-ch-ua" not in crawler  # the control stays an honest crawler
+    assert person["accept-language"] and '"Google Chrome"' in person["sec-ch-ua"]
 
 
 def test_a_proxy_set_in_settings_is_what_the_probe_looks_for(engine):

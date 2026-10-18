@@ -131,6 +131,9 @@ class Settings(BaseSettings):
     home_lat: float | None = None
     home_lon: float | None = None
     log_level: str = "INFO"
+    # the "built by" card on How it works: a case-study video, shown only when set (the public demo
+    # build sets it; a private deployment leaves it empty)
+    case_study_url: str = ""
 
     # --- auth -------------------------------------------------------------------------------
     secret_key: SecretStr = SecretStr("change-me-in-real-deployments-please")

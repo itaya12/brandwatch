@@ -8,11 +8,11 @@
 ![Python](https://img.shields.io/badge/python-3.12-3776AB?logo=python&logoColor=white)
 ![FastAPI](https://img.shields.io/badge/FastAPI-009688?logo=fastapi&logoColor=white)
 ![Playwright](https://img.shields.io/badge/Playwright-sandboxed-2EAD33?logo=playwright&logoColor=white)
-![Tests](https://img.shields.io/badge/tests-688%20passing-brightgreen)
+![Tests](https://img.shields.io/badge/tests-691%20passing-brightgreen)
 ![Demo](https://img.shields.io/badge/demo-%240%2C%20no%20API%20keys-35C7F2)
 
 ### [▶ Open the live demo](https://nbse3h.s.gy/M37Izw)
-<sub>A read-only copy of the app with fictional brands: click through every page, the attacker map and the findings. Nothing is sent anywhere.</sub>
+<sub>A read-only copy of the app with fictional brands: click through every page, the attacker map and the findings. Nothing is sent anywhere. Start at <b>How it works</b> — the whole product in one picture and six short steps.</sub>
 
 ### [🎬 Watch a real case study](https://nbse3h.s.gy/sSLDpR)
 <sub>A live scan of a real crypto-trading brand: BrandWatch finds its look-alike domains, investigates them, and the map shows that eight typo domains are one operation, forwarding visitors to the real site with the same affiliate id.</sub>
@@ -29,7 +29,7 @@
 |---|---|
 | 🔎 **Find** | Look-alike domains (typos and look-alike letters on 1,000+ domain endings, checked in DNS), newly registered domains from yesterday's registrations, brand-new HTTPS certificates, Google results, urlscan, and fake Facebook / Instagram pages and ads that use the brand's name. |
 | 🤖 **Ask the AI assistants** | Asks ChatGPT, Gemini and Google AI Mode what a customer would ask ("what is the support phone of …?"), checks every phone, short code, e-mail and login address in the answers against the brand's own website, asks for the proof when one does not match, opens the cited pages itself, and raises made-up or scam-published contacts as findings. |
-| 🧪 **Prove** | Visits every suspect in a sandboxed browser like a real victim would (and like a scanner would, to catch cloaking), compares it with the real site (favicon, screenshot, login form, DOM), and scores 50 signals in 7 capped groups. Every point is explained. |
+| 🧪 **Prove** | Visits every suspect in a sandboxed browser like a real victim would — a real Chrome (User-Agent, Accept-Language, client hints, language and time zone) through a residential or mobile 4G / 5G proxy, as a desktop or a phone — and like a scanner would, to catch cloaking; compares it with the real site (favicon, screenshot, login form, DOM), and scores 50 signals in 7 capped groups. Every point is explained. |
 | ⚖️ **Decide** | An analyst confirms or dismisses, one by one or in bulk. AI and an ML classifier give a second opinion, but never change the score. Nothing is sent automatically. |
 | 🕸️ **Map the attackers** | Pivots on servers, certificates, registrants, analytics IDs, affiliate IDs, redirect hosts and where the stolen data goes, then groups the sites into **operations**: who is behind them, how they operate, and the shortest way to stop each one. |
 | 🧾 **Take down** | Registrar, host and CDN abuse contacts, 26 report portals, evidence packages (HTML + JSON, SHA-256 per row), and an audited takedown lifecycle. |
@@ -142,7 +142,7 @@ Optional real browser worker for live mode: `pip install -e ".[browser]"` then
 | 2 Evidence | Sandboxed Playwright worker (route-gated public-only egress, fresh browser per fetch), rendered-DOM login similarity, pHash + dHash + palette, evidence packages, takedown drafts, candidate timeline | `providers/impl/playwright_fetcher.py`, `detection/{dom,reports}.py` |
 | 3 Continuous intelligence | CT / NRD / search / urlscan streams, watchlist scheduler (long-watch + expiry), trigger engine, Slack / Telegram / e-mail / digest notifications, real provider clients, Arq/Redis queue, SSE console | `detection/{sources,triggers,scheduler}.py`, `notifications.py`, `providers/impl/clients.py`, `jobs/arq_worker.py` |
 | 4 Investigation | Budgeted BFS pivoting (reverse IP, certificates, favicon hash, tracking ids, registrant) with co-hosted triage and shared-hosting stop, campaign graph, Infrastructure signals for later scans, IOC normalisation + STIX 2.1 | `detection/investigation.py`, `api/campaigns.py` |
-| 5 Advanced detection | Cloaking multi-probe (crawler UA, `?email=` parameter, search referer) + gated, budgeted residential Tier-4 probe that adopts the victim's view; AI second opinion and AI co-hosted triage (strict JSON schema, untrusted-text framing, advisory only); logistic-regression classifier trained on analyst labels with k-fold validation | `detection/{cloaking,ai,ml}.py`, `api/ml.py` |
+| 5 Advanced detection | Cloaking multi-probe (crawler UA, `?email=` parameter, search referer, a phone) as a real Chrome with matching headers + gated, budgeted Tier-4 probe through a residential and / or mobile proxy that adopts the victim's view; AI second opinion and AI co-hosted triage (strict JSON schema, untrusted-text framing, advisory only); logistic-regression classifier trained on analyst labels with k-fold validation | `detection/{cloaking,ai,ml}.py`, `api/ml.py` |
 | 6 Productization | RBAC admin / analyst / viewer on API and UI, personal access tokens (hashed, read/write scope, expiry, revocation), provider keys in the DB with AES-256-GCM envelope encryption bound to workspace + provider, workspace budget inherited by brands, multi-tenant isolation, scoring editor with content-addressed scoring versions + live preview + re-score with history, FP whitelist, settings UI | `api/{admin,tokens}.py`, `keys.py`, `tenancy.py`, `detection/rescore.py`, `api/ui_settings.py` |
 
 ### Scoring in one paragraph

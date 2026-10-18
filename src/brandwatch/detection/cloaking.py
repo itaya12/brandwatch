@@ -205,7 +205,7 @@ def residential_allowance(ctx: PipelineContext) -> tuple[bool, str]:
         return True, "demo mode (recorded residential view)"
     extra = getattr(ctx, "extra", None) or {}
     if not (extra.get("proxy_enabled") or ctx.settings.residential_proxy_url):
-        kind = "mobile" if extra.get("proxy_kind") == "mobile" else "residential"
+        kind = {"mobile": "mobile", "both": "residential or mobile"}.get(str(extra.get("proxy_kind")), "residential")
         return False, f"no {kind} proxy configured (Settings → Proxy)"
     limit = ctx.config.economic_limits.max_residential_gb
     used = residential_gb_today(ctx.session, ctx.workspace_id)
@@ -439,12 +439,13 @@ def _adopt(
     col.liveness = LivenessResult(
         alive=True, http_status=outcome.status, content_present=True, parked=False
     )
-    if outcome.name.startswith("residential"):
+    if outcome.name.startswith(("residential", "mobile-network")):
+        mobile_net = outcome.name.startswith("mobile-network") or ctx.extra.get("proxy_kind") == "mobile"
         session.add(
             Observation(
                 candidate_id=cand.id,
                 source=cand.sources[0].source if cand.sources else DiscoverySource.MANUAL,
-                scanner_profile=ScannerProfile.MOBILE if ctx.extra.get("proxy_kind") == "mobile" else ScannerProfile.RESIDENTIAL,
+                scanner_profile=ScannerProfile.MOBILE if mobile_net else ScannerProfile.RESIDENTIAL,
                 state_at_time=cand.state,
                 content_hash=outcome.content_sha256,
                 screenshot_evidence_id=col.evidence_ids.get("screenshot"),
@@ -517,14 +518,20 @@ async def probe(
                     "residential"
                 )  # confidence penalty: the victim view is unknown
         else:
-            net = "mobile-network" if ctx.extra.get("proxy_kind") == "mobile" else "residential"
+            # one visit per proxy (residential, mobile network or both) and per device (desktop, phone or both)
+            nets = list(ctx.extra.get("proxy_nets") or []) or [
+                ("mobile-network" if ctx.extra.get("proxy_kind") == "mobile" else "residential", "residential")]
+            if ctx.settings.demo_mode and ctx.extra.get("proxy_kind") == "both":
+                nets = [("residential", "residential"), ("mobile-network", "carrier")]  # recorded: both answer
             runs = []
-            if devices in ("desktop", "both"):
-                runs.append(("residential", "residential", "desktop"))
-            if devices in ("mobile", "both"):
-                runs.append(("residential-mobile", "residential+mobile", "phone"))
-            done: list[tuple[ProbeOutcome, str]] = []
-            for name, profile, label in runs:
+            for net, prefix in nets:
+                base = "residential" if prefix == "residential" else "mobile-network"
+                if devices in ("desktop", "both"):
+                    runs.append((base, prefix, "desktop", net))
+                if devices in ("mobile", "both"):
+                    runs.append((f"{base}-mobile" if prefix == "residential" else "mobile-network-phone", f"{prefix}+mobile", "phone", net))
+            done: list[tuple[ProbeOutcome, str, str]] = []
+            for name, profile, label, net in runs:
                 res = await _probe(ctx, cand, col, name, profile, base_url, keywords, dc_phishy, store)
                 result.probes.append(res)
                 ctx.session.add(
@@ -538,9 +545,9 @@ async def probe(
                         else Decimal(str(round(RESIDENTIAL_GB_PER_FETCH * RESIDENTIAL_USD_PER_GB, 4))),
                     )  # fmt: skip
                 )
-                done.append((res, label))
-            result.residential = "used" if any(r.ok for r, _ in done) else f"skipped:{done[0][0].error}"
-            for res, label in done:
+                done.append((res, label, net))
+            result.residential = "used" if any(r.ok for r, _, _ in done) else f"skipped:{done[0][0].error}"
+            for res, label, net in done:
                 if res.ok and res.phishy and not dc_phishy:
                     # only an IP-based decision if the parameter / referer / phone probes did not already explain it
                     explained = (param.ok and param.phishy) or (ref.ok and ref.phishy) or (mob is not None and mob.ok and mob.phishy)
@@ -549,7 +556,7 @@ async def probe(
                             f"datacenter IPs get a decoy page; a {net} IP gets the phishing page" + (" (seen as a phone)" if label == "phone" else "")
                         )
                     revealed = revealed or res
-            if not any(r.ok for r, _ in done) and result.suspected and not revealed:
+            if not any(r.ok for r, _, _ in done) and result.suspected and not revealed:
                 col.unavailable.append("residential")
 
     if revealed is not None:

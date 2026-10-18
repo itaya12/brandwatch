@@ -11,6 +11,9 @@ Never copied: the raw HTML that a phishing kit served (stored as evidence) — o
 the static site carries no login form of a fake site.
 
     python scripts/build_static_demo.py --base http://127.0.0.1:8765 --out site
+
+Start the demo server with ``CASE_STUDY_URL`` set so How it works shows the case-study link; ``--public-url`` is where the copy will live (the link-preview picture needs an
+absolute address).
 """
 
 from __future__ import annotations
@@ -257,11 +260,18 @@ NOT_FOUND = """<!doctype html><html lang="en"><head><meta charset="utf-8"><meta 
 """
 
 
-def write_site(docs: dict, res: dict, out: Path, github: str) -> None:
+OG_IMAGE = Path(__file__).resolve().parents[1] / "src" / "brandwatch" / "api" / "assets" / "og-how-it-works.png"
+
+
+def write_site(docs: dict, res: dict, out: Path, github: str, base: str = "", public_url: str = "") -> None:
     if out.exists():
         shutil.rmtree(out)
     (out / "_r").mkdir(parents=True)
     (out / "_demo").mkdir()
+    # the link-preview picture: served from the site's root, named by its public address
+    og_from, og_to = base + "/ui/assets/og-how-it-works.png", public_url.rstrip("/") + "/og-how-it-works.png"
+    if OG_IMAGE.exists():
+        shutil.copy(OG_IMAGE, out / "og-how-it-works.png")
     mapping: dict[str, str] = {}
     for k, (body, ctype) in res.items():
         t = res_target(k, ctype)
@@ -284,6 +294,8 @@ def write_site(docs: dict, res: dict, out: Path, github: str) -> None:
         page = ATTR.sub(swap, text)
         page = CSS_URL.sub(swap, page)
         page = re.sub(r"<head([^>]*)>", lambda m: "<head" + m.group(1) + ">" + head, page, count=1)
+        if base and public_url:
+            page = page.replace(og_from, og_to)
         dest = out / doc_target(k).strip("/") / "index.html" if doc_target(k) != "/" else out / "index.html"
         dest.parent.mkdir(parents=True, exist_ok=True)
         dest.write_text(page, encoding="utf-8")
@@ -304,11 +316,13 @@ def main() -> None:
     ap.add_argument("--user", default="admin")
     ap.add_argument("--password", default="admin")
     ap.add_argument("--max-pages", type=int, default=450)
-    ap.add_argument("--github", default="https://github.com/itaya12/brandwatch")
+    # a link to the repository from the site: off by default (the repository is shared by hand)
+    ap.add_argument("--github", default="")
+    ap.add_argument("--public-url", default="https://brandwatch.itaya12.workers.dev")
     args = ap.parse_args()
     t0 = time.time()
     docs, res = crawl(args.base.rstrip("/"), args.user, args.password, args.max_pages)
-    write_site(docs, res, Path(args.out), args.github)
+    write_site(docs, res, Path(args.out), args.github, args.base.rstrip("/"), args.public_url)
     size = sum(p.stat().st_size for p in Path(args.out).rglob("*") if p.is_file())
     print(f"done: {len(docs)} pages, {len(res)} files, {size / 1e6:.1f} MB in {time.time() - t0:.0f}s → {args.out}/")
 

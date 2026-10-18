@@ -1,9 +1,16 @@
 {% extends "base.html" %}
 {% block title %}How it works{% endblock %}
+{% block description %}Someone fakes a brand's site. BrandWatch finds it, proves it with tamper-proof evidence, maps the attacker and drafts the takedown — the whole product in one picture and six short steps.{% endblock %}
+{% block og_image %}<meta property="og:image" content="{{ request.base_url }}ui/assets/og-how-it-works.png">
+<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">{% endblock %}
 {% block content %}
 {#
-  How it works = a two-minute story in six chapters, animated on this workspace's own data
-  (demo/story.py), with a "Play" mode and a sticky chapter rail.
+  How it works = one picture of the whole product (_flow_diagram.html), then a one-minute story in six
+  chapters animated on this workspace's own data (demo/story.py), with a "Play" mode and a sticky rail.
+  Built for someone who skims: the picture, four numbers and the author first; every chapter is a headline,
+  two lines and a bold "why"; the stage draws itself at once when scrolled to (--speed) and at narration
+  pace when played.
   The deep material (all 13 steps with "More info", the presenter's walkthrough, the engineering,
   the glossary every "?" links to) is folded underneath.
   Animation contract: elements with class "rv" appear when their chapter gets class "live";
@@ -15,7 +22,7 @@
   /* ------------------------------------------------------------------ shell */
   .sx{--ink:#E6EDF5;--line:#1E2A3D;--card:rgba(18,26,43,.92)}
   .sx.js .rv{opacity:0}
-  .sx.js .ch.live .rv,.sx.js .on-view.live .rv{animation:rvIn .6s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(var(--t,0)*1ms)}
+  .sx.js .ch.live .rv,.sx.js .on-view.live .rv{animation:rvIn .6s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(var(--t,0)*var(--speed,1)*1ms)}
   @keyframes rvIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
   .sx svg .rv{transform-box:fill-box;transform-origin:center}
   .sx.js .ch.live svg g.rv{animation-name:popIn}
@@ -26,18 +33,12 @@
   @media (prefers-reduced-motion:reduce){.sx.js .rv{opacity:1;transform:none}}
 
   /* ------------------------------------------------------------------ hero */
-  .sx-hero{position:relative;padding:34px 0 26px;display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:34px;align-items:center}
-  .sx-hero h1{font-size:13px;letter-spacing:.2em;margin:0 0 14px;font-family:var(--mono);-webkit-text-fill-color:var(--accent2)}
+  .sx-hero{position:relative;padding:22px 0 16px}
+  .sx-hero h1{font-size:13px;letter-spacing:.2em;margin:0 0 10px;font-family:var(--mono);-webkit-text-fill-color:var(--accent2)}
   .sx-hero h1 span{-webkit-text-fill-color:var(--muted);letter-spacing:.06em}
-  .sx-head{font:700 clamp(30px,4.4vw,54px)/1.04 var(--display);letter-spacing:.01em;margin:0}
+  .sx-head{font:700 clamp(30px,3.3vw,46px)/1.04 var(--display);letter-spacing:.01em;margin:0;max-width:1180px}
   .sx-head em{font-style:normal;color:var(--accent2)}
-  .sx-social{display:flex;gap:12px;align-items:flex-start;margin:16px 0 0;padding:12px 14px;border:1px solid rgba(53,199,242,.45);border-radius:14px;background:linear-gradient(90deg,rgba(53,199,242,.10),rgba(53,199,242,.02))}
-  .sx-social .ic{flex:0 0 auto;display:flex;gap:4px}
-  .sx-social .ic span{width:26px;height:26px;border-radius:7px;display:grid;place-items:center;font:700 13px var(--sans);color:#fff}
-  .sx-social b.t{display:block;font-size:14.5px;color:var(--ink)}
-  .sx-social p b{color:var(--ink)}
-  .sx-social p{margin:2px 0 0;font-size:13px;line-height:1.5;color:#c3cdd9}
-  .sx-sub{font-size:16px;line-height:1.55;color:#c3cdd9;margin:16px 0 22px;max-width:620px}
+  .sx-sub{font-size:16px;line-height:1.55;color:#c3cdd9;margin:14px 0 18px;max-width:720px}
   .sx-cta{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
   .btn-play{display:inline-flex;align-items:center;gap:12px;padding:14px 22px;border-radius:999px;border:1px solid var(--accent);background:rgba(53,199,242,.12);
     color:var(--accent2);font:700 15px var(--sans);letter-spacing:.02em;cursor:pointer;transition:transform .2s,background .2s}
@@ -46,15 +47,22 @@
   @keyframes ping{0%{box-shadow:0 0 0 0 rgba(53,199,242,.5)}70%{box-shadow:0 0 0 14px rgba(53,199,242,0)}100%{box-shadow:0 0 0 0 rgba(53,199,242,0)}}
   .sx-cta .alt{font-size:13px;color:var(--muted)}
   .illus{display:inline-block;font:600 10px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--high);border:1px solid rgba(255,159,28,.5);border-radius:999px;padding:2px 8px;margin-left:6px;vertical-align:middle}
-  /* hero map of the six chapters */
-  .sx-map{position:relative;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
-  .sx-map a{position:relative;display:block;padding:14px 14px 12px;border:1px solid var(--line);border-radius:14px;background:var(--card);color:var(--ink);text-decoration:none;transition:border-color .2s,transform .2s}
-  .sx-map a:hover{border-color:var(--accent);transform:translateY(-2px)}
-  .sx-map .ic{font-size:22px;line-height:1;color:var(--accent2)}
-  .sx-map .k{display:block;font:600 10px var(--mono);letter-spacing:.14em;color:var(--muted);margin-top:10px}
-  .sx-map b{display:block;font:700 17px var(--display);letter-spacing:.03em;margin-top:2px}
-  .sx-map a::after{content:"";position:absolute;left:14px;right:14px;bottom:0;height:2px;border-radius:2px;background:var(--accent);transform:scaleX(0);transform-origin:left;animation:mapfill 6s calc(var(--n)*1s) infinite}
-  @keyframes mapfill{0%{transform:scaleX(0);opacity:1}14%{transform:scaleX(1);opacity:1}30%,100%{transform:scaleX(1);opacity:0}}
+  /* under the picture: four numbers read from the code, and who built it */
+  .sx-proof{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 10px}
+  .sx-proof a{display:inline-flex;align-items:baseline;gap:6px;padding:7px 13px;border:1px solid var(--line);border-radius:999px;background:var(--card);color:var(--ink);text-decoration:none;font-size:13px;transition:border-color .2s}
+  .sx-proof a:hover{border-color:var(--accent)}
+  .sx-proof b{font:700 18px/1 var(--display);color:var(--accent2)}
+  .sx-author{display:flex;flex-wrap:wrap;align-items:center;gap:10px 18px;padding:12px 16px;border:1px solid rgba(53,199,242,.35);border-radius:14px;background:linear-gradient(90deg,rgba(53,199,242,.08),rgba(53,199,242,.02));margin:0 0 6px}
+  .sx-author .by{font:700 16px var(--display);letter-spacing:.03em;color:var(--ink)}
+  .sx-author .by span{font:500 13px var(--sans);letter-spacing:0;color:var(--muted);margin-left:8px}
+  .sx-author .tech{font-size:13px;color:#c3cdd9}
+  .sx-author .lk{margin-left:auto;display:flex;flex-wrap:wrap;gap:8px}
+  .sx-author .lk a{display:inline-block;padding:6px 12px;border:1px solid var(--accent);border-radius:999px;color:var(--accent2);text-decoration:none;font-size:13px;font-weight:600}
+  .sx-author .lk a:hover{background:rgba(53,199,242,.12)}
+  /* short bullets inside a chapter's text */
+  .ch-text .pts{margin:0 0 12px;padding-left:18px;font-size:14.5px;line-height:1.6;color:#c3cdd9}
+  .ch-text .pts li{margin:2px 0}
+  .ch-text .pts b{color:var(--ink)}
 
   /* ------------------------------------------------------------------ chapter rail */
   .sx-rail{position:sticky;top:64px;z-index:15;display:flex;align-items:center;gap:10px;margin:0 -20px;padding:9px 20px;border-bottom:1px solid var(--line);
@@ -95,7 +103,7 @@
   .browser .vp .mock{position:absolute;inset:0;padding:18px;display:grid;gap:10px;align-content:start}
   .browser .vp .mock span{display:block;height:12px;border-radius:4px;background:#1a2438}
   .scan{position:absolute;left:0;right:0;top:-30%;height:30%;background:linear-gradient(180deg,transparent,rgba(53,199,242,.28),transparent);pointer-events:none;opacity:0}
-  .sx.js .ch.live .scan{animation:scanY 2.6s .3s ease-in-out both}
+  .sx.js .ch.live .scan{animation:scanY calc(2.6s*var(--speed,1)) calc(.3s*var(--speed,1)) ease-in-out both}
   @keyframes scanY{0%{top:-30%;opacity:1}100%{top:100%;opacity:1}}
   .fp{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:12px}
   .fp .c{border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--panel)}
@@ -127,7 +135,7 @@
   .view .ip{font:11px var(--mono);color:var(--muted);margin:2px 0 8px 34px}
   .loadbar{height:3px;border-radius:3px;background:var(--line);overflow:hidden;margin-bottom:8px}
   .loadbar i{display:block;height:100%;width:0;background:var(--accent)}
-  .sx.js .ch.live .loadbar i{animation:load 1s ease-out both;animation-delay:calc(var(--t,0)*1ms)}
+  .sx.js .ch.live .loadbar i{animation:load 1s ease-out both;animation-delay:calc(var(--t,0)*var(--speed,1)*1ms)}
   .sx:not(.js) .loadbar i{width:100%}
   @keyframes load{to{width:100%}}
   .view .shot{position:relative;aspect-ratio:16/10;border-radius:8px;overflow:hidden;background:#05080f;border:1px solid var(--line)}
@@ -165,10 +173,10 @@
   .cbtn > span{grid-area:1/1;padding:8px 14px;border-radius:8px;white-space:nowrap}
   .cbtn .a{border:1px solid var(--low);color:var(--low)}
   .cbtn .b{border:1px solid var(--low);background:rgba(46,204,113,.15);color:var(--low)}
-  .sx.js .ch.live .cbtn .a{animation:fadeOut .3s both;animation-delay:calc(var(--t,0)*1ms)}
+  .sx.js .ch.live .cbtn .a{animation:fadeOut .3s both;animation-delay:calc(var(--t,0)*var(--speed,1)*1ms)}
   @keyframes fadeOut{to{opacity:0}}
   .cursor{position:absolute;right:-6px;bottom:-14px;font-size:20px;filter:drop-shadow(0 2px 4px rgba(0,0,0,.6));opacity:0}
-  .sx.js .ch.live .cursor{animation:cur 1.4s both;animation-delay:calc(var(--t,0)*1ms)}
+  .sx.js .ch.live .cursor{animation:cur 1.4s both;animation-delay:calc(var(--t,0)*var(--speed,1)*1ms)}
   @keyframes cur{0%{opacity:0;transform:translate(60px,40px)}40%{opacity:1;transform:none}55%{transform:scale(.8)}70%{transform:none;opacity:1}100%{opacity:0}}
   .graph{width:100%;height:auto;display:block}
   .graph line{stroke:#2c3d57;stroke-width:1.4}
@@ -201,7 +209,7 @@
   .chan .to{font:11px var(--mono);color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .portals{display:flex;flex-wrap:wrap;gap:5px;margin-top:12px}
   .portals span{font-size:11px;border:1px solid var(--line);border-radius:6px;padding:2px 7px;color:var(--muted);background:var(--panel)}
-  .sx.js .ch.live .portals span{animation:lit .5s both;animation-delay:calc(var(--t,0)*1ms)}
+  .sx.js .ch.live .portals span{animation:lit .5s both;animation-delay:calc(var(--t,0)*var(--speed,1)*1ms)}
   @keyframes lit{0%{opacity:0}60%{opacity:1;border-color:var(--accent);color:var(--ink)}100%{opacity:1;border-color:rgba(53,199,242,.4);color:#c3cdd9}}
   .human{display:flex;gap:12px;align-items:center;margin-top:14px;padding:12px 14px;border-radius:12px;border:1px solid rgba(46,204,113,.45);background:rgba(46,204,113,.06);font-size:13.5px}
   .human .ico{font-size:22px}
@@ -247,11 +255,19 @@
   .mi{position:relative;display:inline-block}
   .mi-btn{font:600 11px var(--mono);letter-spacing:.06em;padding:3px 9px;border-radius:999px;color:var(--muted);background:transparent}
   .mi:hover .mi-btn,.mi.open .mi-btn{color:var(--text);border-color:var(--accent)}
-  .deep{display:none;position:absolute;left:0;top:calc(100% + 8px);z-index:60;width:min(660px,calc(100vw - 32px));max-height:72vh;overflow:auto;
-    padding:14px 16px;border:1px solid var(--accent);border-radius:12px;background:#0b1220;box-shadow:0 18px 50px rgba(0,0,0,.6);text-align:left;cursor:auto}
-  .deep::before{content:"";position:absolute;left:0;right:0;top:-10px;height:10px}
-  .mi.r .deep{left:auto;right:0}
-  .mi:hover .deep,.mi.open .deep,.mi:focus-within .deep{display:block}
+  .deep{display:none;position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:90;width:min(760px,calc(100vw - 32px));max-height:84vh;overflow:auto;
+    padding:18px 20px;border:1px solid var(--accent);border-radius:14px;background:#0b1220;box-shadow:0 24px 70px rgba(0,0,0,.7);text-align:left;cursor:auto}
+  .deep.on{display:block;animation:miIn .18s ease-out}
+  @keyframes miIn{from{opacity:0;transform:translate(-50%,-47%)}to{opacity:1;transform:translate(-50%,-50%)}}
+  #mi-back{display:none;position:fixed;inset:0;z-index:89;background:rgba(3,6,12,.66);backdrop-filter:blur(2px)}
+  body.mi-on #mi-back{display:block}
+  .mi-x{position:absolute;right:12px;top:10px;padding:2px 9px;font-size:14px}
+  .deep .short{margin:4px 0 6px;padding-left:18px;font-size:14px;line-height:1.7}
+  .deep .short b{display:inline;font:inherit;font-weight:700;letter-spacing:0;margin:0;color:var(--text)}
+  .deep .short .hl{color:var(--accent2)}
+  .deep details.all{margin-top:10px;border-top:1px solid var(--border);padding-top:8px}
+  .deep details.all > summary{cursor:pointer;color:var(--accent2);font-size:13px;list-style:none}
+  .deep details.all > summary::-webkit-details-marker{display:none}
   .deep h4{margin:0 0 2px;font:600 15px var(--sans)}.deep .sub{color:var(--muted);font-size:12px;margin-bottom:10px}
   .deep h5{margin:12px 0 6px;font:600 10px var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
   .deep .api{border:1px solid var(--border);border-radius:8px;padding:8px 10px;margin:6px 0;background:var(--panel)}
@@ -264,9 +280,10 @@
 
   /* ------------------------------------------------------------------ phone */
   @media (max-width:900px){
-    .sx-hero,.ch{grid-template-columns:minmax(0,1fr);gap:22px}
-    .ch{min-height:0;padding:40px 0}
-    .sx-map{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .ch{grid-template-columns:minmax(0,1fr);gap:22px;min-height:0;padding:40px 0}
+    .sx-hero{padding-top:14px}
+    .btn-play{width:100%;justify-content:center}
+    .sx-author .lk{margin-left:0;width:100%}
     .sx-rail{margin:0 -12px;padding:8px 12px}
     .sx-rail .segs{display:flex;overflow-x:auto;scrollbar-width:none;gap:10px}
     .sx-rail .segs::-webkit-scrollbar{display:none}
@@ -276,19 +293,28 @@
   @media (max-width:700px){
     .stage{padding:40px 14px 14px;min-height:0}
     .views,.chans,.fp{grid-template-columns:minmax(0,1fr)}
+    .found .src{display:none}  /* the domain is what matters on a phone */
     .score{grid-template-columns:minmax(0,1fr);justify-items:center}
     .score .sigs,.score > div{width:100%}
     .gl{grid-template-columns:1fr}.gl dd{margin-bottom:8px}
-    .deep{position:static;width:auto;max-width:100%;max-height:none;margin-top:8px;padding:12px}.deep .two{grid-template-columns:1fr}.deep::before{display:none}
-    .hiw-foot{flex-wrap:wrap}.mi.open{flex:1 0 100%;text-align:right}.mi:hover .deep{display:none}.mi.open .deep{display:block}
+    .deep{padding:14px 14px 12px;max-height:86vh}.deep .two{grid-template-columns:1fr}
+    .hiw-foot{flex-wrap:wrap}
     .deep .api .tg{white-space:normal;display:inline-block;margin:2px 4px 0 0}
   }
 </style>
 
 {% macro more(n) -%}{% set d = deep.get(n) %}{% if d %}
 <span class="mi"><button type="button" class="mi-btn" aria-expanded="false" aria-label="More info about {{ d.title }}">More info</button>
-  <div class="deep" role="note">
-    <h4>{{ d.title }}</h4><div class="sub">Under the hood · the exact calls, limits and code behind this step</div>
+  <div class="deep" role="dialog" aria-label="{{ d.title }} — more info">
+    <button type="button" class="mi-x" aria-label="Close">✕</button>
+    <h4>{{ d.title }}</h4><div class="sub">Under the hood · what this step calls, costs, keeps and never does</div>
+    <ul class="short">
+      <li><b>Calls:</b> {% if d.apis %}{% for a in d.apis %}<b class="hl">{{ a.name.split(' (')[0] }}</b>{{ ', ' if not loop.last }}{% endfor %}{% else %}<b class="hl">nothing outside</b> — it works on what is already stored{% endif %}</li>
+      {% if d.apis %}<li><b>Cost:</b> {% for a in d.apis %}{{ a.cost }}{{ ' · ' if not loop.last }}{% endfor %}</li>{% endif %}
+      {% if d.stored %}<li><b>Keeps:</b> {{ d.stored[0] }}</li>{% endif %}
+      {% if d.limits %}<li><b>Limit:</b> {{ d.limits[0] }}</li>{% endif %}
+    </ul>
+    <details class="all"><summary>All the details ▾</summary>
     <h5>{{ 'External calls' if d.apis else 'External calls · none' }}</h5>
     {% for a in d.apis %}<div class="api"><div class="nm">{{ a.name }}<span class="tg">{{ a.key }}</span><span class="tg">{{ a.cost }}</span></div>
       <div class="ln"><code>{{ a.host }}</code></div><div class="ln">call · <code>{{ a.call }}</code></div><div class="ln">returns · {{ a.returns }}</div></div>{% endfor %}
@@ -298,6 +324,7 @@
     <h5>Limits</h5><ul>{% for x in d.limits %}<li>{{ x }}</li>{% endfor %}</ul>
     <h5>Demo vs live</h5><div style="font-size:12.5px;line-height:1.5">{{ d.demo_vs_live }}</div>
     <h5>Code</h5><div class="mods">{% for m in d.modules %}<span>{{ m }}</span>{% endfor %}</div>
+    </details>
   </div></span>{% endif %}{%- endmacro %}
 
 {% set chapters = [
@@ -308,33 +335,36 @@
   ('map', '⟁', 'Map', 'the attacker'),
   ('takedown', '✉', 'Take down', 'the site'),
 ] %}
-{% set durations = [12, 15, 13, 14, 15, 13] %}
+{% set durations = [8, 10, 9, 9, 10, 8] %}
 
 <div class="sx" id="sx">
 
 {# ================================================================== hero #}
 <section class="sx-hero">
   <div>
-    <h1>HOW IT WORKS <span>· the product in two minutes</span></h1>
-    <p class="sx-head">Someone copies {{ B.name }}'s website to steal passwords. <em>BrandWatch finds it, proves it and gets it taken down.</em></p>
-    <div class="sx-social" id="social">
-      <div class="ic" aria-hidden="true"><span style="background:#1877F2">f</span><span style="background:linear-gradient(45deg,#F58529,#DD2A7B,#8134AF)">◎</span><span style="background:#10A37F">AI</span></div>
-      <div><b class="t">Websites, new domains, social media — and AI assistants too.</b>
-        <p>It hunts <b>look-alike domains</b> (typos and look-alike letters on more than a thousand domain endings) and <b>newly registered domains</b> from yesterday's registrations, every day.
-          It searches <b>Facebook and Instagram</b> for impostors: pages and profiles that use the brand's name — an AI reads what they post and say — and ads that sell fakes of its products. Each fake account, ad and page gets a ready report to Meta.</p>
-        <p style="margin-top:6px">And it asks <b>ChatGPT, Gemini and Google AI Mode</b> what they tell customers about the brand's phone, e-mail and login — every contact they give is checked against the brand's own website, and a made-up or scam number becomes a finding.</p></div>
-    </div>
-    <p class="sx-sub">Six steps, shown on {{ 'an illustration — scan a brand to see your own data' if B.illustrative else "this workspace's real data: " ~ B.name ~ ", its look-alikes, a real cloaked kit and the attacker behind it" }}. Press play and watch, or scroll at your own pace.</p>
+    <h1>HOW IT WORKS <span>· the product in one minute</span></h1>
+    <p class="sx-head">Someone fakes {{ B.name }}'s site. <em>BrandWatch finds it, proves it, takes it down.</em></p>
+    <p class="sx-sub">{{ 'The six steps below are an illustration — scan a brand to see your own data' if B.illustrative else "Six steps, shown on this workspace's real data: " ~ B.name ~ ", its look-alikes, a cloaked kit and the attacker behind it" }}. Press play, or scroll.</p>
     <div class="sx-cta">
       <button type="button" class="btn-play" id="play"><span class="tri">▶</span><span>Play the story <span class="muted" style="font-weight:500">· {{ (durations|sum // 60) }}:{{ '%02d'|format(durations|sum % 60) }}</span></span></button>
       <a class="alt" href="#ch-learn" data-jump="0">or scroll ↓</a>
       <a class="alt" href="#deeper">skip to the details</a>
     </div>
   </div>
-  <div class="sx-map" aria-label="The six steps">
-    {% for id, ic, k, rest in chapters %}<a href="#ch-{{ id }}" data-jump="{{ loop.index0 }}" style="--n:{{ loop.index0 }}"><span class="ic">{{ ic }}</span><span class="k">STEP {{ loop.index }}</span><b>{{ k }}</b><span class="small muted">{{ rest }}</span></a>{% endfor %}
-  </div>
 </section>
+{% include "_flow_diagram.html" %}
+<div class="sx-proof" aria-label="Numbers read from the code">
+  <a href="#about"><b>{{ facts.signals }}</b> signals in {{ facts.signal_groups }} groups</a>
+  <a href="#about"><b>{{ facts.providers }}</b> data providers</a>
+  {% if facts.tests %}<a href="#about"><b>{{ '{:,}'.format(facts.tests.functions) }}</b> automated tests</a>{% endif %}
+  <a href="#ch-takedown"><b>{{ REPORT_PORTAL_COUNT }}</b> report portals</a>
+  <a href="#about"><b>$0</b> demo · no API keys</a>
+</div>
+<div class="sx-author" id="author">
+  <span class="by">Built by Itay Azulay <span>· a solo project</span></span>
+  <span class="tech">Python · FastAPI · SQLAlchemy · Playwright · CI on SQLite &amp; PostgreSQL</span>
+  {% if links.case_study %}<span class="lk"><a href="{{ links.case_study }}" target="_blank" rel="noopener">▶ A real case study</a></span>{% endif %}
+</div>
 
 {# ================================================================== sticky chapter rail #}
 <nav class="sx-rail" id="rail" aria-label="Chapters">
@@ -348,7 +378,7 @@
     <div class="eb">STEP 1 <span>/ 6 · LEARN</span>{% if B.illustrative %}<span class="illus">illustration</span>{% endif %}</div>
     <h2>First, it learns what the real {{ B.name }} looks like.</h2>
     <p>BrandWatch opens <b>{{ B.domain or 'the official site' }}</b> once and keeps a fingerprint: the favicon's hash, a picture of the homepage, its colours, its login form and the words a phisher would copy.</p>
-    <p>An AI model reads the site and writes the Google searches an attacker would target.</p>
+    <ul class="pts"><li><b>AI</b> reads the site and writes the Google searches an attacker would target.</li></ul>
     <p class="why">Every suspect is later compared against this fingerprint, not against a guess.</p>
     <div class="links">{% if stops.brand %}<a href="{{ stops.brand }}">see the brand page →</a>{% endif %}<a href="#step-1" data-deep>how exactly? →</a></div>
   </div>
@@ -383,10 +413,12 @@
   <div class="ch-text">
     <div class="eb">STEP 2 <span>/ 6 · FIND</span>{% if C.illustrative %}<span class="illus">illustration</span>{% endif %}</div>
     <h2>Then it hunts for look-alikes — before anyone reports them.</h2>
-    <p>Typos and look-alike letters on more than a thousand domain endings, checked in DNS. Brand-new HTTPS certificates the moment they are issued. Yesterday's newly registered domains. Google results.</p>
-    <p><b>And on social media:</b> Facebook pages and Instagram profiles under the brand's name — their history (new, renamed, run from abroad), their logo, their links and what they post, read by an AI — and the ads in each country you choose.</p>
-    <p><b>And in AI assistants:</b> ChatGPT, Gemini and Google AI Mode are asked what a customer would ask — the support phone, how to get in touch, where to log in. Every phone, short code, e-mail and address in their answers is compared with the brand's own website; for one that does not match, BrandWatch asks for the official page and opens the cited pages itself.</p>
-    <p>Nothing has to be on a blocklist first. The brand's own sites and big platforms are dropped before anything is fetched.</p>
+    <p>Typo domains on 1,000+ endings, new HTTPS certificates as they are issued, yesterday's registrations and Google results — nothing has to be on a blocklist first.</p>
+    <ul class="pts">
+      <li><b>Social:</b> Facebook pages, Instagram profiles and ads under the brand's name, read by an AI.</li>
+      <li><b>AI assistants:</b> ChatGPT and Gemini are asked what a customer asks; a phone or e-mail that is not on the brand's site becomes a finding.</li>
+    </ul>
+    <p class="why">Found before anyone reports it — the brand's own sites and big platforms are dropped first.</p>
     <div class="links"><a href="/ui/candidates">see the watchlist →</a>{% if stops.scan %}<a href="{{ stops.scan }}">replay a real scan →</a>{% endif %}<a href="#step-2" data-deep>how exactly? →</a></div>
   </div>
   <div class="stage">
@@ -410,8 +442,12 @@
   <div class="ch-text">
     <div class="eb">STEP 3 <span>/ 6 · VISIT</span>{% if not F %}<span class="illus">illustration</span>{% endif %}</div>
     <h2>It visits every site the way a victim would.</h2>
-    <p>Each suspect opens in a locked-down browser that can't be tricked into reaching internal systems. Everything it sees is kept as evidence that nobody can edit afterwards.</p>
-    <p>Many phishing kits <b>hide from security scanners</b>: they show a harmless page to datacenter IPs and the fake login only to real people. So BrandWatch also looks like a real person, from a home IP.</p>
+    <p>Many phishing kits <b>hide from security scanners</b>: a harmless page for datacenter IPs, the fake login only for real people. So BrandWatch also visits as a real person.</p>
+    <ul class="pts">
+      <li><b>A real Chrome:</b> its User-Agent, Accept-Language, client hints, language and time zone all agree — no "HeadlessChrome" giveaway.</li>
+      <li><b>A real address:</b> through a residential or a mobile 4G / 5G proxy (or both) in the brand's country, as a desktop and / or a phone.</li>
+      <li>A <b>locked-down browser</b> that can't reach internal systems; everything it sees is kept as evidence nobody can edit.</li>
+    </ul>
     <p class="why">The score uses what a victim sees, not what the kit chose to show a scanner.</p>
     <div class="links">{% if F %}<a href="{{ F.url }}#looks">see this kit →</a>{% endif %}<a href="#step-5" data-deep>how exactly? →</a></div>
   </div>
@@ -426,7 +462,8 @@
         <div class="saw rv" style="--t:2000">saw: <b>a harmless page</b></div>
       </div>
       <div class="view victim rv" style="--t:2400">
-        <div class="who"><span class="ico">👤</span>Real visitor</div><div class="ip">home IP{% if F and F.revealed_by %} · {{ F.revealed_by }} probe{% endif %} · normal browser</div>
+        {% set rb = (F.revealed_by if F else '') or '' %}
+        <div class="who"><span class="ico">👤</span>Real visitor</div><div class="ip">{{ 'mobile 4G / 5G IP' if rb.startswith('mobile-network') else ('home IP' if rb.startswith('residential') or not rb else 'data-centre IP · ' ~ rb ~ ' probe') }} · real Chrome headers{{ ' · a phone' if rb.endswith('mobile') or rb.endswith('phone') or rb == 'mobile' else '' }}</div>
         <div class="loadbar"><i style="--t:2600"></i></div>
         <div class="shot">{% if shots.suspect_url %}<img class="rv" style="--t:3600" src="{{ shots.suspect_url }}" alt="what a victim sees" loading="lazy">{% else %}<div class="blank rv" style="--t:3600">a copy of the {{ B.name }} login page</div>{% endif %}</div>
         <div class="saw rv" style="--t:3900">saw: <b style="color:var(--crit)">a fake {{ B.name }} login</b></div>
@@ -449,8 +486,8 @@
   <div class="ch-text">
     <div class="eb">STEP 4 <span>/ 6 · SCORE</span>{% if not F %}<span class="illus">illustration</span>{% endif %}</div>
     <h2>It scores the site — and shows its work.</h2>
-    <p>{{ facts.signals }} signals in {{ facts.signal_groups }} groups, each worth fixed points: does the address use the brand, does the page look the same, does it ask for a password, how new is it, is it hiding.</p>
-    <p>Each group has a cap, so one trick can't dominate. The same evidence always gives the same score. AI gives a second opinion but never changes the number.</p>
+    <p>{{ facts.signals }} signals in {{ facts.signal_groups }} capped groups, each worth fixed points: does the address use the brand, does the page look the same, does it ask for a password, how new is it, is it hiding.</p>
+    <ul class="pts"><li>The same evidence always gives the same score; <b>AI is a second opinion</b> and never changes the number.</li></ul>
     <p class="why">No black box: every point traces back to a piece of evidence.</p>
     <div class="links">{% if F %}<a href="{{ F.url }}#why">see every signal →</a>{% endif %}<a href="#step-7" data-deep>how exactly? →</a></div>
   </div>
@@ -479,8 +516,8 @@
   <div class="ch-text">
     <div class="eb">STEP 5 <span>/ 6 · DECIDE &amp; MAP</span>{% if G.illustrative %}<span class="illus">illustration</span>{% endif %}</div>
     <h2>A person decides. Then it maps the attacker.</h2>
-    <p>Nothing is confirmed automatically: an analyst reads the evidence and presses <b>Confirm</b>. The reason goes to an audit log nobody can edit.</p>
-    <p>From that one confirmed site, BrandWatch follows what the attacker reused — the same server, certificate, favicon, tracking code or owner — to the rest of the operation. Neighbours that only share a cheap server are dropped as noise, with the reason written down.</p>
+    <p>Nothing is confirmed automatically: an analyst reads the evidence and presses <b>Confirm</b>. From that one site, BrandWatch follows what the attacker reused — server, certificate, favicon, tracking code, owner — to the rest of the operation.</p>
+    <ul class="pts"><li>Neighbours that only share a cheap server are <b>dropped as noise</b>, with the reason written down.</li></ul>
     <p class="why">One fake site leads to the whole operation, and every indicator exports to a SIEM as STIX 2.1.</p>
     <div class="links">{% if G.url %}<a href="{{ G.url }}">open the full map →</a>{% endif %}<a href="#step-12" data-deep>how exactly? →</a></div>
   </div>
@@ -516,9 +553,11 @@
   <div class="ch-text">
     <div class="eb">STEP 6 <span>/ 6 · TAKE DOWN</span>{% if not T %}<span class="illus">illustration</span>{% endif %}</div>
     <h2>Finally, it drafts the takedown.</h2>
-    <p>A request backed by the evidence, addressed to the people who can pull the site: the <b>registrar</b>, the <b>hosting provider</b> and the <b>CDN</b> — contacts found automatically from WHOIS and the server's owner.</p>
-    <p>Plus {{ REPORT_PORTAL_COUNT }} browser, anti-virus and blocklist portals, each a direct link to its report form, so the site gets blocked for everyone while the takedown is pending.</p>
-    <p>When the impostor advertises on social media, every <b>Facebook / Instagram ad</b> and <b>page</b> behind it gets a link to Meta's report flow and a ready-to-paste report.</p>
+    <p>A request backed by the evidence, addressed to the people who can pull the site: the <b>registrar</b>, the <b>hosting provider</b> and the <b>CDN</b> — contacts found automatically.</p>
+    <ul class="pts">
+      <li><b>{{ REPORT_PORTAL_COUNT }} report portals</b> (browsers, anti-virus, blocklists) so the site is blocked for everyone while the takedown is pending.</li>
+      <li>A fake <b>Facebook / Instagram</b> ad or page gets Meta's report flow and a ready-to-paste report.</li>
+    </ul>
     <p class="why">BrandWatch never sends anything by itself: a person reviews and sends, and every step lands in the audit log.</p>
     <div class="links">{% if T %}<a href="{{ T.url }}">open this takedown →</a>{% endif %}<a href="/ui/takedowns">all takedowns →</a><a href="#step-13" data-deep>how exactly? →</a></div>
   </div>
@@ -542,7 +581,7 @@
 {# ================================================================== the end #}
 <section class="sx-end on-view" id="the-end">
   <div class="flow rv"><b>Find</b><span>→</span><b>Prove</b><span>→</span><b>Decide</b><span>→</span><b>Map</b><span>→</span><b>Take down</b></div>
-  <p class="rv" style="--t:300">That's BrandWatch. Every step is explainable, every piece of evidence is tamper-proof, and a person decides everything that matters.</p>
+  <p class="rv" style="--t:300">That's BrandWatch, in the six steps above. Every step is explainable, every piece of evidence is tamper-proof, and a person decides everything that matters.</p>
   <div class="sx-cta rv" style="--t:600">
     <a class="btn primary big" href="/ui/dashboard">Open the dashboard →</a>
     {% if F %}<a class="btn big" href="{{ F.url }}">Open the cloaked kit</a>{% endif %}
@@ -572,7 +611,7 @@
   <p class="muted" style="margin:0">For the questions after the demo: every step with its exact APIs and limits, the presenter's script, the engineering, and the glossary every “?” on the site links to.</p>
 
   <details class="fold" id="all-steps">
-    <summary><b>All 13 steps</b><span>· the pipeline in order — “see it” opens a real example, “More info” shows the exact APIs, limits and code</span></summary>
+    <summary><b>The pipeline, step by step</b><span>· 13 stages in order — “see it” opens a real example, “More info” shows the exact APIs, limits and code</span></summary>
     <div class="in">
       <div class="hiw-steps">
         {% set see = {'baseline': stops.brand, 'discovery': stops.scan, 'deduplicate': stops.scan, 'enrichment': stops.cloaked or stops.open, 'cloaking': stops.cloaked, 'analysis': stops.cloaked or stops.open, 'scoring': stops.cloaked or stops.open, 'finding': '/ui/findings', 'summary': stops.scan} %}
@@ -581,8 +620,8 @@
           'discovery': "Five streams look for look-alikes: typo and homoglyph permutations on 1,000+ TLDs (DNS-checked), new TLS certificates, yesterday's newly registered domains, Google results, and the urlscan archive — plus fake Facebook / Instagram accounts and ads, and what ChatGPT, Gemini and Google AI Mode tell users about the brand's contacts.",
           'deduplicate': "One candidate per URL with every stream that found it; official domains, whitelisted partners and big platforms (YouTube, app stores) are dropped before anything is fetched.",
           'enrichment': "Each site is visited in a sandboxed browser behind an SSRF guard: DNS, WHOIS / RDAP, TLS, screenshot, HTML, favicon and reputation feeds — all stored as evidence.",
-          'cloaking': "Kits that hide from scanners are fetched again as a bot, as a victim link, from a Google referer and from a home IP; the score uses what a victim sees.",
-          'analysis': "42 signals in 7 groups compare the site with the brand: identity tricks, visual copy, what the page asks for, shared infrastructure, reputation, freshness, evasion.",
+          'cloaking': "Kits that hide from scanners are fetched again as a bot, as a victim link, from a Google referer — and as a person: a real Chrome (User-Agent, Accept-Language, client hints, language and time zone) through a residential or a mobile 4G / 5G proxy, or both, as a desktop and / or a phone. The score uses what a victim sees.",
+          'analysis': facts.signals ~ " signals in " ~ facts.signal_groups ~ " groups compare the site with the brand: identity tricks, visual copy, what the page asks for, shared infrastructure, reputation, freshness, evasion.",
           'scoring': "Deterministic and versioned: points per signal, a cap per group, combination rules for known kit shapes, false-positive penalties — plus a separate confidence axis. AI and a classifier give advisory opinions only.",
           'finding': "Medium and above become a finding for an analyst; the rest stays on the watchlist and is re-checked on a schedule (a parked domain that grows a login form jumps to the front).",
           'summary': "The live console narrates every step while it happens and ends with a plain-language report; an engineering trace records every provider call, AI prompt and the scoring maths.",
@@ -600,7 +639,7 @@
   </details>
 
   <details class="fold" id="demo">
-    <summary><b>Demo walkthrough · 8 stops</b><span>· the presenter's ten-minute script, with the questions people ask</span></summary>
+    <summary><b>Guided tour · 8 stops</b><span>· a ten-minute walk through the app, with the questions people ask</span></summary>
     <div class="in">
       <ol class="tour">
         <li><div class="where"><a href="/ui/dashboard">Dashboard</a> — the mission line and the five-step strip</div>
@@ -702,9 +741,11 @@
 
   // ---------------------------------------------------------------- chapter animations
   const timers = new WeakMap();
-  function later(ch, ms, fn){ const t = setTimeout(fn, reduce ? 0 : ms); (timers.get(ch) || timers.set(ch, []).get(ch)).push(t); }
+  const QUICK = 0.25;  // a chapter the reader scrolls to draws itself in a quarter of the narration time
+  const pace = ch => parseFloat(ch.style.getPropertyValue('--speed')) || 1;
+  function later(ch, ms, fn){ const t = setTimeout(fn, reduce ? 0 : Math.round(ms * pace(ch))); (timers.get(ch) || timers.set(ch, []).get(ch)).push(t); }
   function countUp(el){
-    const to = parseFloat(el.dataset.to) || 0, dur = reduce ? 0 : parseInt(el.dataset.dur || 1200, 10);
+    const to = parseFloat(el.dataset.to) || 0, dur = reduce ? 0 : Math.round(parseInt(el.dataset.dur || 1200, 10) * pace(el.closest('.ch, .on-view') || el));
     const t0 = performance.now(), fmt = v => Math.round(v).toLocaleString('en-US');
     const ring = el.closest('.bigring');
     const step = t => { const k = dur ? Math.min(1, (t - t0) / dur) : 1, e = 1 - Math.pow(1 - k, 3);
@@ -716,13 +757,14 @@
   function typeOut(el){
     const full = el.dataset.full; el.textContent = '';
     if (reduce) { el.textContent = full; return; }
-    const per = Math.max(6, Math.min(22, 2600 / Math.max(1, full.length)));
+    const per = Math.max(6, Math.min(22, 2600 / Math.max(1, full.length))) * pace(el.closest('.ch, .on-view') || el);
     let i = 0; const tick = () => { i = Math.min(full.length, i + 2); el.textContent = full.slice(0, i); if (i < full.length) setTimeout(tick, per * 2); };
     tick();
   }
   document.querySelectorAll('[data-type]').forEach(el => { el.dataset.full = el.textContent; });
-  function run(ch){
+  function run(ch, speed = QUICK){
     (timers.get(ch) || []).forEach(clearTimeout); timers.set(ch, []);
+    ch.style.setProperty('--speed', speed);
     ch.classList.remove('live'); void ch.offsetWidth; ch.classList.add('live');
     ch.querySelectorAll('[data-to]').forEach(el => { el.textContent = '0'; later(ch, parseInt(el.dataset.t || 0, 10), () => countUp(el)); });
     ch.querySelectorAll('[data-type]').forEach(el => { el.textContent = ''; later(ch, parseInt(el.dataset.t || 0, 10), () => typeOut(el)); });
@@ -785,7 +827,7 @@
     const narrow = innerWidth < 900, lead = narrow ? 3800 : 450;
     if (narrow) setTimeout(() => { if (playing && idx === i) { const st = chapters[i].querySelector('.stage');
       scrollTo({top: st.getBoundingClientRect().top + scrollY - offset(), behavior: reduce ? 'auto' : 'smooth'}); } }, lead - 400);
-    setTimeout(() => { if (playing && idx === i) run(chapters[i]); }, lead);
+    setTimeout(() => { if (playing && idx === i) run(chapters[i], 1); }, lead);
     chStart = performance.now(); tickLeft();
     chTimer = setTimeout(() => playFrom(i + 1), durs[i]);
   }
@@ -816,15 +858,23 @@
 
   // ---------------------------------------------------------------- "More info" panels
   const all = [...document.querySelectorAll('.mi')];
-  const place = mi => { mi.classList.remove('r'); if (mi.getBoundingClientRect().left + 680 > innerWidth) mi.classList.add('r'); };
+  const back = document.createElement('div'); back.id = 'mi-back'; document.body.appendChild(back);
+  let shown = null;
+  const closeAll = () => {
+    if (shown) { shown.d.classList.remove('on'); shown.mi.appendChild(shown.d); shown = null; }
+    all.forEach(o => { o.classList.remove('open'); o.querySelector('.mi-btn').setAttribute('aria-expanded', 'false'); });
+    document.body.classList.remove('mi-on'); };
   all.forEach(mi => {
-    mi.addEventListener('mouseenter', () => place(mi));
-    mi.querySelector('.mi-btn').addEventListener('click', e => { e.stopPropagation(); place(mi);
-      const open = !mi.classList.contains('open'); all.forEach(o => { o.classList.remove('open'); o.querySelector('.mi-btn').setAttribute('aria-expanded', 'false'); });
-      if (open) { mi.classList.add('open'); e.currentTarget.setAttribute('aria-expanded', 'true'); } });
+    mi.querySelector('.mi-btn').addEventListener('click', e => { e.stopPropagation();
+      const open = !mi.classList.contains('open'); closeAll();
+      if (open) { if (playing) stop(); const d = mi.querySelector('.deep'); shown = {mi, d};
+        document.body.appendChild(d); d.classList.add('on'); d.scrollTop = 0;
+        mi.classList.add('open'); document.body.classList.add('mi-on'); e.currentTarget.setAttribute('aria-expanded', 'true'); } });
+    const x = mi.querySelector('.mi-x'); if (x) x.addEventListener('click', e => { e.stopPropagation(); closeAll(); });
   });
-  document.addEventListener('click', e => { if (!e.target.closest('.mi')) all.forEach(o => o.classList.remove('open')); });
-  document.addEventListener('keydown', e => { if (e.key === 'Escape') { all.forEach(o => o.classList.remove('open')); if (document.activeElement && document.activeElement.closest('.mi')) document.activeElement.blur(); } });
+  back.addEventListener('click', closeAll);
+  document.addEventListener('click', e => { if (shown && !e.target.closest('.mi') && !e.target.closest('.deep')) closeAll(); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeAll(); if (document.activeElement && document.activeElement.closest('.mi')) document.activeElement.blur(); } });
 })();
 </script>
 {% endblock %}

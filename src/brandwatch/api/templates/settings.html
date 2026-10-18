@@ -146,6 +146,7 @@
         <div id="proxy-kind"><label>Which proxy the probe uses</label>
           <label class="opt"><input type="radio" name="proxy_kind" value="residential" {{ 'checked' if probe.proxy_kind == 'residential' }} {{ 'disabled' if not is_admin }}> Residential — a home broadband address</label>
           <label class="opt"><input type="radio" name="proxy_kind" value="mobile" {{ 'checked' if probe.proxy_kind == 'mobile' }} {{ 'disabled' if not is_admin }}> Mobile — a 4G / 5G carrier address</label>
+          <label class="opt"><input type="radio" name="proxy_kind" value="both" {{ 'checked' if probe.proxy_kind == 'both' }} {{ 'disabled' if not is_admin }}> Both — one visit through each (kits that trust only one kind of address)</label>
         </div>
         <div id="probe-devices"><label>Visit as</label>
           <label class="opt"><input type="radio" name="devices" value="desktop" {{ 'checked' if probe.devices == 'desktop' }} {{ 'disabled' if not is_admin }}> A desktop browser</label>
@@ -153,7 +154,8 @@
           <label class="opt"><input type="radio" name="devices" value="both" {{ 'checked' if probe.devices == 'both' }} {{ 'disabled' if not is_admin }}> Both: two visits, one of each</label>
         </div>
       </div>
-      <p class="small muted" style="margin:0 0 10px">A phone visit is also made from the data-centre IP (free) when "mobile" or "both" is chosen, because kits that target phones show the lure to a mobile browser whatever the address. Through the proxy it costs the same as a desktop visit, once per device.</p>
+      <p class="small muted" style="margin:0 0 10px">A phone visit is also made from the data-centre IP (free) when "mobile" or "both" is chosen, because kits that target phones show the lure to a mobile browser whatever the address. Through the proxy it costs the same as a desktop visit, once per device and per proxy.
+        Every visit except the crawler's is a <b>real Chrome</b>: its User-Agent, Accept-Language, client hints (<span class="mono">sec-ch-ua</span>), language and time zone agree with each other and with the proxy's country.</p>
       <h3 class="subh">RESIDENTIAL PROXY</h3>
       <label class="opt"><input type="radio" name="mode" value="off" {{ 'checked' if px.mode == 'off' }} {{ 'disabled' if not is_admin }}> Off — datacentre probes only</label>
       <label class="opt"><input type="radio" name="mode" value="webshare" {{ 'checked' if px.mode == 'webshare' }} {{ 'disabled' if not is_admin }}> Webshare rotating residential (paste the API token below)</label>

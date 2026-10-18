@@ -112,11 +112,13 @@ def test_a_bot_check_shown_to_the_crawler_is_kept_with_its_screenshot_and_explai
     assert "BrandWatchBot" in ch["user_agent"] and ch["status"] == 403 and ch["title"] == "Just a moment..."
     assert ch["vendor"] == "Cloudflare" and "verify you are human" in ch["said"].lower()
     assert ch["compared"]["challenged"] is False and ch["compared"]["profile"] == "datacenter" and "Chrome/124" in ch["compared"]["user_agent"]
-    assert [d["header"] for d in ch["differences"]] == ["user-agent"]  # the same headers otherwise: the User-Agent is what differed
-    assert "same data-centre IP" in ch["why"] and "User-Agent" in ch["why"] and "BrandWatchBot" in ch["why"]
-    assert ch["not_sent"] == ["sec-ch-ua", "sec-fetch-site", "sec-fetch-mode", "sec-fetch-dest"]  # the recorded visits send accept-language only
-    assert "A person's browser also sends sec-ch-ua, sec-fetch-site" in ch["why"] and "nor did the browser-like one" in ch["why"]
-    assert ch["headers"]["accept-language"] == "en-US" and ch["headers"]["user-agent"] == ch["user_agent"]  # exactly what was sent
+    # the browser visit is a person's Chrome; the crawler sends its own User-Agent and none of what a person's browser adds
+    differed = [d["header"] for d in ch["differences"]]
+    assert "user-agent" in differed and "accept-language" in differed and "sec-ch-ua" in differed
+    assert "same IP address" in ch["why"] and "User-Agent" in ch["why"] and "BrandWatchBot" in ch["why"]
+    assert ch["not_sent"] == ["accept-language", "sec-ch-ua", "sec-fetch-site", "sec-fetch-mode", "sec-fetch-dest"]
+    assert "A person's browser also sends accept-language, sec-ch-ua" in ch["why"] and "nor did the browser-like one" not in ch["why"]
+    assert "accept-language" not in ch["headers"] and ch["headers"]["user-agent"] == ch["user_agent"]  # exactly what was sent
     assert sig["_details"]["bot_blocking"].startswith("the crawler (User-Agent “Mozilla/5.0 (compatible; BrandWatchBot/0.1")
     assert "the browser-like visit was not" in sig["_details"]["bot_blocking"]
     kinds = [k for k, _ in o["shots"]]
@@ -286,8 +288,11 @@ def test_the_sandboxed_browser_reports_what_it_sent_and_the_redirect_it_followed
         assert ordinary["status"] == 200 and ordinary["final_url"] == "http://gate.test/landing"
         assert ordinary["redirect_chain"] == ["http://gate.test/promo"]  # where it was sent away from
         assert "Chrome/124" in ordinary["user_agent"] and ordinary["request_headers"]["user-agent"] == ordinary["user_agent"]
-        # what the sandboxed Chromium really sends: no Accept-Language, no client hints (the finding says so next to a bot check)
-        assert "accept" in ordinary["request_headers"] and "accept-language" not in ordinary["request_headers"]
+        # what the sandboxed Chromium really sends: a person's Chrome — Accept-Language, and client hints that say Google Chrome
+        sent = ordinary["request_headers"]
+        assert "accept" in sent and sent["accept-language"] == "en-US,en;q=0.9"  # exactly what Chrome sends, no doubled q-values
+        assert '"Google Chrome";v="124"' in sent["sec-ch-ua"] and "HeadlessChrome" not in sent["sec-ch-ua"]
+        assert sent["sec-ch-ua-platform"] == '"Windows"' and sent["sec-ch-ua-mobile"] == "?0"
         assert is_challenge_page(ordinary["title"], ordinary["dom"]) is False
 
         crawler = asyncio.run(fetcher.fetch("http://gate.test/promo", "bot")).data
@@ -313,10 +318,11 @@ def test_a_site_that_refuses_the_scan_says_who_was_refused(engine, tmp_path):
         f = c.get("/api/findings", params={"brand_id": brand["id"]}).json()[0]
         sb = c.get(f"/api/findings/{f['id']}").json()["score"]["scanner_block"]
         assert sb["status"] == 403 and "Chrome/124" in sb["user_agent"] and sb["profile"] == "datacenter"
-        assert sb["headers"]["user-agent"] == sb["user_agent"]
+        assert sb["headers"]["user-agent"] == sb["user_agent"] and sb["headers"]["accept-language"] and "sec-ch-ua" in sb["headers"]
         page = ui.get(f"/ui/findings/{f['id']}").text
         assert "Who was refused" in page and "BrandWatch&#39;s browser visit (datacenter profile" in page.replace("'", "&#39;")
-        assert "A person&#39;s browser also sends sec-ch-ua" in page.replace("'", "&#39;") and "every header it sent" in page
+        # it sent everything a person's browser sends, so the page does not claim otherwise
+        assert "A person&#39;s browser also sends" not in page.replace("'", "&#39;") and "every header it sent" in page
 
 
 def test_both_findings_point_at_each_other(engine, tmp_path):

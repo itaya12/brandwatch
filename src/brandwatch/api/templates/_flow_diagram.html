@@ -1,0 +1,270 @@
+{# The whole product in one picture (How it works): the brand's fingerprint → where impostors hide (BrandWatch in the
+   middle, every source around it) → the attacker's footprint, the takedown and the reports → the brand protected.
+   Live numbers from the workspace (demo/story.py flow()). Every node opens its chapter (data-jump).
+   Two drawings of the same data: a wide one (left to right) for screens over 900px and a tall one (top to bottom)
+   for phones. Context: flow, B, facts. #}
+{% set n = flow or {} %}
+{% macro fmt(v) %}{{ '{:,}'.format(v) }}{% endmacro %}
+{% set cx, cy = 620, 285 %}
+{% set TRIG = {-150: (-0.866, -0.5), -110: (-0.342, -0.9397), -70: (0.342, -0.9397), -30: (0.866, -0.5), 30: (0.866, 0.5), 70: (0.342, 0.9397), 110: (-0.342, 0.9397), 150: (-0.866, 0.5)} %}
+{% set COL = {'web': '#FF9F1C', 'ai': '#B48CFF', 'social': '#FF4D4D'} %}
+{# label, sub, glyph, angle, chapter, number badge, kind #}
+{% set sources = [
+  ('Look-alike domains', 'typos · 1,000+ endings', 'Aa', -150, 1, n.lookalikes, 'web'),
+  ('New domains', "yesterday's registrations", 'NEW', -110, 1, None, 'web'),
+  ('New certificates', 'HTTPS, as issued', 'SSL', -70, 1, None, 'web'),
+  ('Google & urlscan', 'search results', 'G', -30, 1, None, 'web'),
+  ('ChatGPT · Gemini', 'AI answers', 'AI', 30, 1, n.ai, 'ai'),
+  ('Ads', 'selling fakes', 'AD', 70, 1, None, 'social'),
+  ('Facebook & Instagram', 'fake pages & profiles', 'f', 110, 1, n.social, 'social'),
+  ('Redirects & bio links', 'where fakes send people', '↪', 150, 1, None, 'web'),
+] %}
+{# y on the wide drawing, label, sub, short sub (phone), colour, chapter, href, badge #}
+{% set outs = [
+  (150, 'Attacker footprint', 'servers · certificates · owners', 'servers · certs · owners', '#35C7F2', 4, '#ch-map', (fmt(n.networks) ~ ' networks') if n.networks else ''),
+  (285, 'Takedown', 'registrar · host · CDN', 'registrar · host · CDN', '#2ECC71', 5, '#ch-takedown', (fmt(n.takedowns) ~ ' sent') if n.takedowns else ((fmt(n.drafted) ~ ' drafted') if n.drafted else '')),
+  (420, 'Reports', 'Meta · AI vendors · 26 blocklists', 'Meta · 26 blocklists', '#2ECC71', 5, '#ch-takedown', ''),
+] %}
+{% set nsig = facts.signals if facts and facts.signals else 50 %}
+<style>
+  .sx-flow{position:relative;margin:4px 0 14px;border:1px solid var(--line);border-radius:18px;background:radial-gradient(ellipse at 45% 50%,rgba(53,199,242,.08),transparent 60%),rgba(10,15,26,.55);padding:8px 6px 2px;overflow:hidden}
+  .sx-flow svg{display:block;width:100%;height:auto}
+  .sx-flow text{font-family:var(--sans);fill:#C9D3DF}
+  .sx-flow .lbl{font-size:14px;font-weight:600;fill:#E6EDF5}
+  .sx-flow .sub{font-size:12px;fill:#8A97A8}
+  .sx-flow .cap{font:700 13px var(--mono);letter-spacing:.14em}
+  .sx-flow .glyph{font:800 15px var(--mono);text-anchor:middle;dominant-baseline:central}
+  .sx-flow .badge rect{fill:#0B1220;stroke-width:1.2}
+  .sx-flow .badge text{font:700 11px var(--mono);text-anchor:middle;dominant-baseline:central}
+  .sx-flow a{cursor:pointer}
+  .sx-flow a .ring{transition:stroke-width .2s,filter .2s}
+  .sx-flow-h a:hover .ring{stroke-width:3.5;filter:url(#fx-glow)}
+  .sx-flow-v a:hover .ring{stroke-width:3.5;filter:url(#fv-glow)}
+  .sx-flow .core-ring{animation:corePulse 3.2s ease-in-out infinite;transform-origin:{{ cx }}px {{ cy }}px}
+  .sx-flow-v .core-ring{transform-origin:210px 430px}
+  @keyframes corePulse{50%{opacity:.55;transform:scale(1.06)}}
+  .sx-flow .dash{stroke-dasharray:4 6}
+  .sx-flow .hint{position:absolute;right:16px;bottom:10px;font-size:12px;color:var(--muted)}
+  /* the tall drawing: smaller type, the same classes */
+  .sx-flow-h{max-width:1240px;margin-left:auto;margin-right:auto}  /* the picture and the headline fit one 1440×900 screen */
+  .sx-flow-v{display:none;padding:10px 4px 4px;margin:4px 0 10px}
+  .sx-flow-v .lbl{font-size:10.5px;letter-spacing:.04em}
+  .sx-flow-v .sub{font-size:9.5px}
+  .sx-flow-v .cap{font-size:11px;letter-spacing:.1em}
+  .sx-flow-v .glyph{font-size:12px}
+  .sx-flow-v .badge text{font-size:10px}
+  @media (max-width:900px){ .sx-flow-h{display:none} .sx-flow-v{display:block} }
+  @media (prefers-reduced-motion:reduce){ .sx-flow .core-ring{animation:none} }
+</style>
+
+{# ================================================================== wide: left to right #}
+<div class="sx-flow sx-flow-h" aria-label="How BrandWatch works, in one picture">
+<svg viewBox="0 0 1400 560" role="img" aria-labelledby="fx-title">
+  <title id="fx-title">The brand's fingerprint, where impostors hide, BrandWatch in the middle, then the attacker's footprint, the takedown and the reports, and the brand protected</title>
+  <defs>
+    <filter id="fx-glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <radialGradient id="fx-core" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#35C7F2" stop-opacity=".45"/><stop offset="1" stop-color="#35C7F2" stop-opacity="0"/></radialGradient>
+    <radialGradient id="fx-green" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#2ECC71" stop-opacity=".35"/><stop offset="1" stop-color="#2ECC71" stop-opacity="0"/></radialGradient>
+  </defs>
+
+  {# ---------------------------------------------------------------- the ecosystem box #}
+  <rect x="300" y="52" width="640" height="468" rx="34" fill="rgba(255,159,28,.025)" stroke="#8A7A55" stroke-opacity=".55" stroke-width="1.5" class="dash"/>
+  <rect x="482" y="38" width="276" height="28" rx="6" fill="#0B1220" stroke="#8A7A55" stroke-opacity=".55"/>
+  <text x="620" y="57" text-anchor="middle" class="cap" style="fill:#F5C518">WHERE IMPOSTORS HIDE</text>
+
+  {# ---------------------------------------------------------------- paths (lines + packets) #}
+  {% for label, sub, g, ang, ch, num, kind in sources %}
+    {% set x = cx + 245 * TRIG[ang][0] %}{% set y = cy + 160 * TRIG[ang][1] %}
+    <path id="fx-s{{ loop.index }}" d="M{{ x|round(1) }},{{ y|round(1) }} L{{ cx }},{{ cy }}" stroke="{{ COL[kind] }}" stroke-opacity=".35" stroke-width="1.6" class="dash" fill="none"/>
+  {% endfor %}
+  <path id="fx-brand" d="M180,285 L548,285" stroke="#35C7F2" stroke-opacity=".7" stroke-width="2.2" fill="none"/>
+  <path id="fx-fp" d="M120,345 C140,540 560,560 600,356" stroke="#35C7F2" stroke-opacity=".28" stroke-width="1.4" class="dash" fill="none"/>
+  <path id="fx-o1" d="M692,285 C900,285 950,150 1052,150" stroke="#35C7F2" stroke-opacity=".55" stroke-width="2" fill="none"/>
+  <path id="fx-o2" d="M692,285 L1052,285" stroke="#2ECC71" stroke-opacity=".55" stroke-width="2" fill="none"/>
+  <path id="fx-o3" d="M692,285 C900,285 950,420 1052,420" stroke="#2ECC71" stroke-opacity=".55" stroke-width="2" fill="none"/>
+  <path id="fx-p1" d="M1128,150 C1200,150 1220,250 1240,262" stroke="#2ECC71" stroke-opacity=".45" stroke-width="2" fill="none"/>
+  <path id="fx-p2" d="M1128,285 L1236,285" stroke="#2ECC71" stroke-opacity=".45" stroke-width="2" fill="none"/>
+  <path id="fx-p3" d="M1128,420 C1200,420 1220,320 1240,308" stroke="#2ECC71" stroke-opacity=".45" stroke-width="2" fill="none"/>
+  <text x="300" y="548" class="sub" style="fill:#5FA9C2">the fingerprint every suspect is compared with</text>
+
+  <g class="packets">
+    {% for label, sub, g, ang, ch, num, kind in sources %}<circle r="4" visibility="hidden" fill="{{ COL[kind] }}"><set attributeName="visibility" to="visible" begin="{{ (loop.index * 0.45)|round(2) }}s"/><animateMotion dur="2.6s" begin="{{ (loop.index * 0.45)|round(2) }}s" repeatCount="indefinite"><mpath href="#fx-s{{ loop.index }}"/></animateMotion></circle>{% endfor %}
+    <circle r="5" fill="#35C7F2"><animateMotion dur="2.2s" repeatCount="indefinite"><mpath href="#fx-brand"/></animateMotion></circle>
+    {% for p, c, b in [('o1', '#35C7F2', 0.3), ('o2', '#2ECC71', 0.9), ('o3', '#2ECC71', 1.5), ('p1', '#2ECC71', 1.2), ('p2', '#2ECC71', 1.8), ('p3', '#2ECC71', 2.4)] %}
+    <circle r="4.5" visibility="hidden" fill="{{ c }}"><set attributeName="visibility" to="visible" begin="{{ b }}s"/><animateMotion dur="2.4s" begin="{{ b }}s" repeatCount="indefinite"><mpath href="#fx-{{ p }}"/></animateMotion></circle>{% endfor %}
+  </g>
+
+  {# ---------------------------------------------------------------- the brand #}
+  <a href="#ch-learn" data-jump="0"><title>Step 1 · learn the real site</title>
+    <circle cx="120" cy="285" r="78" fill="url(#fx-core)"/>
+    <circle cx="120" cy="285" r="58" fill="#0E1A2B" stroke="#35C7F2" stroke-width="2.4" class="ring"/>
+    <path d="M100,270 h40 v30 h-40 z M106,278 h28 M106,286 h20 M106,294 h24" stroke="#35C7F2" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+    <text x="120" y="376" text-anchor="middle" class="cap" style="fill:#E6EDF5">{{ (B.name or 'YOUR BRAND')|upper }}</text>
+    <text x="120" y="396" text-anchor="middle" class="sub">fingerprint: logo · colours</text>
+    <text x="120" y="412" text-anchor="middle" class="sub">login page · keywords</text>
+  </a>
+
+  {# ---------------------------------------------------------------- the sources #}
+  {% for label, sub, g, ang, ch, num, kind in sources %}
+    {% set x = cx + 245 * TRIG[ang][0] %}{% set y = cy + 160 * TRIG[ang][1] %}
+    {% set col = COL[kind] %}
+    {% set top = ang < 0 %}
+    <a href="#ch-find" data-jump="{{ ch }}"><title>Step 2 · find: {{ label }}</title>
+      <circle cx="{{ x|round(1) }}" cy="{{ y|round(1) }}" r="32" fill="#141A28" stroke="{{ col }}" stroke-width="2.2" class="ring"/>
+      <text x="{{ x|round(1) }}" y="{{ y|round(1) }}" class="glyph" style="fill:{{ col }}">{{ g }}</text>
+      <text x="{{ x|round(1) }}" y="{{ (y - 52 if top else y + 54)|round(1) }}" text-anchor="middle" class="lbl">{{ label }}</text>
+      <text x="{{ x|round(1) }}" y="{{ (y - 36 if top else y + 70)|round(1) }}" text-anchor="middle" class="sub">{{ sub }}</text>
+      {# the badge sits on the side away from the neighbours' labels: top-right above the middle, bottom-right below it #}
+      {% set by = y - 34 if top else y + 14 %}
+      {% if num %}<g class="badge"><rect x="{{ (x + 18)|round(1) }}" y="{{ by|round(1) }}" width="{{ 18 + 8 * (fmt(num)|length) }}" height="20" rx="10" style="stroke:{{ col }}"/>
+        <text x="{{ (x + 27 + 4 * (fmt(num)|length))|round(1) }}" y="{{ (by + 10)|round(1) }}" style="fill:{{ col }}">{{ fmt(num) }}</text></g>{% endif %}
+    </a>
+  {% endfor %}
+
+  {# ---------------------------------------------------------------- BrandWatch in the middle #}
+  <circle cx="{{ cx }}" cy="{{ cy }}" r="104" fill="url(#fx-core)" class="core-ring"/>
+  <a href="#ch-visit" data-jump="2"><title>Steps 3–4 · visit like a victim, score and explain</title>
+    <circle cx="{{ cx }}" cy="{{ cy }}" r="70" fill="#0E1A2B" stroke="#35C7F2" stroke-width="3" class="ring" filter="url(#fx-glow)"/>
+    <circle cx="{{ cx }}" cy="{{ cy }}" r="56" fill="none" stroke="#35C7F2" stroke-opacity=".35" stroke-width="1.2" class="dash"/>
+    <text x="{{ cx }}" y="{{ cy - 8 }}" text-anchor="middle" class="cap" style="fill:#5FE3FF;font-size:15px">BRAND</text>
+    <text x="{{ cx }}" y="{{ cy + 12 }}" text-anchor="middle" class="cap" style="fill:#5FE3FF;font-size:15px">WATCH</text>
+  </a>
+  <a href="#ch-visit" data-jump="2"><text x="{{ cx }}" y="{{ cy + 96 }}" text-anchor="middle" class="lbl">visit like a victim</text></a>
+  <a href="#ch-score" data-jump="3"><text x="{{ cx }}" y="{{ cy + 114 }}" text-anchor="middle" class="sub" style="fill:#9FB6C8">score {{ nsig }} signals · explain every point</text></a>
+  {% if n.findings %}<g class="badge"><rect x="{{ cx + 44 }}" y="{{ cy - 82 }}" width="{{ 82 + 8 * (fmt(n.findings)|length) }}" height="22" rx="11" style="stroke:#35C7F2"/>
+    <text x="{{ cx + 85 + 4 * (fmt(n.findings)|length) }}" y="{{ cy - 71 }}" style="fill:#5FE3FF">{{ fmt(n.findings) }} suspects</text></g>{% endif %}
+
+  {# ---------------------------------------------------------------- what comes out #}
+  {% for y, label, sub, vsub, col, ch, href, badge in outs %}
+  <a href="{{ href }}" data-jump="{{ ch }}"><title>{{ label }}</title>
+    <circle cx="1090" cy="{{ y }}" r="38" fill="#0E1A22" stroke="{{ col }}" stroke-width="2.4" class="ring"/>
+    {% if loop.index == 1 %}<g stroke="{{ col }}" stroke-width="2" fill="none"><circle cx="1078" cy="{{ y - 8 }}" r="5"/><circle cx="1104" cy="{{ y - 6 }}" r="5"/><circle cx="1090" cy="{{ y + 12 }}" r="5"/><path d="M1082,{{ y - 5 }} L1088,{{ y + 7 }} M1100,{{ y - 2 }} L1093,{{ y + 8 }} M1083,{{ y - 8 }} L1099,{{ y - 6 }}"/></g>
+    {% elif loop.index == 2 %}<path d="M1074,{{ y - 10 }} h32 v22 h-32 z M1074,{{ y - 10 }} l16,13 l16,-13" stroke="{{ col }}" stroke-width="2.2" fill="none" stroke-linejoin="round"/>
+    {% else %}<path d="M1078,{{ y - 14 }} v28 M1078,{{ y - 14 }} h22 l-5,7 l5,7 h-22" stroke="{{ col }}" stroke-width="2.2" fill="none" stroke-linejoin="round"/>{% endif %}
+    <text x="1090" y="{{ y + 58 }}" text-anchor="middle" class="lbl">{{ label }}</text>
+    <text x="1090" y="{{ y + 74 }}" text-anchor="middle" class="sub">{{ sub }}</text>
+    {% if badge %}<g class="badge"><rect x="1110" y="{{ y - 44 }}" width="{{ 20 + 7.4 * (badge|length) }}" height="20" rx="10" style="stroke:{{ col }}"/>
+      <text x="{{ 1120 + 3.7 * (badge|length) }}" y="{{ y - 34 }}" style="fill:{{ col }}">{{ badge }}</text></g>{% endif %}
+  </a>
+  {% endfor %}
+
+  {# ---------------------------------------------------------------- the brand, protected #}
+  <a href="#ch-takedown" data-jump="5"><title>The brand, protected</title>
+    <circle cx="1290" cy="285" r="76" fill="url(#fx-green)"/>
+    <circle cx="1290" cy="285" r="52" fill="#0B1A16" stroke="#2ECC71" stroke-width="2.6" class="ring"/>
+    <path d="M1290,258 l22,8 v14 c0,15 -10,24 -22,29 c-12,-5 -22,-14 -22,-29 v-14 z M1280,284 l7,7 l13,-14" stroke="#2ECC71" stroke-width="2.6" fill="none" stroke-linejoin="round" stroke-linecap="round"/>
+    <text x="1290" y="368" text-anchor="middle" class="cap" style="fill:#E6EDF5">PROTECTED</text>
+    <text x="1290" y="388" text-anchor="middle" class="sub">{{ (fmt(n.confirmed) ~ ' fakes confirmed') if n.confirmed else 'an analyst decides every step' }}</text>
+  </a>
+</svg>
+<span class="hint">click any step to see it on real data ↓</span>
+</div>
+
+{# ================================================================== tall: top to bottom (phones) #}
+{% set vx, vy = 210, 430 %}{% set ROWS = [240, 330, 560, 650] %}{% set COLS = [94, 326] %}
+<div class="sx-flow sx-flow-v" aria-label="How BrandWatch works, in one picture">
+<svg viewBox="0 0 420 1180" role="img" aria-labelledby="fv-title">
+  <title id="fv-title">The brand's fingerprint, where impostors hide, BrandWatch in the middle, then the attacker's footprint, the takedown and the reports, and the brand protected</title>
+  <defs>
+    <filter id="fv-glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <radialGradient id="fv-core" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#35C7F2" stop-opacity=".45"/><stop offset="1" stop-color="#35C7F2" stop-opacity="0"/></radialGradient>
+    <radialGradient id="fv-green" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#2ECC71" stop-opacity=".35"/><stop offset="1" stop-color="#2ECC71" stop-opacity="0"/></radialGradient>
+  </defs>
+
+  {# the ecosystem box; its caption sits left so the brand's line passes beside it #}
+  <rect x="10" y="176" width="400" height="560" rx="24" fill="rgba(255,159,28,.025)" stroke="#8A7A55" stroke-opacity=".55" stroke-width="1.5" class="dash"/>
+  <rect x="22" y="164" width="176" height="24" rx="6" fill="#0B1220" stroke="#8A7A55" stroke-opacity=".55"/>
+  <text x="110" y="180" text-anchor="middle" class="cap" style="fill:#F5C518">WHERE IMPOSTORS HIDE</text>
+
+  {# paths: brand → core, every source → core, core → outputs → shield #}
+  <path id="fv-brand" d="M210,116 L210,{{ vy - 54 }}" stroke="#35C7F2" stroke-opacity=".7" stroke-width="2" fill="none"/>
+  {% for label, sub, g, ang, ch, num, kind in sources %}
+    {% set x = COLS[loop.index0 % 2] %}{% set y = ROWS[loop.index0 // 2] %}
+    <path id="fv-s{{ loop.index }}" d="M{{ x }},{{ y }} L{{ vx }},{{ vy }}" stroke="{{ COL[kind] }}" stroke-opacity=".35" stroke-width="1.4" class="dash" fill="none"/>
+  {% endfor %}
+  <path id="fv-o1" d="M{{ vx }},{{ vy + 54 }} C210,730 88,750 88,808" stroke="#35C7F2" stroke-opacity=".55" stroke-width="2" fill="none"/>
+  <path id="fv-o2" d="M{{ vx }},{{ vy + 54 }} L210,808" stroke="#2ECC71" stroke-opacity=".55" stroke-width="2" fill="none"/>
+  <path id="fv-o3" d="M{{ vx }},{{ vy + 54 }} C210,730 332,750 332,808" stroke="#2ECC71" stroke-opacity=".55" stroke-width="2" fill="none"/>
+  <path id="fv-p1" d="M88,872 C88,960 190,970 198,996" stroke="#2ECC71" stroke-opacity=".45" stroke-width="2" fill="none"/>
+  <path id="fv-p2" d="M210,872 L210,996" stroke="#2ECC71" stroke-opacity=".45" stroke-width="2" fill="none"/>
+  <path id="fv-p3" d="M332,872 C332,960 230,970 222,996" stroke="#2ECC71" stroke-opacity=".45" stroke-width="2" fill="none"/>
+
+  <g class="packets">
+    {% for label, sub, g, ang, ch, num, kind in sources %}<circle r="3.5" visibility="hidden" fill="{{ COL[kind] }}"><set attributeName="visibility" to="visible" begin="{{ (loop.index * 0.45)|round(2) }}s"/><animateMotion dur="2.6s" begin="{{ (loop.index * 0.45)|round(2) }}s" repeatCount="indefinite"><mpath href="#fv-s{{ loop.index }}"/></animateMotion></circle>{% endfor %}
+    <circle r="4.5" fill="#35C7F2"><animateMotion dur="2.2s" repeatCount="indefinite"><mpath href="#fv-brand"/></animateMotion></circle>
+    {% for p, c, b in [('o1', '#35C7F2', 0.3), ('o2', '#2ECC71', 0.9), ('o3', '#2ECC71', 1.5), ('p1', '#2ECC71', 1.2), ('p2', '#2ECC71', 1.8), ('p3', '#2ECC71', 2.4)] %}
+    <circle r="4" visibility="hidden" fill="{{ c }}"><set attributeName="visibility" to="visible" begin="{{ b }}s"/><animateMotion dur="2.4s" begin="{{ b }}s" repeatCount="indefinite"><mpath href="#fv-{{ p }}"/></animateMotion></circle>{% endfor %}
+  </g>
+
+  {# the brand #}
+  <a href="#ch-learn" data-jump="0"><title>Step 1 · learn the real site</title>
+    <circle cx="210" cy="70" r="62" fill="url(#fv-core)"/>
+    <circle cx="210" cy="70" r="44" fill="#0E1A2B" stroke="#35C7F2" stroke-width="2.2" class="ring"/>
+    <path d="M194,58 h32 v24 h-32 z M199,65 h22 M199,71 h16 M199,77 h19" stroke="#35C7F2" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+    <text x="300" y="66" text-anchor="start" class="cap" style="fill:#E6EDF5;font-size:12px">{{ (B.name or 'YOUR BRAND')|upper }}</text>
+    <text x="300" y="82" text-anchor="start" class="sub">fingerprint: logo · colours</text>
+    <text x="300" y="95" text-anchor="start" class="sub">login page · keywords</text>
+  </a>
+
+  {# the sources, two columns #}
+  {% for label, sub, g, ang, ch, num, kind in sources %}
+    {% set x = COLS[loop.index0 % 2] %}{% set y = ROWS[loop.index0 // 2] %}
+    {% set col = COL[kind] %}
+    <a href="#ch-find" data-jump="{{ ch }}"><title>Step 2 · find: {{ label }}</title>
+      <circle cx="{{ x }}" cy="{{ y }}" r="26" fill="#141A28" stroke="{{ col }}" stroke-width="2" class="ring"/>
+      <text x="{{ x }}" y="{{ y }}" class="glyph" style="fill:{{ col }}">{{ g }}</text>
+      <text x="{{ x }}" y="{{ y + 42 }}" text-anchor="middle" class="lbl">{{ label }}</text>
+      <text x="{{ x }}" y="{{ y + 56 }}" text-anchor="middle" class="sub">{{ sub }}</text>
+      {% set by = y - 38 if loop.index0 < 4 else y + 14 %}
+      {% if num %}<g class="badge"><rect x="{{ x + 14 }}" y="{{ by }}" width="{{ 16 + 7 * (fmt(num)|length) }}" height="18" rx="9" style="stroke:{{ col }}"/>
+        <text x="{{ x + 22 + 3.5 * (fmt(num)|length) }}" y="{{ by + 9 }}" style="fill:{{ col }}">{{ fmt(num) }}</text></g>{% endif %}
+    </a>
+  {% endfor %}
+
+  {# BrandWatch in the middle #}
+  <circle cx="{{ vx }}" cy="{{ vy }}" r="80" fill="url(#fv-core)" class="core-ring"/>
+  <a href="#ch-visit" data-jump="2"><title>Steps 3–4 · visit like a victim, score and explain</title>
+    <circle cx="{{ vx }}" cy="{{ vy }}" r="54" fill="#0E1A2B" stroke="#35C7F2" stroke-width="2.6" class="ring" filter="url(#fv-glow)"/>
+    <circle cx="{{ vx }}" cy="{{ vy }}" r="43" fill="none" stroke="#35C7F2" stroke-opacity=".35" stroke-width="1.2" class="dash"/>
+    <text x="{{ vx }}" y="{{ vy - 6 }}" text-anchor="middle" class="cap" style="fill:#5FE3FF;font-size:12px">BRAND</text>
+    <text x="{{ vx }}" y="{{ vy + 10 }}" text-anchor="middle" class="cap" style="fill:#5FE3FF;font-size:12px">WATCH</text>
+  </a>
+  <rect x="{{ vx - 104 }}" y="{{ vy + 60 }}" width="208" height="32" rx="8" fill="#0B1220" fill-opacity=".9"/>
+  <a href="#ch-visit" data-jump="2"><text x="{{ vx }}" y="{{ vy + 73 }}" text-anchor="middle" class="lbl">visit like a victim</text></a>
+  <a href="#ch-score" data-jump="3"><text x="{{ vx }}" y="{{ vy + 87 }}" text-anchor="middle" class="sub" style="fill:#9FB6C8">score {{ nsig }} signals · explain every point</text></a>
+  {% if n.findings %}{% set bw = 70 + 7 * (fmt(n.findings)|length) %}<g class="badge"><rect x="{{ vx - bw / 2 }}" y="{{ vy - 82 }}" width="{{ bw }}" height="18" rx="9" style="stroke:#35C7F2"/>
+    <text x="{{ vx }}" y="{{ vy - 73 }}" style="fill:#5FE3FF">{{ fmt(n.findings) }} suspects</text></g>{% endif %}
+
+  {# what comes out, three in a row #}
+  {% for y0, label, sub, vsub, col, ch, href, badge in outs %}
+  {% set x = [88, 210, 332][loop.index0] %}{% set y = 840 %}
+  <a href="{{ href }}" data-jump="{{ ch }}"><title>{{ label }}</title>
+    <circle cx="{{ x }}" cy="{{ y }}" r="32" fill="#0E1A22" stroke="{{ col }}" stroke-width="2.2" class="ring"/>
+    {% if loop.index == 1 %}<g stroke="{{ col }}" stroke-width="1.8" fill="none"><circle cx="{{ x - 10 }}" cy="{{ y - 7 }}" r="4.2"/><circle cx="{{ x + 12 }}" cy="{{ y - 5 }}" r="4.2"/><circle cx="{{ x }}" cy="{{ y + 10 }}" r="4.2"/><path d="M{{ x - 7 }},{{ y - 4 }} L{{ x - 2 }},{{ y + 6 }} M{{ x + 9 }},{{ y - 2 }} L{{ x + 3 }},{{ y + 7 }} M{{ x - 6 }},{{ y - 7 }} L{{ x + 8 }},{{ y - 5 }}"/></g>
+    {% elif loop.index == 2 %}<path d="M{{ x - 13 }},{{ y - 8 }} h26 v18 h-26 z M{{ x - 13 }},{{ y - 8 }} l13,11 l13,-11" stroke="{{ col }}" stroke-width="2" fill="none" stroke-linejoin="round"/>
+    {% else %}<path d="M{{ x - 10 }},{{ y - 12 }} v24 M{{ x - 10 }},{{ y - 12 }} h18 l-4,6 l4,6 h-18" stroke="{{ col }}" stroke-width="2" fill="none" stroke-linejoin="round"/>{% endif %}
+    <text x="{{ x }}" y="{{ y + 50 }}" text-anchor="middle" class="lbl">{{ label }}</text>
+    <text x="{{ x }}" y="{{ y + 64 }}" text-anchor="middle" class="sub">{{ vsub }}</text>
+    {% if badge %}<g class="badge"><rect x="{{ x - 10 - 3.4 * (badge|length) }}" y="{{ y - 56 }}" width="{{ 20 + 6.8 * (badge|length) }}" height="18" rx="9" style="stroke:{{ col }}"/>
+      <text x="{{ x }}" y="{{ y - 47 }}" style="fill:{{ col }}">{{ badge }}</text></g>{% endif %}
+  </a>
+  {% endfor %}
+
+  {# the brand, protected #}
+  <a href="#ch-takedown" data-jump="5"><title>The brand, protected</title>
+    <circle cx="210" cy="1040" r="62" fill="url(#fv-green)"/>
+    <circle cx="210" cy="1040" r="44" fill="#0B1A16" stroke="#2ECC71" stroke-width="2.4" class="ring"/>
+    <path d="M210,1018 l18,7 v12 c0,13 -8,20 -18,24 c-10,-4 -18,-11 -18,-24 v-12 z M202,1040 l6,6 l11,-12" stroke="#2ECC71" stroke-width="2.4" fill="none" stroke-linejoin="round" stroke-linecap="round"/>
+    <text x="210" y="1108" text-anchor="middle" class="cap" style="fill:#E6EDF5">PROTECTED</text>
+    <text x="210" y="1124" text-anchor="middle" class="sub">{{ (fmt(n.confirmed) ~ ' fakes confirmed') if n.confirmed else 'an analyst decides every step' }}</text>
+  </a>
+  <text x="210" y="1166" text-anchor="middle" class="sub">tap any step to see it on real data ↓</text>
+</svg>
+</div>
+<script>
+(function () {
+  if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    document.querySelectorAll('.sx-flow animateMotion').forEach(a => a.parentNode.remove());
+  }
+})();
+</script>

@@ -55,7 +55,7 @@ SIGNAL_LABELS: dict[str, tuple[str, str]] = {
     "age_lt_30d": ("registered < 30 days ago", "young domain"),
     "cert_age_lt_7d": ("certificate < 7 days old", "TLS certificate issued in the last week"),
     "woke_up_in_watch": ("woke up while watched", "was parked / empty and suddenly started serving a page"),
-    "cloaking_ip_based": ("hides from datacenter IPs", "shows the phishing page only to home (residential) IPs"),
+    "cloaking_ip_based": ("hides from datacenter IPs", "shows the phishing page only to home (residential) or mobile-network IPs"),
     "cloaking_ua_based": ("hides from scanners", "shows a decoy to crawler / bot user-agents"),
     "parameter_gating": ("needs a victim link", "the kit only opens with a parameter from the phishing e-mail"),
     "device_gating": ("only a phone sees it", "the login form is shown to a mobile browser only: a desktop scanner sees a harmless page"),

@@ -134,7 +134,7 @@ def test_how_it_works_settings_and_dashboard_tell_the_story(engine, tmp_path):
             and "api.shodan.io" in page
             and "detection/cloaking.py" in page
         )
-        for needle in ("HOW IT WORKS", "Demo walkthrough", "About this project", 'id="ssrf"', 'id="evidence"', 'id="golden"',
+        for needle in ("HOW IT WORKS", "Guided tour", "About this project", 'class="sx-flow sx-flow-v"', 'id="author"', 'id="ssrf"', 'id="evidence"', 'id="golden"',
                        'id="g-baseline"', "see it →", ">How it works<"):  # fmt: skip
             assert needle in page, needle
         settings = ui.get("/ui/settings").text
@@ -160,6 +160,21 @@ def test_how_it_works_settings_and_dashboard_tell_the_story(engine, tmp_path):
             "UI calls the same service functions"
             in c.get("/openapi.json").json()["info"]["description"]
         )
+        # who built it, never a link to the repository; no video link unless configured
+        assert "Built by" in page and "GitHub ↗" not in page and "A real case study" not in page
+        assert '<meta property="og:image"' in page and 'name="description"' in dash
+
+
+def test_how_it_works_links_out_only_when_configured(engine, tmp_path):
+    settings = Settings(_env_file=None, demo_mode=True, evidence_dir=str(tmp_path / "ev"), bootstrap_admin_email=ADMIN["email"],
+                        bootstrap_admin_password=ADMIN["password"], secret_key="unit-test-secret-0123456789abcdef",
+                        case_study_url="https://example.com/video")  # fmt: skip
+    app = create_app(settings=settings, engine=engine)
+    with TestClient(app):
+        page = _ui(app).get("/ui/how-it-works").text
+        assert 'href="https://example.com/video"' in page and "github.com" not in page
+        og = TestClient(app).get("/ui/assets/og-how-it-works.png")  # a chat app fetches it without a session
+        assert og.status_code == 200 and og.headers["content-type"] == "image/png"
 
 
 def test_finding_page_explains_cloaked_kit_and_lists_are_human(engine, tmp_path):

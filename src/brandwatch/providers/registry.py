@@ -72,10 +72,14 @@ class ProviderRegistry:
         key_overrides: dict[str, str] | None = None,
         route_overrides: dict[str, list[str]] | None = None,
         residential_proxy: str | None = None,
+        mobile_proxy: str | None = None,
+        browser_country: str | None = None,
     ) -> None:
         self.settings = settings
         self.route_overrides = dict(route_overrides or {})
         self.residential_proxy = residential_proxy
+        self.mobile_proxy = mobile_proxy  # the second proxy when the probe goes through both kinds
+        self.browser_country = browser_country  # the browser's language and time zone follow the proxy's country
         self.key_overrides = dict(key_overrides or {})
         self.ledger = ledger
         self.policy = policy
@@ -111,6 +115,10 @@ class ProviderRegistry:
             )  # fmt: skip
             if proxy:
                 kwargs["residential_proxy"] = proxy
+            if self.mobile_proxy:
+                kwargs["mobile_proxy"] = self.mobile_proxy
+            if self.browser_country:
+                kwargs["country"] = self.browser_country
         if provider_name == "openai":
             kwargs["model"] = self.settings.openai_model
         return REAL_PROVIDERS[provider_name](**kwargs)

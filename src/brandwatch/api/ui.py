@@ -1317,11 +1317,26 @@ def how_it_works_page(
         return _login_redirect(request)
     from brandwatch.about import project_facts
     from brandwatch.api.deep_info import DEEP
-    from brandwatch.demo.story import story
+    from brandwatch.demo.story import flow, story
     from brandwatch.demo.tour import tour_stops
 
+    s = request.app.state.settings
     return _render(request, "how_it_works.html", user, facts=project_facts(request.app), deep=DEEP,
-                   stops=tour_stops(session, user), story=story(session, user), active="how")  # fmt: skip
+                   stops=tour_stops(session, user), story=story(session, user), flow=flow(session, user),
+                   links={"case_study": s.case_study_url}, active="how")  # fmt: skip
+
+
+_OG_IMAGE = Path(__file__).parent / "assets" / "og-how-it-works.png"
+
+
+@router.get("/assets/og-how-it-works.png")
+def og_image() -> Response:
+    """The picture a chat app or LinkedIn shows next to a link to How it works (1200×630, rendered
+    from the flow diagram by scripts/render_og_image.py)."""
+    if not _OG_IMAGE.exists():
+        raise HTTPException(status_code=404)
+    return Response(_OG_IMAGE.read_bytes(), media_type="image/png",
+                    headers={"Cache-Control": "public, max-age=86400"})  # fmt: skip
 
 
 @router.get("/takedowns", response_class=HTMLResponse)

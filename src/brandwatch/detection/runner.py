@@ -1334,11 +1334,12 @@ async def process_candidate(
                 em.running(
                     "cloaking",
                     host,
-                    "Multi-probe: crawler User-Agent (BrandWatchBot) · ?email= parameter · search referer …",
+                    "Multi-probe: crawler User-Agent (BrandWatchBot) · ?email= parameter · search referer · real Chrome headers …",
                     data=_now(
                         f"Checking whether {host} hides from scanners",
                         "Re-visiting the page as the BrandWatchBot crawler, with a victim-style ?email= link and "
-                        "from a search-engine referer — phishing kits often show a fake page to bots, and a bot check "
+                        "from a search-engine referer; every visit but the crawler's is a real Chrome (its headers, client hints, "
+                        "language and time zone) — phishing kits often show a fake page to bots, and a bot check "
                         "in front of the page is kept as a screenshot",
                         icon="cloak",
                     ),
@@ -1354,7 +1355,8 @@ async def process_candidate(
                               "from a search-engine referer; a different page (hash / phishy features) = cloaking")  # fmt: skip
                 if cres.residential == "used":
                     rc = str(ctx.extra.get("proxy_country") or "")
-                    net = "mobile-network" if ctx.extra.get("proxy_kind") == "mobile" else "residential"
+                    nets = [n for n, _ in ctx.extra.get("proxy_nets") or []]
+                    net = " and a ".join(nets) or ("mobile-network" if ctx.extra.get("proxy_kind") == "mobile" else "residential")
                     dev = {"desktop": "as a desktop browser", "mobile": "as a phone", "both": "as a desktop browser and as a phone"}[str(ctx.extra.get("devices") or "desktop")]
                     em.emit("cloaking", host, "done",
                             f"Re-fetched {host} through a {net} IP" + (f" in {rc.upper()}" if rc else "") + f", {dev}",
@@ -1629,11 +1631,20 @@ async def run_scan(
     em = ScanEventEmitter(session, job_id, secrets=settings.known_secret_values(), commit=True)
     lookups = tenancy.workspace_lookups(session, job.workspace_id)
     set_checkpoint(session)
+    probe_cfg = tenancy.workspace_probe_settings(session, job.workspace_id)
     proxy_cfg = await tenancy.resolve_proxy(session, job.workspace_id, settings)
     proxy_country = cfg.detection.residential_country or proxy_mod.country_for(
         cfg.detection.search_geo, cfg.detection.search_lang
     )
     proxy_url = proxy_cfg.url(proxy_country) if proxy_cfg.enabled else None
+    # both kinds: a second visit through the mobile proxy ("carrier" profiles), next to the residential one
+    both = probe_cfg["proxy_kind"] == "both"
+    mobile_cfg = await tenancy.resolve_proxy(session, job.workspace_id, settings, kind="mobile") if both else None
+    mobile_url = mobile_cfg.url(proxy_country) if mobile_cfg and mobile_cfg.enabled else None
+    if both:
+        proxy_nets = ([("residential", "residential")] if proxy_url else []) + ([("mobile-network", "carrier")] if mobile_url else [])
+    else:
+        proxy_nets = [("mobile-network" if proxy_cfg.kind == "mobile" else "residential", "residential")]
     trace.start(job_id, settings.evidence_dir, secrets=settings.known_secret_values())
     trace.log("scan", "configuration", brand=brand.name, job_kind=job.kind, preset=cfg.preset,
               detection=cfg.detection.model_dump(), scoring_version=cfg.scoring.version,
@@ -1651,6 +1662,8 @@ async def run_scan(
         key_overrides=keystore.load_keys(session, job.workspace_id, settings),
         route_overrides={"whois": tenancy.whois_route(lookups)},
         residential_proxy=proxy_url,
+        mobile_proxy=mobile_url,
+        browser_country=proxy_country,
     )
     ctx = PipelineContext(
         session=session, job_id=job_id, workspace_id=job.workspace_id, brand_id=brand.id,
@@ -1659,9 +1672,10 @@ async def run_scan(
     ctx.extra["notifier"] = notifier
     ctx.extra["full_check"] = bool((job.payload or {}).get("full_check"))  # an analyst's rescan also looks behind warnings
     ctx.extra["proxy_country"] = proxy_country
-    ctx.extra["proxy_enabled"] = proxy_cfg.enabled  # the proxy set in Settings (not only an environment variable)
-    ctx.extra["proxy_kind"] = proxy_cfg.kind  # residential | mobile
-    ctx.extra["devices"] = tenancy.workspace_probe_settings(session, job.workspace_id)["devices"]  # desktop | mobile | both
+    ctx.extra["proxy_enabled"] = proxy_cfg.enabled or bool(mobile_url)  # the proxy set in Settings (not only an environment variable)
+    ctx.extra["proxy_kind"] = "both" if both else proxy_cfg.kind  # residential | mobile | both
+    ctx.extra["proxy_nets"] = proxy_nets  # (network name, profile prefix) per proxy the Tier-4 probe goes through
+    ctx.extra["devices"] = probe_cfg["devices"]  # desktop | mobile | both
     ctx.extra["ml_model"] = ml.latest_model(session, job.workspace_id)
     # suspicious shops: only for brands whose products other shops resell
     ctx.extra["shop"] = {"retail": (brand.kind or "service") == "retail", "profile": dict(brand.profile or {}),
