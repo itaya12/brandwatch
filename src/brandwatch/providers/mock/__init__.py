@@ -582,6 +582,9 @@ class MockBrowserFetcher(_MockBase):
         if sc is None or sc.http is None:
             return ProviderResult.failure(self.name, f"connection failed: {host} unreachable")
         html = sc.http.get("html", "")
+        path = urlsplit(url).path or "/"
+        if sc.pages and path in sc.pages:  # another page of the same site (an official contact page)
+            html = sc.pages[path]
         title = html.split("<title>")[-1].split("</title>")[0][:120] if "<title>" in html else None
         return self._ok(ProviderStatus.POSITIVE, {
             "url": url, "final_url": sc.url, "profile": "datacenter", "status": 403 if sc.behind_warning else int(sc.http.get("status", 200)),
@@ -865,6 +868,17 @@ class MockLLMProvider(_MockBase):
                 "confidence": round(min(conf, 0.97), 2),
                 "rationale": ("; ".join(reasons) or "no credential or payment capture") + (f"; page presents itself as {brand}" if brand and phishing else ""),
             })  # fmt: skip
+        if title == "ai_prompts":
+            m = re.search(r"^Brand: (.+)$", text, flags=re.M)
+            name = m.group(1).strip() if m else "the brand"
+            ml = re.search(r"^Languages: (.+)$", text, flags=re.M)
+            langs = [x.strip() for x in (ml.group(1) if ml else "en").split(",") if x.strip()] or ["en"]
+            said = {"en": [("support_phone", f"what's the {name} support phone number"), ("contact", f"how do i reach {name} customer service? phone or email"),
+                           ("login", f"{name} login page link"), ("fraud", f"someone used my {name} card, who do i call")],
+                    "he": [("support_phone", f"מה הטלפון של התמיכה של {name}"), ("contact", f"איך יוצרים קשר עם {name}? טלפון או מייל"),
+                           ("login", f"קישור לכניסה לחשבון {name}"), ("fraud", f"גנבו לי את הכרטיס של {name} למי מתקשרים")]}  # fmt: skip
+            return self._ok(ProviderStatus.POSITIVE, {"prompts": [{"text": t, "topic": tp, "lang": la}
+                                                                  for la in langs for tp, t in said.get(la, said["en"])]})  # fmt: skip
         if title == "brand_profile":
             m = re.search(r"^Brand: (.+)$", text, flags=re.M)
             name = m.group(1).strip().lower() if m else "brand"
@@ -1103,9 +1117,54 @@ class MockSocialProvider(_MockBase):
         })  # fmt: skip
 
 
+AI_ANSWERS_FIXTURE = Path(__file__).resolve().parents[2] / "demo" / "ai_answers.json"
+_FOLLOWUP_WORDS = ("official page", "show me", "proof", "evidence", "suspect", "where did", "source", "ראיה", "הוכחה",
+                   "חושד", "מאיפה", "עמוד", "הונאה")  # fmt: skip
+_LOGIN_WORDS = ("log in", "login", "sign in", "signin", "התחבר", "כניסה", "להיכנס", "connexion", "anmelden", "iniciar sesión")
+
+
+@lru_cache(maxsize=1)
+def ai_answers_world() -> dict[str, Any]:
+    import json
+
+    return json.loads(AI_ANSWERS_FIXTURE.read_text(encoding="utf-8"))
+
+
+class MockAiAnswersProvider(_MockBase):
+    """What ChatGPT / Gemini / Google AI Mode answer, from the recorded demo world (``demo/ai_answers.json``).
+    The topic comes from the prompt's words (contact details or login); a follow-up that quotes a
+    contact gets the follow-up recorded for that contact. Another brand gets an answer without contacts."""
+
+    async def ask(self, engine: str, prompt: str, *, gl: str | None = None, hl: str | None = None,
+                  conversation_token: str | None = None) -> ProviderResult:  # fmt: skip
+        from brandwatch.detection.contacts import from_text, urls_in
+        from brandwatch.providers.impl.commerce import normalize_ai_answer
+
+        world = ai_answers_world()
+        low = prompt.lower()
+        rec = (world["answers"] or {}).get(engine) or {}
+        raw: dict[str, Any]
+        if world.get("brand_match", "nova") not in low or not rec:
+            raw = {"markdown": world["unknown_brand"], "reference_links": []}
+        elif any(w in low for w in _FOLLOWUP_WORDS) and (from_text(prompt) or urls_in(prompt)):
+            ups = rec.get("followups") or {}
+            quoted = [f.value for f in from_text(prompt)]
+            key = next((v for v in quoted if v in ups), None)
+            raw = ups[key] if key else {"markdown": world["followup_default"], "reference_links": []}  # keys: normalised values
+        elif any(w in low for w in _LOGIN_WORDS):
+            raw = rec.get("login") or {"markdown": world["unknown_brand"], "reference_links": []}
+        else:
+            raw = rec.get("contact") or {"markdown": world["unknown_brand"], "reference_links": []}
+        raw = {**raw, "response_metadata": {"model": f"demo-{engine}", "is_web_search_performed": True},
+               "pagination": {"conversation_token": f"demo-{engine}-{hashlib.sha256(prompt.encode()).hexdigest()[:10]}"} if engine == "google_ai_mode" else {}}  # fmt: skip
+        data = normalize_ai_answer(engine, prompt, raw)
+        return self._ok(ProviderStatus.POSITIVE if data["answer"] else ProviderStatus.UNKNOWN, data)
+
+
 MOCKS_BY_KIND: dict[str, type[_MockBase]] = {
     "ads": MockAdsProvider,
     "social": MockSocialProvider,
+    "ai_answers": MockAiAnswersProvider,
     "registry": MockRegistryProvider,
     "reputation": MockReputationProvider,
     "whois": MockWhoisProvider,

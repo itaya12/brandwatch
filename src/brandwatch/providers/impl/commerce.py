@@ -165,8 +165,76 @@ class SocialMixin:
                             latency, cost=self.cost_per_call)  # fmt: skip
 
 
+# ------------------------------------------------------------------------------------ AI answers
+AI_ENGINES = ("chatgpt", "gemini", "google_ai_mode")
+
+
+def normalize_ai_answer(engine: str, prompt: str, raw: dict[str, Any] | None) -> dict[str, Any]:
+    """One SearchApi AI answer → ``{engine, prompt, answer, references[{title, link, snippet, source}],
+    conversation_token, model, web_search}``. ``answer`` is the full markdown (the text blocks joined
+    when the engine sends no markdown)."""
+    raw = raw or {}
+    text = str(raw.get("markdown") or "").strip()
+    if not text:
+        parts: list[str] = []
+        for b in raw.get("text_blocks") or []:
+            if not isinstance(b, dict):
+                continue
+            if b.get("answer"):
+                parts.append(str(b["answer"]))
+            for it in b.get("items") or []:
+                parts.append("- " + str(it.get("answer") if isinstance(it, dict) else it))
+        text = "\n".join(parts).strip()
+    refs = []
+    for r in raw.get("reference_links") or []:
+        if isinstance(r, dict) and r.get("link"):
+            refs.append({"title": str(r.get("title") or "")[:200], "link": str(r["link"])[:500],
+                         "snippet": str(r.get("snippet") or "")[:400], "source": str(r.get("source") or "")[:80]})  # fmt: skip
+    meta = raw.get("response_metadata") or {}
+    token = ((raw.get("pagination") or {}).get("conversation_token")) or meta.get("conversation_token")
+    return {
+        "engine": engine, "prompt": prompt, "answer": text[:12000], "references": refs[:20],
+        "conversation_token": token, "model": meta.get("model"),
+        "web_search": bool(meta.get("is_web_search_performed", engine != "chatgpt")),
+    }  # fmt: skip
+
+
+class AiAnswersMixin:
+    """SearchApi.io engines for what AI assistants tell their users (kind ``ai_answers``), same key:
+
+    * ``chatgpt`` — ChatGPT with web search on (``web_search=true``): answer, ``reference_links``,
+      ``citations`` that point into them.
+    * ``gemini`` — the Gemini app's answer with its ``reference_links``.
+    * ``google_ai_mode`` — Google's AI Mode in a country / language (``gl`` / ``hl``); a follow-up
+      question continues the same conversation through ``conversation_token``.
+
+    These are the consumer answers — what a real user sees — not a raw model. One request each."""
+
+    async def ask(self, engine: str, prompt: str, *, gl: str | None = None, hl: str | None = None,
+                  conversation_token: str | None = None) -> ProviderResult:  # fmt: skip
+        if engine not in AI_ENGINES:
+            raise ProviderError(f"searchapi: unknown AI engine {engine!r}", retryable=False)
+        params: dict[str, Any] = {"engine": engine, "q": prompt[:4000]}
+        if engine == "chatgpt":
+            params["web_search"] = "true"
+        if engine == "google_ai_mode":
+            if conversation_token:
+                params["conversation_token"] = conversation_token
+            else:
+                if gl:
+                    params["gl"] = gl.lower()
+                if hl:
+                    params["hl"] = hl.lower()
+        raw, latency = await self._social(params)
+        data = normalize_ai_answer(engine, prompt, raw if isinstance(raw, dict) else None)
+        return self._result(ProviderStatus.POSITIVE if data["answer"] else ProviderStatus.UNKNOWN, data,
+                            {k: (raw or {}).get(k) for k in ("markdown", "reference_links", "citations", "response_metadata",
+                                                            "search_metadata", "pagination")} if isinstance(raw, dict) else None,
+                            latency, cost=self.cost_per_call)  # fmt: skip
+
+
 # ------------------------------------------------------------------------------------ Meta ads
-class SearchApiAdsClient(SocialMixin, HttpClientMixin):
+class SearchApiAdsClient(AiAnswersMixin, SocialMixin, HttpClientMixin):
     """SearchApi.io ``meta_ad_library`` engine: keyword search of Meta's Ad Library per country.
     Bearer key; one request per page; ~$0.004 per request on the entry plan."""
 

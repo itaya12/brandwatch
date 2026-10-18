@@ -52,6 +52,8 @@ DEFAULT_PROVIDER_ROUTES: dict[str, ProviderRoute] = {
     "ads": ProviderRoute(primary="searchapi", fallback=[]),
     # fake social accounts: Facebook pages / Instagram profiles under the brand's name (same key)
     "social": ProviderRoute(primary="searchapi", fallback=[]),
+    # what ChatGPT / Gemini / Google AI Mode tell users about the brand's contacts (same key)
+    "ai_answers": ProviderRoute(primary="searchapi", fallback=[]),
     "registry": ProviderRoute(
         primary="il_companies", fallback=["companies_house", "vies", "gleif", "opencorporates"]
     ),
@@ -164,7 +166,7 @@ class Settings(BaseSettings):
         None  # abuse.ch Auth-Key (free account, required since 2025)
     )
     openai_api_key: SecretStr | None = None
-    searchapi_api_key: SecretStr | None = None  # SearchApi.io — Meta Ad Library search
+    searchapi_api_key: SecretStr | None = None  # SearchApi.io — Meta Ad Library, social accounts, AI answers
     companies_house_api_key: SecretStr | None = None  # UK Companies House (free)
     opencorporates_api_key: SecretStr | None = None  # OpenCorporates (paid, optional)
 

@@ -27,6 +27,7 @@ TASKS: dict[str, tuple[str, str]] = {
     "urlscan": ("urlscan archive", "pages other researchers scanned that carry the brand"),
     "meta_ads": ("Facebook / Instagram ads", "ads that sell the brand's products, and the shops behind them"),
     "social": ("Fake social accounts", "Facebook pages and Instagram profiles under the brand's name"),
+    "ai_answers": ("AI answers", "what ChatGPT, Gemini and Google AI Mode tell users about the brand's phone, e-mail and login"),
     "watchlist": ("Re-check the watchlist", "visit suspicious sites and open findings again to catch changes"),
     "fingerprint": ("Refresh the fingerprint", "re-read the official site: logo, colours, keywords"),
 }  # fmt: skip
@@ -64,6 +65,8 @@ def default_tasks(detection: Any, retail: bool) -> list[str]:
         out.append("meta_ads")
     if getattr(detection, "social_accounts", True):
         out.append("social")
+    if getattr(detection, "ai_answers", False):
+        out.append("ai_answers")
     return [*out, "watchlist"]
 
 
@@ -115,7 +118,7 @@ def next_due(s: Schedule, last_auto: datetime | None, now: datetime) -> datetime
 
 
 def cost_estimate(s: Schedule, *, approved_queries: int, search_max: int, geos: int, retail: bool,
-                  ad_queries: int, shops_checked: int = 15) -> dict[str, Any]:  # fmt: skip
+                  ad_queries: int, shops_checked: int = 15, ai_requests: int = 0) -> dict[str, Any]:  # fmt: skip
     """An upper bound per run in USD, from the per-call prices of the paid APIs (SerpApi ~$0.01,
     SearchApi ~$0.004); DNS, certificate logs, new domains and urlscan are free."""
     lines: list[tuple[str, float]] = []
@@ -126,6 +129,9 @@ def cost_estimate(s: Schedule, *, approved_queries: int, search_max: int, geos: 
         lines.append(("Facebook / Instagram ads", ad_queries * 0.004 + shops_checked * 0.021))
     if "social" in s.tasks:
         lines.append(("Fake social accounts", (2 + 8 * 2) * 0.004 + 2 * 0.01))
+    if "ai_answers" in s.tasks and ai_requests:
+        # every approved question to every assistant, + up to two follow-ups and one Google search per wrong contact
+        lines.append(("AI answers", ai_requests * 0.004 + min(ai_requests, 10) * (2 * 0.004 + 0.01)))
     per_run = sum(v for _k, v in lines)
     runs_per_month = DAYS_PER_MONTH * 24 / s.every_hours
     return {"lines": [{"task": k, "usd": round(v, 3)} for k, v in lines], "per_run": round(per_run, 2),

@@ -96,6 +96,16 @@ SIGNAL_LABELS: dict[str, tuple[str, str]] = {
     "social_small_audience": ("tiny audience", "under 1,000 followers / likes for an account under the brand's name"),
     "social_verified": ("verified by Meta", "carries Meta's blue verified badge"),
     "social_says_unofficial": ("says it is unofficial", "calls itself a fan page / unofficial / not affiliated"),
+    # AI answers (detection/ai_answers.py — a separate score)
+    "ai_contact_not_on_site": ("not on the brand's site", "an AI assistant gives this phone / e-mail / short code, and no page of the brand's website carries it"),
+    "ai_url_not_official": ("sends users elsewhere", "an AI assistant sends people who ask about the brand to a site that is not one of its domains"),
+    "ai_known_suspect": ("a known phishing site", "the page that publishes it (or the address given) is a phishing site BrandWatch already found"),
+    "ai_offsite_lookalike": ("published by a look-alike", "the only page that carries it has the brand's name in a domain the brand does not own"),
+    "ai_offsite_page": ("published off the brand's site", "the contact appears only on pages that are not the brand's"),
+    "ai_retracted": ("the AI took it back", "asked for the official page, the assistant said it was a mistake"),
+    "ai_cited_page_missing": ("the cited page does not say it", "BrandWatch opened the pages the assistant cited: none of them carries the contact"),
+    "ai_several_engines": ("several assistants say it", "two or more assistants give the same wrong contact"),
+    "ai_no_source": ("no source given", "asked for the proof, the assistant cited no page"),
 }  # fmt: skip
 
 GROUP_LABELS: dict[str, tuple[str, str]] = {
@@ -113,6 +123,8 @@ GROUP_LABELS: dict[str, tuple[str, str]] = {
     "brand": ("Brand use", "a one-brand store or an ad page named after the brand"),
     "contact": ("Contact & policies", "free-mail or WhatsApp only, no privacy / terms / returns pages"),
     "ai": ("AI reading", "what the AI concluded from the account's content (advisory, capped)"),
+    "evidence": ("Proof", "what the pages the assistant cited really say, and whether it took the answer back"),
+    "breadth": ("Breadth", "how many assistants give the same answer"),
 }
 
 RULE_LABELS: dict[str, str] = {
@@ -155,6 +167,7 @@ STREAM_LABELS: dict[str, str] = {
     "meta_ads": "Facebook / Instagram ads",
     "social": "Facebook pages / Instagram profiles",
     "redirect": "Redirect from a flagged site",
+    "ai_answer": "AI answer (ChatGPT / Gemini / Google AI Mode)",
 }
 
 STATE_LABELS: dict[str, str] = {
@@ -220,6 +233,8 @@ STAGE_LABELS: dict[str, tuple[str, str]] = {
     "finding": ("Raise a finding", "Medium and above go to an analyst"),
     "summary": ("Report", "what this scan did, step by step"),
     "social": ("Check social media", "Facebook pages, Instagram profiles, AI reading"),
+    "ai_answers": ("Ask AI assistants", "ChatGPT, Gemini, Google AI Mode — every contact they give vs the brand's site"),
+    "contacts": ("Read the real contacts", "phones, short codes, e-mails and WhatsApp on the official site"),
     "investigation": ("Map the attacker", "shared servers, certificates, favicons"),
     "intel": ("Look it up", "VirusTotal, RDAP, DNS, urlscan"),
 }
@@ -275,8 +290,8 @@ PROVIDER_INFO: dict[str, dict[str, Any]] = {
     "whoisxml": {"group": "infrastructure", "name": "WhoisXML API", "plan": "paid · WHOIS History is its own product on the same key",
                  "does": "WHOIS history on the finding page: every past owner, registrar and privacy change, and owner details hidden after registration. Also WHOIS records when Lookups → WHOIS is 'Service' (the default RDAP method needs no key).",
                  "url": "https://whoisxmlapi.com"},
-    "searchapi": {"group": "shops", "name": "SearchApi.io · Meta Ad Library", "recommended": True, "plan": "100 free requests · then $40/month for 10k",
-                  "does": "Finds Facebook and Instagram ads that sell the brand's products in each chosen country, and the shops they link to (brands whose products other shops resell). Meta's own Ad Library API only covers ads that ran in the EU/UK.",
+    "searchapi": {"group": "shops", "name": "SearchApi.io · Meta Ad Library, social accounts, AI answers", "recommended": True, "plan": "100 free requests · then $40/month for 10k",
+                  "does": "Finds Facebook and Instagram ads that sell the brand's products in each chosen country, and the shops they link to (brands whose products other shops resell); fake Facebook pages and Instagram profiles; and what ChatGPT, Gemini and Google AI Mode tell users about the brand's phone, e-mail and login. Meta's own Ad Library API only covers ads that ran in the EU/UK.",
                   "url": "https://www.searchapi.io/meta-ad-library-api"},
     "companies_house": {"group": "shops", "name": "UK Companies House", "plan": "free key",
                         "does": "Checks that a UK company number printed on a shop exists and is not dissolved.",

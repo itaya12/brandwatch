@@ -1,0 +1,93 @@
+{# AI answers on the brand page (detection/ai_answers.py): the switch and the assistants asked, the questions (proposed →
+   approved, like the Google queries), the brand's official contacts read from its website, contacts it uses elsewhere.
+   Context: brand (incl. ai_answers), cfg, can_write, social_ready, request. #}
+{% set A = brand.ai_answers %}
+{% set done = request.query_params.get('ai') if request else None %}
+{% set TL = A.topics %}
+<style>
+  #ai-answers{scroll-margin-top:90px}
+  #ai-answers .cols{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:16px;margin-top:10px}
+  @media (max-width:900px){ #ai-answers .cols{grid-template-columns:minmax(0,1fr)} }
+  #ai-answers .box{border:1px solid var(--border);border-radius:12px;padding:12px 14px}
+  #ai-answers .box h3{margin:0 0 6px;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+  #ai-answers .prow{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:6px;align-items:center;margin:4px 0}
+  #ai-answers .prow input[name=q]{margin:0}
+  #ai-answers .chip{display:inline-flex;gap:6px;align-items:center;border:1px solid var(--border);border-radius:999px;padding:3px 10px;font-size:12.5px;margin:0 6px 6px 0;cursor:pointer;text-transform:none;letter-spacing:0}
+  #ai-answers .chip input{width:auto;margin:0}
+  #ai-answers .ct{display:flex;gap:8px;align-items:baseline;flex-wrap:wrap;padding:4px 0;border-top:1px solid var(--border)}
+  #ai-answers .ct:first-of-type{border-top:0}
+  #ai-answers .ct .v{font-family:var(--mono)}
+  #ai-answers form.inl{display:inline;margin:0}
+</style>
+<div class="panel" style="margin-top:14px" id="ai-answers">
+  <h2>AI answers <span class="muted">· what ChatGPT, Gemini and Google AI Mode tell people who ask for {{ brand.name }}’s phone, e-mail or login — every contact they give is checked against {{ brand.name }}’s own website</span></h2>
+  {% if done %}<div class="small" style="color:var(--low);margin-bottom:6px">✓ {{ {'on': 'AI answers are on: every scan of ' ~ brand.name ~ ' asks the approved questions', 'off': 'AI answers are off', 'approved': 'Questions approved: every run asks exactly these', 'contact': 'Contacts saved', 'saved': 'Saved'}.get(done, 'Saved') }}</div>{% endif %}
+  {% if A.suggested %}<div class="small" style="color:var(--accent2);margin-bottom:6px">The AI proposed these questions — edit them and press Approve; nothing is saved yet.</div>{% endif %}
+  <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+    <span class="pill" style="{{ 'color:var(--low)' if A.on else 'color:var(--muted)' }}">{{ 'on' if A.on else 'off' }} for automatic scans</span>
+    <span class="small muted">{{ A.requests }} question(s) per run (questions × assistants) · about ${{ A.cost }} with the follow-ups · SearchApi{{ '' if social_ready else ' — no key yet' }}</span>
+    {% if can_write %}<form method="post" action="/ui/brands/{{ brand.id }}/ai-answers" class="inl"><input type="hidden" name="on" value="{{ '0' if A.on else '1' }}"><button type="submit" class="small {{ '' if A.on else 'primary' }}">{{ 'Switch off' if A.on else 'Switch on' }}</button></form>{% endif %}
+  </div>
+
+  <div class="cols">
+    <div class="box">
+      <h3>Questions {% if A.prompts.approved %}<span style="color:var(--low);text-transform:none;letter-spacing:0">· approved{% if A.prompts.approved_by %} by {{ A.prompts.approved_by }}{% endif %}</span>{% else %}<span style="color:var(--high);text-transform:none;letter-spacing:0">· proposed, waiting for your approval</span>{% endif %}</h3>
+      <p class="small muted" style="margin:0 0 6px">Asked the way a customer would ask, in {{ A.prompts.languages|join(', ') or 'English' }}. A contact that is not on {{ brand.name }}’s site gets a second question — “show me the official page, I suspect it is a fraud” — and BrandWatch opens every page cited.</p>
+      {% set rows = A.prompts.prompts if A.prompts.approved and not A.suggested else A.prompts.proposal %}
+      <form method="post" action="/ui/brands/{{ brand.id }}/ai-prompts" id="ai-prompts">
+        <div id="ai-rows">{% for p in rows %}
+          <div class="prow"><input name="q" value="{{ p.text }}" maxlength="300" {{ 'disabled' if not can_write }}><input type="hidden" name="lang" value="{{ p.lang }}"><input type="hidden" name="topic" value="{{ p.topic }}">
+            <span class="small muted" title="{{ TL.get(p.topic, 'your own question') }}">{{ p.lang }} · {{ TL.get(p.topic, 'custom') }}</span>
+            {% if can_write %}<button type="button" class="ghost small" data-del title="remove">✕</button>{% endif %}</div>{% endfor %}
+        </div>
+        {% if can_write %}<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px">
+          <button type="button" class="small" id="ai-add" data-ph="e.g. what is the support phone of {{ brand.name }}?">+ add a question</button>
+          <button type="submit" name="action" value="approve" class="primary small">{{ 'Approve these questions' if not A.prompts.approved or A.suggested else 'Save the questions' }}</button>
+          <button type="submit" name="action" value="suggest" class="small" formnovalidate title="the AI writes them from the approved Google queries — nothing is saved until you approve">Suggest with AI</button>
+        </div>{% endif %}
+      </form>
+      {% if can_write %}<form method="post" action="/ui/brands/{{ brand.id }}/ai-answers" style="margin-top:12px"><input type="hidden" name="engines_form" value="1">
+        <div class="small muted" style="margin-bottom:4px">Assistants asked</div>
+        {% for key, label in A.engine_labels.items() %}<label class="chip"><input type="checkbox" name="engines" value="{{ key }}" {{ 'checked' if key in A.engines }}> {{ label }}</label>{% endfor %}
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:4px">
+          <label class="small muted" style="margin:0">questions per run <input name="ai_prompts_max" type="number" min="1" max="20" value="{{ A.max_prompts }}" style="width:70px;padding:4px 6px"></label>
+          <label class="small muted" style="margin:0">official pages read <input name="contacts_pages_max" type="number" min="1" max="150" value="{{ A.pages_max }}" style="width:70px;padding:4px 6px"></label>
+          <button type="submit" class="small">Save</button></div>
+      </form>{% endif %}
+    </div>
+
+    <div class="box" id="contacts">
+      <h3>{{ brand.name }}’s real contacts <span style="text-transform:none;letter-spacing:0;font-weight:400">· read from its website{% if A.contacts_read %} — {{ A.contacts_pages }} page(s), {{ (A.contacts_at or '')[:16].replace('T', ' ') }}{% endif %}</span></h3>
+      {% set any_c = A.contacts.phone or A.contacts.star or A.contacts.email or A.contacts.whatsapp %}
+      {% if any_c %}
+        {% for k in ['star', 'phone', 'whatsapp', 'email'] %}{% for c in A.contacts[k] %}
+        <div class="ct"><span class="v">{{ c.display }}</span><span class="small muted">{{ A.kind_labels[k] }}</span>
+          {% if c.pages %}<a class="small" href="{{ c.pages[0] }}" target="_blank" rel="noopener noreferrer" title="{{ c.pages|join(' · ') }}">{{ c.pages[0].split('://')[-1][:46] }}{% if c.pages|length > 1 %} +{{ c.pages|length - 1 }}{% endif %}</a>{% endif %}
+          {% if c.context == 'found while checking an AI answer' %}<span class="small muted">· found while checking an AI answer</span>{% endif %}</div>
+        {% endfor %}{% endfor %}
+      {% elif A.contacts_read %}<p class="small" style="color:var(--high);margin:0">No phone, short code, e-mail or WhatsApp was found on the site. Add them below — without them every contact an AI gives would look wrong.</p>
+      {% else %}<p class="small muted" style="margin:0">Not read yet: the first AI-answers run reads them (contact, support and service pages first), or read them now — free, nothing paid is asked.</p>{% endif %}
+      {% if can_write %}<form method="post" action="/ui/brands/{{ brand.id }}/scan" style="margin-top:8px"><input type="hidden" name="only" value="contacts"><button type="submit" class="small">{{ 'Read them again' if A.contacts_read else 'Read the contacts now' }}</button> <span class="small muted">up to {{ A.pages_max }} pages · free</span></form>{% endif %}
+      <div class="small muted" style="margin:12px 0 4px">Contacts {{ brand.name }} uses that the site does not show <span title="an SMS sender, an app-only line, a number on printed cards">ⓘ</span></div>
+      {% for k in A.known_contacts %}{% set kv = k.value if k is mapping else k %}
+        <div class="ct"><span class="v">{{ kv }}</span>{% if k is mapping and k.note %}<span class="small muted">{{ k.note }}</span>{% endif %}
+          {% if can_write %}<form method="post" action="/ui/brands/{{ brand.id }}/known-contacts" class="inl"><input type="hidden" name="value" value="{{ kv }}"><button name="action" value="remove" class="ghost small" title="remove">✕</button></form>{% endif %}</div>
+      {% endfor %}
+      {% if can_write %}<form method="post" action="/ui/brands/{{ brand.id }}/known-contacts" style="display:flex;gap:6px;margin-top:6px">
+        <input name="value" placeholder="*1234 · 03-1234567 · help@brand.com" maxlength="200" style="margin:0"><button name="action" value="add" class="small">Add</button></form>{% endif %}
+    </div>
+  </div>
+</div>
+{% if can_write %}<script>
+(function () {
+  const rows = document.getElementById('ai-rows'), add = document.getElementById('ai-add');
+  if (!rows || !add) return;
+  rows.addEventListener('click', e => { const b = e.target.closest('[data-del]'); if (b) b.closest('.prow').remove(); });
+  add.addEventListener('click', () => {
+    const d = document.createElement('div'); d.className = 'prow';
+    d.innerHTML = '<input name="q" maxlength="300"><input type="hidden" name="lang" value=""><input type="hidden" name="topic" value="custom"><span class="small muted">your own</span><button type="button" class="ghost small" data-del>✕</button>';
+    d.querySelector('input').placeholder = add.dataset.ph || '';
+    rows.appendChild(d); d.querySelector('input').focus();
+  });
+})();
+</script>{% endif %}

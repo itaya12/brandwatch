@@ -1,0 +1,95 @@
+{# One AI-answer finding (detection/ai_answers.py): what the assistants said, the proof they gave when asked, and what
+   BrandWatch found when it opened the pages itself. Context: ar (the record), d (the finding), can_write.
+   A page that is not the brand's is shown as text, never as a link: it may be a phishing page. #}
+{% set EL = {'chatgpt': 'ChatGPT', 'gemini': 'Gemini', 'google_ai_mode': 'Google AI Mode'} %}
+{% set KL = {'phone': 'phone', 'star': 'short code', 'email': 'e-mail', 'whatsapp': 'WhatsApp', 'url': 'web address'} %}
+{% set names = [] %}{% for e in ar.engines %}{% set _ = names.append(EL.get(e, e)) %}{% endfor %}
+{# the answer as text (markdown emphasis off), the contact highlighted; autoescape keeps the answer inert, the <mark> is ours #}
+{% macro hl(text, needle) %}{% set parts = (text or '').replace('\\*', '*').replace('**', '').split(needle) %}{% for part in parts %}{{ part }}{% if not loop.last %}<mark>{{ needle }}</mark>{% endif %}{% endfor %}{% endmacro %}
+<style>
+  .aia .head{display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+  .aia .contact{font:700 24px/1.2 var(--mono);letter-spacing:.02em}
+  .aia .eng{display:inline-block;border:1px solid var(--border);border-radius:999px;padding:1px 10px;font-size:12px;margin-right:4px}
+  .aia .turn{border:1px solid var(--border);border-radius:12px;padding:12px 14px;margin-top:10px;background:var(--panel2)}
+  .aia .q{font-size:13px;color:var(--muted);margin-bottom:6px}
+  .aia .q b{color:var(--text)}
+  .aia .a{white-space:pre-wrap;line-height:1.55;font-size:14px}
+  .aia mark{background:rgba(255,77,77,.22);color:inherit;border-radius:4px;padding:0 3px;outline:1px solid rgba(255,77,77,.6)}
+  .aia .refs{margin:8px 0 0;font-size:12px;padding-left:18px}
+  .aia .refs li{margin:2px 0;overflow-wrap:anywhere}
+  .aia h2{margin:18px 0 4px}
+  .aia table{width:100%}
+  .aia td,.aia th{vertical-align:top;overflow-wrap:anywhere}
+  .aia .ok{color:var(--low)} .aia .bad{color:var(--crit)}
+  .aia .tag{display:inline-block;border:1px solid var(--border);border-radius:6px;padding:0 6px;font-size:11px;margin:0 4px 2px 0}
+  .aia .tag.bad{border-color:rgba(255,77,77,.6)}
+  .aia textarea{width:100%;min-height:110px;font:13px/1.5 var(--mono)}
+</style>
+<div class="aia">
+<div class="panel">
+  <div class="head">
+    <div><div class="small muted">{{ KL.get(ar.kind, ar.kind)|upper }} GIVEN BY</div>
+      {% for n in names %}<span class="eng">{{ n }}</span>{% endfor %}</div>
+    <div class="contact">{{ ar.display }}</div>
+    <div class="small"><b class="{{ 'bad' if ar.verdict != 'confirmed_official' else 'ok' }}">{{ ar.verdict_label }}</b></div>
+  </div>
+  {% if ar.why %}<ul class="small" style="margin:10px 0 0;padding-left:18px">{% for k, v in ar.why.items() %}<li>{{ v }}</li>{% endfor %}</ul>{% endif %}
+  {% if ar.official_sample %}<p class="small muted" style="margin:10px 0 0">The contacts {{ d.brand.name }} publishes on its own site:
+    {% for c in ar.official_sample %}<span class="mono">{{ c }}</span>{{ ' · ' if not loop.last }}{% endfor %} — <a href="/ui/brands/{{ d.brand.id }}#ai-answers">all of them, with their pages</a></p>{% endif %}
+</div>
+
+<h2>What the assistants said</h2>
+{% set seen = namespace(last='') %}
+{% for t in ar.said %}
+<div class="turn">
+  <div class="q"><span class="eng">{{ EL.get(t.engine, t.engine) }}</span> asked <b>“{{ t.prompt }}”</b> <span class="tag">{{ t.lang }}</span></div>
+  {% if t.answer == seen.last %}<div class="small muted">— the same answer as above</div>
+  {% else %}<div class="a">{{ hl(t.answer, ar.display) }}</div>
+  {% if t.references %}<ul class="refs muted">{% for r in t.references %}<li>source: {{ r.title or r.source }} — <span class="mono">{{ r.link }}</span></li>{% endfor %}</ul>{% endif %}{% endif %}
+  {% set seen.last = t.answer %}
+</div>
+{% endfor %}
+
+{% if ar.followups %}
+<h2>Asked for the proof</h2>
+{% for f in ar.followups %}
+<div class="turn">
+  <div class="q"><span class="eng">{{ EL.get(f.engine, f.engine) }}</span> <b>“{{ f.prompt }}”</b></div>
+  {% if f.error %}<div class="small bad">no answer: {{ f.error }}</div>{% else %}
+  <div class="a">{{ hl(f.answer, ar.display) }}</div>
+  <div class="small" style="margin-top:6px">{% if f.retracted %}<b class="ok">✓ took it back</b>{% elif f.still_gives_it %}<b class="bad">still gives it</b>{% else %}<span class="muted">no clear answer</span>{% endif %}</div>
+  {% if f.references %}<ul class="refs muted">{% for r in f.references %}<li>source: {{ r.title or r.source }} — <span class="mono">{{ r.link }}</span></li>{% endfor %}</ul>{% endif %}
+  {% endif %}
+</div>
+{% endfor %}
+{% endif %}
+
+<h2>What the pages really say <span class="muted" style="font-size:12px;letter-spacing:0;text-transform:none">· BrandWatch opened every page the assistants cited — their word is never taken</span></h2>
+{% if ar.checks %}
+<table class="small">
+  <tr><th>Page</th><th>The brand's?</th><th>Carries {{ ar.display }}?</th><th></th></tr>
+  {% for c in ar.checks %}
+  <tr>
+    <td>{% if c.official %}<a class="mono" href="{{ c.url }}" target="_blank" rel="noopener noreferrer">{{ c.url }}</a>{% else %}<span class="mono">{{ c.url }}</span>{% endif %}</td>
+    <td>{% if c.official %}<span class="ok">✓ official</span>{% else %}<span class="bad">no</span>{% endif %}</td>
+    <td>{% if ar.kind == 'url' %}—{% elif not c.opened %}<span class="muted">could not open it</span>{% elif c.found %}<b class="{{ 'ok' if c.official else 'bad' }}">yes</b>{% else %}no{% endif %}</td>
+    <td>{% if c.lookalike %}<span class="tag bad">carries the brand's name</span>{% endif %}{% if c.known %}<span class="tag bad">{{ c.known }}</span>{% endif %}</td>
+  </tr>
+  {% endfor %}
+</table>
+{% else %}<p class="small muted">The assistants cited no page for it.</p>{% endif %}
+{% if ar.hunt %}
+<h3 style="margin-top:12px;font-size:13px">Who else publishes it <span class="muted">· a Google search of the contact itself</span></h3>
+<ul class="small">{% for h in ar.hunt %}<li><span class="mono">{{ h.url }}</span>{% if h.official %} <span class="ok">✓ official</span>{% endif %} {% if h.lookalike %}<span class="tag bad">carries the brand's name</span>{% endif %}{% if h.known %}<span class="tag bad">{{ h.known }}</span>{% endif %}{% if h.title %} — {{ h.title }}{% endif %}</li>{% endfor %}</ul>
+{% endif %}
+
+<h2>What to do</h2>
+<ol class="small" style="padding-left:18px;line-height:1.7">
+  {% if ar.verdict == 'offsite' or ar.verdict == 'url_not_official' %}<li>Take the page that publishes it down: it was sent to the website checks of this scan — see its own finding in <a href="/ui/findings?brand_id={{ d.brand.id }}">Findings</a>.</li>{% endif %}
+  <li>Report the answer to the assistant: in {{ names|join(', ') }}, ask the same question and use the answer's <b>thumbs-down / report</b> button with the text below. Nothing is sent from BrandWatch.</li>
+  <li>Make the real contacts easy for assistants to read: one contact page, the numbers as text (not only in images), and <span class="mono">schema.org ContactPoint</span> markup on it.</li>
+  {% if ar.kind != 'url' %}<li>If {{ ar.display }} is really yours, press <b>This is our contact</b> above.</li>{% endif %}
+</ol>
+<label class="small muted" for="aia-report">Ready text for the report</label>
+<textarea id="aia-report" readonly>{{ names|join(' / ') }} gives "{{ ar.display }}" as the {{ KL.get(ar.kind, 'contact') }} of {{ d.brand.name }}. {{ d.brand.name }} does not publish it on its website{% if ar.verdict == 'offsite' %}; only {{ (ar.checks|selectattr('found')|rejectattr('official')|map(attribute='host')|list + ar.hunt|rejectattr('official')|map(attribute='host')|list)|unique|join(', ') }} does{% endif %}. People who follow this answer reach someone who is not {{ d.brand.name }}. Please remove it and answer with the contacts on {{ d.brand.name }}'s official website{% if ar.official_sample %} ({{ ar.official_sample[:4]|join(', ') }}){% endif %}.</textarea>
+</div>

@@ -45,6 +45,7 @@ from brandwatch.db.models import (
     ScanJob,
     User,
 )
+from brandwatch.db.types import utcnow
 from brandwatch.detection import ai as ai_mod
 from brandwatch.detection import baseline_health, rescore
 from brandwatch.detection import regions as regions_mod
@@ -86,13 +87,15 @@ class BrandPatch(BaseModel):
     domains: list[str] | None = Field(default=None, min_length=1, max_length=50)
 
 
-ScanTask = Literal["dnstwist", "ct", "nrd", "search", "urlscan", "meta_ads", "social"]
+ScanTask = Literal["dnstwist", "ct", "nrd", "search", "urlscan", "meta_ads", "social", "ai_answers", "contacts"]
 # "scan now, only …": one part of the scan, by itself
 ONLY_PARTS = {
     "lookalike": "look-alike sites",
     "search": "Google search",
     "social": "social media",
     "ads": "Facebook / Instagram ads",
+    "ai": "AI answers",
+    "contacts": "official contacts",
 }
 DOMAIN_STREAMS = ("dnstwist", "ct", "nrd", "urlscan")
 
@@ -101,15 +104,15 @@ def tasks_for_only(cfg: BrandConfig, only: str) -> list[str]:
     """The tasks of one part of the scan: look-alike sites use the brand's own domain streams (dnstwist at least)."""
     if only == "lookalike":
         return [x for x in cfg.detection.streams if x in DOMAIN_STREAMS] or ["dnstwist"]
-    return {"search": ["search"], "social": ["social"], "ads": ["meta_ads"]}[only]
+    return {"search": ["search"], "social": ["social"], "ads": ["meta_ads"], "ai": ["ai_answers"], "contacts": ["contacts"]}[only]
 
 
 class ScanRequest(BaseModel):
     max_candidates: int | None = Field(default=None, ge=1, le=5000)
     max_names: int | None = Field(default=None, ge=1, le=100_000)  # look-alike names checked in DNS
     rebuild_baseline: bool = False  # fingerprint the official site again before discovery
-    tasks: list[ScanTask] | None = Field(default=None, min_length=1, max_length=7)  # only these parts (None: the whole track)
-    only: Literal["lookalike", "search", "social", "ads"] | None = None  # shorthand for tasks, by part
+    tasks: list[ScanTask] | None = Field(default=None, min_length=1, max_length=9)  # only these parts (None: the whole track)
+    only: Literal["lookalike", "search", "social", "ads", "ai", "contacts"] | None = None  # shorthand for tasks, by part
 
 
 class UrlScanRequest(BaseModel):
@@ -370,6 +373,10 @@ def config_patch_from_form(form: Any, default_mode: str = "custom") -> tuple[str
     streams = [str(s) for s in form.getlist("streams")]
     if streams:
         detection["streams"] = streams
+    if "ai_answers_form" in form:  # the AI-answers block: a brand switch, kept whatever the track
+        detection["ai_answers"] = form.get("ai_answers") == "on"
+        engines = [e for e in form.getlist("ai_engines") if e in ("chatgpt", "gemini", "google_ai_mode")]
+        detection["ai_engines"] = engines or ["chatgpt", "gemini", "google_ai_mode"]
     scoring: dict[str, Any] = {}
     if weights:
         scoring["weights"] = weights
@@ -768,6 +775,7 @@ def get_brand(
     out["scoring_version"] = cfg.scoring.version
     out["country_sites"] = country_site_suggestions(session, brand)
     out["site_links"] = site_links(session, brand)
+    out["ai_answers"] = ai_answers_view(session, brand, cfg)
     out["whitelist"] = [
         {"domain": d.domain, "kind": d.kind}
         for d in session.scalars(
@@ -1154,6 +1162,108 @@ def approve_search_queries(
 
 
 # ------------------------------------------------------------------------------------------
+# AI answers: the approved prompts and the brand's official contacts (detection/ai_answers.py).
+# ------------------------------------------------------------------------------------------
+def ai_answers_view(session: Session, brand: Brand, cfg: Any) -> dict[str, Any]:
+    """What the brand page shows: the switch, the prompts (approved or proposed), the official contacts and a cost line."""
+    from brandwatch.detection import ai_answers as ai_answers_mod
+    from brandwatch.detection import ai_prompts
+    from brandwatch.detection import contacts as contacts_mod
+
+    det = cfg.detection
+    st = ai_prompts.prompt_state(brand, det)
+    prof = brand.profile or {}
+    saved = dict(prof.get("contacts") or {})
+    engines = [e for e in det.ai_engines if e in ai_answers_mod.ENGINE_LABEL]
+    asks = min(len(st.prompts), det.ai_prompts_max) * max(1, len(engines))
+    return {
+        "on": det.ai_answers, "engines": engines, "engine_labels": ai_answers_mod.ENGINE_LABEL,
+        "prompts": st.as_dict(), "topics": ai_prompts.TOPICS,
+        "contacts": {k: saved.get(k) or [] for k in contacts_mod.KINDS}, "contacts_at": saved.get("at"),
+        "contacts_pages": saved.get("crawled") or 0, "contacts_read": bool(saved.get("at")),
+        "known_contacts": list(prof.get("known_contacts") or []), "kind_labels": contacts_mod.KIND_LABEL,
+        "requests": asks, "cost": round(asks * 0.004 + min(asks, ai_answers_mod.MAX_SUSPECTS * 3) * 0.004, 2),
+        "max_prompts": det.ai_prompts_max, "pages_max": det.contacts_pages_max,
+    }  # fmt: skip
+
+
+class AiPromptsBody(BaseModel):
+    prompts: list[dict[str, str] | str] = Field(default_factory=list, max_length=40)
+
+
+@router.post("/{brand_id}/ai-prompts/suggest")
+async def suggest_ai_prompts(
+    brand_id: uuid.UUID, request: Request,
+    session: Annotated[Session, Depends(get_session, scope="function")], user: Annotated[User, Depends(require_analyst)],
+) -> dict[str, Any]:  # fmt: skip
+    """The AI writes the questions a real user would ask about the brand, from its approved Google queries. Nothing is saved."""
+    from brandwatch.detection import ai_prompts
+
+    brand = _get_brand(session, user, brand_id)
+    cfg = tenancy.effective_brand_config(session, brand.id)
+    base = load_baseline(session, brand)
+    qs = search_queries_mod.query_state(brand, cfg.detection, base)
+    settings = request.app.state.settings
+    providers = ProviderRegistry(settings, key_overrides=keystore.load_keys(session, user.workspace_id, settings))
+    rows = await ai_prompts.suggest(providers, brand_name=brand.search_name, detection=cfg.detection, queries=qs.queries,
+                                    keywords=list(base.keywords) if base else [])  # fmt: skip
+    return {"prompts": rows}
+
+
+@router.put("/{brand_id}/ai-prompts")
+def approve_ai_prompts(
+    brand_id: uuid.UUID, body: AiPromptsBody,
+    session: Annotated[Session, Depends(get_session, scope="function")], user: Annotated[User, Depends(require_analyst)],
+) -> dict[str, Any]:  # fmt: skip
+    """Approve the questions asked to AI assistants (edited or as proposed); every run after that asks exactly these."""
+    from brandwatch.detection import ai_prompts
+
+    brand = _get_brand(session, user, brand_id)
+    prompts = ai_prompts.clean(body.prompts)
+    if not prompts:
+        raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT,
+                            "approve at least one question — to stop asking AI assistants, switch AI answers off")  # fmt: skip
+    old = ai_prompts.approve(brand, prompts, by=user.email)
+    audit(session, workspace_id=user.workspace_id, actor_type="analyst", actor_id=user.id, action="brand.ai_prompts_approved",
+          object_type="brand", object_id=brand.id, old={"approved": old.get("approved")}, new={"approved": prompts})  # fmt: skip
+    session.flush()
+    cfg = tenancy.effective_brand_config(session, brand.id)
+    return {"ai_answers": ai_answers_view(session, brand, cfg)}
+
+
+class KnownContactBody(BaseModel):
+    value: str = Field(min_length=3, max_length=200)
+    action: Literal["add", "remove"] = "add"
+    note: str | None = Field(default=None, max_length=200)
+
+
+@router.post("/{brand_id}/known-contacts")
+def known_contact(
+    brand_id: uuid.UUID, body: KnownContactBody,
+    session: Annotated[Session, Depends(get_session, scope="function")], user: Annotated[User, Depends(require_analyst)],
+) -> dict[str, Any]:  # fmt: skip
+    """A contact the brand uses but its website does not show (an SMS sender, an app-only line): never reported."""
+    from brandwatch.detection import contacts as contacts_mod
+
+    brand = _get_brand(session, user, brand_id)
+    value = " ".join(body.value.split())
+    cfg = tenancy.effective_brand_config(session, brand.id)
+    cc = contacts_mod.dial_code([*((brand.profile or {}).get("countries") or []), *[g for g in cfg.detection.search_geo.split(",") if g]])
+    if body.action == "add" and not contacts_mod.known_set(None, [value], cc=cc):
+        raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, f"“{value}” is not a phone number, short code or e-mail address")
+    prof = dict(brand.profile or {})
+    rows = [r for r in prof.get("known_contacts") or [] if (r.get("value") if isinstance(r, dict) else r) != value]
+    if body.action == "add":
+        rows.append({"value": value, "note": body.note or "", "by": user.email, "at": utcnow().isoformat()})
+    prof["known_contacts"] = rows
+    brand.profile = prof
+    audit(session, workspace_id=user.workspace_id, actor_type="analyst", actor_id=user.id, action=f"brand.known_contact_{body.action}",
+          object_type="brand", object_id=brand.id, new={"value": value})  # fmt: skip
+    session.flush()
+    return {"known_contacts": rows}
+
+
+# ------------------------------------------------------------------------------------------
 # Automatic scans: on / off, how often, at what time, which tasks (detection/schedule.py).
 # ------------------------------------------------------------------------------------------
 def schedule_view(session: Session, brand: Brand, cfg: Any, queries: dict[str, Any]) -> dict[str, Any]:
@@ -1166,10 +1276,14 @@ def schedule_view(session: Session, brand: Brand, cfg: Any, queries: dict[str, A
 
     reach = ad_settings.cost(brand.profile, keywords=len(p["ad_keywords"] or [brand.search_name]), countries=len(p["countries"] or geos))
     ad_queries = reach["requests"]
+    from brandwatch.detection import ai_prompts
+
+    ai_st = ai_prompts.prompt_state(brand, cfg.detection)
     out["cost"] = schedule_mod.cost_estimate(
         sc, approved_queries=len(queries["queries"]) if queries.get("approved") else 0,
         search_max=cfg.detection.search_queries_max, geos=len(geos), retail=retail, ad_queries=ad_queries,
         shops_checked=reach["shops_checked_max"],
+        ai_requests=min(len(ai_st.prompts), cfg.detection.ai_prompts_max) * len(cfg.detection.ai_engines) if ai_st.approved else 0,
     )  # fmt: skip
     out["retail"] = retail
     out["search_approved"] = bool(queries.get("approved"))
@@ -1456,6 +1570,13 @@ def start_scan(
                 raise HTTPException(status.HTTP_409_CONFLICT, "Google search runs only with approved queries — approve them first (brand page → Google queries)")
         if body.only == "social" and not request.app.state.settings.demo_mode and request.app.state.providers.uses_mock("searchapi"):
             raise HTTPException(status.HTTP_409_CONFLICT, "Social media needs a SearchApi key — add it in Settings → API keys")
+        if body.only == "ai":
+            from brandwatch.detection import ai_prompts
+
+            if not ai_prompts.prompt_state(brand, cfg.detection).approved:
+                raise HTTPException(status.HTTP_409_CONFLICT, "AI answers run only with approved questions — approve them first (brand page → AI answers)")
+            if not request.app.state.settings.demo_mode and request.app.state.providers.uses_mock("searchapi"):
+                raise HTTPException(status.HTTP_409_CONFLICT, "AI answers need a SearchApi key — add it in Settings → API keys")
         if body.only == "ads" and brand.kind != "retail":
             raise HTTPException(status.HTTP_409_CONFLICT, "Ads are searched for a brand whose products are sold in shops (brand kind: retail)")
     session.commit()  # release our write lock before the job thread starts writing

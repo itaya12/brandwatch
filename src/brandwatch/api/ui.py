@@ -260,7 +260,8 @@ async def brands_create(
             domains=domain_list,
             preset=preset or "basic",
             kind="retail" if form.get("kind") == "retail" else "service",
-            detection=detection if custom else None,
+            # the track's profile, plus the brand's own switches (AI answers) whatever the track
+            detection=detection if custom else ({k: detection[k] for k in ("ai_answers", "ai_engines") if k in detection} or None),
             scoring=scoring if (custom and scoring) else None,
         )  # type: ignore[arg-type]
         out = brands_api.create_brand(body, session, user)
@@ -460,7 +461,7 @@ def findings_page(
 ):
     if user is None:
         return _login_redirect(request)
-    kind = kind if kind in ("phishing", "shop", "social") else ""
+    kind = kind if kind in ("phishing", "shop", "social", "ai_answer") else ""
     # no state param at all → open findings (the work queue); state="" → the 'all' option
     state = _enum_or_none(FindingState, "open" if state is None else state)
     brand_id = _uuid_or_none(brand_id)
@@ -492,7 +493,7 @@ def findings_page(
                    brand_chips=brand_chips, brand_total=sum(counts.values()),
                    filters={"brand_id": str(brand_id) if brand_id else "", "state": state.value if state else "",
                             "severity": severity.value if severity else "", "kind": kind},
-                   has_shops=any(r.get("kind") in ("shop", "social") for r in rows) or bool(kind))  # fmt: skip
+                   has_shops=any(r.get("kind") in ("shop", "social", "ai_answer") for r in rows) or bool(kind))  # fmt: skip
 
 
 @router.post("/findings/bulk")
@@ -697,6 +698,18 @@ def finding_official_account(
     if user is None:
         return _login_redirect(request)
     findings_api.official_account(finding_id, session, user)
+    return RedirectResponse(f"/ui/findings/{finding_id}", status_code=303)
+
+
+@router.post("/findings/{finding_id}/our-contact")
+def finding_our_contact(
+    finding_id: uuid.UUID, request: Request,
+    session: Annotated[Session, Depends(get_session, scope="function")], user: Annotated[User | None, Depends(ui_writer)],
+):  # fmt: skip
+    """"This is our contact": the contact an AI gave joins the brand's known contacts and the finding closes."""
+    if user is None:
+        return _login_redirect(request)
+    findings_api.our_contact(finding_id, session, user)
     return RedirectResponse(f"/ui/findings/{finding_id}", status_code=303)
 
 
@@ -1143,7 +1156,7 @@ def confirmed_sites(
 
     q = (
         sa.select(Finding).join(Brand, Brand.id == Finding.brand_id)
-        .where(Brand.workspace_id == user.workspace_id, Finding.state == FindingState.CONFIRMED)
+        .where(Brand.workspace_id == user.workspace_id, Finding.state == FindingState.CONFIRMED, Finding.kind != "ai_answer")  # a contact is not a site
     )  # fmt: skip
     if brand_id:
         q = q.where(Finding.brand_id.in_(regions_mod.with_regions(session, brand_id)))

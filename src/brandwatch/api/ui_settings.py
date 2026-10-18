@@ -489,7 +489,9 @@ def needs_setup(brand: dict[str, Any]) -> bool:
     search_on = "search" in ((cfg.get("detection") or {}).get("streams") or [])
     pending = search_on and not (brand.get("search_queries") or {}).get("approved")
     retail_blind = brand.get("kind") == "retail" and not (brand.get("profile") or {}).get("countries")
-    return bool(pending or retail_blind)
+    ai = brand.get("ai_answers") or {}
+    ai_pending = bool(ai.get("on")) and not (ai.get("prompts") or {}).get("approved")
+    return bool(pending or retail_blind or ai_pending)
 
 
 def _setup_context(session: Session, user: User, brand_id: uuid.UUID, error: str | None = None) -> dict[str, Any]:
@@ -542,6 +544,11 @@ async def brand_setup_save(
             if want:
                 admin_api.patch_workspace(admin_api.WorkspacePatch(economic_limits={"max_candidate_count": want}), request, session, user)
             return RedirectResponse(f"/ui/brands/{brand_id}/setup?cap=raised#s-size", status_code=303)
+        ai_texts = [str(q) for q in form.getlist("aiq") if str(q).strip()]
+        if ai_texts:  # the AI-answers step: approved with the rest
+            langs, topics = list(form.getlist("ailang")), list(form.getlist("aitopic"))
+            rows = [{"text": t, "lang": langs[i] if i < len(langs) else "", "topic": topics[i] if i < len(topics) else ""} for i, t in enumerate(ai_texts)]
+            brands_api.approve_ai_prompts(brand_id, brands_api.AiPromptsBody(prompts=rows), session, user)
         queries = [str(q) for q in form.getlist("q") if str(q).strip()]
         if ctx["search_on"]:
             if not queries:
@@ -647,6 +654,87 @@ async def brand_site_link(
         session.rollback()
         return _brand_error(request, session, user, brand_id, exc)
     return RedirectResponse(f"/ui/brands/{brand_id}?links={out['action']}#sitelinks", status_code=303)
+
+
+@router.post("/brands/{brand_id}/ai-answers")
+async def brand_ai_answers_switch(
+    brand_id: uuid.UUID,
+    request: Request,
+    session: Annotated[Session, Depends(get_session, scope="function")],
+    user: Annotated[User | None, Depends(ui_writer)],
+):
+    """AI answers on / off for this brand (and, from the panel, which assistants are asked)."""
+    if user is None:
+        return _login_redirect(request)
+    form = await request.form()
+    patch: dict[str, Any] = {}
+    if "on" in form:
+        patch["ai_answers"] = str(form.get("on") or "") == "1"
+    if "engines_form" in form:
+        patch["ai_engines"] = [e for e in form.getlist("engines") if e in ("chatgpt", "gemini", "google_ai_mode")] or ["chatgpt"]
+    for key, top in (("ai_prompts_max", 20), ("contacts_pages_max", 150)):
+        raw = str(form.get(key) or "").strip()
+        if raw.isdigit():
+            patch[key] = max(1, min(top, int(raw)))
+    try:
+        brands_api.patch_config(brand_id, brands_api.ConfigPatch(detection=patch), session, user)
+    except (ValueError, HTTPException) as exc:
+        session.rollback()
+        return _brand_error(request, session, user, brand_id, exc)
+    flag = "on" if patch.get("ai_answers") else ("off" if "ai_answers" in patch else "saved")
+    return RedirectResponse(f"/ui/brands/{brand_id}?ai={flag}#ai-answers", status_code=303)
+
+
+@router.post("/brands/{brand_id}/ai-prompts")
+async def brand_ai_prompts(
+    brand_id: uuid.UUID,
+    request: Request,
+    session: Annotated[Session, Depends(get_session, scope="function")],
+    user: Annotated[User | None, Depends(ui_writer)],
+):
+    """The questions asked to AI assistants: approve the list as edited, or let the AI propose new ones (not saved)."""
+    if user is None:
+        return _login_redirect(request)
+    form = await request.form()
+    try:
+        if form.get("action") == "suggest":
+            from brandwatch.api.ui import brand_context
+
+            out = await brands_api.suggest_ai_prompts(brand_id, request, session, user)
+            ctx = brand_context(request, session, user, brand_id)
+            ctx["brand"]["ai_answers"]["prompts"]["proposal"] = out["prompts"]
+            ctx["brand"]["ai_answers"]["suggested"] = True
+            return _render(request, "brand_detail.html", user, **ctx)
+        texts = [str(q) for q in form.getlist("q") if str(q).strip()]
+        langs = list(form.getlist("lang"))
+        topics = list(form.getlist("topic"))
+        rows = [{"text": t, "lang": langs[i] if i < len(langs) else "", "topic": topics[i] if i < len(topics) else ""} for i, t in enumerate(texts)]
+        brands_api.approve_ai_prompts(brand_id, brands_api.AiPromptsBody(prompts=rows), session, user)
+    except (ValueError, HTTPException) as exc:
+        session.rollback()
+        return _brand_error(request, session, user, brand_id, exc)
+    return RedirectResponse(f"/ui/brands/{brand_id}?ai=approved#ai-answers", status_code=303)
+
+
+@router.post("/brands/{brand_id}/known-contacts")
+async def brand_known_contact(
+    brand_id: uuid.UUID,
+    request: Request,
+    session: Annotated[Session, Depends(get_session, scope="function")],
+    user: Annotated[User | None, Depends(ui_writer)],
+):
+    """A contact the brand uses that its website does not show: never reported as wrong."""
+    if user is None:
+        return _login_redirect(request)
+    form = await request.form()
+    try:
+        brands_api.known_contact(brand_id, brands_api.KnownContactBody(value=str(form.get("value") or "").strip() or "-",
+                                                                        action=str(form.get("action") or "add"),  # type: ignore[arg-type]
+                                                                        note=str(form.get("note") or "") or None), session, user)  # fmt: skip
+    except (ValueError, HTTPException) as exc:
+        session.rollback()
+        return _brand_error(request, session, user, brand_id, exc)
+    return RedirectResponse(f"/ui/brands/{brand_id}?ai=contact#ai-answers", status_code=303)
 
 
 @router.post("/brands/{brand_id}/social")

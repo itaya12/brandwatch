@@ -6,6 +6,9 @@
 {% set is_shop = d.finding.kind == 'shop' %}
 {% set sl = d.finding.shop_level %}
 {% set is_social = d.finding.kind == 'social' %}
+{% set is_ai = d.finding.kind == 'ai_answer' %}
+{% set ar = s.ai_answer if s else none %}
+{% set off_site = is_social or is_ai %}
 {% import "_macros.html" as m %}
 {% from "_cap.html" import cap %}
 {% include "_intel_css.html" %}
@@ -96,6 +99,7 @@
       <span class="badge sev-{{ d.finding.severity }}">{{ d.finding.severity }}</span>
       {% if is_shop %}<span class="badge lvl lvl-{{ sl.level if sl else 'suspicious_retailer' }}" title="{{ (sl.help if sl else '') }}{{ ' · concluded by ' ~ sl.conclusion.by if sl and sl.conclusion else ' · BrandWatch’s reading of the shop checks' }}">{{ (sl.label if sl else 'Suspicious shop')|lower }}</span>{% endif %}
       {% if is_social %}<span class="badge" style="border:1px solid var(--accent);color:var(--accent2)" title="a Facebook page or Instagram profile that poses as {{ d.brand.name }} — scored by the social checks">fake social account</span>{% endif %}
+      {% if is_ai and ar %}<span class="badge" style="border:1px solid var(--accent);color:var(--accent2)" title="a contact an AI assistant gives for {{ d.brand.name }} that is not on its website — scored by the AI-answer checks">AI answer · {{ ar.verdict_label }}</span>{% endif %}
       <span class="badge state" title="{{ STATE_HELP.get(d.finding.state, '') }}">{% if is_shop and d.finding.state == 'confirmed' %}confirmed · {{ (sl.short if sl else 'suspicious') }}{% else %}{{ ('confirmed_social' if is_social and d.finding.state == 'confirmed' else d.finding.state)|state_label }}{% endif %}</span>
       {% if s and s.cloaked %}{{ m.cloaked_badge(true) }}{% endif %}
       {% if d.finding.analyst_verdict and d.finding.state != 'confirmed' %}<span class="pill">verdict: {{ d.finding.analyst_verdict }}</span>{% endif %}
@@ -107,7 +111,8 @@
       {% if s and s.age_days is not none %}<span>registered <b>{{ s.age_days }} day{{ 's' if s.age_days != 1 }} ago</b></span>{% endif %}
       <span title="{% for src in d.candidate.sources %}{{ src.source|stream_label }}{% if src.pattern %}: {{ src.pattern }}{% endif %}{{ ' · ' if not loop.last }}{% endfor %}">found by <b>{{ d.candidate.sources|map(attribute='source')|map('stream_label')|unique|join(', ') }}</b></span>
       <span>confidence {{ term('confidence') }}<span class="meter"><i style="width:{{ d.finding.confidence|round|int }}%"></i></span><b>{{ d.finding.confidence|round|int }}%</b></span>
-      <span>{{ SURFACE_LABELS.get(d.candidate.surface, d.candidate.surface) }} · <span class="mono">{{ d.candidate.canonical_url }}</span></span>
+      {% if is_ai and ar %}<span>{{ {'phone': 'phone', 'star': 'short code', 'email': 'e-mail', 'whatsapp': 'WhatsApp', 'url': 'web address'}.get(ar.kind, 'contact') }} · given by {{ ar.engines|length }} assistant{{ 's' if ar.engines|length != 1 }}</span>
+      {% else %}<span>{{ SURFACE_LABELS.get(d.candidate.surface, d.candidate.surface) }} · <span class="mono">{{ d.candidate.canonical_url }}</span></span>{% endif %}
       {% if v.ips %}<span>hosted {% for ip in v.ips[:2] %}<a class="mono" href="#ips" data-goto="ips" title="{{ ip.country_name }}{{ ' · ' ~ ip.as_owner if ip.as_owner }}">{{ flag_img(ip.country, 16) }}{{ ip.ip }}</a>{{ ', ' if not loop.last }}{% endfor %}{% if v.ips|length > 2 %} +{{ v.ips|length - 2 }}{% endif %}</span>{% endif %}
       {% if v.registrar %}<span>registrar <b>{{ v.registrar }}</b></span>{% endif %}
     </div>
@@ -117,7 +122,7 @@
     </div>{% endif %}
     {% if s and s.cloaked %}<div class="small" style="margin-top:6px">Hides from scanners: the real page was revealed by BrandWatch's probes — see <a href="#looks" data-goto="looks">Looks like {{ d.brand.name }}</a>.</div>{% endif %}
 
-    {% if not is_social %}
+    {% if not off_site %}
     {% set flagged = d.threat_intel|selectattr('positives')|list %}
     <div class="tilabel"><span class="mono">THREAT INTEL</span><span class="muted"> · what public blocklists say about this site — each card opens the lookup</span></div>
     <div class="ti" aria-label="Threat intel">
@@ -132,7 +137,8 @@
     </div>
     {% if not flagged %}<div class="tinote">Not on public blocklists yet — they lag by hours or days{% if s and s.age_days is not none %}, and this domain is {{ s.age_days }} day{{ 's' if s.age_days != 1 }} old{% endif %}. BrandWatch found it first; <em>unknown</em> is never treated as safe.</div>{% endif %}
     {% else %}
-    <div class="tinote">An account on {{ 'Facebook' if s and s.social and s.social.platform == 'facebook' else 'Instagram' }}, not a website: there is no domain or server to look up — it is reported to Meta (see <a href="#social" data-goto="social">Social account</a>).</div>
+    {% if is_ai %}<div class="tinote">A {{ {'phone': 'phone number', 'star': 'short code', 'email': 'e-mail address', 'whatsapp': 'WhatsApp number', 'url': 'web address'}.get(ar.kind if ar else '', 'contact') }} an AI assistant gives for {{ d.brand.name }}, not a website: what the assistants said and what the pages say are in the <a href="#aianswer" data-goto="aianswer">AI answer</a> tab.</div>
+    {% else %}<div class="tinote">An account on {{ 'Facebook' if s and s.social and s.social.platform == 'facebook' else 'Instagram' }}, not a website: there is no domain or server to look up — it is reported to Meta (see <a href="#social" data-goto="social">Social account</a>).</div>{% endif %}
     {% endif %}
   </div>
 </div>
@@ -196,7 +202,7 @@
     <form method="post" action="/ui/findings/{{ d.finding.id }}/verdict" class="verdict-form"><input type="hidden" name="next" value="{{ back or '' }}">
       <div><label for="reason">Reason · goes to the audit log and the training data</label><input id="reason" name="reason" placeholder="e.g. cloned login, exfil form"></div>
       <div><label for="verdict">If dismissing, verdict</label><select id="verdict" name="verdict">{% for v in Verdicts %}<option value="{{ v }}">{{ v }}</option>{% endfor %}</select></div>
-      <button class="ok" name="action" value="confirm" type="submit">{{ 'Confirm scam shop' if is_shop else ('Confirm fake account' if is_social else 'Confirm phishing') }}</button>
+      <button class="ok" name="action" value="confirm" type="submit">{{ 'Confirm scam shop' if is_shop else ('Confirm fake account' if is_social else ('Confirm wrong contact' if is_ai else 'Confirm phishing')) }}</button>
       <button class="danger" name="action" value="dismiss" type="submit">Dismiss</button>
     </form>
     {% if s and s.shop %}<form method="post" action="/ui/findings/{{ d.finding.id }}/authorized" class="small" style="margin:8px 0 0"
@@ -207,9 +213,14 @@
           data-confirm="Add this account to {{ d.brand.name }}’s own accounts and close the finding?" data-confirm-title="The brand\'s own account" data-confirm-ok="Add and close">
       <button type="submit" class="ghost" title="one of the brand's real accounts: added to the official list, never flagged again">✓ This is our account</button>
       <span class="muted">— a real {{ d.brand.name }} account: never flagged again</span></form>{% endif %}
+    {% if is_ai and ar and ar.kind != 'url' %}<form method="post" action="/ui/findings/{{ d.finding.id }}/our-contact" class="small" style="margin:8px 0 0"
+          data-confirm="Add {{ ar.display }} to {{ d.brand.name }}’s known contacts and close the finding? Later runs never report it again." data-confirm-title="The brand’s own contact" data-confirm-ok="Add and close">
+      <button type="submit" class="ghost" title="a real contact of the brand that its website does not show (an SMS line, a new number): never reported again">✓ This is our contact</button>
+      <span class="muted">— a real {{ d.brand.name }} contact: never reported again</span></form>{% endif %}
     <p class="hint">
       {% set sev = d.finding.severity %}
-      {% if is_social %}{% if sev in ('critical', 'high') %}Several independent signs that this account poses as {{ d.brand.name }} → confirm, then report the account to Meta (Social account tab).{% else %}Some signs of impersonation → read the content in the Social account tab; dismiss a fan page, or mark one of your own accounts.{% endif %}
+      {% if is_ai %}{% if ar and ar.verdict == 'offsite' %}Only a page that is not {{ d.brand.name }}’s publishes this contact — confirm, then take that page down (its own finding) and report the answer to the AI vendor (AI answer tab).{% elif ar and ar.verdict == 'url_not_official' %}The answer sends users to a site that is not {{ d.brand.name }}’s → confirm; that site is checked as a suspect of its own.{% else %}No page publishes this contact: the assistant made it up → confirm and report the answer (AI answer tab); if it is really yours, mark it as your contact.{% endif %}
+      {% elif is_social %}{% if sev in ('critical', 'high') %}Several independent signs that this account poses as {{ d.brand.name }} → confirm, then report the account to Meta (Social account tab).{% else %}Some signs of impersonation → read the content in the Social account tab; dismiss a fan page, or mark one of your own accounts.{% endif %}
       {% elif is_shop %}{% if sev in ('critical', 'high') %}Several independent signs of a scam shop → confirm, report the ads and the page to Meta, then draft the takedown.{% else %}Some signs of a scam shop → open “Shop checks”; if it is a genuine retailer, mark it as an authorised retailer.{% endif %}
       {% elif sev in ('critical', 'high') and d.finding.confidence >= 85 %}High risk and complete evidence → confirm, then draft the takedown.
       {% elif sev in ('critical', 'high') %}High risk, but some evidence is missing ({{ s.unavailable|join(', ') if s and s.unavailable else 'few independent signal groups' }}) → review the screenshots, or re-scan before confirming.
@@ -219,7 +230,7 @@
     </p>
   {% elif d.finding.state == 'confirmed' %}
     <div class="done-box">
-      <div style="margin-bottom:10px"><b style="color:var(--low)">✓ {{ 'Confirmed fake account' if is_social else ('Confirmed · ' ~ sl.label if is_shop and sl else 'Confirmed phishing') }}</b> <span class="muted small">· {{ d.finding.updated_at[:16].replace('T',' ') }}</span>
+      <div style="margin-bottom:10px"><b style="color:var(--low)">✓ {{ 'Confirmed fake account' if is_social else ('Confirmed wrong contact' if is_ai else ('Confirmed · ' ~ sl.label if is_shop and sl else 'Confirmed phishing')) }}</b> <span class="muted small">· {{ d.finding.updated_at[:16].replace('T',' ') }}</span>
         {% if is_shop and sl and sl.conclusion %}<div class="small muted" style="margin-top:4px">by {{ sl.conclusion.by }}{% if sl.proof_label %} · proof: {{ sl.proof_label }}{% endif %}{% if sl.conclusion.note %} · “{{ sl.conclusion.note }}”{% endif %}</div>{% endif %}</div>
       {% if is_shop and sl and can_write %}<details class="small" style="margin:-4px 0 10px"{{ ' open' if request and request.query_params.get('conclusion') }}><summary style="cursor:pointer;color:var(--accent2)">change the conclusion{{ ' — saved ✓' if request and request.query_params.get('conclusion') == 'saved' }}</summary>
         <form method="post" action="/ui/findings/{{ d.finding.id }}/conclusion" id="concl-change" style="margin-top:8px">
@@ -230,7 +241,9 @@
         </form>
         <script>(function(){const f=document.getElementById('concl-change');if(!f)return;const b=f.querySelector('.proof-box');const s=()=>{b.hidden=(f.querySelector('input[name=level]:checked')||{}).value!=='confirmed_counterfeit'};f.addEventListener('change',s);s();})();</script>
       </details>{% endif %}
-      {% if is_social %}
+      {% if is_ai %}
+        <a class="btn-intel" href="#aianswer" data-goto="aianswer"><span class="ico">✎</span><span><b>REPORT THE ANSWER</b><small>the transcripts, the pages we checked and a ready text for the AI vendor and for your own site</small></span><span class="arr">↓</span></a>
+      {% elif is_social %}
         <a class="btn-intel" href="#social" data-goto="social"><span class="ico">⚑</span><span><b>REPORT IT TO META</b><small>open the account, Meta's report steps and the impersonation forms · ready-to-paste text</small></span><span class="arr">↓</span></a>
         {% if not takedowns %}<form method="post" action="/ui/findings/{{ d.finding.id }}/takedown" class="small" style="margin:8px 0 0"><button type="submit" class="ghost">Open a report record</button> <span class="muted">— to tick each report as done, with an audit trail</span></form>
         {% else %}<div class="small" style="margin-top:8px"><a href="/ui/takedowns/{{ takedowns[0].id }}">report record {{ takedowns[0].reference }} →</a></div>{% endif %}
@@ -241,7 +254,7 @@
           <button type="submit" class="btn-intel" aria-label="Draft takedown request" style="width:100%;border:0;cursor:pointer"><span class="ico">✉</span><span><b>DRAFT TAKEDOWN REQUEST</b><small>evidence-backed request to the registrar, the host and the CDN · you review and send it yourself</small></span><span class="arr">→</span></button>
         </form>
       {% endif %}
-      {% if not is_social %}<div class="small" style="margin-top:10px">
+      {% if not off_site %}<div class="small" style="margin-top:10px">
         Attack infrastructure:
         {% if d.campaign_id %}<a href="/ui/campaigns/{{ d.campaign_id }}">mapped → open the map</a>
         {% elif map_job and map_job.state in ('queued','running') %}<span class="radar"></span> mapping now · <a href="/ui/jobs/{{ map_job.id }}">watch the console</a>
@@ -255,14 +268,15 @@
   {% if error %}<div class="error" style="margin-top:10px">{{ error }}</div>{% endif %}
 
   <div class="sec-actions">
-    {% if is_social %}<button type="button" class="primary" data-goto="social">◎ THE ACCOUNT AND REPORT TO META ↓</button>
+    {% if is_ai %}<button type="button" class="primary" data-goto="aianswer">◎ WHAT THE AI SAID AND WHAT THE PAGES SAY ↓</button>
+    {% elif is_social %}<button type="button" class="primary" data-goto="social">◎ THE ACCOUNT AND REPORT TO META ↓</button>
     {% else %}<button type="button" class="primary" id="investigate" data-goto="reputation" title="detections · DNS · certificate · registration and WHOIS history · the server and every site on it · urlscan — the tabs below">◉ INVESTIGATE SITE AND ITS NETWORK ↓</button>{% endif %}
     {% if can_write %}
-      {% if d.finding.state == 'confirmed' and not is_social %}
+      {% if d.finding.state == 'confirmed' and not off_site %}
       <form method="post" action="/ui/findings/{{ d.finding.id }}/investigate"><button type="submit" title="pivot over shared servers, certificates, favicons and tracking ids into a map of the attacker's infrastructure">{{ 'Map attack infrastructure again' if d.campaign_id else 'Map attack infrastructure' }}</button></form>
       {% endif %}
       <form method="post" action="/ui/findings/{{ d.finding.id }}/report"><button type="submit" title="HTML + JSON with screenshots and SHA-256 of every piece of evidence">Generate evidence package</button></form>
-      {% if not is_social %}<button type="button" onclick="document.getElementById('rescan').submit()" title="visit the site again now">Re-scan now</button>{% endif %}
+      {% if not off_site %}<button type="button" onclick="document.getElementById('rescan').submit()" title="visit the site again now">Re-scan now</button>{% endif %}
     {% endif %}
     <a class="small" href="/ui/candidates/{{ d.candidate.id }}" style="margin-left:4px">domain timeline</a>
     {% if reports %}<span class="small muted" style="margin-left:6px">evidence packages:</span>{% for r in reports %}<a href="{{ r.url }}" target="_blank" class="pill">{{ r.format }} · {{ r.created_at[:16].replace('T',' ') }}</a>{% endfor %}{% endif %}
@@ -272,10 +286,11 @@
 {# ================================================================ details, in tabs #}
 {% set dt = v.detections %}{% set ipbad = v.ips|selectattr('positives')|list %}
 <nav class="tabs" role="tablist" id="tabs" aria-label="Finding details">
+  {% if is_ai and ar %}<button role="tab" data-tab="aianswer">AI answer <span class="n bad">{{ ar.engines|length }} assistant{{ 's' if ar.engines|length != 1 }}</span></button>{% endif %}
   {% if is_social and s and s.social %}<button role="tab" data-tab="social">Social account {% if s.social.why %}<span class="n bad">{{ s.social.why|length }} sign{{ 's' if s.social.why|length != 1 }}</span>{% endif %}</button>{% endif %}
   {% if s and s.shop %}<button role="tab" data-tab="shop">Shop checks {% if s.shop.why %}<span class="n {{ 'bad' if is_shop }}">{{ s.shop.why|length }} warning{{ 's' if s.shop.why|length != 1 }}</span>{% endif %}</button>{% endif %}
   <button role="tab" data-tab="why">Why flagged {% if s %}<span class="n">{{ s.signals|length }} signals</span>{% endif %}</button>
-  {% if not is_social %}
+  {% if not off_site %}
   <button role="tab" data-tab="looks">Looks like {{ d.brand.name }} {% if d.screenshots.similarity_pct is not none %}<span class="n">{{ d.screenshots.similarity_pct }}%</span>{% endif %}</button>
   <span class="grp" aria-hidden="true"></span>
   <button role="tab" data-tab="reputation" title="site & network investigation">Reputation {% if has_intel and dt and dt.available %}<span class="n {{ 'bad' if dt.positives }}">{{ dt.positives }}/{{ dt.total }}</span>{% endif %}</button>
@@ -306,6 +321,7 @@
 </div>
 
 {% if s and s.shop %}<section class="tabpane" id="tab-shop">{% set sh = s.shop %}{% include "_shop_checks.html" %}</section>{% endif %}
+{% if is_ai and ar %}<section class="tabpane" id="tab-aianswer">{% include "_ai_answer.html" %}</section>{% endif %}
 {% if is_social and s and s.social %}<section class="tabpane" id="tab-social">{% set sa = s.social %}{% include "_social_account.html" %}</section>{% endif %}
 
 <section class="tabpane" id="tab-why">
@@ -526,9 +542,9 @@
     e.preventDefault();
     if (!select(a.dataset.goto, true)) $('tabs').scrollIntoView({behavior: 'smooth', block: 'start'});
   }));
-  select((location.hash || '').slice(1) || {{ ("'shop'" if is_shop else ("'social'" if is_social else "'why'"))|safe }}, false);
+  select((location.hash || '').slice(1) || {{ ("'shop'" if is_shop else ("'social'" if is_social else ("'aianswer'" if is_ai else "'why'")))|safe }}, false);
   // back / forward and typed hashes (#history, #ips …) re-select without a reload
-  window.addEventListener('hashchange', () => select((location.hash || '').slice(1) || {{ ("'shop'" if is_shop else ("'social'" if is_social else "'why'"))|safe }}, false));
+  window.addEventListener('hashchange', () => select((location.hash || '').slice(1) || {{ ("'shop'" if is_shop else ("'social'" if is_social else ("'aianswer'" if is_ai else "'why'")))|safe }}, false));
 
   // --- the investigation job: start / refresh, stream its narration, reload as results land ---
   const startUrl = {{ ('/api/findings/' ~ d.finding.id ~ '/intel')|tojson }};

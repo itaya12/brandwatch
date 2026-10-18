@@ -205,6 +205,9 @@ class ProviderRegistry:
     def social(self) -> FallbackChain:
         return self.get("social")
 
+    def ai_answers(self) -> FallbackChain:
+        return self.get("ai_answers")
+
     def drain_issues(self) -> list[dict[str, Any]]:
         """Provider problems since the last call (quota, rate limit, bad key, outage …)."""
         out: list[dict[str, Any]] = []

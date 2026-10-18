@@ -28,10 +28,11 @@ from brandwatch.db.models import (
     User,
 )
 from brandwatch.detection import regions as regions_mod
+from brandwatch.detection.ai_answers import AI_GROUPS
 from brandwatch.detection.merchant import SHOP_GROUPS
 from brandwatch.detection.social import SOCIAL_GROUPS
 
-ALL_GROUPS = {**SOCIAL_GROUPS, **SHOP_GROUPS, **SIGNAL_GROUPS}  # phishing signals + suspicious-shop signals
+ALL_GROUPS = {**AI_GROUPS, **SOCIAL_GROUPS, **SHOP_GROUPS, **SIGNAL_GROUPS}  # phishing + shop + social + AI-answer signals
 SEV_COLORS = {"critical": "#FF4D4D", "high": "#FF9F1C", "medium": "#F5C518", "low": "#2ECC71"}
 STATE_COLORS = {
     "new": "#8A97A8", "watching": "#35C7F2", "analyzing": "#5FE3FF", "flagged": "#FF4D4D",

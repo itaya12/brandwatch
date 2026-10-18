@@ -28,6 +28,7 @@
 | | |
 |---|---|
 | 🔎 **Find** | Look-alike domains from typo permutations, certificate-transparency logs, newly registered domains, Google results, urlscan, and fake Facebook / Instagram pages and ads that use the brand's name. |
+| 🤖 **Ask the AI assistants** | Asks ChatGPT, Gemini and Google AI Mode what a customer would ask ("what is the support phone of …?"), checks every phone, short code, e-mail and login address in the answers against the brand's own website, asks for the proof when one does not match, opens the cited pages itself, and raises made-up or scam-published contacts as findings. |
 | 🧪 **Prove** | Visits every suspect in a sandboxed browser like a real victim would (and like a scanner would, to catch cloaking), compares it with the real site (favicon, screenshot, login form, DOM), and scores 50 signals in 7 capped groups. Every point is explained. |
 | ⚖️ **Decide** | An analyst confirms or dismisses, one by one or in bulk. AI and an ML classifier give a second opinion, but never change the score. Nothing is sent automatically. |
 | 🕸️ **Map the attackers** | Pivots on servers, certificates, registrants, analytics IDs, affiliate IDs, redirect hosts and where the stolen data goes, then groups the sites into **operations**: who is behind them, how they operate, and the shortest way to stop each one. |

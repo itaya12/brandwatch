@@ -111,6 +111,9 @@
       {% if can_write %}<form method="post" action="/ui/brands/{{ brand.id }}/social" class="socsw"><input type="hidden" name="on" value="{{ '0' if cfg.detection.social_accounts else '1' }}">
         <button type="submit" class="pill" style="{{ 'color:var(--low)' if cfg.detection.social_accounts else 'color:var(--muted)' }}" title="Facebook pages / Instagram profiles under the brand's name — click to switch {{ 'off' if cfg.detection.social_accounts else 'on' }} for every scan of this brand">social media {{ 'on' if cfg.detection.social_accounts else 'off' }} · {{ 'turn off' if cfg.detection.social_accounts else 'turn on' }}</button></form>
       {% else %}<span class="pill" style="{{ 'color:var(--low)' if cfg.detection.social_accounts else 'color:var(--muted)' }}" title="Facebook pages / Instagram profiles under the brand's name">social media {{ 'on' if cfg.detection.social_accounts else 'off' }}</span>{% endif %}
+      {% if can_write %}<form method="post" action="/ui/brands/{{ brand.id }}/ai-answers" class="socsw"><input type="hidden" name="on" value="{{ '0' if cfg.detection.ai_answers else '1' }}">
+        <button type="submit" class="pill" style="{{ 'color:var(--low)' if cfg.detection.ai_answers else 'color:var(--muted)' }}" title="what ChatGPT, Gemini and Google AI Mode tell users about the brand's phone, e-mail and login — click to switch {{ 'off' if cfg.detection.ai_answers else 'on' }}">AI answers {{ 'on' if cfg.detection.ai_answers else 'off' }} · {{ 'turn off' if cfg.detection.ai_answers else 'turn on' }}</button></form>
+      {% else %}<a class="pill" href="#ai-answers" style="{{ 'color:var(--low)' if cfg.detection.ai_answers else 'color:var(--muted)' }}">AI answers {{ 'on' if cfg.detection.ai_answers else 'off' }}</a>{% endif %}
       <a class="pill" href="#schedule" style="{{ 'color:var(--low)' if brand.schedule.enabled else 'color:var(--muted)' }}">automatic: {{ brand.schedule.label if brand.schedule.enabled else 'off' }}</a>
       {% if 'search' in cfg.detection.streams %}<a class="pill" href="#queries" style="{{ 'color:var(--low)' if brand.search_queries.approved else 'color:var(--high)' }}">Google queries {{ 'approved' if brand.search_queries.approved else '· waiting for approval' }}</a>{% endif %}
     </div>
@@ -121,6 +124,11 @@
     {% endif %}
     {% set sdone = request.query_params.get('social') if request else None %}
     {% if sdone %}<p class="small" style="margin:8px 0 0;color:var(--low)">✓ Social media scanning is {{ sdone }} for {{ brand.name }}{% if sdone == 'on' %} — every scan now also looks for fake Facebook pages and Instagram profiles{% endif %}.</p>{% endif %}
+    {% if cfg.detection.ai_answers and not brand.ai_answers.prompts.approved %}
+    <p class="small" style="margin:8px 0 0;color:var(--high)">AI answers are on, but they wait for you: <a href="#ai-answers">approve the {{ brand.ai_answers.prompts.proposal|length }} proposed questions ↓</a></p>
+    {% elif cfg.detection.ai_answers and not social_ready %}
+    <p class="small" style="margin:8px 0 0;color:var(--high)">AI answers are on, but they are skipped: they need a SearchApi key — <a href="/ui/settings#keys">Settings → API keys</a>.</p>
+    {% endif %}
     {% if cfg.detection.social_accounts and not social_ready %}
     <p class="small" style="margin:8px 0 0;color:var(--high)">Social media is on, but it is skipped: it needs a SearchApi key — <a href="/ui/settings#keys">Settings → API keys</a>.</p>
     {% endif %}
@@ -174,6 +182,8 @@
         {% else %}<a class="btn small" href="#queries" style="opacity:.7" title="Google runs only with approved queries">🌐 Google search · approve the queries first</a>{% endif %}
         {% if social_ready %}<form method="post" action="/ui/brands/{{ brand.id }}/scan"><input type="hidden" name="only" value="social"><button type="submit" class="small" title="only Facebook pages and Instagram profiles under the brand's name{{ ' — runs even though social media is off for automatic scans' if not cfg.detection.social_accounts }}">👥 Social media</button></form>
         {% else %}<a class="btn small" href="/ui/settings#keys" style="opacity:.7" title="social media is searched through SearchApi">👥 Social media · needs a SearchApi key</a>{% endif %}
+        {% if brand.ai_answers.prompts.approved and social_ready %}<form method="post" action="/ui/brands/{{ brand.id }}/scan"><input type="hidden" name="only" value="ai"><button type="submit" class="small" title="only the AI assistants: {{ brand.ai_answers.requests }} question(s), about ${{ brand.ai_answers.cost }}{{ ' — runs even though AI answers are off for automatic scans' if not cfg.detection.ai_answers }}">🤖 AI answers</button></form>
+        {% else %}<a class="btn small" href="#ai-answers" style="opacity:.7" title="AI answers run only with approved questions{{ ' and a SearchApi key' if not social_ready }}">🤖 AI answers · {{ 'approve the questions first' if not brand.ai_answers.prompts.approved else 'needs a SearchApi key' }}</a>{% endif %}
         {% if brand.kind == 'retail' %}<form method="post" action="/ui/brands/{{ brand.id }}/scan"><input type="hidden" name="only" value="ads"><button type="submit" class="small" title="only Facebook / Instagram ads that sell the brand's products">📣 Ads</button></form>{% endif %}
       </div>
     </div>
@@ -183,6 +193,7 @@
 
 {% include "_regions.html" %}
 {% include "_site_links.html" %}
+{% include "_ai_answers_panel.html" %}
 {% include "_schedule.html" %}
 
 {# ---------------------------------------------------------------- EDIT BRAND ---------------------------------------------------------------- #}

@@ -18,6 +18,16 @@
   @media (max-width:900px){ #add .three{grid-template-columns:minmax(0,1fr)} }
 </style>
 {% set d0 = PRESETS['standard'].detection %}
+<div style="grid-column:1/-1" class="cfgcard" id="nb-ai">
+  <h3>AI answers <span style="text-transform:none;letter-spacing:0;color:var(--muted);font-family:var(--sans)">· optional, set now or later on the brand page</span></h3>
+  <input type="hidden" name="ai_answers_form" value="1">
+  <div class="chkrow"><label><input type="checkbox" name="ai_answers"> Ask AI assistants what they tell users about this brand's phone, e-mail and login — every contact they give is checked against the brand's own website</label></div>
+  <div class="chkrow" style="margin-left:22px"><span class="small muted" style="align-self:center">Assistants:</span>
+    <label><input type="checkbox" name="ai_engines" value="chatgpt" checked> ChatGPT</label>
+    <label><input type="checkbox" name="ai_engines" value="gemini" checked> Gemini</label>
+    <label><input type="checkbox" name="ai_engines" value="google_ai_mode" checked> Google AI Mode</label></div>
+  <div class="small muted">Through SearchApi.io (the same key as social media). The questions are proposed after the brand is created and asked only once you approve them.</div>
+</div>
 <div style="grid-column:1/-1">
   <input type="hidden" name="mode" id="nb-mode" value="preset">
   <div class="customhd">

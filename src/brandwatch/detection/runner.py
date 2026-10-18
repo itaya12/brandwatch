@@ -1025,6 +1025,185 @@ async def _social_step(
     return hits
 
 
+def _contacts_stale(saved: dict[str, Any] | None, days: int) -> bool:
+    from datetime import datetime, timedelta
+
+    at = (saved or {}).get("at")
+    if not at:
+        return True
+    try:
+        when = datetime.fromisoformat(str(at))
+    except ValueError:
+        return True
+    if when.tzinfo is None:
+        from datetime import UTC
+
+        when = when.replace(tzinfo=UTC)
+    return utcnow() - when > timedelta(days=days)
+
+
+async def _contacts_step(ctx: PipelineContext, brand: Brand, baseline: BrandBaseline, summary: ScanSummary, *, cc: str) -> dict[str, Any]:
+    """Read the official site from its homepage for every contact it publishes (``detection/contacts.py``)."""
+    from brandwatch.detection import contacts as contacts_mod
+
+    em, det = ctx.emitter, ctx.config.detection
+    prof = dict(brand.profile or {})
+    home = prof.get("baseline_url") or (f"https://{prof['home_domain']}/" if prof.get("home_domain") else None)
+    starts = list(dict.fromkeys([u for u in [home, *(f"https://{d}/" for d in list(baseline.official_domains)[:3])] if u]))
+    em.running("discovery", "contacts", f"Reading the official contacts of {brand.name}: up to {det.contacts_pages_max} page(s) of its site …",
+               data=_now("Reading the brand's real contacts",
+                         "contact / support / service / about pages first — phones, short codes (*1234), e-mails and WhatsApp, "
+                         "each with the page it is on", icon="contacts"))  # fmt: skip
+
+    def on_page(url: str, n: int, total: int) -> None:
+        if n:
+            em.running("contacts", urlsplit(url).path or "/", f"{url}: {n} contact(s) · {total} so far")
+
+    inv = await contacts_mod.crawl(ctx.providers, starts, set(baseline.official_domains), cc=cc,
+                                   max_pages=det.contacts_pages_max, on_page=on_page)  # fmt: skip
+    data = {**inv.as_dict(), "at": utcnow().isoformat(), "start": starts}
+    prof["contacts"] = data
+    brand.profile = prof
+    ctx.session.commit()
+    items = [{"label": r["display"], "tag": contacts_mod.KIND_LABEL[k], "url": (r.get("pages") or [None])[0]}
+             for k in contacts_mod.KINDS for r in data[k]]  # fmt: skip
+    detail = (f"{data['crawled']} page(s) read · " + " · ".join(f"{len(data[k])} {contacts_mod.KIND_LABEL[k]}{'' if len(data[k]) == 1 else 's'}"
+                                                               for k in contacts_mod.KINDS))  # fmt: skip
+    summary.step(f"Read the official contacts: {len(items)} on {data['crawled']} page(s) of the official site", detail, items)
+    em.done("discovery", "contacts", f"Official contacts: {len(items)} on {data['crawled']} page(s)", counts={"contacts": len(items), "pages": data["crawled"]},
+            data=_now(f"{len(items)} official contact(s) found", detail, items, icon="contacts"))  # fmt: skip
+    return data
+
+
+async def _ai_answers_step(
+    ctx: PipelineContext, brand: Brand, baseline: BrandBaseline, store: EvidenceStore, summary: ScanSummary,
+    *, crawl: bool, ask: bool,
+) -> list[DiscoveryHit]:  # fmt: skip
+    """What ChatGPT / Gemini / Google AI Mode tell users about the brand's contacts, checked against its own
+    website (``detection/ai_answers.py``). Returns the off-brand sites the answers lead to, for the web pipeline."""
+    from brandwatch.detection import ai_answers, ai_prompts
+    from brandwatch.detection import contacts as contacts_mod
+
+    em, cfg, session = ctx.emitter, ctx.config, ctx.session
+    det = cfg.detection
+    prs = markets_mod.pairs(det.search_geo, det.search_lang, det.search_markets)
+    cc = contacts_mod.dial_code([*((brand.profile or {}).get("countries") or []), *markets_mod.countries(prs)])
+    saved = dict((brand.profile or {}).get("contacts") or {})
+    if crawl or _contacts_stale(saved, contacts_mod.STALE_DAYS):
+        try:
+            saved = await _contacts_step(ctx, brand, baseline, summary, cc=cc)
+        except Exception as exc:  # noqa: BLE001 - the brand's contacts are read again next time
+            em.emit("discovery", "contacts", "skipped", f"Official contacts not read: {type(exc).__name__}: {exc}", level="warn")
+    if not ask:
+        return []
+    st = ai_prompts.prompt_state(brand, det)
+    if not st.approved:
+        note = (f"{len(st.proposal)} prompts are proposed — approve or edit them on the brand page (AI answers); every run after that "
+                "asks the approved list")  # fmt: skip
+        em.emit("discovery", "ai_answers", "skipped", "AI answers skipped: the prompts wait for your approval", level="warn",
+                data={**_now("AI answers: waiting for your approval", note, icon="ai", items=[{"label": p["text"], "tag": p["lang"]} for p in st.proposal]),
+                      "alert": {"kind": "approval", "provider": "ai answers", "title": "AI answers wait for your approval of the prompts",
+                                "fix": note, "settings_url": f"/ui/brands/{brand.id}#ai-prompts"}})  # fmt: skip
+        summary.step("AI answers skipped: the prompts wait for your approval", note)
+        return []
+    known = contacts_mod.known_set(saved, (brand.profile or {}).get("known_contacts"), cc=cc)
+    if not known:
+        note = ("no phone, short code, e-mail or WhatsApp was found on the official site — every contact an AI gives would look "
+                "wrong. Add the brand's contacts on the brand page (Official contacts) and run again.")  # fmt: skip
+        em.emit("discovery", "ai_answers", "skipped", "AI answers skipped: " + note, level="warn")
+        summary.step("AI answers skipped: the brand's official contacts are unknown", note)
+        return []
+    family = regions_mod.family_ids(session, brand.id)
+    suspect_hosts: dict[str, str] = {}
+    rows = session.execute(
+        sa.select(Candidate.hostname, Finding.state).join(Finding, Finding.candidate_id == Candidate.id)
+        .where(Candidate.brand_id.in_(family), Finding.state.in_([FindingState.OPEN, FindingState.CONFIRMED]),
+               sa.or_(Finding.kind == "phishing", Finding.kind.is_(None), Finding.kind == "shop"))
+    ).all()  # fmt: skip
+    for host, state in rows:
+        suspect_hosts[str(host).lower()] = "a phishing site BrandWatch confirmed" if state is FindingState.CONFIRMED else "a suspected phishing site BrandWatch found"
+    official = {*baseline.official_domains, *baseline.whitelist_domains}
+    engines = [e for e in det.ai_engines if e in ai_answers.ENGINE_LABEL] or list(ai_answers.ENGINE_LABEL)
+    prompts = st.prompts[: det.ai_prompts_max]
+    th = cfg.scoring.thresholds
+    em.running("discovery", "ai_answers", f"Asking {len(engines)} AI assistant(s) {len(prompts)} question(s) about {brand.name} …",
+               data=_now("What do AI assistants tell users?",
+                         f"{', '.join(ai_answers.ENGINE_LABEL[e] for e in engines)} · {len(prompts)} approved question(s) · every phone, "
+                         f"e-mail and address in the answers is compared with the {len(known)} official contact(s)", icon="ai",
+                         items=[{"label": p["text"], "tag": p["lang"]} for p in prompts]))  # fmt: skip
+
+    def narrate(step: str, engine: str, text: str) -> None:
+        name = ai_answers.ENGINE_LABEL.get(engine, engine)
+        em.running("ai_answers", engine, f"{name}: {'asking for the proof' if step == 'followup' else 'asking'} — {text[:140]}",
+                   data=_now(f"{'Asking ' + name + ' for the proof' if step == 'followup' else 'Asking ' + name}", text, icon="ai"))  # fmt: skip
+
+    try:
+        run = await ai_answers.run(ctx.providers, brand_name=brand.search_name, brand_key=baseline.brand_key, prompts=prompts,
+                                   engines=engines, detection=det, known=known, cc=cc, official=official,
+                                   suspect_hosts=suspect_hosts, thresholds={"medium": th.medium, "high": th.high, "critical": th.critical},
+                                   on_event=narrate)  # fmt: skip
+    except Exception as exc:  # noqa: BLE001 - AI answers never kill a scan
+        em.emit("discovery", "ai_answers", "skipped", f"AI answers skipped: {type(exc).__name__}: {exc}", level="warn")
+        return []
+    for t in run.transcripts:
+        em.done("ai_answers", t["engine"],
+                f"{ai_answers.ENGINE_LABEL.get(t['engine'], t['engine'])}: “{t['prompt'][:80]}” → "
+                + (", ".join(t["contacts"][:6]) or "no contact details")
+                + (f" · not official: {', '.join(t['suspects'][:4])}" if t["suspects"] else ""),
+                level="warn" if t["suspects"] else "info")  # fmt: skip
+    found = official_added = 0
+    hits: list[DiscoveryHit] = []
+    prof = dict(brand.profile or {})
+    sample = [r["display"] for k in contacts_mod.KINDS for r in (saved.get(k) or [])][:12]
+    for s in run.suspects:
+        if s.verdict == "confirmed_official":  # an official page lists it after all: the inventory learns it
+            page = next((c["url"] for c in s.checks if c["official"] and c["found"]), None)
+            bucket = (prof.setdefault("contacts", {})).setdefault(s.kind, [])
+            if not any(r.get("value") == s.value for r in bucket):
+                bucket.append({"kind": s.kind, "value": s.value, "display": s.display, "pages": [page] if page else [],
+                               "context": "found while checking an AI answer"})  # fmt: skip
+                official_added += 1
+            continue
+        prior = session.scalars(sa.select(Candidate).where(Candidate.brand_id == brand.id, Candidate.canonical_url == s.canonical_url)).first()
+        if prior is not None and prior.state is CandidateState.DISMISSED:
+            em.done("ai_answers", s.display, f"{s.display}: an analyst said it is fine — not raised again")
+            continue
+        fr = ai_answers.record(session, store, workspace_id=ctx.workspace_id, brand_id=brand.id, s=s, cfg=cfg.scoring,
+                               watch_cadence_hours=det.watch_cadence_hours, official_sample=sample)  # fmt: skip
+        session.commit()
+        sev = s.score["severity"]
+        if fr.disposition == "finding":
+            found += 1
+            summary.findings += 1
+            if sev is Severity.CRITICAL:
+                summary.criticals += 1
+            em.done("finding", s.display, f"Finding {'created' if fr.created else 'updated'}: {s.display} — {ai_answers.VERDICT_LABEL[s.verdict]} ({sev.value})",
+                    level="warn", data={"finding_id": str(fr.finding_id), "severity": sev.value})  # fmt: skip
+            notifier: NotificationService | None = ctx.extra.get("notifier")
+            row = session.get(Finding, fr.finding_id) if notifier is not None else None
+            if notifier is not None and row is not None:
+                notifier.notify_finding(session, row, score=s.score["score"], confidence=s.score["confidence"], created=fr.created)
+        targets = [f"https://{s.value}/"] if s.kind == "url" else [c["url"] for c in s.checks if c["found"] and not c["official"]] + [
+            h["url"] for h in s.hunt if not h["official"] and h.get("url")]  # fmt: skip
+        for url in targets[:3]:
+            hits.append(DiscoveryHit(DiscoverySource.AI_ANSWER, url, Surface.PATH if urlsplit(url).path not in ("", "/") else Surface.NAME,
+                                     matched_pattern=f"ai answer: {s.display} — {', '.join(ai_answers.ENGINE_LABEL.get(e, e) for e in s.engines)}"))  # fmt: skip
+    if official_added:
+        brand.profile = prof
+        session.commit()
+    ok = sum(len(v) for v in run.matched.values())
+    detail = (f"{len(run.transcripts)} answer(s) · {ok} official contact(s) given correctly · {found} finding(s)"
+              + (f" · {official_added} contact(s) found on an official page the crawl had missed" if official_added else "")
+              + (f" · {run.skipped_suspects} more suspect(s) not checked (limit {ai_answers.MAX_SUSPECTS})" if run.skipped_suspects else "")
+              + (f" — {len(run.errors)} problem(s): {'; '.join(run.errors[:2])}" if run.errors else ""))  # fmt: skip
+    items = [{"label": s.display, "tag": ai_answers.VERDICT_LABEL.get(s.verdict, s.verdict), "note": ", ".join(s.engines)} for s in run.suspects]
+    summary.step(f"Asked AI assistants: {len(prompts)} question(s) × {len(engines)} assistant(s)", detail, items)
+    em.done("discovery", "ai_answers", f"AI answers: {len(run.transcripts)} answer(s), {found} wrong contact(s)",
+            counts={"answers": len(run.transcripts), "findings": found},
+            data=_now(f"AI answers: {found} wrong contact(s)", detail, items, icon="ai"))  # fmt: skip
+    return hits
+
+
 async def process_candidate(
     ctx: PipelineContext, cand: Candidate, baseline: BrandBaseline, store: EvidenceStore
 ) -> CandidateOutcome:
@@ -1769,6 +1948,17 @@ async def run_scan(
                 origins[h.raw_value] = h.matched_pattern.replace("social: ", "") if h.matched_pattern else "a fake social account"
             if cancel_requested(session, job_id):
                 return _finish_cancelled(session, em, job, summary, "during the social media check")
+        # AI answers: what ChatGPT / Gemini / Google AI Mode tell users about the brand's contacts (off until switched on)
+        ai_on = ("ai_answers" in tasks) if tasks is not None else cfg.detection.ai_answers
+        crawl_only = tasks is not None and "contacts" in tasks
+        if crawl_only or (ai_on and (settings.demo_mode or not providers.uses_mock("searchapi"))):
+            ai_hits = await _ai_answers_step(ctx, brand, baseline, store, summary, crawl=crawl_only, ask=ai_on)
+            _flush_issues(providers, em, issues_seen)
+            for h in ai_hits:
+                origins[h.raw_value] = h.matched_pattern.replace("ai answer: ", "an AI answer: ") if h.matched_pattern else "an AI answer"
+            social_hits = [*social_hits, *ai_hits]
+            if cancel_requested(session, job_id):
+                return _finish_cancelled(session, em, job, summary, "while asking AI assistants")
         # sites a fake social account links to and shops advertised with the brand's products first
         # (the most targeted hits), dnstwist last (the broadest/cheapest) so the visit cap keeps the rarer hits
         ordered = sorted(stream_results, key=lambda r: (r.stream != "meta_ads", r.stream == "dnstwist"))

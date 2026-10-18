@@ -469,6 +469,35 @@ payload's `tasks` plus a label in `only`; the runner already runs exactly the pa
 "Scan of one part · social media" (an automatic run still says "Automatic scan · …"). A part that cannot run is refused
 with 409 and the reason, shown on the brand page.
 
+### 2.10 AI answers: what ChatGPT, Gemini and Google AI Mode tell users about the brand's contacts
+
+**Why.** Users ask an assistant "what is the support phone of <brand>?" and call the number they get. A made-up number
+(a hallucination) or one a scam page published sends them to a stranger, and a made-up number can be claimed by a
+scammer tomorrow. Off by default; a brand switch (`detection.ai_answers` in `BRAND_SWITCHES`, with `ai_engines`,
+`ai_prompts_max` 8, `contacts_pages_max` 40), set on the add-brand form or later on the brand page.
+
+| Step | Module | What happens |
+|---|---|---|
+| Official contacts | `detection/contacts.py` | `crawl()` reads the official site from its homepage (official domains only, contact / support / service pages first, depth 2, `browser.peek` then the sandboxed browser for script-built pages) and extracts `tel:` / `mailto:` / WhatsApp links and, from the text, Israeli 0X / 05X / 07X and 1-700 numbers, `+CC` international (also right-to-left `972-3-…+`), North-American, short codes `*2407` / `2407*`, e-mails. Normalised (`+97236532407`, `*2407`, lower-case e-mail; WhatsApp and phones share one namespace). Stored in `brands.profile["contacts"]` with the page of each one; re-read after 7 days or on "Read the contacts now". `profile["known_contacts"]` = contacts the site does not show (added by the analyst or by "This is our contact"). |
+| Questions | `detection/ai_prompts.py` | Templates per topic (`support_phone`, `contact`, `login`, `fraud`) in the brand's market languages (en, he, es, fr, de, ru, ar); "Suggest with AI" (schema `ai_prompts`) rewrites them from the approved Google queries. Approved like the Google queries: `profile["ai_prompts"]`; nothing is asked before approval (console alert `approval`). |
+| Ask | `providers/impl/commerce.py` `AiAnswersMixin.ask` (kind `ai_answers`, route `searchapi`) | SearchApi engines `chatgpt` (`web_search=true`), `gemini`, `google_ai_mode` (`gl`/`hl` per market, `conversation_token` for the follow-up). Normalised to `{answer (markdown), references[{title, link, snippet, source}], conversation_token, model}`. Mock: `demo/ai_answers.json`. |
+| Compare | `detection/ai_answers.run` | Every contact in every answer vs the inventory + known contacts; a web address in the answer is a suspect when it carries the brand's name or is a known phishing host. |
+| Proof | same | ≤ 2 follow-ups per suspect: "show me the official page where it appears — I suspect it is a fraud"; then **BrandWatch opens every cited page itself** (≤ 5, through the SSRF guard) and looks for the contact; one Google search of the contact lists who else publishes it. |
+| Verdict | `classify` | `confirmed_official` (an official page carries it → added to the inventory, no finding), `offsite` (only pages that are not the brand's carry it), `hallucinated` (none does, or the engine took it back), `url_not_official`. |
+| Record | `ai_answers.record` | Candidate `ai-answer://<kind>/<value>` (hostname = the contact as written), `DiscoverySource.AI_ANSWER` (migration 014), evidence `ai_transcript`, finding kind `ai_answer` on the separate score `aianswer-v1`: `ai_contact_not_on_site` 40, `ai_url_not_official` 40, `ai_known_suspect` 40, `ai_offsite_lookalike` 30, `ai_offsite_page` 20, `ai_retracted` 15, `ai_cited_page_missing` 15, `ai_several_engines` 15, `ai_no_source` 10; floors: hallucinated / wrong address → High, a look-alike or a known phishing site → Critical. Pages that publish the wrong contact and wrong addresses go to the web pipeline of the same scan. |
+
+**Where it runs.** A step of `brand_scan` after social media (`runner._ai_answers_step`, task `ai_answers` in the
+schedule, "Scan now, only one part → AI answers"); `only=contacts` reads the official contacts alone (free). A run with
+8 questions × 3 assistants ≈ 24 SearchApi requests + follow-ups (≈ $0.15). Refused with 409 when the questions are not
+approved or live mode has no SearchApi key.
+
+**UI.** Brand page: pill "AI answers on · turn off", panel `#ai-answers` (questions, assistants, the official contacts
+with their pages, known contacts), set-up step `s-ai`. Finding page: tab "AI answer" (`_ai_answer.html`: transcripts with
+the contact highlighted, the follow-ups, our check of every cited page, who else publishes it, what to do, a ready text
+for the vendor; pages that are not the brand's are text, never links), "This is our contact"
+(`POST /api/findings/{id}/our-contact`). Confirming an AI-answer finding starts no map / intel job, and AI answers never
+appear on Takedowns or the attack maps.
+
 ## 3. The detection pipeline, stage by stage
 
 `detection/runner.py` orchestrates the scan. The table maps each stage to its module and its scan-console name.

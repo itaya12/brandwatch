@@ -1,0 +1,54 @@
+{
+  "note": "Recorded answers of AI assistants for the fictional brand ShopNova, served by MockAiAnswersProvider (SearchApi engines chatgpt / gemini / google_ai_mode). A prompt about another brand gets an answer with no contact details. 'topic' is picked from the prompt's words; a follow-up ('show me the official page', 'I suspect fraud') gets the follow-up recorded for the contact it quotes.",
+  "brand_match": "nova",
+  "answers": {
+    "chatgpt": {
+      "contact": {
+        "markdown": "You can reach **ShopNova customer support** at **\\*6700** or **03-9817777** (Sunday–Thursday, 08:00–20:00).\n\nE-mail: support@shopnova.com. For lost cards or suspected fraud, call the same number 24/7.",
+        "reference_links": [
+          {"index": 1, "title": "ShopNova Support Center — 24/7 help", "link": "https://shopnova-support-center.com/", "source": "shopnova-support-center.com", "snippet": "Need help? Call ShopNova support 24/7: 03-9817777"},
+          {"index": 2, "title": "Contact us — ShopNova", "link": "https://shopnova.com/contact", "source": "shopnova.com", "snippet": "Customer service: *6700 or 03-6000000"}
+        ]
+      },
+      "login": {
+        "markdown": "Sign in to your ShopNova account at https://shopnova.com/ (top-right **Sign in**), or in the ShopNova app from the App Store.",
+        "reference_links": [{"index": 1, "title": "ShopNova — Shop smarter", "link": "https://shopnova.com/", "source": "shopnova.com"}]
+      },
+      "followups": {
+        "+97239817777": {
+          "markdown": "The number **03-9817777** is listed on the ShopNova Support Center page (https://shopnova-support-center.com/), which says support is available 24/7 on that line.",
+          "reference_links": [{"index": 1, "title": "ShopNova Support Center — 24/7 help", "link": "https://shopnova-support-center.com/", "source": "shopnova-support-center.com"}]
+        }
+      }
+    },
+    "gemini": {
+      "contact": {
+        "markdown": "ShopNova customer service:\n\n* Phone: **\\*6700**\n* WhatsApp: 050-6000000\n* E-mail: **help@shopnova-care.net**\n\nOpening hours: Sun–Thu 08:00–20:00.",
+        "reference_links": [{"index": 1, "title": "Contact us — ShopNova", "link": "https://shopnova.com/contact", "source": "shopnova.com"}]
+      },
+      "login": {
+        "markdown": "You can log in to ShopNova at **https://shopnova-login.com/** with your e-mail and password, or through the ShopNova app.",
+        "reference_links": [{"index": 1, "title": "ShopNova — Sign in", "link": "https://shopnova-login.com/", "source": "shopnova-login.com"}]
+      },
+      "followups": {
+        "help@shopnova-care.net": {
+          "markdown": "I apologize — I could not find an official ShopNova page that lists help@shopnova-care.net. That address was not accurate. The official e-mail on ShopNova's contact page is support@shopnova.com (https://shopnova.com/contact).",
+          "reference_links": [{"index": 1, "title": "Contact us — ShopNova", "link": "https://shopnova.com/contact", "source": "shopnova.com"}]
+        }
+      }
+    },
+    "google_ai_mode": {
+      "contact": {
+        "markdown": "ShopNova's customer service is reachable at **\\*6700** or **03-6000000** (Sun–Thu 08:00–20:00), by e-mail at support@shopnova.com, or on WhatsApp at 050-6000000. Fraud and lost cards: \\*6711, 24/7.",
+        "reference_links": [{"index": 1, "title": "Contact us — ShopNova", "link": "https://shopnova.com/contact", "source": "shopnova.com"}]
+      },
+      "login": {
+        "markdown": "Sign in on the official site, https://shopnova.com/, or in the ShopNova app.",
+        "reference_links": [{"index": 1, "title": "ShopNova — Shop smarter", "link": "https://shopnova.com/", "source": "shopnova.com"}]
+      },
+      "followups": {}
+    }
+  },
+  "unknown_brand": "I could not find reliable, specific contact details for that company. Please check its official website.",
+  "followup_default": "I could not find an official page that lists it. Please use only the contact details published on the company's official website."
+}

@@ -66,6 +66,7 @@ class DiscoverySource(StrEnum):
     META_ADS = "meta_ads"  # an ad in Meta's Ad Library that links to the site
     SOCIAL = "social"  # a Facebook page / Instagram profile under the brand's name
     REDIRECT = "redirect"  # the address a flagged look-alike redirects its visitors to
+    AI_ANSWER = "ai_answer"  # a contact an AI assistant gives for the brand (ChatGPT, Gemini, Google AI Mode)
 
 
 class ScannerProfile(StrEnum):

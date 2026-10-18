@@ -388,6 +388,14 @@ class DetectionConfig(BaseModel):
     # Facebook pages / Instagram profiles under the brand's name (detection/social.py); on for every
     # track — it runs only when the SearchApi key is set (recorded accounts in demo mode)
     social_accounts: bool = True
+    # what ChatGPT / Gemini / Google AI Mode tell users about the brand's contacts (detection/ai_answers.py): off
+    # until switched on per brand; runs with approved prompts and the SearchApi key (recorded answers in demo mode)
+    ai_answers: bool = False
+    ai_engines: list[Literal["chatgpt", "gemini", "google_ai_mode"]] = Field(
+        default_factory=lambda: ["chatgpt", "gemini", "google_ai_mode"], max_length=3
+    )
+    ai_prompts_max: int = Field(default=8, ge=1, le=20)  # approved prompts asked per run (x every engine)
+    contacts_pages_max: int = Field(default=40, ge=1, le=150)  # official pages read for the brand's real contacts
     tlds: Literal["common", "popular", "all"] = "common"
     max_candidates: int = Field(default=500, ge=1)
     # look-alike names checked in DNS per scan (best first: keyword combinations, other TLDs,
@@ -470,7 +478,7 @@ def detection_for_preset(preset: str) -> DetectionConfig:
 
 
 # switches of the brand itself, not of its track: changing them is not "custom", changing the track keeps them
-BRAND_SWITCHES = ("social_accounts",)
+BRAND_SWITCHES = ("social_accounts", "ai_answers", "ai_engines", "ai_prompts_max", "contacts_pages_max")
 
 
 def is_custom_detection(preset: str, detection: DetectionConfig) -> bool:

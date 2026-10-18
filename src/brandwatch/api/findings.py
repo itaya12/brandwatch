@@ -282,7 +282,7 @@ def list_findings(
     brand_id: uuid.UUID | None = None,
     state: FindingState | None = None,
     severity: Severity | None = None,
-    kind: Annotated[str | None, Query(pattern="^(phishing|shop|social)$")] = None,  # None when called directly
+    kind: Annotated[str | None, Query(pattern="^(phishing|shop|social|ai_answer)$")] = None,  # None when called directly
     limit: int = Query(default=200, ge=1, le=1000),
 ) -> list[dict[str, Any]]:
     q = (
@@ -440,6 +440,26 @@ def explain_shop_sentence(shop: dict[str, Any], brand: str, host: str) -> str:
     return " ".join(out)
 
 
+def explain_ai_sentence(rec: dict[str, Any], brand: str) -> str:
+    """One plain sentence about an AI-answer finding: who said what, and what the pages say."""
+    from brandwatch.detection.ai_answers import ENGINE_LABEL
+    from brandwatch.detection.contacts import KIND_LABEL
+
+    who = ", ".join(ENGINE_LABEL.get(e, e) for e in rec.get("engines") or []) or "An AI assistant"
+    what = KIND_LABEL.get(rec.get("kind"), "contact")
+    v = rec.get("verdict")
+    if v == "url_not_official":
+        return f"{who} sends users who ask about {brand} to {rec.get('display')}, which is not one of {brand}'s sites."
+    hosts = list(dict.fromkeys([c["host"] for c in rec.get("checks") or [] if c.get("found") and not c.get("official")]
+                               + [h["host"] for h in rec.get("hunt") or [] if not h.get("official")]))  # fmt: skip
+    if v == "offsite":
+        return (f"{who} gives {rec.get('display')} as {brand}'s {what}. No page of {brand} publishes it; "
+                f"{', '.join(hosts[:3])} does — callers reach whoever runs that page.")
+    took_back = any(fu.get("retracted") for fu in rec.get("followups") or [])
+    return (f"{who} gives {rec.get('display')} as {brand}'s {what}, but no page publishes it"
+            + (" — asked for the proof, it took it back" if took_back else "") + ". A made-up contact can be claimed by a scammer.")
+
+
 def explain_social_sentence(rec: dict[str, Any], brand: str) -> str:
     """A fake social account in two or three plain sentences, from its record."""
     why = rec.get("why") or {}
@@ -543,6 +563,7 @@ def finding_detail(session: Session, f: Finding) -> dict[str, Any]:
     breakdown = groups_raw.pop("_breakdown", {})
     group_detail = breakdown.get("group_detail", {})
 
+    from brandwatch.detection.ai_answers import AI_GROUPS
     from brandwatch.detection.merchant import SHOP_GROUPS
     from brandwatch.detection.social import SOCIAL_GROUPS
 
@@ -550,7 +571,7 @@ def finding_detail(session: Session, f: Finding) -> dict[str, Any]:
         (
             {
                 "name": k,
-                "group": SIGNAL_GROUPS.get(k) or SHOP_GROUPS.get(k) or SOCIAL_GROUPS.get(k, "?"),
+                "group": SIGNAL_GROUPS.get(k) or SHOP_GROUPS.get(k) or SOCIAL_GROUPS.get(k) or AI_GROUPS.get(k, "?"),
                 "points": v,
                 "detail": details.get(k, ""),
             }
@@ -678,11 +699,14 @@ def finding_detail(session: Session, f: Finding) -> dict[str, Any]:
             if f.kind == "shop" and breakdown.get("shop")
             else explain_social_sentence(breakdown["social"], brand.name)
             if f.kind == "social" and breakdown.get("social")
+            else explain_ai_sentence(breakdown["ai_answer"], brand.name)
+            if f.kind == "ai_answer" and breakdown.get("ai_answer")
             else explain_sentence(
                 signals_raw, details if isinstance(details, dict) else {}, brand.name
             ),
             "shop": breakdown.get("shop"),
             "social": breakdown.get("social"),
+            "ai_answer": breakdown.get("ai_answer"),
             "phishing": breakdown.get("phishing"),
             "cloaked": any(SIGNAL_GROUPS.get(k) == "evasion" for k in signals_raw),
             "age_days": int(m.group(1))
@@ -800,6 +824,8 @@ def confirm_finding(
 
     det = load_brand_config(session, f.brand_id).detection
     plans: list[tuple[str, dict[str, Any]]] = []
+    if (f.kind or "phishing") == "ai_answer":  # a contact, not a site: there is no server to map or investigate
+        return out
     if det.auto_map_on_confirm:
         plans.append(("map_job_id", start_map_job(session, request, user, f, auto=True, defer=True)))
     if det.auto_investigate_on_confirm:
@@ -861,6 +887,40 @@ def official_account(
         finding_stage.dismiss(session, f, user, reason="the brand's own account", verdict=AnalystVerdict.LEGITIMATE)
     session.flush()
     return {"official_social": profile["official_social"], "state": f.state.value}
+
+
+@router.post("/findings/{finding_id}/our-contact")
+def our_contact(
+    finding_id: uuid.UUID,
+    session: Annotated[Session, Depends(get_session, scope="function")],
+    user: Annotated[User, Depends(require_analyst)],
+) -> dict[str, Any]:
+    """"This is our contact": the phone / e-mail an AI gave is the brand's after all (an SMS line, a new number the site
+    does not show yet). It joins the brand's known contacts, the finding closes, and later runs never raise it again."""
+    from brandwatch.db.models import AuditEvent
+    from brandwatch.db.types import utcnow
+    from brandwatch.detection.ai_answers import ai_record_of
+
+    f = _get_finding(session, user, finding_id)
+    rec = ai_record_of(f)
+    if (f.kind or "phishing") != "ai_answer" or not rec:
+        raise HTTPException(status.HTTP_409_CONFLICT, "only an AI-answer finding can be marked as the brand's own contact")
+    if rec.get("kind") == "url":
+        raise HTTPException(status.HTTP_409_CONFLICT, "a web address is made official on the brand page (Links on the official site / Edit brand)")
+    brand = session.get(Brand, f.brand_id)
+    profile = dict(brand.profile or {})
+    have = list(profile.get("known_contacts") or [])
+    if not any((r.get("value") if isinstance(r, dict) else r) == rec["display"] for r in have):
+        have.append({"value": rec["display"], "note": f"marked from an AI-answer finding {f.id}", "by": user.email, "at": _iso(utcnow())})
+    profile["known_contacts"] = have
+    brand.profile = profile
+    session.add(AuditEvent(workspace_id=user.workspace_id, actor_type="analyst", actor_id=user.id,
+                           action="brand.known_contact_add", object_type="brand", object_id=brand.id,
+                           new_value={"value": rec["display"]}, reason=f"marked from finding {f.id}"))  # fmt: skip
+    if f.state is FindingState.OPEN:
+        finding_stage.dismiss(session, f, user, reason="the brand's own contact", verdict=AnalystVerdict.LEGITIMATE)
+    session.flush()
+    return {"known_contacts": have, "state": f.state.value}
 
 
 class BulkVerdictRequest(BaseModel):

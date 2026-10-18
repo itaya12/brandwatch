@@ -103,7 +103,19 @@
       i.addEventListener('input',sync);sync();})();</script>{% endif %}
   </div>
 
-  {% if not search_on and not retail %}
+  {% set AA = brand.ai_answers %}
+  {% if AA.on %}
+  <div class="step" id="s-ai">
+    <h2><span class="num">{{ (1 if search_on else 0) + (1 if retail else 0) + 2 }}</span> Questions for the AI assistants</h2>
+    <p class="small muted" style="margin:0 0 8px">Asked to {{ AA.engines|map('replace', 'google_ai_mode', 'Google AI Mode')|map('replace', 'chatgpt', 'ChatGPT')|map('replace', 'gemini', 'Gemini')|join(', ') }} the way a customer would ask. Every phone, e-mail and address in the answers is checked against {{ brand.name }}’s own website. Edit them; they run once you approve.</p>
+    {% for p in (AA.prompts.prompts if AA.prompts.approved else AA.prompts.proposal) %}
+    <div class="qrow"><input name="aiq" value="{{ p.text }}" maxlength="300" dir="auto"><input type="hidden" name="ailang" value="{{ p.lang }}"><input type="hidden" name="aitopic" value="{{ p.topic }}"></div>
+    {% endfor %}
+    <p class="small muted" style="margin:8px 0 0">{{ AA.requests }} question(s) per run · about ${{ AA.cost }} with the follow-ups (SearchApi).</p>
+  </div>
+  {% endif %}
+
+  {% if not search_on and not retail and not AA.on %}
   <div class="step"><p style="margin:0">Nothing to set up for this track — the scan needs no queries. <a href="/ui/brands/{{ brand.id }}">Back to the brand</a>.</p></div>
   {% endif %}
 

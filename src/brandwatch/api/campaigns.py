@@ -99,7 +99,7 @@ def investigate_finding(
 def _confirmed(session: Session, user: User, brand_id: uuid.UUID | None) -> list[Finding]:
     q = (
         sa.select(Finding).join(Brand, Brand.id == Finding.brand_id)
-        .where(Brand.workspace_id == user.workspace_id, Finding.state == FindingState.CONFIRMED)
+        .where(Brand.workspace_id == user.workspace_id, Finding.state == FindingState.CONFIRMED, Finding.kind != "ai_answer")  # a contact is not a site
     )  # fmt: skip
     if brand_id:
         q = q.where(Finding.brand_id.in_(regions_mod.with_regions(session, brand_id)))
