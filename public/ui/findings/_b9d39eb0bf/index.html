@@ -73,6 +73,21 @@ button:hover,.btn:hover{border-color:var(--accent);box-shadow:0 0 12px rgba(53,1
 button.danger{border-color:var(--crit);color:var(--crit)}button.ok{border-color:var(--low);color:var(--low)}
 input,select,textarea{background:#0b1220;color:var(--text);border:1px solid var(--border);border-radius:6px;padding:7px 9px;font:inherit;width:100%;transition:border-color .2s,box-shadow .2s}
 input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(53,199,242,.15)}
+/* keyboard users see where they are; mouse clicks do not get the ring */
+:focus-visible{outline:2px solid var(--accent2);outline-offset:2px;border-radius:4px}
+a:focus-visible,button:focus-visible,.btn:focus-visible{box-shadow:0 0 0 3px rgba(53,199,242,.25)}
+.skip{position:absolute;left:8px;top:-60px;z-index:100;padding:8px 14px;background:var(--panel2);border:1px solid var(--accent);border-radius:8px;color:var(--text);font-weight:600}
+.skip:focus{top:8px}
+/* the button variants every page uses */
+.btn.primary{background:rgba(53,199,242,.16);border-color:var(--accent);color:var(--accent2);font-weight:600}
+.btn.ghost,button.ghost{background:transparent}
+button.small,.btn.small{padding:4px 9px;font-size:12px;white-space:nowrap}
+button[disabled],.btn[aria-disabled=true]{opacity:.55;cursor:default;box-shadow:none}
+/* one message after a form (see _flash.html) */
+.flash{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:0 0 14px;padding:10px 14px;border:1px solid rgba(46,204,113,.5);border-radius:10px;background:rgba(46,204,113,.08);font-size:13.5px;animation:fadeUp .4s ease both}
+.flash .ic{width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:800;background:rgba(53,199,242,.15);color:var(--accent2);flex:none}
+.flash .ic.ok{background:rgba(46,204,113,.18);color:var(--low)}.flash .ic.undo{background:rgba(255,159,28,.18);color:var(--high)}
+.flash .t{flex:1;min-width:200px}.flash .undo{margin:0}.flash .x{margin-left:auto;padding:2px 8px;font-size:12px;border-color:transparent;color:var(--muted)}
 label{display:block;font-size:12px;color:var(--muted);margin:8px 0 4px;font-family:var(--mono);text-transform:uppercase;letter-spacing:.06em}
 .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
 .kpi{position:relative;overflow:hidden;background:linear-gradient(180deg,rgba(18,26,43,.95),rgba(14,20,32,.95));border:1px solid var(--border);border-radius:10px;padding:12px 14px;
@@ -173,6 +188,7 @@ header nav{display:flex;align-items:center;min-width:0}
 </style>
 </head>
 <body>
+<a class="skip" href="#main">Skip to content</a>
 <header>
   <a class="logo" href="/ui/dashboard/">BrandWatch</a>
   
@@ -191,31 +207,195 @@ header nav{display:flex;align-items:center;min-width:0}
   <span class="who"><span class="email">admin · </span>admin · <a href="/ui/logout">logout</a></span>
   
 </header>
-<main>
+<main id="main">
+
+
+
+
+
+
 
 
 <style>
   .hbar{display:grid;grid-template-columns:96px 1fr 34px;gap:8px;align-items:center;margin:7px 0;font-size:12px}
   .hbar .bar{height:6px}.hbar b{font-family:var(--mono);font-weight:400;color:var(--muted);text-align:right}
+  .fhead{display:flex;align-items:flex-end;gap:14px;flex-wrap:wrap;margin-bottom:8px}
+  .fhead h1{margin:0}
+  .fhead .keys{margin-left:auto}
+  .qtiles{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 12px}
+  .qtiles a{display:flex;flex-direction:column;gap:2px;min-width:96px;padding:8px 12px;border:1px solid var(--border);border-radius:10px;background:var(--panel2);color:var(--text);text-decoration:none}
+  .qtiles a:hover{border-color:var(--accent)}.qtiles a.on{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+  .qtiles .v{font-family:var(--display);font-size:22px;font-weight:700;line-height:1}
+  .qtiles .l{font-size:11.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;font-family:var(--mono)}
+  .qtiles .crit .v{color:var(--crit)}.qtiles .hi .v{color:var(--high)}.qtiles .med .v{color:var(--med)}.qtiles .ok .v{color:var(--low)}.qtiles .cy .v{color:var(--accent2)}
+  .filters{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px 10px;align-items:end;margin-bottom:8px}
+  .filters label{display:block;font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:3px}
+  .filters .wide{grid-column:span 2}
+  .filters .go{display:flex;gap:6px}
+  .bchips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+  .bchips a{padding:4px 12px;font-size:12.5px}.bchips a.on{border-color:var(--accent);color:var(--accent2)}
+  .shotsw{display:flex;gap:6px;align-items:center;text-transform:none;letter-spacing:0;font-size:13px;color:var(--text);cursor:pointer;margin-top:6px}
+  .shotsw input{width:auto;margin:0}
+  #ftable:not(.shots) .shotcol{display:none}
+  #ftable tr.cur td{background:rgba(53,199,242,.09);box-shadow:inset 3px 0 0 var(--accent)}
+  .bigshot{width:220px;height:138px;object-fit:cover;object-position:top;border:1px solid var(--border);border-radius:6px;background:#000;cursor:zoom-in;display:block}
+  .noshot{width:220px;height:138px;border:1px dashed var(--border);border-radius:6px;display:flex;align-items:center;justify-content:center;text-align:center;padding:10px;font-size:11.5px;color:var(--muted)}
+  .selcol{width:28px}
+  .selcol input{width:16px;height:16px;margin:0;cursor:pointer}
+  /* the bulk bar sits under the sticky header (z-index 20 in main{z-index:1} slid under it before) */
+  .bulkbar{position:sticky;top:calc(var(--hdr,56px) + 8px);z-index:19;display:grid;grid-template-columns:auto 1fr;gap:6px 10px;align-items:center;padding:8px 12px;margin-bottom:8px;border:1px solid var(--accent);border-radius:10px;background:#0a121e;box-shadow:0 8px 24px rgba(0,0,0,.45)}
+  .bulkbar[hidden]{display:none}
+  .bulkbar .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  .bulkbar input[name=reason]{flex:1;min-width:180px;margin:0}
+  .bulkbar select{width:auto}
+  .bulkbar .chk{display:flex;gap:6px;align-items:center;font-size:12.5px;white-space:nowrap}.bulkbar .chk input{width:auto;margin:0}
+  .fstats summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:8px;margin:18px 0 8px}
+  .fstats summary::-webkit-details-marker{display:none}
+  .fstats summary h2{margin:0}
+  .fstats summary .tog{font-size:12px;color:var(--accent)}
+  .fstats[open] summary .tog.o{display:none}.fstats:not([open]) summary .tog.c{display:none}
+  .keys{display:inline-flex;gap:6px;align-items:center;font-size:12px;color:var(--muted)}
+  kbd{font-family:var(--mono);font-size:11px;border:1px solid var(--border);border-bottom-width:2px;border-radius:4px;padding:0 5px;background:var(--panel2);color:var(--text)}
+  #keysheet{position:fixed;inset:0;z-index:70;background:rgba(3,6,10,.8);display:flex;align-items:center;justify-content:center;padding:16px}
+  #keysheet[hidden]{display:none}
+  #keysheet .inner{background:linear-gradient(180deg,#121c2b,#0c131e);border:1px solid var(--border);border-radius:14px;padding:18px 22px;width:min(440px,100%)}
+  #keysheet table td{padding:5px 8px;border:0}#keysheet td:first-child{white-space:nowrap}
+  #shotbox{position:fixed;inset:0;z-index:60;background:rgba(3,6,10,.85);display:flex;align-items:center;justify-content:center;padding:20px}
+  #shotbox[hidden]{display:none}
+  #shotbox .inner{max-width:min(1200px,96vw);max-height:92vh;display:flex;flex-direction:column;gap:8px}
+  #shotbox img{max-width:100%;max-height:82vh;object-fit:contain;border:1px solid var(--border);border-radius:8px;background:#000}
+  #shotbox .cap{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+  #shotbox .cap button{margin-left:auto}
+  .pager{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:10px}
+  .pager .off{opacity:.4;pointer-events:none}
+  @media (max-width:700px){
+    .fhead .keys{display:none}  /* no keyboard on a phone */
+    .filters{grid-template-columns:1fr 1fr}.filters .wide{grid-column:span 2}
+    .qtiles a{min-width:calc(33% - 6px)}
+    .bulkbar{top:calc(var(--hdr,56px) + 4px);grid-template-columns:1fr}
+    #ftable th:nth-child(6),#ftable td:nth-child(6),#ftable th:nth-child(7),#ftable td:nth-child(7){display:none}
+  }
 </style>
-<div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:12px">
-  <h1 style="margin:0">FINDINGS <span class="muted">· ranked by severity, then score · 4 shown</span></h1>
+<div class="fhead">
+  <h1>FINDINGS <span class="muted">· 4 confirmed phishing</span></h1>
+  <span class="keys" title="keyboard shortcuts"><kbd>j</kbd><kbd>k</kbd> move · <kbd>x</kbd> select · <kbd>c</kbd> confirm · <kbd>d</kbd> dismiss · <kbd>/</kbd> search · <button type="button" id="keysbtn" class="small" aria-label="keyboard shortcuts">?</button></span>
 </div>
 <p class="intro">A finding is a look-alike that scored Medium or higher and waits for an analyst&#39;s verdict. Everything below the threshold stays on the Watchlist and is re-checked on a schedule.</p>
 
-<div class="kpis">
-  <a class="kpi crit " href="?state=open&severity=critical&amp;brand_id=a7b5cb5c-e4a0-495d-b6c9-3ac5209ac3b2"><div class="v" data-count="1">0</div><div class="l"><span class="pulse"></span> critical open</div></a>
-  <a class="kpi hi " href="?state=open&severity=high&amp;brand_id=a7b5cb5c-e4a0-495d-b6c9-3ac5209ac3b2"><div class="v" data-count="0">0</div><div class="l">high open</div></a>
-  <a class="kpi med " href="?state=open&severity=medium&amp;brand_id=a7b5cb5c-e4a0-495d-b6c9-3ac5209ac3b2"><div class="v" data-count="0">0</div><div class="l">medium open</div></a>
-  <a class="kpi cy " href="?state=open&amp;brand_id=a7b5cb5c-e4a0-495d-b6c9-3ac5209ac3b2"><div class="v" data-count="1">0</div><div class="l">awaiting verdict</div></a>
-  <a class="kpi ok on" href="?state=confirmed&amp;brand_id=a7b5cb5c-e4a0-495d-b6c9-3ac5209ac3b2"><div class="v" data-count="4">0</div><div class="l">confirmed phishing</div></a>
-  <a class="kpi " href="?state=dismissed&amp;brand_id=a7b5cb5c-e4a0-495d-b6c9-3ac5209ac3b2"><div class="v" data-count="0">0</div><div class="l">dismissed</div></a>
-  <div class="kpi vi"><div class="v" data-count="96" data-suffix="%">0</div><div class="l">avg confidence</div></div>
-  <div class="kpi mg"><div class="v" data-count="1">0</div><div class="l">new in 24h</div></div>
+
+<div class="qtiles" aria-label="Queue">
+  <a class="cy " href="?state=open&amp;brand_id=a7b5cb5c-e4a0-495d-b6c9-3ac5209ac3b2"><span class="v" data-count="1">0</span><span class="l">awaiting verdict</span></a>
+  <a class="crit " href="?state=open&severity=critical&amp;brand_id=a7b5cb5c-e4a0-495d-b6c9-3ac5209ac3b2"><span class="v" data-count="1">0</span><span class="l">critical</span></a>
+  <a class="hi " href="?state=open&severity=high&amp;brand_id=a7b5cb5c-e4a0-495d-b6c9-3ac5209ac3b2"><span class="v" data-count="0">0</span><span class="l">high</span></a>
+  <a class="med " href="?state=open&severity=medium&amp;brand_id=a7b5cb5c-e4a0-495d-b6c9-3ac5209ac3b2"><span class="v" data-count="0">0</span><span class="l">medium</span></a>
+  <a class="" href="?state=open&since=24h&amp;brand_id=a7b5cb5c-e4a0-495d-b6c9-3ac5209ac3b2"><span class="v" data-count="1">0</span><span class="l">new in 24h</span></a>
+  <a class="ok on" href="?state=confirmed&amp;brand_id=a7b5cb5c-e4a0-495d-b6c9-3ac5209ac3b2"><span class="v" data-count="4">0</span><span class="l">confirmed</span></a>
+  <a class="" href="?state=dismissed&amp;brand_id=a7b5cb5c-e4a0-495d-b6c9-3ac5209ac3b2"><span class="v" data-count="0">0</span><span class="l">dismissed</span></a>
 </div>
 
-<h2 style="margin:18px 0 8px">Statistics <span class="muted">· across open findings of the chosen brand</span></h2>
-<div class="grid fstats" style="grid-template-columns:repeat(auto-fit,minmax(260px,1fr))">
+<div class="ftable-wrap">
+  <div class="panel" style="padding-top:10px;overflow-x:auto">
+    
+    
+    <div class="bchips">
+      <a class="btn " href="/ui/findings/_22862afcbb/">All brands <b>39</b></a>
+      <a class="btn " href="/ui/findings/_75bd96a84b/"><bdi>ShopNova</bdi> <b>28</b></a><a class="btn " href="/ui/findings/_0c88c0c414/"><bdi>ShopNova · Israel</bdi> <b>2</b></a><a class="btn " href="/ui/findings/_8d66a4f591/"><bdi>CoinPilot</bdi> <b>7</b></a><a class="btn on" href="/ui/findings/_49f5e18322/"><bdi>VaultPay</bdi> <b>4</b></a>
+    </div>
+    <form method="get" action="/ui/findings/" class="filters" id="filters">
+      <input type="hidden" name="brand_id" value="a7b5cb5c-e4a0-495d-b6c9-3ac5209ac3b2">
+      <div class="wide"><label for="q">Search host</label><input id="q" name="q" value="" placeholder="part of a host name, e.g. login" autocomplete="off" maxlength="120"></div>
+      <div><label for="f-state">State</label><select id="f-state" name="state"><option value="">all</option><option value="open" >awaiting verdict</option><option value="confirmed" selected>confirmed phishing</option><option value="dismissed" >dismissed</option></select></div>
+      <div><label for="f-sev">Severity</label><select id="f-sev" name="severity"><option value="">all</option><option value="low" >low</option><option value="medium" >medium</option><option value="high" >high</option><option value="critical" >critical</option></select></div>
+      <div><label for="f-kind">Kind</label><select id="f-kind" name="kind"><option value="">all</option><option value="phishing" >phishing</option><option value="shop" >suspicious shop</option><option value="social" >fake social account</option><option value="ai_answer" >AI answer</option></select></div>
+      <div><label for="f-since">Found</label><select id="f-since" name="since"><option value="">any time</option><option value="24h" >last 24 hours</option><option value="7d" >last 7 days</option><option value="visit" >since my last visit</option></select></div>
+      <div><label for="f-sort">Sort by</label><select id="f-sort" name="sort"><option value="severity" selected>severity, then score</option><option value="score" >score</option><option value="newest" >newest first</option><option value="oldest" >oldest first</option><option value="confidence" >confidence</option></select></div>
+      <div class="go"><button type="submit" class="primary">Apply</button><a class="btn" href="/ui/findings/_d860073f15/" title="back to the open queue">Reset</a></div>
+      <div><label class="shotsw" title="a screenshot next to every site (off by default: the list stays short)"><input type="checkbox" id="t-shots"> show screenshots</label></div>
+    </form>
+    
+    
+    
+    <form id="bulkform" method="post" action="/ui/findings/bulk" class="bulkbar" hidden>
+      <input type="hidden" name="next" value="/ui/findings?brand_id=a7b5cb5c-e4a0-495d-b6c9-3ac5209ac3b2&amp;state=confirmed">
+      <b id="bulkn">0 selected</b>
+      <div class="row">
+        <input name="reason" list="reasons" placeholder="reason (optional, kept in the audit log)" maxlength="2000" aria-label="reason">
+        <datalist id="reasons"><option value="cloned login page"><option value="legitimate site, not a look-alike"><option value="parked domain"><option value="domain expired, no site"><option value="not about the brand"><option value="duplicate of another finding"></datalist>
+        <button type="submit" name="action" value="confirm" class="primary" data-confirm="Confirm {n} finding(s) as phishing? They move to Attack infrastructure; map and investigate them there with MAP ALL and INVESTIGATE ALL." data-confirm-count=".sel:checked" data-confirm-title="Confirm phishing" data-confirm-ok="✓ Confirm phishing">✓ Confirm phishing</button>
+        <label class="chk" title="why it is not phishing — kept with the verdict and used to train the classifier">as <select name="verdict" aria-label="verdict when dismissing"><option value="legitimate">a legitimate site</option><option value="suspicious">suspicious, but not phishing</option><option value="unknown">cannot tell</option></select></label>
+        <label class="chk" title="the registrable domain of each dismissed finding is allowlisted for its brand: no scan flags it, or a subdomain of it, again"><input type="checkbox" name="whitelist"> also allowlist the domain</label>
+        <button type="submit" name="action" value="dismiss" data-confirm="Dismiss {n} finding(s) as not phishing? They leave the open list; the verdict is kept and teaches the classifier." data-confirm-count=".sel:checked" data-confirm-title="Not phishing" data-confirm-ok="✕ Dismiss them" data-confirm-danger>✕ Not phishing</button>
+        <button type="button" id="bulkclear" class="small">clear</button>
+      </div>
+    </form>
+    
+    <table id="ftable">
+      <thead><tr><th class="selcol"><input type="checkbox" id="selall" aria-label="select every finding on this page" title="select every finding on this page"></th><th class="shotcol">Screenshot</th><th>Severity</th><th>Host</th><th>Score</th><th>Conf.</th><th>Signals</th><th>State</th><th>Found</th></tr></thead>
+      <tbody>
+      
+      <tr class="sevrow critical" data-host="vaultpay-login.com" data-id="be5f0a7c-d96e-4260-b413-a70d917bbfe9">
+        <td class="selcol"></td>
+        <td class="shotcol"><img class="bigshot" data-src="/_r/e1c8c7f57f136b.png" alt="screenshot of vaultpay-login.com" title="click to enlarge" data-host="vaultpay-login.com" data-href="/ui/findings/be5f0a7c-d96e-4260-b413-a70d917bbfe9/"></td>
+        <td><span class="badge sev-critical">critical</span></td>
+        <td><a href="/ui/findings/be5f0a7c-d96e-4260-b413-a70d917bbfe9/" class="flink"><span class="mono">vaultpay-login.com</span></a><div class="small muted">domain name · found by Look-alike names, Analyst URL scan · <a href="/ui/findings/be5f0a7c-d96e-4260-b413-a70d917bbfe9/#network" title="site & network investigation: servers, WHOIS history, urlscan">network</a> · <a href="/ui/candidates/d84a6c1d-94dd-4dc4-96e6-e63136de1233" title="domain timeline on the watchlist">timeline</a></div></td>
+        <td class="mono" style="white-space:nowrap">87<span class="scorebar"><i data-w="87"></i></span>
+          <span style="margin-left:6px"><a class="pill" href="https://www.virustotal.com/gui/domain/vaultpay-login.com" target="_blank" rel="noreferrer noopener" title="VirusTotal: 7 engine(s) flag it" style="font-size:10px;border-color:var(--crit);color:var(--crit)">VT 7</a></span></td>
+        <td><div class="ring sm" data-p="100" style="--c:var(--accent)" title="confidence in the evidence: 100%"><div>100</div></div></td>
+        <td class="small" style="max-width:360px"><span class="pill g-visual" title="favicon mmh3 1401845590 equals the brand&#39;s favicon hash · +22 pts">identical favicon</span> <span class="pill g-visual" title="homepage screenshot is 100% similar to the brand&#39;s (pHash) · +18 pts">looks like the real site</span> <span class="pill g-infrastructure" title="shares server 198.51.100.77 with known phishing of this brand · +15 pts">shares a server with phishing</span> <span class="pill g-reputation" title="already flagged as phishing — Google Safe Browsing lists it as social engineering (phishing) · +15 pts">already flagged as phishing</span> <a href="/ui/findings/be5f0a7c-d96e-4260-b413-a70d917bbfe9/" class="muted small">+15 more</a></td>
+        <td><span class="badge state st-confirmed" title="an analyst confirmed it as phishing">confirmed phishing</span></td>
+        <td class="mono small muted"><time datetime="2026-10-14T09:46:24.329229" data-local title="2026-10-14T09:46:24.329229 UTC">2026-10-14 09:46</time></td>
+      </tr>
+      
+      <tr class="sevrow critical" data-host="vaultpay-verify.com" data-id="9e972300-3ba9-4bc8-9db8-d56527f3cc8e">
+        <td class="selcol"></td>
+        <td class="shotcol"><img class="bigshot" data-src="/_r/ba0480e113d0a7.png" alt="screenshot of vaultpay-verify.com" title="click to enlarge" data-host="vaultpay-verify.com" data-href="/ui/findings/9e972300-3ba9-4bc8-9db8-d56527f3cc8e/"></td>
+        <td><span class="badge sev-critical">critical</span></td>
+        <td><a href="/ui/findings/9e972300-3ba9-4bc8-9db8-d56527f3cc8e/" class="flink"><span class="mono">vaultpay-verify.com</span></a><div class="small muted">domain name · found by Look-alike names, Analyst URL scan · <a href="/ui/findings/9e972300-3ba9-4bc8-9db8-d56527f3cc8e/#network" title="site & network investigation: servers, WHOIS history, urlscan">network</a> · <a href="/ui/candidates/e3cc31e3-7c57-4441-8b21-2c4d87d61df2" title="domain timeline on the watchlist">timeline</a></div></td>
+        <td class="mono" style="white-space:nowrap">77<span class="scorebar"><i data-w="77"></i></span>
+          <span style="margin-left:6px"><a class="pill" href="https://www.virustotal.com/gui/domain/vaultpay-verify.com" target="_blank" rel="noreferrer noopener" title="not in VirusTotal yet — unknown is never treated as clean" style="font-size:10px;color:var(--muted)">VT —</a></span></td>
+        <td><div class="ring sm" data-p="100" style="--c:var(--accent)" title="confidence in the evidence: 100%"><div>100</div></div></td>
+        <td class="small" style="max-width:360px"><span class="pill g-visual" title="favicon mmh3 1401845590 equals the brand&#39;s favicon hash · +22 pts">identical favicon</span> <span class="pill g-visual" title="homepage screenshot is 100% similar to the brand&#39;s (pHash) · +18 pts">looks like the real site</span> <span class="pill g-infrastructure" title="shares server 198.51.100.77 with known phishing of this brand · +15 pts">shares a server with phishing</span> <span class="pill g-infrastructure" title="shares infrastructure with an investigated campaign of this brand · +15 pts">linked to a mapped attacker</span> <a href="/ui/findings/9e972300-3ba9-4bc8-9db8-d56527f3cc8e/" class="muted small">+12 more</a></td>
+        <td><span class="badge state st-confirmed" title="an analyst confirmed it as phishing">confirmed phishing</span></td>
+        <td class="mono small muted"><time datetime="2026-10-14T09:46:24.713463" data-local title="2026-10-14T09:46:24.713463 UTC">2026-10-14 09:46</time></td>
+      </tr>
+      
+      <tr class="sevrow critical" data-host="vaultpay-secure.net" data-id="f65ec535-db25-4b14-a8d0-76442a4b4e6e">
+        <td class="selcol"></td>
+        <td class="shotcol"><img class="bigshot" data-src="/_r/80fea38a400d11.png" alt="screenshot of vaultpay-secure.net" title="click to enlarge" data-host="vaultpay-secure.net" data-href="/ui/findings/f65ec535-db25-4b14-a8d0-76442a4b4e6e/"></td>
+        <td><span class="badge sev-critical">critical</span></td>
+        <td><a href="/ui/findings/f65ec535-db25-4b14-a8d0-76442a4b4e6e/" class="flink"><span class="mono">vaultpay-secure.net</span></a><div class="small muted">domain name · found by Analyst URL scan · <a href="/ui/findings/f65ec535-db25-4b14-a8d0-76442a4b4e6e/#network" title="site & network investigation: servers, WHOIS history, urlscan">network</a> · <a href="/ui/candidates/22827f9a-8fb0-446b-b059-9665320be86e" title="domain timeline on the watchlist">timeline</a></div></td>
+        <td class="mono" style="white-space:nowrap">77<span class="scorebar"><i data-w="77"></i></span>
+          <span style="margin-left:6px"><a class="pill" href="https://www.virustotal.com/gui/domain/vaultpay-secure.net" target="_blank" rel="noreferrer noopener" title="not in VirusTotal yet — unknown is never treated as clean" style="font-size:10px;color:var(--muted)">VT —</a></span></td>
+        <td><div class="ring sm" data-p="90" style="--c:var(--accent)" title="confidence in the evidence: 90%"><div>90</div></div></td>
+        <td class="small" style="max-width:360px"><span class="pill g-visual" title="favicon mmh3 1401845590 equals the brand&#39;s favicon hash · +22 pts">identical favicon</span> <span class="pill g-visual" title="homepage screenshot is 100% similar to the brand&#39;s (pHash) · +18 pts">looks like the real site</span> <span class="pill g-infrastructure" title="shares server 198.51.100.77 with known phishing of this brand · +15 pts">shares a server with phishing</span> <span class="pill g-infrastructure" title="tracking id UA-777001-1 also present on known phishing pages · +15 pts">same tracking ID as phishing</span> <a href="/ui/findings/f65ec535-db25-4b14-a8d0-76442a4b4e6e/" class="muted small">+11 more</a></td>
+        <td><span class="badge state st-confirmed" title="an analyst confirmed it as phishing">confirmed phishing</span></td>
+        <td class="mono small muted"><time datetime="2026-10-14T09:46:24.483973" data-local title="2026-10-14T09:46:24.483973 UTC">2026-10-14 09:46</time></td>
+      </tr>
+      
+      <tr class="sevrow critical" data-host="vault-pay.co" data-id="ab239662-2d39-4d17-aeaf-c1b7d3575bd7">
+        <td class="selcol"></td>
+        <td class="shotcol"><img class="bigshot" data-src="/_r/15a5f151ccfb3b.png" alt="screenshot of vault-pay.co" title="click to enlarge" data-host="vault-pay.co" data-href="/ui/findings/ab239662-2d39-4d17-aeaf-c1b7d3575bd7/"></td>
+        <td><span class="badge sev-critical">critical</span></td>
+        <td><a href="/ui/findings/ab239662-2d39-4d17-aeaf-c1b7d3575bd7/" class="flink"><span class="mono">vault-pay.co</span></a><div class="small muted">domain name · found by Analyst URL scan · <a href="/ui/findings/ab239662-2d39-4d17-aeaf-c1b7d3575bd7/#network" title="site & network investigation: servers, WHOIS history, urlscan">network</a> · <a href="/ui/candidates/a7925088-f723-4632-92d0-fc2a3c632cbb" title="domain timeline on the watchlist">timeline</a></div></td>
+        <td class="mono" style="white-space:nowrap">75<span class="scorebar"><i data-w="75"></i></span>
+          <span style="margin-left:6px"><a class="pill" href="https://www.virustotal.com/gui/domain/vault-pay.co" target="_blank" rel="noreferrer noopener" title="not in VirusTotal yet — unknown is never treated as clean" style="font-size:10px;color:var(--muted)">VT —</a></span></td>
+        <td><div class="ring sm" data-p="90" style="--c:var(--accent)" title="confidence in the evidence: 90%"><div>90</div></div></td>
+        <td class="small" style="max-width:360px"><span class="pill g-visual" title="favicon mmh3 1401845590 equals the brand&#39;s favicon hash · +22 pts">identical favicon</span> <span class="pill g-visual" title="homepage screenshot is 100% similar to the brand&#39;s (pHash) · +18 pts">looks like the real site</span> <span class="pill g-infrastructure" title="shares server 198.51.100.77 with known phishing of this brand · +15 pts">shares a server with phishing</span> <span class="pill g-infrastructure" title="tracking id UA-777001-1 also present on known phishing pages · +15 pts">same tracking ID as phishing</span> <a href="/ui/findings/ab239662-2d39-4d17-aeaf-c1b7d3575bd7/" class="muted small">+10 more</a></td>
+        <td><span class="badge state st-confirmed" title="an analyst confirmed it as phishing">confirmed phishing</span></td>
+        <td class="mono small muted"><time datetime="2026-10-14T09:46:24.585432" data-local title="2026-10-14T09:46:24.585432 UTC">2026-10-14 09:46</time></td>
+      </tr>
+      
+      </tbody>
+    </table>
+    
+<div class="muted small" style="margin-top:8px">4 in total</div>
+    
+  </div>
+</div>
+
+<details class="fstats" id="fstats">
+  <summary><h2 style="margin:0">Statistics <span class="muted">· across open findings of the chosen brand</span></h2><span class="tog o">show ▾</span><span class="tog c">hide ▴</span></summary>
+<div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(260px,1fr))">
   <div class="panel">
     <h2>Open by severity <span class="muted">· Medium ≥ 25 · High ≥ 50 · Critical ≥ 75</span></h2>
     <div class="donut-wrap">
@@ -323,112 +503,23 @@ header nav{display:flex;align-items:center;min-width:0}
     <p class="small muted" style="margin-top:14px">Every signal belongs to one of 7 groups, and each group has a points cap so correlated evidence is not counted twice. Hover a signal for its evidence and points. <a href="/ui/how-it-works/#g-signal">How scoring works →</a></p>
   </div>
 </div>
-<div class="ftable-wrap" style="margin-top:14px">
-  <div class="panel" style="padding-top:10px;overflow-x:auto">
-    
-    
-    <div class="bchips" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px">
-      <a class="btn " style="padding:4px 12px;font-size:12.5px;" href="/ui/findings/_b25f1804f2/">All brands <b>39</b></a>
-      <a class="btn" style="padding:4px 12px;font-size:12.5px;" href="/ui/findings/_501d656cbb/">ShopNova <b>28</b></a><a class="btn" style="padding:4px 12px;font-size:12.5px;" href="/ui/findings/_1553b72692/">ShopNova · Israel <b>2</b></a><a class="btn" style="padding:4px 12px;font-size:12.5px;" href="/ui/findings/_765a627de5/">CoinPilot <b>7</b></a><a class="btn" style="padding:4px 12px;font-size:12.5px;border-color:var(--accent);color:var(--accent2)" href="/ui/findings/_b9d39eb0bf/">VaultPay <b>4</b></a>
-    </div>
-    <form method="get" action="/ui/findings/" class="actions" style="margin-bottom:8px">
-      <div><label>Brand</label><select name="brand_id" onchange="this.form.submit()"><option value="">all</option><option value="eb019060-41b6-4160-871c-14094ad558a4" >ShopNova</option><option value="1909c3e0-295d-4d38-bb7e-a2b05c9287d4" >ShopNova · Israel</option><option value="f46bffed-4795-4cdd-ad8f-abd3d26fcc60" >CoinPilot</option><option value="a7b5cb5c-e4a0-495d-b6c9-3ac5209ac3b2" selected>VaultPay</option></select></div>
-      <div><label>State</label><select name="state" onchange="this.form.submit()"><option value="">all</option><option value="open" >open</option><option value="confirmed" selected>confirmed</option><option value="dismissed" >dismissed</option></select></div>
-      <div><label>Severity</label><select name="severity" onchange="this.form.submit()"><option value="">all</option><option value="low" >low</option><option value="medium" >medium</option><option value="high" >high</option><option value="critical" >critical</option></select></div>
-      <div><label>Kind</label><select name="kind" onchange="this.form.submit()"><option value="">all</option><option value="phishing" >phishing</option><option value="shop" >suspicious shop</option><option value="social" >fake social account</option><option value="ai_answer" >AI answer</option></select></div>
-      <div><label>Search host</label><input id="q" placeholder="type to filter…" autocomplete="off"></div>
-      <div><label>View</label><label class="shotsw" title="a screenshot next to every site (off by default: the list stays short)"><input type="checkbox" id="t-shots"> show screenshots</label></div>
-      <div><button type="submit">Apply</button></div>
-    </form>
-    
-    
-    <form id="bulkform" method="post" action="/ui/findings/bulk" class="bulkbar" hidden>
-      <input type="hidden" name="next" value="/ui/findings?brand_id=a7b5cb5c-e4a0-495d-b6c9-3ac5209ac3b2&amp;state=confirmed&amp;severity=&amp;kind=">
-      <b id="bulkn">0 selected</b>
-      <input name="reason" placeholder="reason (optional, kept in the audit log)" maxlength="2000">
-      <button type="submit" name="action" value="confirm" class="primary" data-confirm="Confirm {n} finding(s) as phishing? They move to Attack infrastructure; map and investigate them there with MAP ALL and INVESTIGATE ALL." data-confirm-count=".sel:checked" data-confirm-title="Confirm phishing" data-confirm-ok="✓ Confirm phishing">✓ Confirm phishing</button>
-      <button type="submit" name="action" value="dismiss" data-confirm="Dismiss {n} finding(s) as not phishing? They leave the open list; the verdict is kept and teaches the classifier." data-confirm-count=".sel:checked" data-confirm-title="Not phishing" data-confirm-ok="✕ Dismiss them" data-confirm-danger>✕ Not phishing</button>
-      <button type="button" id="bulkclear" class="small">clear</button>
-    </form>
-    
-    <table id="ftable">
-      <tr><th class="selcol"><input type="checkbox" id="selall" title="select every finding shown"></th><th class="shotcol">Screenshot</th><th>Severity</th><th>Host</th><th>Score</th><th>Conf.</th><th>Signals</th><th>State</th><th>Found</th></tr>
-      
-      <tr class="sevrow critical" data-host="vaultpay-login.com">
-        <td class="selcol"></td>
-        <td class="shotcol"><img class="bigshot" data-src="/_r/e1c8c7f57f136b.png" alt="screenshot of vaultpay-login.com" title="click to enlarge" data-host="vaultpay-login.com" data-href="/ui/findings/be5f0a7c-d96e-4260-b413-a70d917bbfe9/"></td>
-        <td><span class="badge sev-critical">critical</span></td>
-        <td><a href="/ui/findings/be5f0a7c-d96e-4260-b413-a70d917bbfe9/"><span class="mono">vaultpay-login.com</span></a><div class="small muted">domain name · found by Look-alike names, Analyst URL scan · <a href="/ui/findings/be5f0a7c-d96e-4260-b413-a70d917bbfe9/#network" title="site & network investigation: servers, WHOIS history, urlscan">network</a> · <a href="/ui/candidates/d84a6c1d-94dd-4dc4-96e6-e63136de1233" title="domain timeline on the watchlist">timeline</a></div></td>
-        <td class="mono" style="white-space:nowrap">87<span class="scorebar"><i data-w="87"></i></span>
-          <span style="margin-left:6px"><a class="pill" href="https://www.virustotal.com/gui/domain/vaultpay-login.com" target="_blank" rel="noreferrer noopener" title="VirusTotal: 7 engine(s) flag it" style="font-size:10px;border-color:var(--crit);color:var(--crit)">VT 7</a></span></td>
-        <td><div class="ring sm" data-p="100" style="--c:var(--accent)" title="confidence in the evidence: 100%"><div>100</div></div></td>
-        <td class="small" style="max-width:360px"><span class="pill g-visual" title="favicon mmh3 1401845590 equals the brand&#39;s favicon hash · +22 pts">identical favicon</span> <span class="pill g-visual" title="homepage screenshot is 100% similar to the brand&#39;s (pHash) · +18 pts">looks like the real site</span> <span class="pill g-infrastructure" title="shares server 198.51.100.77 with known phishing of this brand · +15 pts">shares a server with phishing</span> <span class="pill g-reputation" title="already flagged as phishing — Google Safe Browsing lists it as social engineering (phishing) · +15 pts">already flagged as phishing</span> <a href="/ui/findings/be5f0a7c-d96e-4260-b413-a70d917bbfe9/" class="muted small">+15 more</a></td>
-        <td><span class="badge state st-confirmed" title="an analyst confirmed it as phishing">confirmed phishing</span></td>
-        <td class="mono small muted" data-rel="2026-10-14T09:46:24.329229">2026-10-14 09:46</td>
-      </tr>
-      
-      <tr class="sevrow critical" data-host="vaultpay-verify.com">
-        <td class="selcol"></td>
-        <td class="shotcol"><img class="bigshot" data-src="/_r/ba0480e113d0a7.png" alt="screenshot of vaultpay-verify.com" title="click to enlarge" data-host="vaultpay-verify.com" data-href="/ui/findings/9e972300-3ba9-4bc8-9db8-d56527f3cc8e/"></td>
-        <td><span class="badge sev-critical">critical</span></td>
-        <td><a href="/ui/findings/9e972300-3ba9-4bc8-9db8-d56527f3cc8e/"><span class="mono">vaultpay-verify.com</span></a><div class="small muted">domain name · found by Look-alike names, Analyst URL scan · <a href="/ui/findings/9e972300-3ba9-4bc8-9db8-d56527f3cc8e/#network" title="site & network investigation: servers, WHOIS history, urlscan">network</a> · <a href="/ui/candidates/e3cc31e3-7c57-4441-8b21-2c4d87d61df2" title="domain timeline on the watchlist">timeline</a></div></td>
-        <td class="mono" style="white-space:nowrap">77<span class="scorebar"><i data-w="77"></i></span>
-          <span style="margin-left:6px"><a class="pill" href="https://www.virustotal.com/gui/domain/vaultpay-verify.com" target="_blank" rel="noreferrer noopener" title="not in VirusTotal yet — unknown is never treated as clean" style="font-size:10px;color:var(--muted)">VT —</a></span></td>
-        <td><div class="ring sm" data-p="100" style="--c:var(--accent)" title="confidence in the evidence: 100%"><div>100</div></div></td>
-        <td class="small" style="max-width:360px"><span class="pill g-visual" title="favicon mmh3 1401845590 equals the brand&#39;s favicon hash · +22 pts">identical favicon</span> <span class="pill g-visual" title="homepage screenshot is 100% similar to the brand&#39;s (pHash) · +18 pts">looks like the real site</span> <span class="pill g-infrastructure" title="shares server 198.51.100.77 with known phishing of this brand · +15 pts">shares a server with phishing</span> <span class="pill g-infrastructure" title="shares infrastructure with an investigated campaign of this brand · +15 pts">linked to a mapped attacker</span> <a href="/ui/findings/9e972300-3ba9-4bc8-9db8-d56527f3cc8e/" class="muted small">+12 more</a></td>
-        <td><span class="badge state st-confirmed" title="an analyst confirmed it as phishing">confirmed phishing</span></td>
-        <td class="mono small muted" data-rel="2026-10-14T09:46:24.713463">2026-10-14 09:46</td>
-      </tr>
-      
-      <tr class="sevrow critical" data-host="vaultpay-secure.net">
-        <td class="selcol"></td>
-        <td class="shotcol"><img class="bigshot" data-src="/_r/80fea38a400d11.png" alt="screenshot of vaultpay-secure.net" title="click to enlarge" data-host="vaultpay-secure.net" data-href="/ui/findings/f65ec535-db25-4b14-a8d0-76442a4b4e6e/"></td>
-        <td><span class="badge sev-critical">critical</span></td>
-        <td><a href="/ui/findings/f65ec535-db25-4b14-a8d0-76442a4b4e6e/"><span class="mono">vaultpay-secure.net</span></a><div class="small muted">domain name · found by Analyst URL scan · <a href="/ui/findings/f65ec535-db25-4b14-a8d0-76442a4b4e6e/#network" title="site & network investigation: servers, WHOIS history, urlscan">network</a> · <a href="/ui/candidates/22827f9a-8fb0-446b-b059-9665320be86e" title="domain timeline on the watchlist">timeline</a></div></td>
-        <td class="mono" style="white-space:nowrap">77<span class="scorebar"><i data-w="77"></i></span>
-          <span style="margin-left:6px"><a class="pill" href="https://www.virustotal.com/gui/domain/vaultpay-secure.net" target="_blank" rel="noreferrer noopener" title="not in VirusTotal yet — unknown is never treated as clean" style="font-size:10px;color:var(--muted)">VT —</a></span></td>
-        <td><div class="ring sm" data-p="90" style="--c:var(--accent)" title="confidence in the evidence: 90%"><div>90</div></div></td>
-        <td class="small" style="max-width:360px"><span class="pill g-visual" title="favicon mmh3 1401845590 equals the brand&#39;s favicon hash · +22 pts">identical favicon</span> <span class="pill g-visual" title="homepage screenshot is 100% similar to the brand&#39;s (pHash) · +18 pts">looks like the real site</span> <span class="pill g-infrastructure" title="shares server 198.51.100.77 with known phishing of this brand · +15 pts">shares a server with phishing</span> <span class="pill g-infrastructure" title="tracking id UA-777001-1 also present on known phishing pages · +15 pts">same tracking ID as phishing</span> <a href="/ui/findings/f65ec535-db25-4b14-a8d0-76442a4b4e6e/" class="muted small">+11 more</a></td>
-        <td><span class="badge state st-confirmed" title="an analyst confirmed it as phishing">confirmed phishing</span></td>
-        <td class="mono small muted" data-rel="2026-10-14T09:46:24.483973">2026-10-14 09:46</td>
-      </tr>
-      
-      <tr class="sevrow critical" data-host="vault-pay.co">
-        <td class="selcol"></td>
-        <td class="shotcol"><img class="bigshot" data-src="/_r/15a5f151ccfb3b.png" alt="screenshot of vault-pay.co" title="click to enlarge" data-host="vault-pay.co" data-href="/ui/findings/ab239662-2d39-4d17-aeaf-c1b7d3575bd7/"></td>
-        <td><span class="badge sev-critical">critical</span></td>
-        <td><a href="/ui/findings/ab239662-2d39-4d17-aeaf-c1b7d3575bd7/"><span class="mono">vault-pay.co</span></a><div class="small muted">domain name · found by Analyst URL scan · <a href="/ui/findings/ab239662-2d39-4d17-aeaf-c1b7d3575bd7/#network" title="site & network investigation: servers, WHOIS history, urlscan">network</a> · <a href="/ui/candidates/a7925088-f723-4632-92d0-fc2a3c632cbb" title="domain timeline on the watchlist">timeline</a></div></td>
-        <td class="mono" style="white-space:nowrap">75<span class="scorebar"><i data-w="75"></i></span>
-          <span style="margin-left:6px"><a class="pill" href="https://www.virustotal.com/gui/domain/vault-pay.co" target="_blank" rel="noreferrer noopener" title="not in VirusTotal yet — unknown is never treated as clean" style="font-size:10px;color:var(--muted)">VT —</a></span></td>
-        <td><div class="ring sm" data-p="90" style="--c:var(--accent)" title="confidence in the evidence: 90%"><div>90</div></div></td>
-        <td class="small" style="max-width:360px"><span class="pill g-visual" title="favicon mmh3 1401845590 equals the brand&#39;s favicon hash · +22 pts">identical favicon</span> <span class="pill g-visual" title="homepage screenshot is 100% similar to the brand&#39;s (pHash) · +18 pts">looks like the real site</span> <span class="pill g-infrastructure" title="shares server 198.51.100.77 with known phishing of this brand · +15 pts">shares a server with phishing</span> <span class="pill g-infrastructure" title="tracking id UA-777001-1 also present on known phishing pages · +15 pts">same tracking ID as phishing</span> <a href="/ui/findings/ab239662-2d39-4d17-aeaf-c1b7d3575bd7/" class="muted small">+10 more</a></td>
-        <td><span class="badge state st-confirmed" title="an analyst confirmed it as phishing">confirmed phishing</span></td>
-        <td class="mono small muted" data-rel="2026-10-14T09:46:24.585432">2026-10-14 09:46</td>
-      </tr>
-      
-    </table>
-    
-  </div>
-</div>
+</details>
+
 <div id="shotbox" hidden><div class="inner"><img alt=""><div class="cap"><b class="mono"></b> <a>open the finding →</a> <button type="button" class="small">close ✕</button></div></div></div>
-<style>
-  .shotsw{display:flex;gap:6px;align-items:center;text-transform:none;letter-spacing:0;font-size:13px;color:var(--text);cursor:pointer;margin-top:6px}
-  .shotsw input{width:auto;margin:0}
-  #ftable:not(.shots) .shotcol{display:none}
-  .bigshot{width:220px;height:138px;object-fit:cover;object-position:top;border:1px solid var(--border);border-radius:6px;background:#000;cursor:zoom-in;display:block}
-  .noshot{width:220px;height:138px;border:1px dashed var(--border);border-radius:6px;display:flex;align-items:center;justify-content:center;text-align:center;padding:10px;font-size:11.5px;color:var(--muted)}
-  .selcol{width:28px}
-  .selcol input{width:16px;height:16px;margin:0;cursor:pointer}
-  .bulkbar{position:sticky;top:8px;z-index:20;display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:8px 12px;margin-bottom:8px;border:1px solid var(--accent);border-radius:10px;background:rgba(10,18,30,.97);box-shadow:0 8px 24px rgba(0,0,0,.45)}
-  .bulkbar[hidden]{display:none}
-  .bulkbar input[name=reason]{flex:1;min-width:200px;margin:0}
-  #shotbox{position:fixed;inset:0;z-index:60;background:rgba(3,6,10,.85);display:flex;align-items:center;justify-content:center;padding:20px}
-  #shotbox[hidden]{display:none}
-  #shotbox .inner{max-width:min(1200px,96vw);max-height:92vh;display:flex;flex-direction:column;gap:8px}
-  #shotbox img{max-width:100%;max-height:82vh;object-fit:contain;border:1px solid var(--border);border-radius:8px;background:#000}
-  #shotbox .cap{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
-  #shotbox .cap button{margin-left:auto}
-</style>
+<div id="keysheet" hidden role="dialog" aria-modal="true" aria-labelledby="keysheet-t"><div class="inner">
+  <h3 id="keysheet-t" style="margin:0 0 8px">Keyboard shortcuts</h3>
+  <table>
+    <tr><td><kbd>j</kbd> / <kbd>k</kbd></td><td>next / previous finding</td></tr>
+    <tr><td><kbd>Enter</kbd></td><td>open the highlighted finding</td></tr>
+    <tr><td><kbd>x</kbd></td><td>select / unselect it</td></tr>
+    <tr><td><kbd>c</kbd></td><td>confirm the selected (or highlighted) findings as phishing</td></tr>
+    <tr><td><kbd>d</kbd></td><td>dismiss them — the bar asks for the reason</td></tr>
+    <tr><td><kbd>/</kbd></td><td>search by host</td></tr>
+    <tr><td><kbd>s</kbd></td><td>show / hide the statistics</td></tr>
+    <tr><td><kbd>?</kbd></td><td>this sheet · <kbd>Esc</kbd> closes it</td></tr>
+  </table>
+  <div style="text-align:right;margin-top:10px"><button type="button" class="small" id="keysclose">close</button></div>
+</div></div>
 <script>
 (function(){
   // screenshots next to every site: a view the analyst switches on (remembered in this browser), off by default
@@ -441,25 +532,77 @@ header nav{display:flex;align-items:center;min-width:0}
   if (table && box) {
     table.addEventListener('click', ev => { const im = ev.target.closest('img.bigshot'); if (!im) return; box.querySelector('img').src = im.src; box.querySelector('b').textContent = im.dataset.host; box.querySelector('a').href = im.dataset.href; box.hidden = false; });
     box.addEventListener('click', ev => { if (ev.target === box || ev.target.closest('button')) box.hidden = true; });
-    document.addEventListener('keydown', ev => { if (ev.key === 'Escape') box.hidden = true; });
   }
+  // the statistics fold away; the choice is remembered in this browser
+  const st = document.getElementById('fstats');
+  if (st) { try { st.open = localStorage.getItem('bw-findings-stats') === '1'; } catch (e) { /* ignore */ }
+    st.addEventListener('toggle', () => { try { localStorage.setItem('bw-findings-stats', st.open ? '1' : '0'); } catch (e) { /* ignore */ } }); }
   // one verdict for many: tick the rows, then Confirm phishing or Not phishing
   const bar = document.getElementById('bulkform'), all = document.getElementById('selall');
-  const visible = () => [...document.querySelectorAll('#ftable tr[data-host]')].filter(tr => tr.style.display !== 'none').map(tr => tr.querySelector('.sel')).filter(Boolean);
-  const count = () => { const n = document.querySelectorAll('.sel:checked').length; if (bar) { bar.hidden = n === 0; document.getElementById('bulkn').textContent = n + ' selected'; } if (all) { const v = visible(); all.checked = v.length > 0 && v.every(c => c.checked); } };
-  document.querySelectorAll('.sel').forEach(c => c.addEventListener('change', count));
-  if (all) all.addEventListener('change', () => { visible().forEach(c => { c.checked = all.checked; }); count(); });
+  const sels = () => [...document.querySelectorAll('#ftable .sel')];
+  const count = () => { const n = document.querySelectorAll('.sel:checked').length; if (bar) { bar.hidden = n === 0; document.getElementById('bulkn').textContent = n + ' selected'; } if (all) { const v = sels(); all.checked = v.length > 0 && v.every(c => c.checked); } };
+  sels().forEach(c => c.addEventListener('change', count));
+  if (all) all.addEventListener('change', () => { sels().forEach(c => { c.checked = all.checked; }); count(); });
   const clear = document.getElementById('bulkclear'); if (clear) clear.addEventListener('click', () => { document.querySelectorAll('.sel:checked').forEach(c => { c.checked = false; }); count(); });
   count();
-})();
-(function(){
-  const q = document.getElementById('q'); if (!q) return;
-  q.addEventListener('input', () => { const v = q.value.toLowerCase();
-    document.querySelectorAll('#ftable tr[data-host]').forEach(tr => tr.style.display = tr.dataset.host.includes(v) ? '' : 'none'); });
+  // keyboard: j/k move a highlight, x selects, c / d give the verdict through the bulk bar, / searches, ? explains
+  const rows = () => [...document.querySelectorAll('#ftable tbody tr[data-id]')];
+  let cur = -1;
+  const setCur = i => { const r = rows(); if (!r.length) return; cur = Math.max(0, Math.min(r.length - 1, i)); r.forEach((tr, k) => tr.classList.toggle('cur', k === cur)); r[cur].scrollIntoView({block: 'nearest'}); };
+  const sheet = document.getElementById('keysheet'), kb = document.getElementById('keysbtn'), kc = document.getElementById('keysclose');
+  const toggleSheet = v => { if (sheet) sheet.hidden = v === undefined ? !sheet.hidden : !v; };
+  if (kb) kb.addEventListener('click', () => toggleSheet()); if (kc) kc.addEventListener('click', () => toggleSheet(false));
+  if (sheet) sheet.addEventListener('click', ev => { if (ev.target === sheet) toggleSheet(false); });
+  const typing = () => { const a = document.activeElement; return a && (a.tagName === 'INPUT' || a.tagName === 'SELECT' || a.tagName === 'TEXTAREA' || a.isContentEditable); };
+  const verdict = action => { if (!bar) return; const r = rows();
+    if (!document.querySelector('.sel:checked') && cur >= 0) { const c = r[cur].querySelector('.sel'); if (c) { c.checked = true; count(); } }
+    if (!document.querySelector('.sel:checked')) return;
+    if (action === 'dismiss') { bar.querySelector('input[name=reason]').focus(); return; }  // the reason first; Enter sends it
+    bar.querySelector('button[value=confirm]').click(); };
+  document.addEventListener('keydown', ev => {
+    if (ev.key === 'Escape') { if (box) box.hidden = true; toggleSheet(false); return; }
+    if (ev.ctrlKey || ev.metaKey || ev.altKey) return;
+    if (typing()) { if (ev.key === 'Enter' && ev.target === bar?.querySelector('input[name=reason]')) { ev.preventDefault(); bar.querySelector('button[value=dismiss]').click(); } return; }
+    if (sheet && !sheet.hidden && ev.key !== '?') return;
+    switch (ev.key) {
+      case 'j': case 'ArrowDown': if (table) { ev.preventDefault(); setCur(cur + 1); } break;
+      case 'k': case 'ArrowUp': if (table) { ev.preventDefault(); setCur(cur - 1); } break;
+      case 'x': if (cur >= 0) { const c = rows()[cur].querySelector('.sel'); if (c) { c.checked = !c.checked; count(); } } break;
+      case 'Enter': if (cur >= 0) { const a = rows()[cur].querySelector('a.flink'); if (a) location.href = a.href; } break;
+      case 'c': verdict('confirm'); break;
+      case 'd': verdict('dismiss'); break;
+      case '/': { const q = document.getElementById('q'); if (q) { ev.preventDefault(); q.focus(); q.select(); } break; }
+      case 's': if (st) st.open = !st.open; break;
+      case '?': ev.preventDefault(); toggleSheet(); break;
+    }
+  });
 })();
 </script>
 
 </main>
+<script>
+/* A form is sent once: a double click (or Enter twice) queued two identical scans, one of which never ran.
+   Every scan form and every form marked data-busy is guarded; a data-busy form also disables the button that sent it
+   and shows "Working…" (data-busy="text" for other words) until the answer arrives.
+   Only a submit that really went out counts — a confirm dialog cancels the first one and sends it again itself. */
+(function(){
+  const once = f => f.hasAttribute('data-busy') || /\/(scan|scan-urls)$/.test(f.getAttribute('action') || '');
+  document.addEventListener('submit', e => { const f = e.target; if (once(f) && f.__sentAt && Date.now() - f.__sentAt < 4000) { e.preventDefault(); e.stopImmediatePropagation(); } }, true);
+  // read defaultPrevented after every listener ran (the confirm dialog's included), not before them
+  document.addEventListener('submit', e => { const f = e.target, b = e.submitter; if (!once(f)) return;
+    setTimeout(() => { if (e.defaultPrevented) return; f.__sentAt = Date.now();
+      if (f.hasAttribute('data-busy') && b && b.tagName === 'BUTTON') { b.disabled = true; b.dataset.was = b.textContent; b.textContent = f.getAttribute('data-busy') || 'Working…';
+        setTimeout(() => { b.disabled = false; b.textContent = b.dataset.was; }, 30000); } }, 0); });
+  // the sticky header's height, for anything that sticks under it
+  const hdr = document.querySelector('header'); const setH = () => document.documentElement.style.setProperty('--hdr', (hdr ? hdr.offsetHeight : 56) + 'px');
+  setH(); window.addEventListener('resize', setH);
+  // server timestamps are UTC: <time datetime="…" data-local> (the |ts filter) and [data-local="…"] show the viewer's local time
+  const utc = iso => /T\d\d:\d\d/.test(iso) && !/(Z|[+-]\d\d:?\d\d)$/.test(iso) ? iso + 'Z' : iso;
+  const fmt = new Intl.DateTimeFormat(undefined, {year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'});
+  document.querySelectorAll('[data-local]').forEach(el => { const raw = el.getAttribute('datetime') || el.dataset.local; if (!raw) return;
+    const d = new Date(utc(raw)); if (isNaN(d)) return; el.textContent = fmt.format(d); if (!el.title) el.title = raw.replace('T', ' ').slice(0, 19) + ' UTC'; });
+})();
+</script>
 <script>
 /* BrandWatch motion layer: count-ups, staggered entrances, animated bars / rings / histograms,
    and auto-drawn donut + sparkline charts from data-* attributes. */

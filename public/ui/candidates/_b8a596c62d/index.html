@@ -73,6 +73,21 @@ button:hover,.btn:hover{border-color:var(--accent);box-shadow:0 0 12px rgba(53,1
 button.danger{border-color:var(--crit);color:var(--crit)}button.ok{border-color:var(--low);color:var(--low)}
 input,select,textarea{background:#0b1220;color:var(--text);border:1px solid var(--border);border-radius:6px;padding:7px 9px;font:inherit;width:100%;transition:border-color .2s,box-shadow .2s}
 input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(53,199,242,.15)}
+/* keyboard users see where they are; mouse clicks do not get the ring */
+:focus-visible{outline:2px solid var(--accent2);outline-offset:2px;border-radius:4px}
+a:focus-visible,button:focus-visible,.btn:focus-visible{box-shadow:0 0 0 3px rgba(53,199,242,.25)}
+.skip{position:absolute;left:8px;top:-60px;z-index:100;padding:8px 14px;background:var(--panel2);border:1px solid var(--accent);border-radius:8px;color:var(--text);font-weight:600}
+.skip:focus{top:8px}
+/* the button variants every page uses */
+.btn.primary{background:rgba(53,199,242,.16);border-color:var(--accent);color:var(--accent2);font-weight:600}
+.btn.ghost,button.ghost{background:transparent}
+button.small,.btn.small{padding:4px 9px;font-size:12px;white-space:nowrap}
+button[disabled],.btn[aria-disabled=true]{opacity:.55;cursor:default;box-shadow:none}
+/* one message after a form (see _flash.html) */
+.flash{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:0 0 14px;padding:10px 14px;border:1px solid rgba(46,204,113,.5);border-radius:10px;background:rgba(46,204,113,.08);font-size:13.5px;animation:fadeUp .4s ease both}
+.flash .ic{width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:800;background:rgba(53,199,242,.15);color:var(--accent2);flex:none}
+.flash .ic.ok{background:rgba(46,204,113,.18);color:var(--low)}.flash .ic.undo{background:rgba(255,159,28,.18);color:var(--high)}
+.flash .t{flex:1;min-width:200px}.flash .undo{margin:0}.flash .x{margin-left:auto;padding:2px 8px;font-size:12px;border-color:transparent;color:var(--muted)}
 label{display:block;font-size:12px;color:var(--muted);margin:8px 0 4px;font-family:var(--mono);text-transform:uppercase;letter-spacing:.06em}
 .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
 .kpi{position:relative;overflow:hidden;background:linear-gradient(180deg,rgba(18,26,43,.95),rgba(14,20,32,.95));border:1px solid var(--border);border-radius:10px;padding:12px 14px;
@@ -173,6 +188,7 @@ header nav{display:flex;align-items:center;min-width:0}
 </style>
 </head>
 <body>
+<a class="skip" href="#main">Skip to content</a>
 <header>
   <a class="logo" href="/ui/dashboard/">BrandWatch</a>
   
@@ -191,7 +207,13 @@ header nav{display:flex;align-items:center;min-width:0}
   <span class="who"><span class="email">admin · </span>admin · <a href="/ui/logout">logout</a></span>
   
 </header>
-<main>
+<main id="main">
+
+
+
+
+
+
 
 
 <style>
@@ -206,8 +228,24 @@ header nav{display:flex;align-items:center;min-width:0}
   .count{font-family:var(--display);font-size:18px;color:var(--accent2)}
   .wrow td:first-child{box-shadow:inset 3px 0 0 var(--sc)}
   .prio{display:inline-block;height:6px;border-radius:3px;background:var(--accent);vertical-align:middle;width:0;transition:width 1.2s}
-  button.small{padding:4px 9px;font-size:12px;white-space:nowrap}
   td form{margin:0 4px 0 0}
+  .filters{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px 10px;align-items:end;margin-bottom:8px}
+  .filters label{display:block;font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:3px}
+  .filters .wide{grid-column:span 2}.filters .go{display:flex;gap:6px}
+  .bchips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+  .bchips a{padding:4px 12px;font-size:12.5px}.bchips a.on{border-color:var(--accent);color:var(--accent2)}
+  .selcol{width:28px}.selcol input{width:16px;height:16px;margin:0;cursor:pointer}
+  .bulkbar{position:sticky;top:calc(var(--hdr,56px) + 8px);z-index:19;display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:8px 12px;margin-bottom:8px;border:1px solid var(--accent);border-radius:10px;background:#0a121e;box-shadow:0 8px 24px rgba(0,0,0,.45)}
+  .bulkbar[hidden]{display:none}
+  .bulkbar input[name=reason]{flex:1;min-width:180px;margin:0}
+  .why{font-size:12px;color:var(--muted);max-width:280px}
+  .why b{color:var(--text);font-weight:500}
+  .pager{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:10px}.pager .off{opacity:.4;pointer-events:none}
+  .wstats summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:8px;margin:18px 0 8px}
+  .wstats summary::-webkit-details-marker{display:none}.wstats summary h2{margin:0}.wstats summary .tog{font-size:12px;color:var(--accent)}
+  .wstats[open] summary .tog.o{display:none}.wstats:not([open]) summary .tog.c{display:none}
+  @media (max-width:700px){.filters{grid-template-columns:1fr 1fr}.kpis{grid-template-columns:1fr 1fr}
+    #ctable th:nth-child(4),#ctable td:nth-child(4),#ctable th:nth-child(8),#ctable td:nth-child(8),#ctable th:nth-child(9),#ctable td:nth-child(9),#ctable th:nth-child(11),#ctable td:nth-child(11){display:none}}
 </style>
 <h1>WATCHLIST <span class="muted">· every domain the system is observing over time · 1217 total</span></h1>
 <p class="intro">Every domain ever discovered for your brands — parked, empty or legitimate-looking — re-checked on a schedule. One that suddenly grows a login form jumps to the front.</p>
@@ -234,8 +272,829 @@ header nav{display:flex;align-items:center;min-width:0}
 </div>
 
 <div class="panel" style="margin-top:14px">
+  
+  <div class="bchips">
+    <a class="btn on" href="/ui/candidates/_b8a596c62d/">All brands <b>29</b></a>
+    <a class="btn " href="/ui/candidates/_3e7830941e/"><bdi>ShopNova</bdi> <b>12</b></a><a class="btn " href="/ui/candidates/_5e83e98f7d/"><bdi>ShopNova · Israel</bdi> <b>0</b></a><a class="btn " href="/ui/candidates/_17e589876d/"><bdi>CoinPilot</bdi> <b>7</b></a><a class="btn " href="/ui/candidates/_308c585d4a/"><bdi>VaultPay</bdi> <b>10</b></a>
+  </div>
+  <form method="get" action="/ui/candidates/" class="filters" id="filters">
+    <input type="hidden" name="brand_id" value="">
+    <div class="wide"><label for="q">Search host</label><input id="q" name="q" value="" placeholder="part of a host name" autocomplete="off" maxlength="120"></div>
+    <div><label for="c-state">State</label><select id="c-state" name="state"><option value="">all</option><option value="new" selected>new</option><option value="watching" >watching</option><option value="analyzing" >analysing</option><option value="flagged" >flagged (finding)</option><option value="long_watch" >long watch</option><option value="dismissed" >dismissed</option></select></div>
+    <div class="go"><button type="submit" class="primary">Apply</button><a class="btn" href="/ui/candidates/">Reset</a></div>
+    <div class="muted small" style="align-self:center">29 domains</div>
+  </form>
+  
+  
+  
+  
+  <form id="bulkform" method="post" action="/ui/candidates/bulk-dismiss" class="bulkbar" hidden>
+    <input type="hidden" name="next" value="/ui/candidates?state=new"><input type="hidden" name="whitelist" value="on">
+    <b id="bulkn">0 selected</b>
+    <input name="reason" placeholder="reason (optional, kept in the audit log)" maxlength="2000" aria-label="reason">
+    <button type="submit" class="primary" data-confirm="Known legit: remove {n} domain(s) from the watchlist and allowlist each one for its brand? They (and their subdomains) are never flagged again. Undo on the brand page → whitelist." data-confirm-count=".sel:checked" data-confirm-title="Known legitimate" data-confirm-ok="Allowlist them">Known legit ✓</button>
+    <button type="button" id="bulkclear" class="small">clear</button>
+  </form>
+  
+  <table id="ctable">
+    <thead><tr><th class="selcol"><input type="checkbox" id="selall" aria-label="select every domain on this page"></th><th>Domain</th><th>Brand</th><th>Why it is here</th><th>State</th><th>Finding</th><th>Priority</th><th>First seen</th><th>Last seen</th><th>Next scan</th><th class="right">Scans</th><th>Actions</th></tr></thead>
+    <tbody>
+    
+    <tr class="wrow" style="--sc:#8A97A8" data-host="shopnova-eu.com">
+      <td class="selcol"><input type="checkbox" class="sel" name="ids" value="d25b56ef-f7ee-48c2-aae9-543efa44b68b" form="bulkform" aria-label="select shopnova-eu.com"></td>
+      <td><a href="/ui/candidates/d25b56ef-f7ee-48c2-aae9-543efa44b68b/"><span class="mono">shopnova-eu.com</span></a><div class="small muted">domain name</div></td>
+      <td class="small"><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/"><bdi>ShopNova</bdi></a></td>
+      <td class="why"><b>Analyst URL scan</b> <span class="mono" dir="ltr">pivot:brand pattern in hostname</span></td>
+      <td><span class="badge state st-new" title="just discovered, not visited yet">new</span></td>
+      <td><span class="muted small">—</span></td>
+      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="60" style="max-width:60px"></span> 20</td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:53:04.410815" data-local title="2026-10-14T09:53:04.410815 UTC">2026-10-14 09:53</time></td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:53:04.410815" data-local title="2026-10-14T09:53:04.410815 UTC">2026-10-14 09:53</time></td>
+      <td class="mono small" >—</td>
+      <td class="right mono">0</td>
+      
+      <td style="white-space:nowrap">
+        
+        <form method="post" action="/ui/candidates/d25b56ef-f7ee-48c2-aae9-543efa44b68b/dismiss" style="display:inline"
+              data-confirm="Known legit: remove shopnova-eu.com from the watchlist and allowlist its domain for ShopNova?&#10;&#10;It (and its subdomains) will never be flagged again. You can undo this on the brand page → whitelist."
+              data-confirm-title="Known legitimate" data-confirm-ok="Allowlist it">
+          <input type="hidden" name="next" value="/ui/candidates?state=new"><input type="hidden" name="whitelist" value="on"><input type="hidden" name="reason" value="known legitimate domain">
+          <button type="submit" class="small" title="I know this domain — it is legitimate. One click: off the watchlist and allowlisted for this brand">Known legit ✓</button>
+        </form>
+        
+        <form method="post" action="/ui/candidates/d25b56ef-f7ee-48c2-aae9-543efa44b68b/rescan" style="display:inline" data-busy="Queued…"><input type="hidden" name="next" value="/ui/candidates?state=new"><button type="submit" class="small" title="fetch and score this site again now; you stay on the list">Rescan</button></form>
+      </td>
+      
+    </tr>
+    
+    <tr class="wrow" style="--sc:#8A97A8" data-host="coinpilott.io">
+      <td class="selcol"><input type="checkbox" class="sel" name="ids" value="4952e586-bee9-47e8-95e6-b2e6bd2d687e" form="bulkform" aria-label="select coinpilott.io"></td>
+      <td><a href="/ui/candidates/4952e586-bee9-47e8-95e6-b2e6bd2d687e/"><span class="mono">coinpilott.io</span></a><div class="small muted">domain name</div></td>
+      <td class="small"><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/"><bdi>ShopNova</bdi></a></td>
+      <td class="why"><b>Analyst URL scan</b> <span class="mono" dir="ltr">pivot:shares cert with the campaign</span></td>
+      <td><span class="badge state st-new" title="just discovered, not visited yet">new</span></td>
+      <td><span class="muted small">—</span></td>
+      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="60" style="max-width:60px"></span> 20</td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:53:04.395092" data-local title="2026-10-14T09:53:04.395092 UTC">2026-10-14 09:53</time></td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:53:04.395092" data-local title="2026-10-14T09:53:04.395092 UTC">2026-10-14 09:53</time></td>
+      <td class="mono small" >—</td>
+      <td class="right mono">0</td>
+      
+      <td style="white-space:nowrap">
+        
+        <form method="post" action="/ui/candidates/4952e586-bee9-47e8-95e6-b2e6bd2d687e/dismiss" style="display:inline"
+              data-confirm="Known legit: remove coinpilott.io from the watchlist and allowlist its domain for ShopNova?&#10;&#10;It (and its subdomains) will never be flagged again. You can undo this on the brand page → whitelist."
+              data-confirm-title="Known legitimate" data-confirm-ok="Allowlist it">
+          <input type="hidden" name="next" value="/ui/candidates?state=new"><input type="hidden" name="whitelist" value="on"><input type="hidden" name="reason" value="known legitimate domain">
+          <button type="submit" class="small" title="I know this domain — it is legitimate. One click: off the watchlist and allowlisted for this brand">Known legit ✓</button>
+        </form>
+        
+        <form method="post" action="/ui/candidates/4952e586-bee9-47e8-95e6-b2e6bd2d687e/rescan" style="display:inline" data-busy="Queued…"><input type="hidden" name="next" value="/ui/candidates?state=new"><button type="submit" class="small" title="fetch and score this site again now; you stay on the list">Rescan</button></form>
+      </td>
+      
+    </tr>
+    
+    <tr class="wrow" style="--sc:#8A97A8" data-host="coinpllot.io">
+      <td class="selcol"><input type="checkbox" class="sel" name="ids" value="123efcdb-fbb0-4b2d-9575-72eb36b84466" form="bulkform" aria-label="select coinpllot.io"></td>
+      <td><a href="/ui/candidates/123efcdb-fbb0-4b2d-9575-72eb36b84466/"><span class="mono">coinpllot.io</span></a><div class="small muted">domain name</div></td>
+      <td class="small"><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/"><bdi>ShopNova</bdi></a></td>
+      <td class="why"><b>Analyst URL scan</b> <span class="mono" dir="ltr">pivot:shares cert with the campaign</span></td>
+      <td><span class="badge state st-new" title="just discovered, not visited yet">new</span></td>
+      <td><span class="muted small">—</span></td>
+      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="60" style="max-width:60px"></span> 20</td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:53:04.395092" data-local title="2026-10-14T09:53:04.395092 UTC">2026-10-14 09:53</time></td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:53:04.395092" data-local title="2026-10-14T09:53:04.395092 UTC">2026-10-14 09:53</time></td>
+      <td class="mono small" >—</td>
+      <td class="right mono">0</td>
+      
+      <td style="white-space:nowrap">
+        
+        <form method="post" action="/ui/candidates/123efcdb-fbb0-4b2d-9575-72eb36b84466/dismiss" style="display:inline"
+              data-confirm="Known legit: remove coinpllot.io from the watchlist and allowlist its domain for ShopNova?&#10;&#10;It (and its subdomains) will never be flagged again. You can undo this on the brand page → whitelist."
+              data-confirm-title="Known legitimate" data-confirm-ok="Allowlist it">
+          <input type="hidden" name="next" value="/ui/candidates?state=new"><input type="hidden" name="whitelist" value="on"><input type="hidden" name="reason" value="known legitimate domain">
+          <button type="submit" class="small" title="I know this domain — it is legitimate. One click: off the watchlist and allowlisted for this brand">Known legit ✓</button>
+        </form>
+        
+        <form method="post" action="/ui/candidates/123efcdb-fbb0-4b2d-9575-72eb36b84466/rescan" style="display:inline" data-busy="Queued…"><input type="hidden" name="next" value="/ui/candidates?state=new"><button type="submit" class="small" title="fetch and score this site again now; you stay on the list">Rescan</button></form>
+      </td>
+      
+    </tr>
+    
+    <tr class="wrow" style="--sc:#8A97A8" data-host="coin-pilot.io">
+      <td class="selcol"><input type="checkbox" class="sel" name="ids" value="34a395c5-524a-4108-9917-e124040166d9" form="bulkform" aria-label="select coin-pilot.io"></td>
+      <td><a href="/ui/candidates/34a395c5-524a-4108-9917-e124040166d9/"><span class="mono">coin-pilot.io</span></a><div class="small muted">domain name</div></td>
+      <td class="small"><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/"><bdi>ShopNova</bdi></a></td>
+      <td class="why"><b>Analyst URL scan</b> <span class="mono" dir="ltr">pivot:shares cert with the campaign</span></td>
+      <td><span class="badge state st-new" title="just discovered, not visited yet">new</span></td>
+      <td><span class="muted small">—</span></td>
+      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="60" style="max-width:60px"></span> 20</td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:53:04.395092" data-local title="2026-10-14T09:53:04.395092 UTC">2026-10-14 09:53</time></td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:53:04.395092" data-local title="2026-10-14T09:53:04.395092 UTC">2026-10-14 09:53</time></td>
+      <td class="mono small" >—</td>
+      <td class="right mono">0</td>
+      
+      <td style="white-space:nowrap">
+        
+        <form method="post" action="/ui/candidates/34a395c5-524a-4108-9917-e124040166d9/dismiss" style="display:inline"
+              data-confirm="Known legit: remove coin-pilot.io from the watchlist and allowlist its domain for ShopNova?&#10;&#10;It (and its subdomains) will never be flagged again. You can undo this on the brand page → whitelist."
+              data-confirm-title="Known legitimate" data-confirm-ok="Allowlist it">
+          <input type="hidden" name="next" value="/ui/candidates?state=new"><input type="hidden" name="whitelist" value="on"><input type="hidden" name="reason" value="known legitimate domain">
+          <button type="submit" class="small" title="I know this domain — it is legitimate. One click: off the watchlist and allowlisted for this brand">Known legit ✓</button>
+        </form>
+        
+        <form method="post" action="/ui/candidates/34a395c5-524a-4108-9917-e124040166d9/rescan" style="display:inline" data-busy="Queued…"><input type="hidden" name="next" value="/ui/candidates?state=new"><button type="submit" class="small" title="fetch and score this site again now; you stay on the list">Rescan</button></form>
+      </td>
+      
+    </tr>
+    
+    <tr class="wrow" style="--sc:#8A97A8" data-host="vaultpay-login.com">
+      <td class="selcol"><input type="checkbox" class="sel" name="ids" value="90326556-116b-4edb-ad02-26d53e01a006" form="bulkform" aria-label="select vaultpay-login.com"></td>
+      <td><a href="/ui/candidates/90326556-116b-4edb-ad02-26d53e01a006/"><span class="mono">vaultpay-login.com</span></a><div class="small muted">domain name</div></td>
+      <td class="small"><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/"><bdi>ShopNova</bdi></a></td>
+      <td class="why"><b>Analyst URL scan</b> <span class="mono" dir="ltr">pivot:shares cert with the campaign</span></td>
+      <td><span class="badge state st-new" title="just discovered, not visited yet">new</span></td>
+      <td><span class="muted small">—</span></td>
+      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="60" style="max-width:60px"></span> 20</td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:53:04.395092" data-local title="2026-10-14T09:53:04.395092 UTC">2026-10-14 09:53</time></td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:53:04.395092" data-local title="2026-10-14T09:53:04.395092 UTC">2026-10-14 09:53</time></td>
+      <td class="mono small" >—</td>
+      <td class="right mono">0</td>
+      
+      <td style="white-space:nowrap">
+        
+        <form method="post" action="/ui/candidates/90326556-116b-4edb-ad02-26d53e01a006/dismiss" style="display:inline"
+              data-confirm="Known legit: remove vaultpay-login.com from the watchlist and allowlist its domain for ShopNova?&#10;&#10;It (and its subdomains) will never be flagged again. You can undo this on the brand page → whitelist."
+              data-confirm-title="Known legitimate" data-confirm-ok="Allowlist it">
+          <input type="hidden" name="next" value="/ui/candidates?state=new"><input type="hidden" name="whitelist" value="on"><input type="hidden" name="reason" value="known legitimate domain">
+          <button type="submit" class="small" title="I know this domain — it is legitimate. One click: off the watchlist and allowlisted for this brand">Known legit ✓</button>
+        </form>
+        
+        <form method="post" action="/ui/candidates/90326556-116b-4edb-ad02-26d53e01a006/rescan" style="display:inline" data-busy="Queued…"><input type="hidden" name="next" value="/ui/candidates?state=new"><button type="submit" class="small" title="fetch and score this site again now; you stay on the list">Rescan</button></form>
+      </td>
+      
+    </tr>
+    
+    <tr class="wrow" style="--sc:#8A97A8" data-host="vaultpay-secure.net">
+      <td class="selcol"><input type="checkbox" class="sel" name="ids" value="ed249af2-ab24-44a7-bd07-501c8a441887" form="bulkform" aria-label="select vaultpay-secure.net"></td>
+      <td><a href="/ui/candidates/ed249af2-ab24-44a7-bd07-501c8a441887/"><span class="mono">vaultpay-secure.net</span></a><div class="small muted">domain name</div></td>
+      <td class="small"><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/"><bdi>ShopNova</bdi></a></td>
+      <td class="why"><b>Analyst URL scan</b> <span class="mono" dir="ltr">pivot:shares cert with the campaign</span></td>
+      <td><span class="badge state st-new" title="just discovered, not visited yet">new</span></td>
+      <td><span class="muted small">—</span></td>
+      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="60" style="max-width:60px"></span> 20</td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:53:04.395092" data-local title="2026-10-14T09:53:04.395092 UTC">2026-10-14 09:53</time></td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:53:04.395092" data-local title="2026-10-14T09:53:04.395092 UTC">2026-10-14 09:53</time></td>
+      <td class="mono small" >—</td>
+      <td class="right mono">0</td>
+      
+      <td style="white-space:nowrap">
+        
+        <form method="post" action="/ui/candidates/ed249af2-ab24-44a7-bd07-501c8a441887/dismiss" style="display:inline"
+              data-confirm="Known legit: remove vaultpay-secure.net from the watchlist and allowlist its domain for ShopNova?&#10;&#10;It (and its subdomains) will never be flagged again. You can undo this on the brand page → whitelist."
+              data-confirm-title="Known legitimate" data-confirm-ok="Allowlist it">
+          <input type="hidden" name="next" value="/ui/candidates?state=new"><input type="hidden" name="whitelist" value="on"><input type="hidden" name="reason" value="known legitimate domain">
+          <button type="submit" class="small" title="I know this domain — it is legitimate. One click: off the watchlist and allowlisted for this brand">Known legit ✓</button>
+        </form>
+        
+        <form method="post" action="/ui/candidates/ed249af2-ab24-44a7-bd07-501c8a441887/rescan" style="display:inline" data-busy="Queued…"><input type="hidden" name="next" value="/ui/candidates?state=new"><button type="submit" class="small" title="fetch and score this site again now; you stay on the list">Rescan</button></form>
+      </td>
+      
+    </tr>
+    
+    <tr class="wrow" style="--sc:#8A97A8" data-host="vault-pay.co">
+      <td class="selcol"><input type="checkbox" class="sel" name="ids" value="4f4fd33c-9cc1-4682-9d7f-a381682dd39a" form="bulkform" aria-label="select vault-pay.co"></td>
+      <td><a href="/ui/candidates/4f4fd33c-9cc1-4682-9d7f-a381682dd39a/"><span class="mono">vault-pay.co</span></a><div class="small muted">domain name</div></td>
+      <td class="small"><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/"><bdi>ShopNova</bdi></a></td>
+      <td class="why"><b>Analyst URL scan</b> <span class="mono" dir="ltr">pivot:shares cert with the campaign</span></td>
+      <td><span class="badge state st-new" title="just discovered, not visited yet">new</span></td>
+      <td><span class="muted small">—</span></td>
+      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="60" style="max-width:60px"></span> 20</td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:53:04.395092" data-local title="2026-10-14T09:53:04.395092 UTC">2026-10-14 09:53</time></td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:53:04.395092" data-local title="2026-10-14T09:53:04.395092 UTC">2026-10-14 09:53</time></td>
+      <td class="mono small" >—</td>
+      <td class="right mono">0</td>
+      
+      <td style="white-space:nowrap">
+        
+        <form method="post" action="/ui/candidates/4f4fd33c-9cc1-4682-9d7f-a381682dd39a/dismiss" style="display:inline"
+              data-confirm="Known legit: remove vault-pay.co from the watchlist and allowlist its domain for ShopNova?&#10;&#10;It (and its subdomains) will never be flagged again. You can undo this on the brand page → whitelist."
+              data-confirm-title="Known legitimate" data-confirm-ok="Allowlist it">
+          <input type="hidden" name="next" value="/ui/candidates?state=new"><input type="hidden" name="whitelist" value="on"><input type="hidden" name="reason" value="known legitimate domain">
+          <button type="submit" class="small" title="I know this domain — it is legitimate. One click: off the watchlist and allowlisted for this brand">Known legit ✓</button>
+        </form>
+        
+        <form method="post" action="/ui/candidates/4f4fd33c-9cc1-4682-9d7f-a381682dd39a/rescan" style="display:inline" data-busy="Queued…"><input type="hidden" name="next" value="/ui/candidates?state=new"><button type="submit" class="small" title="fetch and score this site again now; you stay on the list">Rescan</button></form>
+      </td>
+      
+    </tr>
+    
+    <tr class="wrow" style="--sc:#8A97A8" data-host="vaultpay-verify.com">
+      <td class="selcol"><input type="checkbox" class="sel" name="ids" value="181f56a2-5e4e-4949-b6d2-be4bf8082f32" form="bulkform" aria-label="select vaultpay-verify.com"></td>
+      <td><a href="/ui/candidates/181f56a2-5e4e-4949-b6d2-be4bf8082f32/"><span class="mono">vaultpay-verify.com</span></a><div class="small muted">domain name</div></td>
+      <td class="small"><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/"><bdi>ShopNova</bdi></a></td>
+      <td class="why"><b>Analyst URL scan</b> <span class="mono" dir="ltr">pivot:shares cert with the campaign</span></td>
+      <td><span class="badge state st-new" title="just discovered, not visited yet">new</span></td>
+      <td><span class="muted small">—</span></td>
+      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="60" style="max-width:60px"></span> 20</td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:53:04.395092" data-local title="2026-10-14T09:53:04.395092 UTC">2026-10-14 09:53</time></td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:53:04.395092" data-local title="2026-10-14T09:53:04.395092 UTC">2026-10-14 09:53</time></td>
+      <td class="mono small" >—</td>
+      <td class="right mono">0</td>
+      
+      <td style="white-space:nowrap">
+        
+        <form method="post" action="/ui/candidates/181f56a2-5e4e-4949-b6d2-be4bf8082f32/dismiss" style="display:inline"
+              data-confirm="Known legit: remove vaultpay-verify.com from the watchlist and allowlist its domain for ShopNova?&#10;&#10;It (and its subdomains) will never be flagged again. You can undo this on the brand page → whitelist."
+              data-confirm-title="Known legitimate" data-confirm-ok="Allowlist it">
+          <input type="hidden" name="next" value="/ui/candidates?state=new"><input type="hidden" name="whitelist" value="on"><input type="hidden" name="reason" value="known legitimate domain">
+          <button type="submit" class="small" title="I know this domain — it is legitimate. One click: off the watchlist and allowlisted for this brand">Known legit ✓</button>
+        </form>
+        
+        <form method="post" action="/ui/candidates/181f56a2-5e4e-4949-b6d2-be4bf8082f32/rescan" style="display:inline" data-busy="Queued…"><input type="hidden" name="next" value="/ui/candidates?state=new"><button type="submit" class="small" title="fetch and score this site again now; you stay on the list">Rescan</button></form>
+      </td>
+      
+    </tr>
+    
+    <tr class="wrow" style="--sc:#8A97A8" data-host="coinpilot-bot.io">
+      <td class="selcol"><input type="checkbox" class="sel" name="ids" value="14a14d64-6604-41ea-838b-f51c4f34aa83" form="bulkform" aria-label="select coinpilot-bot.io"></td>
+      <td><a href="/ui/candidates/14a14d64-6604-41ea-838b-f51c4f34aa83/"><span class="mono">coinpilot-bot.io</span></a><div class="small muted">domain name</div></td>
+      <td class="small"><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/"><bdi>ShopNova</bdi></a></td>
+      <td class="why"><b>Analyst URL scan</b> <span class="mono" dir="ltr">pivot:shares cert with the campaign</span></td>
+      <td><span class="badge state st-new" title="just discovered, not visited yet">new</span></td>
+      <td><span class="muted small">—</span></td>
+      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="60" style="max-width:60px"></span> 20</td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:53:04.395092" data-local title="2026-10-14T09:53:04.395092 UTC">2026-10-14 09:53</time></td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:53:04.395092" data-local title="2026-10-14T09:53:04.395092 UTC">2026-10-14 09:53</time></td>
+      <td class="mono small" >—</td>
+      <td class="right mono">0</td>
+      
+      <td style="white-space:nowrap">
+        
+        <form method="post" action="/ui/candidates/14a14d64-6604-41ea-838b-f51c4f34aa83/dismiss" style="display:inline"
+              data-confirm="Known legit: remove coinpilot-bot.io from the watchlist and allowlist its domain for ShopNova?&#10;&#10;It (and its subdomains) will never be flagged again. You can undo this on the brand page → whitelist."
+              data-confirm-title="Known legitimate" data-confirm-ok="Allowlist it">
+          <input type="hidden" name="next" value="/ui/candidates?state=new"><input type="hidden" name="whitelist" value="on"><input type="hidden" name="reason" value="known legitimate domain">
+          <button type="submit" class="small" title="I know this domain — it is legitimate. One click: off the watchlist and allowlisted for this brand">Known legit ✓</button>
+        </form>
+        
+        <form method="post" action="/ui/candidates/14a14d64-6604-41ea-838b-f51c4f34aa83/rescan" style="display:inline" data-busy="Queued…"><input type="hidden" name="next" value="/ui/candidates?state=new"><button type="submit" class="small" title="fetch and score this site again now; you stay on the list">Rescan</button></form>
+      </td>
+      
+    </tr>
+    
+    <tr class="wrow" style="--sc:#8A97A8" data-host="coinplot.io">
+      <td class="selcol"><input type="checkbox" class="sel" name="ids" value="c6729bdc-7a71-44dc-8aec-24e28fd5c4c4" form="bulkform" aria-label="select coinplot.io"></td>
+      <td><a href="/ui/candidates/c6729bdc-7a71-44dc-8aec-24e28fd5c4c4/"><span class="mono">coinplot.io</span></a><div class="small muted">domain name</div></td>
+      <td class="small"><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/"><bdi>ShopNova</bdi></a></td>
+      <td class="why"><b>Analyst URL scan</b> <span class="mono" dir="ltr">pivot:shares cert with the campaign</span></td>
+      <td><span class="badge state st-new" title="just discovered, not visited yet">new</span></td>
+      <td><span class="muted small">—</span></td>
+      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="60" style="max-width:60px"></span> 20</td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:53:04.395092" data-local title="2026-10-14T09:53:04.395092 UTC">2026-10-14 09:53</time></td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:53:04.395092" data-local title="2026-10-14T09:53:04.395092 UTC">2026-10-14 09:53</time></td>
+      <td class="mono small" >—</td>
+      <td class="right mono">0</td>
+      
+      <td style="white-space:nowrap">
+        
+        <form method="post" action="/ui/candidates/c6729bdc-7a71-44dc-8aec-24e28fd5c4c4/dismiss" style="display:inline"
+              data-confirm="Known legit: remove coinplot.io from the watchlist and allowlist its domain for ShopNova?&#10;&#10;It (and its subdomains) will never be flagged again. You can undo this on the brand page → whitelist."
+              data-confirm-title="Known legitimate" data-confirm-ok="Allowlist it">
+          <input type="hidden" name="next" value="/ui/candidates?state=new"><input type="hidden" name="whitelist" value="on"><input type="hidden" name="reason" value="known legitimate domain">
+          <button type="submit" class="small" title="I know this domain — it is legitimate. One click: off the watchlist and allowlisted for this brand">Known legit ✓</button>
+        </form>
+        
+        <form method="post" action="/ui/candidates/c6729bdc-7a71-44dc-8aec-24e28fd5c4c4/rescan" style="display:inline" data-busy="Queued…"><input type="hidden" name="next" value="/ui/candidates?state=new"><button type="submit" class="small" title="fetch and score this site again now; you stay on the list">Rescan</button></form>
+      </td>
+      
+    </tr>
+    
+    <tr class="wrow" style="--sc:#8A97A8" data-host="cooinpilot.io">
+      <td class="selcol"><input type="checkbox" class="sel" name="ids" value="f3c2e3c5-8743-4723-8d7b-b3d4b6ed835a" form="bulkform" aria-label="select cooinpilot.io"></td>
+      <td><a href="/ui/candidates/f3c2e3c5-8743-4723-8d7b-b3d4b6ed835a/"><span class="mono">cooinpilot.io</span></a><div class="small muted">domain name</div></td>
+      <td class="small"><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/"><bdi>ShopNova</bdi></a></td>
+      <td class="why"><b>Analyst URL scan</b> <span class="mono" dir="ltr">pivot:shares cert with the campaign</span></td>
+      <td><span class="badge state st-new" title="just discovered, not visited yet">new</span></td>
+      <td><span class="muted small">—</span></td>
+      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="60" style="max-width:60px"></span> 20</td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:53:04.395092" data-local title="2026-10-14T09:53:04.395092 UTC">2026-10-14 09:53</time></td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:53:04.395092" data-local title="2026-10-14T09:53:04.395092 UTC">2026-10-14 09:53</time></td>
+      <td class="mono small" >—</td>
+      <td class="right mono">0</td>
+      
+      <td style="white-space:nowrap">
+        
+        <form method="post" action="/ui/candidates/f3c2e3c5-8743-4723-8d7b-b3d4b6ed835a/dismiss" style="display:inline"
+              data-confirm="Known legit: remove cooinpilot.io from the watchlist and allowlist its domain for ShopNova?&#10;&#10;It (and its subdomains) will never be flagged again. You can undo this on the brand page → whitelist."
+              data-confirm-title="Known legitimate" data-confirm-ok="Allowlist it">
+          <input type="hidden" name="next" value="/ui/candidates?state=new"><input type="hidden" name="whitelist" value="on"><input type="hidden" name="reason" value="known legitimate domain">
+          <button type="submit" class="small" title="I know this domain — it is legitimate. One click: off the watchlist and allowlisted for this brand">Known legit ✓</button>
+        </form>
+        
+        <form method="post" action="/ui/candidates/f3c2e3c5-8743-4723-8d7b-b3d4b6ed835a/rescan" style="display:inline" data-busy="Queued…"><input type="hidden" name="next" value="/ui/candidates?state=new"><button type="submit" class="small" title="fetch and score this site again now; you stay on the list">Rescan</button></form>
+      </td>
+      
+    </tr>
+    
+    <tr class="wrow" style="--sc:#8A97A8" data-host="koinpilot.io">
+      <td class="selcol"><input type="checkbox" class="sel" name="ids" value="6bce9476-6d0f-42b5-89ff-56ad19ec289a" form="bulkform" aria-label="select koinpilot.io"></td>
+      <td><a href="/ui/candidates/6bce9476-6d0f-42b5-89ff-56ad19ec289a/"><span class="mono">koinpilot.io</span></a><div class="small muted">domain name</div></td>
+      <td class="small"><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/"><bdi>ShopNova</bdi></a></td>
+      <td class="why"><b>Analyst URL scan</b> <span class="mono" dir="ltr">pivot:shares cert with the campaign</span></td>
+      <td><span class="badge state st-new" title="just discovered, not visited yet">new</span></td>
+      <td><span class="muted small">—</span></td>
+      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="60" style="max-width:60px"></span> 20</td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:53:04.395092" data-local title="2026-10-14T09:53:04.395092 UTC">2026-10-14 09:53</time></td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:53:04.395092" data-local title="2026-10-14T09:53:04.395092 UTC">2026-10-14 09:53</time></td>
+      <td class="mono small" >—</td>
+      <td class="right mono">0</td>
+      
+      <td style="white-space:nowrap">
+        
+        <form method="post" action="/ui/candidates/6bce9476-6d0f-42b5-89ff-56ad19ec289a/dismiss" style="display:inline"
+              data-confirm="Known legit: remove koinpilot.io from the watchlist and allowlist its domain for ShopNova?&#10;&#10;It (and its subdomains) will never be flagged again. You can undo this on the brand page → whitelist."
+              data-confirm-title="Known legitimate" data-confirm-ok="Allowlist it">
+          <input type="hidden" name="next" value="/ui/candidates?state=new"><input type="hidden" name="whitelist" value="on"><input type="hidden" name="reason" value="known legitimate domain">
+          <button type="submit" class="small" title="I know this domain — it is legitimate. One click: off the watchlist and allowlisted for this brand">Known legit ✓</button>
+        </form>
+        
+        <form method="post" action="/ui/candidates/6bce9476-6d0f-42b5-89ff-56ad19ec289a/rescan" style="display:inline" data-busy="Queued…"><input type="hidden" name="next" value="/ui/candidates?state=new"><button type="submit" class="small" title="fetch and score this site again now; you stay on the list">Rescan</button></form>
+      </td>
+      
+    </tr>
+    
+    <tr class="wrow" style="--sc:#8A97A8" data-host="koinpilot.io">
+      <td class="selcol"><input type="checkbox" class="sel" name="ids" value="698b3666-653c-4d1f-b6fd-14906256c923" form="bulkform" aria-label="select koinpilot.io"></td>
+      <td><a href="/ui/candidates/698b3666-653c-4d1f-b6fd-14906256c923/"><span class="mono">koinpilot.io</span></a><div class="small muted">domain name</div></td>
+      <td class="small"><a href="/ui/brands/a7b5cb5c-e4a0-495d-b6c9-3ac5209ac3b2/"><bdi>VaultPay</bdi></a></td>
+      <td class="why"><b>Analyst URL scan</b> <span class="mono" dir="ltr">pivot:shares cert with the campaign</span></td>
+      <td><span class="badge state st-new" title="just discovered, not visited yet">new</span></td>
+      <td><span class="muted small">—</span></td>
+      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="60" style="max-width:60px"></span> 20</td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:46:41.072365" data-local title="2026-10-14T09:46:41.072365 UTC">2026-10-14 09:46</time></td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:46:41.072365" data-local title="2026-10-14T09:46:41.072365 UTC">2026-10-14 09:46</time></td>
+      <td class="mono small" >—</td>
+      <td class="right mono">0</td>
+      
+      <td style="white-space:nowrap">
+        
+        <form method="post" action="/ui/candidates/698b3666-653c-4d1f-b6fd-14906256c923/dismiss" style="display:inline"
+              data-confirm="Known legit: remove koinpilot.io from the watchlist and allowlist its domain for VaultPay?&#10;&#10;It (and its subdomains) will never be flagged again. You can undo this on the brand page → whitelist."
+              data-confirm-title="Known legitimate" data-confirm-ok="Allowlist it">
+          <input type="hidden" name="next" value="/ui/candidates?state=new"><input type="hidden" name="whitelist" value="on"><input type="hidden" name="reason" value="known legitimate domain">
+          <button type="submit" class="small" title="I know this domain — it is legitimate. One click: off the watchlist and allowlisted for this brand">Known legit ✓</button>
+        </form>
+        
+        <form method="post" action="/ui/candidates/698b3666-653c-4d1f-b6fd-14906256c923/rescan" style="display:inline" data-busy="Queued…"><input type="hidden" name="next" value="/ui/candidates?state=new"><button type="submit" class="small" title="fetch and score this site again now; you stay on the list">Rescan</button></form>
+      </td>
+      
+    </tr>
+    
+    <tr class="wrow" style="--sc:#8A97A8" data-host="shopnova-eu.com">
+      <td class="selcol"><input type="checkbox" class="sel" name="ids" value="47919a25-fb4c-4b26-9827-066ce62f32f4" form="bulkform" aria-label="select shopnova-eu.com"></td>
+      <td><a href="/ui/candidates/47919a25-fb4c-4b26-9827-066ce62f32f4/"><span class="mono">shopnova-eu.com</span></a><div class="small muted">domain name</div></td>
+      <td class="small"><a href="/ui/brands/a7b5cb5c-e4a0-495d-b6c9-3ac5209ac3b2/"><bdi>VaultPay</bdi></a></td>
+      <td class="why"><b>Analyst URL scan</b> <span class="mono" dir="ltr">pivot:shares cert with the campaign</span></td>
+      <td><span class="badge state st-new" title="just discovered, not visited yet">new</span></td>
+      <td><span class="muted small">—</span></td>
+      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="60" style="max-width:60px"></span> 20</td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:46:41.072365" data-local title="2026-10-14T09:46:41.072365 UTC">2026-10-14 09:46</time></td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:46:41.072365" data-local title="2026-10-14T09:46:41.072365 UTC">2026-10-14 09:46</time></td>
+      <td class="mono small" >—</td>
+      <td class="right mono">0</td>
+      
+      <td style="white-space:nowrap">
+        
+        <form method="post" action="/ui/candidates/47919a25-fb4c-4b26-9827-066ce62f32f4/dismiss" style="display:inline"
+              data-confirm="Known legit: remove shopnova-eu.com from the watchlist and allowlist its domain for VaultPay?&#10;&#10;It (and its subdomains) will never be flagged again. You can undo this on the brand page → whitelist."
+              data-confirm-title="Known legitimate" data-confirm-ok="Allowlist it">
+          <input type="hidden" name="next" value="/ui/candidates?state=new"><input type="hidden" name="whitelist" value="on"><input type="hidden" name="reason" value="known legitimate domain">
+          <button type="submit" class="small" title="I know this domain — it is legitimate. One click: off the watchlist and allowlisted for this brand">Known legit ✓</button>
+        </form>
+        
+        <form method="post" action="/ui/candidates/47919a25-fb4c-4b26-9827-066ce62f32f4/rescan" style="display:inline" data-busy="Queued…"><input type="hidden" name="next" value="/ui/candidates?state=new"><button type="submit" class="small" title="fetch and score this site again now; you stay on the list">Rescan</button></form>
+      </td>
+      
+    </tr>
+    
+    <tr class="wrow" style="--sc:#8A97A8" data-host="cooinpilot.io">
+      <td class="selcol"><input type="checkbox" class="sel" name="ids" value="2b7e2894-e7c5-4bde-bd22-4445f4237056" form="bulkform" aria-label="select cooinpilot.io"></td>
+      <td><a href="/ui/candidates/2b7e2894-e7c5-4bde-bd22-4445f4237056/"><span class="mono">cooinpilot.io</span></a><div class="small muted">domain name</div></td>
+      <td class="small"><a href="/ui/brands/a7b5cb5c-e4a0-495d-b6c9-3ac5209ac3b2/"><bdi>VaultPay</bdi></a></td>
+      <td class="why"><b>Analyst URL scan</b> <span class="mono" dir="ltr">pivot:shares cert with the campaign</span></td>
+      <td><span class="badge state st-new" title="just discovered, not visited yet">new</span></td>
+      <td><span class="muted small">—</span></td>
+      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="60" style="max-width:60px"></span> 20</td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:46:41.070356" data-local title="2026-10-14T09:46:41.070356 UTC">2026-10-14 09:46</time></td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:46:41.070356" data-local title="2026-10-14T09:46:41.070356 UTC">2026-10-14 09:46</time></td>
+      <td class="mono small" >—</td>
+      <td class="right mono">0</td>
+      
+      <td style="white-space:nowrap">
+        
+        <form method="post" action="/ui/candidates/2b7e2894-e7c5-4bde-bd22-4445f4237056/dismiss" style="display:inline"
+              data-confirm="Known legit: remove cooinpilot.io from the watchlist and allowlist its domain for VaultPay?&#10;&#10;It (and its subdomains) will never be flagged again. You can undo this on the brand page → whitelist."
+              data-confirm-title="Known legitimate" data-confirm-ok="Allowlist it">
+          <input type="hidden" name="next" value="/ui/candidates?state=new"><input type="hidden" name="whitelist" value="on"><input type="hidden" name="reason" value="known legitimate domain">
+          <button type="submit" class="small" title="I know this domain — it is legitimate. One click: off the watchlist and allowlisted for this brand">Known legit ✓</button>
+        </form>
+        
+        <form method="post" action="/ui/candidates/2b7e2894-e7c5-4bde-bd22-4445f4237056/rescan" style="display:inline" data-busy="Queued…"><input type="hidden" name="next" value="/ui/candidates?state=new"><button type="submit" class="small" title="fetch and score this site again now; you stay on the list">Rescan</button></form>
+      </td>
+      
+    </tr>
+    
+    <tr class="wrow" style="--sc:#8A97A8" data-host="coinpilot-bot.io">
+      <td class="selcol"><input type="checkbox" class="sel" name="ids" value="b8815cca-1aa8-4002-a884-b08ed5e5f309" form="bulkform" aria-label="select coinpilot-bot.io"></td>
+      <td><a href="/ui/candidates/b8815cca-1aa8-4002-a884-b08ed5e5f309/"><span class="mono">coinpilot-bot.io</span></a><div class="small muted">domain name</div></td>
+      <td class="small"><a href="/ui/brands/a7b5cb5c-e4a0-495d-b6c9-3ac5209ac3b2/"><bdi>VaultPay</bdi></a></td>
+      <td class="why"><b>Analyst URL scan</b> <span class="mono" dir="ltr">pivot:shares cert with the campaign</span></td>
+      <td><span class="badge state st-new" title="just discovered, not visited yet">new</span></td>
+      <td><span class="muted small">—</span></td>
+      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="60" style="max-width:60px"></span> 20</td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:46:41.068345" data-local title="2026-10-14T09:46:41.068345 UTC">2026-10-14 09:46</time></td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:46:41.068345" data-local title="2026-10-14T09:46:41.068345 UTC">2026-10-14 09:46</time></td>
+      <td class="mono small" >—</td>
+      <td class="right mono">0</td>
+      
+      <td style="white-space:nowrap">
+        
+        <form method="post" action="/ui/candidates/b8815cca-1aa8-4002-a884-b08ed5e5f309/dismiss" style="display:inline"
+              data-confirm="Known legit: remove coinpilot-bot.io from the watchlist and allowlist its domain for VaultPay?&#10;&#10;It (and its subdomains) will never be flagged again. You can undo this on the brand page → whitelist."
+              data-confirm-title="Known legitimate" data-confirm-ok="Allowlist it">
+          <input type="hidden" name="next" value="/ui/candidates?state=new"><input type="hidden" name="whitelist" value="on"><input type="hidden" name="reason" value="known legitimate domain">
+          <button type="submit" class="small" title="I know this domain — it is legitimate. One click: off the watchlist and allowlisted for this brand">Known legit ✓</button>
+        </form>
+        
+        <form method="post" action="/ui/candidates/b8815cca-1aa8-4002-a884-b08ed5e5f309/rescan" style="display:inline" data-busy="Queued…"><input type="hidden" name="next" value="/ui/candidates?state=new"><button type="submit" class="small" title="fetch and score this site again now; you stay on the list">Rescan</button></form>
+      </td>
+      
+    </tr>
+    
+    <tr class="wrow" style="--sc:#8A97A8" data-host="coinplot.io">
+      <td class="selcol"><input type="checkbox" class="sel" name="ids" value="ad80ade2-330a-4360-ad51-4ce730ad2d20" form="bulkform" aria-label="select coinplot.io"></td>
+      <td><a href="/ui/candidates/ad80ade2-330a-4360-ad51-4ce730ad2d20/"><span class="mono">coinplot.io</span></a><div class="small muted">domain name</div></td>
+      <td class="small"><a href="/ui/brands/a7b5cb5c-e4a0-495d-b6c9-3ac5209ac3b2/"><bdi>VaultPay</bdi></a></td>
+      <td class="why"><b>Analyst URL scan</b> <span class="mono" dir="ltr">pivot:shares cert with the campaign</span></td>
+      <td><span class="badge state st-new" title="just discovered, not visited yet">new</span></td>
+      <td><span class="muted small">—</span></td>
+      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="60" style="max-width:60px"></span> 20</td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:46:41.068345" data-local title="2026-10-14T09:46:41.068345 UTC">2026-10-14 09:46</time></td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:46:41.068345" data-local title="2026-10-14T09:46:41.068345 UTC">2026-10-14 09:46</time></td>
+      <td class="mono small" >—</td>
+      <td class="right mono">0</td>
+      
+      <td style="white-space:nowrap">
+        
+        <form method="post" action="/ui/candidates/ad80ade2-330a-4360-ad51-4ce730ad2d20/dismiss" style="display:inline"
+              data-confirm="Known legit: remove coinplot.io from the watchlist and allowlist its domain for VaultPay?&#10;&#10;It (and its subdomains) will never be flagged again. You can undo this on the brand page → whitelist."
+              data-confirm-title="Known legitimate" data-confirm-ok="Allowlist it">
+          <input type="hidden" name="next" value="/ui/candidates?state=new"><input type="hidden" name="whitelist" value="on"><input type="hidden" name="reason" value="known legitimate domain">
+          <button type="submit" class="small" title="I know this domain — it is legitimate. One click: off the watchlist and allowlisted for this brand">Known legit ✓</button>
+        </form>
+        
+        <form method="post" action="/ui/candidates/ad80ade2-330a-4360-ad51-4ce730ad2d20/rescan" style="display:inline" data-busy="Queued…"><input type="hidden" name="next" value="/ui/candidates?state=new"><button type="submit" class="small" title="fetch and score this site again now; you stay on the list">Rescan</button></form>
+      </td>
+      
+    </tr>
+    
+    <tr class="wrow" style="--sc:#8A97A8" data-host="coin-pilot.io">
+      <td class="selcol"><input type="checkbox" class="sel" name="ids" value="4288eadf-21d1-497c-9c7e-e14f726eda70" form="bulkform" aria-label="select coin-pilot.io"></td>
+      <td><a href="/ui/candidates/4288eadf-21d1-497c-9c7e-e14f726eda70/"><span class="mono">coin-pilot.io</span></a><div class="small muted">domain name</div></td>
+      <td class="small"><a href="/ui/brands/a7b5cb5c-e4a0-495d-b6c9-3ac5209ac3b2/"><bdi>VaultPay</bdi></a></td>
+      <td class="why"><b>Analyst URL scan</b> <span class="mono" dir="ltr">pivot:shares cert with the campaign</span></td>
+      <td><span class="badge state st-new" title="just discovered, not visited yet">new</span></td>
+      <td><span class="muted small">—</span></td>
+      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="60" style="max-width:60px"></span> 20</td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:46:41.065705" data-local title="2026-10-14T09:46:41.065705 UTC">2026-10-14 09:46</time></td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:46:41.065705" data-local title="2026-10-14T09:46:41.065705 UTC">2026-10-14 09:46</time></td>
+      <td class="mono small" >—</td>
+      <td class="right mono">0</td>
+      
+      <td style="white-space:nowrap">
+        
+        <form method="post" action="/ui/candidates/4288eadf-21d1-497c-9c7e-e14f726eda70/dismiss" style="display:inline"
+              data-confirm="Known legit: remove coin-pilot.io from the watchlist and allowlist its domain for VaultPay?&#10;&#10;It (and its subdomains) will never be flagged again. You can undo this on the brand page → whitelist."
+              data-confirm-title="Known legitimate" data-confirm-ok="Allowlist it">
+          <input type="hidden" name="next" value="/ui/candidates?state=new"><input type="hidden" name="whitelist" value="on"><input type="hidden" name="reason" value="known legitimate domain">
+          <button type="submit" class="small" title="I know this domain — it is legitimate. One click: off the watchlist and allowlisted for this brand">Known legit ✓</button>
+        </form>
+        
+        <form method="post" action="/ui/candidates/4288eadf-21d1-497c-9c7e-e14f726eda70/rescan" style="display:inline" data-busy="Queued…"><input type="hidden" name="next" value="/ui/candidates?state=new"><button type="submit" class="small" title="fetch and score this site again now; you stay on the list">Rescan</button></form>
+      </td>
+      
+    </tr>
+    
+    <tr class="wrow" style="--sc:#8A97A8" data-host="coinpllot.io">
+      <td class="selcol"><input type="checkbox" class="sel" name="ids" value="29d2a4af-ed4c-471d-8eed-fd9ef88c79a5" form="bulkform" aria-label="select coinpllot.io"></td>
+      <td><a href="/ui/candidates/29d2a4af-ed4c-471d-8eed-fd9ef88c79a5/"><span class="mono">coinpllot.io</span></a><div class="small muted">domain name</div></td>
+      <td class="small"><a href="/ui/brands/a7b5cb5c-e4a0-495d-b6c9-3ac5209ac3b2/"><bdi>VaultPay</bdi></a></td>
+      <td class="why"><b>Analyst URL scan</b> <span class="mono" dir="ltr">pivot:shares cert with the campaign</span></td>
+      <td><span class="badge state st-new" title="just discovered, not visited yet">new</span></td>
+      <td><span class="muted small">—</span></td>
+      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="60" style="max-width:60px"></span> 20</td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:46:41.064045" data-local title="2026-10-14T09:46:41.064045 UTC">2026-10-14 09:46</time></td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:46:41.064045" data-local title="2026-10-14T09:46:41.064045 UTC">2026-10-14 09:46</time></td>
+      <td class="mono small" >—</td>
+      <td class="right mono">0</td>
+      
+      <td style="white-space:nowrap">
+        
+        <form method="post" action="/ui/candidates/29d2a4af-ed4c-471d-8eed-fd9ef88c79a5/dismiss" style="display:inline"
+              data-confirm="Known legit: remove coinpllot.io from the watchlist and allowlist its domain for VaultPay?&#10;&#10;It (and its subdomains) will never be flagged again. You can undo this on the brand page → whitelist."
+              data-confirm-title="Known legitimate" data-confirm-ok="Allowlist it">
+          <input type="hidden" name="next" value="/ui/candidates?state=new"><input type="hidden" name="whitelist" value="on"><input type="hidden" name="reason" value="known legitimate domain">
+          <button type="submit" class="small" title="I know this domain — it is legitimate. One click: off the watchlist and allowlisted for this brand">Known legit ✓</button>
+        </form>
+        
+        <form method="post" action="/ui/candidates/29d2a4af-ed4c-471d-8eed-fd9ef88c79a5/rescan" style="display:inline" data-busy="Queued…"><input type="hidden" name="next" value="/ui/candidates?state=new"><button type="submit" class="small" title="fetch and score this site again now; you stay on the list">Rescan</button></form>
+      </td>
+      
+    </tr>
+    
+    <tr class="wrow" style="--sc:#8A97A8" data-host="coinpilott.io">
+      <td class="selcol"><input type="checkbox" class="sel" name="ids" value="1e2f98bf-0829-4a3b-aa0a-41470bbc2ac6" form="bulkform" aria-label="select coinpilott.io"></td>
+      <td><a href="/ui/candidates/1e2f98bf-0829-4a3b-aa0a-41470bbc2ac6/"><span class="mono">coinpilott.io</span></a><div class="small muted">domain name</div></td>
+      <td class="small"><a href="/ui/brands/a7b5cb5c-e4a0-495d-b6c9-3ac5209ac3b2/"><bdi>VaultPay</bdi></a></td>
+      <td class="why"><b>Analyst URL scan</b> <span class="mono" dir="ltr">pivot:shares cert with the campaign</span></td>
+      <td><span class="badge state st-new" title="just discovered, not visited yet">new</span></td>
+      <td><span class="muted small">—</span></td>
+      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="60" style="max-width:60px"></span> 20</td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:46:41.062885" data-local title="2026-10-14T09:46:41.062885 UTC">2026-10-14 09:46</time></td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:46:41.062885" data-local title="2026-10-14T09:46:41.062885 UTC">2026-10-14 09:46</time></td>
+      <td class="mono small" >—</td>
+      <td class="right mono">0</td>
+      
+      <td style="white-space:nowrap">
+        
+        <form method="post" action="/ui/candidates/1e2f98bf-0829-4a3b-aa0a-41470bbc2ac6/dismiss" style="display:inline"
+              data-confirm="Known legit: remove coinpilott.io from the watchlist and allowlist its domain for VaultPay?&#10;&#10;It (and its subdomains) will never be flagged again. You can undo this on the brand page → whitelist."
+              data-confirm-title="Known legitimate" data-confirm-ok="Allowlist it">
+          <input type="hidden" name="next" value="/ui/candidates?state=new"><input type="hidden" name="whitelist" value="on"><input type="hidden" name="reason" value="known legitimate domain">
+          <button type="submit" class="small" title="I know this domain — it is legitimate. One click: off the watchlist and allowlisted for this brand">Known legit ✓</button>
+        </form>
+        
+        <form method="post" action="/ui/candidates/1e2f98bf-0829-4a3b-aa0a-41470bbc2ac6/rescan" style="display:inline" data-busy="Queued…"><input type="hidden" name="next" value="/ui/candidates?state=new"><button type="submit" class="small" title="fetch and score this site again now; you stay on the list">Rescan</button></form>
+      </td>
+      
+    </tr>
+    
+    <tr class="wrow" style="--sc:#8A97A8" data-host="shopnowa.com">
+      <td class="selcol"><input type="checkbox" class="sel" name="ids" value="9080f42f-d000-480c-80a6-4fe253d229f2" form="bulkform" aria-label="select shopnowa.com"></td>
+      <td><a href="/ui/candidates/9080f42f-d000-480c-80a6-4fe253d229f2/"><span class="mono">shopnowa.com</span></a><div class="small muted">domain name</div></td>
+      <td class="small"><a href="/ui/brands/a7b5cb5c-e4a0-495d-b6c9-3ac5209ac3b2/"><bdi>VaultPay</bdi></a></td>
+      <td class="why"><b>Analyst URL scan</b> <span class="mono" dir="ltr">pivot:shares cert with the campaign</span></td>
+      <td><span class="badge state st-new" title="just discovered, not visited yet">new</span></td>
+      <td><span class="muted small">—</span></td>
+      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="60" style="max-width:60px"></span> 20</td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:46:41.047724" data-local title="2026-10-14T09:46:41.047724 UTC">2026-10-14 09:46</time></td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:46:41.047724" data-local title="2026-10-14T09:46:41.047724 UTC">2026-10-14 09:46</time></td>
+      <td class="mono small" >—</td>
+      <td class="right mono">0</td>
+      
+      <td style="white-space:nowrap">
+        
+        <form method="post" action="/ui/candidates/9080f42f-d000-480c-80a6-4fe253d229f2/dismiss" style="display:inline"
+              data-confirm="Known legit: remove shopnowa.com from the watchlist and allowlist its domain for VaultPay?&#10;&#10;It (and its subdomains) will never be flagged again. You can undo this on the brand page → whitelist."
+              data-confirm-title="Known legitimate" data-confirm-ok="Allowlist it">
+          <input type="hidden" name="next" value="/ui/candidates?state=new"><input type="hidden" name="whitelist" value="on"><input type="hidden" name="reason" value="known legitimate domain">
+          <button type="submit" class="small" title="I know this domain — it is legitimate. One click: off the watchlist and allowlisted for this brand">Known legit ✓</button>
+        </form>
+        
+        <form method="post" action="/ui/candidates/9080f42f-d000-480c-80a6-4fe253d229f2/rescan" style="display:inline" data-busy="Queued…"><input type="hidden" name="next" value="/ui/candidates?state=new"><button type="submit" class="small" title="fetch and score this site again now; you stay on the list">Rescan</button></form>
+      </td>
+      
+    </tr>
+    
+    <tr class="wrow" style="--sc:#8A97A8" data-host="shoqnova.com">
+      <td class="selcol"><input type="checkbox" class="sel" name="ids" value="68254f00-dc00-46f9-9de3-48f1a18ce7b8" form="bulkform" aria-label="select shoqnova.com"></td>
+      <td><a href="/ui/candidates/68254f00-dc00-46f9-9de3-48f1a18ce7b8/"><span class="mono">shoqnova.com</span></a><div class="small muted">domain name</div></td>
+      <td class="small"><a href="/ui/brands/a7b5cb5c-e4a0-495d-b6c9-3ac5209ac3b2/"><bdi>VaultPay</bdi></a></td>
+      <td class="why"><b>Analyst URL scan</b> <span class="mono" dir="ltr">pivot:shares cert with the campaign</span></td>
+      <td><span class="badge state st-new" title="just discovered, not visited yet">new</span></td>
+      <td><span class="muted small">—</span></td>
+      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="60" style="max-width:60px"></span> 20</td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:46:41.047724" data-local title="2026-10-14T09:46:41.047724 UTC">2026-10-14 09:46</time></td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:46:41.047724" data-local title="2026-10-14T09:46:41.047724 UTC">2026-10-14 09:46</time></td>
+      <td class="mono small" >—</td>
+      <td class="right mono">0</td>
+      
+      <td style="white-space:nowrap">
+        
+        <form method="post" action="/ui/candidates/68254f00-dc00-46f9-9de3-48f1a18ce7b8/dismiss" style="display:inline"
+              data-confirm="Known legit: remove shoqnova.com from the watchlist and allowlist its domain for VaultPay?&#10;&#10;It (and its subdomains) will never be flagged again. You can undo this on the brand page → whitelist."
+              data-confirm-title="Known legitimate" data-confirm-ok="Allowlist it">
+          <input type="hidden" name="next" value="/ui/candidates?state=new"><input type="hidden" name="whitelist" value="on"><input type="hidden" name="reason" value="known legitimate domain">
+          <button type="submit" class="small" title="I know this domain — it is legitimate. One click: off the watchlist and allowlisted for this brand">Known legit ✓</button>
+        </form>
+        
+        <form method="post" action="/ui/candidates/68254f00-dc00-46f9-9de3-48f1a18ce7b8/rescan" style="display:inline" data-busy="Queued…"><input type="hidden" name="next" value="/ui/candidates?state=new"><button type="submit" class="small" title="fetch and score this site again now; you stay on the list">Rescan</button></form>
+      </td>
+      
+    </tr>
+    
+    <tr class="wrow" style="--sc:#8A97A8" data-host="shopnova-eu.com">
+      <td class="selcol"><input type="checkbox" class="sel" name="ids" value="0db67eeb-267f-42c8-a83d-b5675bcc52e8" form="bulkform" aria-label="select shopnova-eu.com"></td>
+      <td><a href="/ui/candidates/0db67eeb-267f-42c8-a83d-b5675bcc52e8/"><span class="mono">shopnova-eu.com</span></a><div class="small muted">domain name</div></td>
+      <td class="small"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/"><bdi>CoinPilot</bdi></a></td>
+      <td class="why"><b>Analyst URL scan</b> <span class="mono" dir="ltr">pivot:shares cert with the campaign</span></td>
+      <td><span class="badge state st-new" title="just discovered, not visited yet">new</span></td>
+      <td><span class="muted small">—</span></td>
+      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="60" style="max-width:60px"></span> 20</td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:46:28.537412" data-local title="2026-10-14T09:46:28.537412 UTC">2026-10-14 09:46</time></td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:46:28.537412" data-local title="2026-10-14T09:46:28.537412 UTC">2026-10-14 09:46</time></td>
+      <td class="mono small" >—</td>
+      <td class="right mono">0</td>
+      
+      <td style="white-space:nowrap">
+        
+        <form method="post" action="/ui/candidates/0db67eeb-267f-42c8-a83d-b5675bcc52e8/dismiss" style="display:inline"
+              data-confirm="Known legit: remove shopnova-eu.com from the watchlist and allowlist its domain for CoinPilot?&#10;&#10;It (and its subdomains) will never be flagged again. You can undo this on the brand page → whitelist."
+              data-confirm-title="Known legitimate" data-confirm-ok="Allowlist it">
+          <input type="hidden" name="next" value="/ui/candidates?state=new"><input type="hidden" name="whitelist" value="on"><input type="hidden" name="reason" value="known legitimate domain">
+          <button type="submit" class="small" title="I know this domain — it is legitimate. One click: off the watchlist and allowlisted for this brand">Known legit ✓</button>
+        </form>
+        
+        <form method="post" action="/ui/candidates/0db67eeb-267f-42c8-a83d-b5675bcc52e8/rescan" style="display:inline" data-busy="Queued…"><input type="hidden" name="next" value="/ui/candidates?state=new"><button type="submit" class="small" title="fetch and score this site again now; you stay on the list">Rescan</button></form>
+      </td>
+      
+    </tr>
+    
+    <tr class="wrow" style="--sc:#8A97A8" data-host="vaultpay-verify.com">
+      <td class="selcol"><input type="checkbox" class="sel" name="ids" value="35743234-5c63-4fac-85a0-53d5d79d9276" form="bulkform" aria-label="select vaultpay-verify.com"></td>
+      <td><a href="/ui/candidates/35743234-5c63-4fac-85a0-53d5d79d9276/"><span class="mono">vaultpay-verify.com</span></a><div class="small muted">domain name</div></td>
+      <td class="small"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/"><bdi>CoinPilot</bdi></a></td>
+      <td class="why"><b>Analyst URL scan</b> <span class="mono" dir="ltr">pivot:shares cert with the campaign</span></td>
+      <td><span class="badge state st-new" title="just discovered, not visited yet">new</span></td>
+      <td><span class="muted small">—</span></td>
+      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="60" style="max-width:60px"></span> 20</td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:46:28.535897" data-local title="2026-10-14T09:46:28.535897 UTC">2026-10-14 09:46</time></td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:46:28.535897" data-local title="2026-10-14T09:46:28.535897 UTC">2026-10-14 09:46</time></td>
+      <td class="mono small" >—</td>
+      <td class="right mono">0</td>
+      
+      <td style="white-space:nowrap">
+        
+        <form method="post" action="/ui/candidates/35743234-5c63-4fac-85a0-53d5d79d9276/dismiss" style="display:inline"
+              data-confirm="Known legit: remove vaultpay-verify.com from the watchlist and allowlist its domain for CoinPilot?&#10;&#10;It (and its subdomains) will never be flagged again. You can undo this on the brand page → whitelist."
+              data-confirm-title="Known legitimate" data-confirm-ok="Allowlist it">
+          <input type="hidden" name="next" value="/ui/candidates?state=new"><input type="hidden" name="whitelist" value="on"><input type="hidden" name="reason" value="known legitimate domain">
+          <button type="submit" class="small" title="I know this domain — it is legitimate. One click: off the watchlist and allowlisted for this brand">Known legit ✓</button>
+        </form>
+        
+        <form method="post" action="/ui/candidates/35743234-5c63-4fac-85a0-53d5d79d9276/rescan" style="display:inline" data-busy="Queued…"><input type="hidden" name="next" value="/ui/candidates?state=new"><button type="submit" class="small" title="fetch and score this site again now; you stay on the list">Rescan</button></form>
+      </td>
+      
+    </tr>
+    
+    <tr class="wrow" style="--sc:#8A97A8" data-host="vault-pay.co">
+      <td class="selcol"><input type="checkbox" class="sel" name="ids" value="fc2a9924-807c-4350-afbd-367169ed6058" form="bulkform" aria-label="select vault-pay.co"></td>
+      <td><a href="/ui/candidates/fc2a9924-807c-4350-afbd-367169ed6058/"><span class="mono">vault-pay.co</span></a><div class="small muted">domain name</div></td>
+      <td class="small"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/"><bdi>CoinPilot</bdi></a></td>
+      <td class="why"><b>Analyst URL scan</b> <span class="mono" dir="ltr">pivot:shares cert with the campaign</span></td>
+      <td><span class="badge state st-new" title="just discovered, not visited yet">new</span></td>
+      <td><span class="muted small">—</span></td>
+      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="60" style="max-width:60px"></span> 20</td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:46:28.535175" data-local title="2026-10-14T09:46:28.535175 UTC">2026-10-14 09:46</time></td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:46:28.535175" data-local title="2026-10-14T09:46:28.535175 UTC">2026-10-14 09:46</time></td>
+      <td class="mono small" >—</td>
+      <td class="right mono">0</td>
+      
+      <td style="white-space:nowrap">
+        
+        <form method="post" action="/ui/candidates/fc2a9924-807c-4350-afbd-367169ed6058/dismiss" style="display:inline"
+              data-confirm="Known legit: remove vault-pay.co from the watchlist and allowlist its domain for CoinPilot?&#10;&#10;It (and its subdomains) will never be flagged again. You can undo this on the brand page → whitelist."
+              data-confirm-title="Known legitimate" data-confirm-ok="Allowlist it">
+          <input type="hidden" name="next" value="/ui/candidates?state=new"><input type="hidden" name="whitelist" value="on"><input type="hidden" name="reason" value="known legitimate domain">
+          <button type="submit" class="small" title="I know this domain — it is legitimate. One click: off the watchlist and allowlisted for this brand">Known legit ✓</button>
+        </form>
+        
+        <form method="post" action="/ui/candidates/fc2a9924-807c-4350-afbd-367169ed6058/rescan" style="display:inline" data-busy="Queued…"><input type="hidden" name="next" value="/ui/candidates?state=new"><button type="submit" class="small" title="fetch and score this site again now; you stay on the list">Rescan</button></form>
+      </td>
+      
+    </tr>
+    
+    <tr class="wrow" style="--sc:#8A97A8" data-host="shopnowa.com">
+      <td class="selcol"><input type="checkbox" class="sel" name="ids" value="5a484f92-9264-44b8-967d-0dbdf9cf8b72" form="bulkform" aria-label="select shopnowa.com"></td>
+      <td><a href="/ui/candidates/5a484f92-9264-44b8-967d-0dbdf9cf8b72/"><span class="mono">shopnowa.com</span></a><div class="small muted">domain name</div></td>
+      <td class="small"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/"><bdi>CoinPilot</bdi></a></td>
+      <td class="why"><b>Analyst URL scan</b> <span class="mono" dir="ltr">pivot:shares cert with the campaign</span></td>
+      <td><span class="badge state st-new" title="just discovered, not visited yet">new</span></td>
+      <td><span class="muted small">—</span></td>
+      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="60" style="max-width:60px"></span> 20</td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:46:28.525774" data-local title="2026-10-14T09:46:28.525774 UTC">2026-10-14 09:46</time></td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:46:28.525774" data-local title="2026-10-14T09:46:28.525774 UTC">2026-10-14 09:46</time></td>
+      <td class="mono small" >—</td>
+      <td class="right mono">0</td>
+      
+      <td style="white-space:nowrap">
+        
+        <form method="post" action="/ui/candidates/5a484f92-9264-44b8-967d-0dbdf9cf8b72/dismiss" style="display:inline"
+              data-confirm="Known legit: remove shopnowa.com from the watchlist and allowlist its domain for CoinPilot?&#10;&#10;It (and its subdomains) will never be flagged again. You can undo this on the brand page → whitelist."
+              data-confirm-title="Known legitimate" data-confirm-ok="Allowlist it">
+          <input type="hidden" name="next" value="/ui/candidates?state=new"><input type="hidden" name="whitelist" value="on"><input type="hidden" name="reason" value="known legitimate domain">
+          <button type="submit" class="small" title="I know this domain — it is legitimate. One click: off the watchlist and allowlisted for this brand">Known legit ✓</button>
+        </form>
+        
+        <form method="post" action="/ui/candidates/5a484f92-9264-44b8-967d-0dbdf9cf8b72/rescan" style="display:inline" data-busy="Queued…"><input type="hidden" name="next" value="/ui/candidates?state=new"><button type="submit" class="small" title="fetch and score this site again now; you stay on the list">Rescan</button></form>
+      </td>
+      
+    </tr>
+    
+    <tr class="wrow" style="--sc:#8A97A8" data-host="shoqnova.com">
+      <td class="selcol"><input type="checkbox" class="sel" name="ids" value="72dfa4a6-5273-4899-976c-9567d2395fe2" form="bulkform" aria-label="select shoqnova.com"></td>
+      <td><a href="/ui/candidates/72dfa4a6-5273-4899-976c-9567d2395fe2/"><span class="mono">shoqnova.com</span></a><div class="small muted">domain name</div></td>
+      <td class="small"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/"><bdi>CoinPilot</bdi></a></td>
+      <td class="why"><b>Analyst URL scan</b> <span class="mono" dir="ltr">pivot:shares cert with the campaign</span></td>
+      <td><span class="badge state st-new" title="just discovered, not visited yet">new</span></td>
+      <td><span class="muted small">—</span></td>
+      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="60" style="max-width:60px"></span> 20</td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:46:28.525774" data-local title="2026-10-14T09:46:28.525774 UTC">2026-10-14 09:46</time></td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:46:28.525774" data-local title="2026-10-14T09:46:28.525774 UTC">2026-10-14 09:46</time></td>
+      <td class="mono small" >—</td>
+      <td class="right mono">0</td>
+      
+      <td style="white-space:nowrap">
+        
+        <form method="post" action="/ui/candidates/72dfa4a6-5273-4899-976c-9567d2395fe2/dismiss" style="display:inline"
+              data-confirm="Known legit: remove shoqnova.com from the watchlist and allowlist its domain for CoinPilot?&#10;&#10;It (and its subdomains) will never be flagged again. You can undo this on the brand page → whitelist."
+              data-confirm-title="Known legitimate" data-confirm-ok="Allowlist it">
+          <input type="hidden" name="next" value="/ui/candidates?state=new"><input type="hidden" name="whitelist" value="on"><input type="hidden" name="reason" value="known legitimate domain">
+          <button type="submit" class="small" title="I know this domain — it is legitimate. One click: off the watchlist and allowlisted for this brand">Known legit ✓</button>
+        </form>
+        
+        <form method="post" action="/ui/candidates/72dfa4a6-5273-4899-976c-9567d2395fe2/rescan" style="display:inline" data-busy="Queued…"><input type="hidden" name="next" value="/ui/candidates?state=new"><button type="submit" class="small" title="fetch and score this site again now; you stay on the list">Rescan</button></form>
+      </td>
+      
+    </tr>
+    
+    <tr class="wrow" style="--sc:#8A97A8" data-host="vaultpay-login.com">
+      <td class="selcol"><input type="checkbox" class="sel" name="ids" value="380fc15a-9a2f-4cb8-945b-04dc5f85abdd" form="bulkform" aria-label="select vaultpay-login.com"></td>
+      <td><a href="/ui/candidates/380fc15a-9a2f-4cb8-945b-04dc5f85abdd/"><span class="mono">vaultpay-login.com</span></a><div class="small muted">domain name</div></td>
+      <td class="small"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/"><bdi>CoinPilot</bdi></a></td>
+      <td class="why"><b>Analyst URL scan</b> <span class="mono" dir="ltr">pivot:shares cert with the campaign</span></td>
+      <td><span class="badge state st-new" title="just discovered, not visited yet">new</span></td>
+      <td><span class="muted small">—</span></td>
+      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="60" style="max-width:60px"></span> 20</td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:46:28.525774" data-local title="2026-10-14T09:46:28.525774 UTC">2026-10-14 09:46</time></td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:46:28.525774" data-local title="2026-10-14T09:46:28.525774 UTC">2026-10-14 09:46</time></td>
+      <td class="mono small" >—</td>
+      <td class="right mono">0</td>
+      
+      <td style="white-space:nowrap">
+        
+        <form method="post" action="/ui/candidates/380fc15a-9a2f-4cb8-945b-04dc5f85abdd/dismiss" style="display:inline"
+              data-confirm="Known legit: remove vaultpay-login.com from the watchlist and allowlist its domain for CoinPilot?&#10;&#10;It (and its subdomains) will never be flagged again. You can undo this on the brand page → whitelist."
+              data-confirm-title="Known legitimate" data-confirm-ok="Allowlist it">
+          <input type="hidden" name="next" value="/ui/candidates?state=new"><input type="hidden" name="whitelist" value="on"><input type="hidden" name="reason" value="known legitimate domain">
+          <button type="submit" class="small" title="I know this domain — it is legitimate. One click: off the watchlist and allowlisted for this brand">Known legit ✓</button>
+        </form>
+        
+        <form method="post" action="/ui/candidates/380fc15a-9a2f-4cb8-945b-04dc5f85abdd/rescan" style="display:inline" data-busy="Queued…"><input type="hidden" name="next" value="/ui/candidates?state=new"><button type="submit" class="small" title="fetch and score this site again now; you stay on the list">Rescan</button></form>
+      </td>
+      
+    </tr>
+    
+    <tr class="wrow" style="--sc:#8A97A8" data-host="vaultpay-secure.net">
+      <td class="selcol"><input type="checkbox" class="sel" name="ids" value="74212e6a-6989-4fec-af47-6f83e26e1f07" form="bulkform" aria-label="select vaultpay-secure.net"></td>
+      <td><a href="/ui/candidates/74212e6a-6989-4fec-af47-6f83e26e1f07/"><span class="mono">vaultpay-secure.net</span></a><div class="small muted">domain name</div></td>
+      <td class="small"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/"><bdi>CoinPilot</bdi></a></td>
+      <td class="why"><b>Analyst URL scan</b> <span class="mono" dir="ltr">pivot:shares cert with the campaign</span></td>
+      <td><span class="badge state st-new" title="just discovered, not visited yet">new</span></td>
+      <td><span class="muted small">—</span></td>
+      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="60" style="max-width:60px"></span> 20</td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:46:28.525774" data-local title="2026-10-14T09:46:28.525774 UTC">2026-10-14 09:46</time></td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:46:28.525774" data-local title="2026-10-14T09:46:28.525774 UTC">2026-10-14 09:46</time></td>
+      <td class="mono small" >—</td>
+      <td class="right mono">0</td>
+      
+      <td style="white-space:nowrap">
+        
+        <form method="post" action="/ui/candidates/74212e6a-6989-4fec-af47-6f83e26e1f07/dismiss" style="display:inline"
+              data-confirm="Known legit: remove vaultpay-secure.net from the watchlist and allowlist its domain for CoinPilot?&#10;&#10;It (and its subdomains) will never be flagged again. You can undo this on the brand page → whitelist."
+              data-confirm-title="Known legitimate" data-confirm-ok="Allowlist it">
+          <input type="hidden" name="next" value="/ui/candidates?state=new"><input type="hidden" name="whitelist" value="on"><input type="hidden" name="reason" value="known legitimate domain">
+          <button type="submit" class="small" title="I know this domain — it is legitimate. One click: off the watchlist and allowlisted for this brand">Known legit ✓</button>
+        </form>
+        
+        <form method="post" action="/ui/candidates/74212e6a-6989-4fec-af47-6f83e26e1f07/rescan" style="display:inline" data-busy="Queued…"><input type="hidden" name="next" value="/ui/candidates?state=new"><button type="submit" class="small" title="fetch and score this site again now; you stay on the list">Rescan</button></form>
+      </td>
+      
+    </tr>
+    
+    </tbody>
+  </table>
+  
+<div class="muted small" style="margin-top:8px">29 in total</div>
+  
+</div>
+
+<details class="wstats" id="wstats">
+  <summary><h2 style="margin:0">Statistics <span class="muted">· lifecycle, re-scans, streams, priority</span></h2><span class="tog o">show ▾</span><span class="tog c">hide ▴</span></summary>
+<div class="panel" style="margin-top:4px">
   <h2>Lifecycle funnel <span class="muted">· new → watching → flagged / long watch / dismissed</span></h2>
-  <p class="small muted" style="margin:0 0 8px"><b>new</b> just discovered · <b>watching</b> visited, below the finding threshold, re-checked on a schedule · <b>flagged</b> scored Medium+, there is a finding · <b>long watch</b> quiet for the whole watch window, checked less often · <b>dismissed</b> dead, legitimate or whitelisted.</p>
+  <p class="small muted" style="margin:0 0 8px"><b>new</b> just discovered · <b>watching</b> visited, below the finding threshold, re-checked on a schedule · <b>flagged</b> scored Medium+, there is a finding · <b>long watch</b> quiet for the whole watch window, checked less often · <b>dismissed</b> dead, legitimate or allowlisted.</p>
   <div class="funnel">
     
     <a href="/ui/candidates/_b8a596c62d/" data-w="2.4" style="background:#8A97A8;" title="new: 29 (2.4%)"><span class="lbl">new </span>29</a>
@@ -308,761 +1167,48 @@ header nav{display:flex;align-items:center;min-width:0}
       <div class="legend"><div><i style="background:#35C7F2"></i>domain name<b>1126</b></div><div><i style="background:#2386a6"></i>subdomain<b>78</b></div><div><i style="background:#8A97A8"></i>content<b>9</b></div><div><i style="background:#1a5f78"></i>URL path<b>4</b></div></div></div>
   </div>
 </div>
-
-<div class="panel" style="margin-top:14px">
-  <div class="bchips" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px">
-    <a class="btn" style="padding:4px 12px;font-size:12.5px;border-color:var(--accent);color:var(--accent2)" href="/ui/candidates/_b8a596c62d/">All brands <b>29</b></a>
-    <a class="btn" style="padding:4px 12px;font-size:12.5px;" href="/ui/candidates/_3e7830941e/">ShopNova <b>12</b></a><a class="btn" style="padding:4px 12px;font-size:12.5px;" href="/ui/candidates/_5e83e98f7d/">ShopNova · Israel <b>0</b></a><a class="btn" style="padding:4px 12px;font-size:12.5px;" href="/ui/candidates/_17e589876d/">CoinPilot <b>7</b></a><a class="btn" style="padding:4px 12px;font-size:12.5px;" href="/ui/candidates/_308c585d4a/">VaultPay <b>10</b></a>
-  </div>
-  <form method="get" action="/ui/candidates/" class="actions" style="margin-bottom:8px">
-    <div><label>Brand</label><select name="brand_id" onchange="this.form.submit()"><option value="">all</option><option value="eb019060-41b6-4160-871c-14094ad558a4" >ShopNova</option><option value="1909c3e0-295d-4d38-bb7e-a2b05c9287d4" >ShopNova · Israel</option><option value="f46bffed-4795-4cdd-ad8f-abd3d26fcc60" >CoinPilot</option><option value="a7b5cb5c-e4a0-495d-b6c9-3ac5209ac3b2" >VaultPay</option></select></div>
-    <div><label>State</label><select name="state" onchange="this.form.submit()"><option value="">all</option><option value="new" selected>new</option><option value="watching" >watching</option><option value="analyzing" >analyzing</option><option value="flagged" >flagged</option><option value="long_watch" >long_watch</option><option value="dismissed" >dismissed</option></select></div>
-    <div><label>Search host</label><input id="q" placeholder="type to filter…" autocomplete="off"></div>
-    <div><button type="submit">Apply</button></div>
-    <div class="muted small" style="margin-left:auto">29 domain(s)</div>
-  </form>
-  
-  
-  <table id="ctable">
-    <tr><th>Domain</th><th>Brand</th><th>Surface</th><th>State</th><th>Finding</th><th>Priority</th><th>First seen</th><th>Last seen</th><th>Next scan</th><th class="right">Scans</th><th>Actions</th></tr>
-    
-    <tr class="wrow" style="--sc:#8A97A8" data-host="shopnova-eu.com">
-      <td><a href="/ui/candidates/d25b56ef-f7ee-48c2-aae9-543efa44b68b/"><span class="mono">shopnova-eu.com</span></a></td>
-      <td class="small"><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/">ShopNova</a></td><td class="small">domain name</td>
-      <td><span class="badge state st-new" title="just discovered, not visited yet">new</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="60" style="max-width:60px"></span> 20</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:53:04.410815">2026-10-14 09:53</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:53:04.410815">2026-10-14 09:53</td>
-      <td class="mono small" >—</td>
-      <td class="right mono">0</td>
-      
-      <td style="white-space:nowrap">
-        
-        <form method="post" action="/ui/candidates/d25b56ef-f7ee-48c2-aae9-543efa44b68b/dismiss" style="display:inline"
-              data-confirm="Known legit: remove shopnova-eu.com from the watchlist and whitelist its domain for ShopNova?&#10;&#10;It (and its subdomains) will never be flagged again. You can undo this on the brand page → whitelist."
-              data-confirm-title="Known legitimate" data-confirm-ok="Whitelist it">
-          <input type="hidden" name="next" value="/ui/candidates?state=new"><input type="hidden" name="whitelist" value="on"><input type="hidden" name="reason" value="known legitimate domain">
-          <button type="submit" class="small" title="I know this domain — it is legitimate. One click: off the watchlist and whitelisted for this brand">Known legit ✓</button>
-        </form>
-        
-        <form method="post" action="/ui/candidates/d25b56ef-f7ee-48c2-aae9-543efa44b68b/rescan" style="display:inline"><button type="submit" class="small" title="fetch and score this site again now">Rescan</button></form>
-      </td>
-      
-    </tr>
-    
-    <tr class="wrow" style="--sc:#8A97A8" data-host="coinpilott.io">
-      <td><a href="/ui/candidates/4952e586-bee9-47e8-95e6-b2e6bd2d687e/"><span class="mono">coinpilott.io</span></a></td>
-      <td class="small"><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/">ShopNova</a></td><td class="small">domain name</td>
-      <td><span class="badge state st-new" title="just discovered, not visited yet">new</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="60" style="max-width:60px"></span> 20</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:53:04.395092">2026-10-14 09:53</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:53:04.395092">2026-10-14 09:53</td>
-      <td class="mono small" >—</td>
-      <td class="right mono">0</td>
-      
-      <td style="white-space:nowrap">
-        
-        <form method="post" action="/ui/candidates/4952e586-bee9-47e8-95e6-b2e6bd2d687e/dismiss" style="display:inline"
-              data-confirm="Known legit: remove coinpilott.io from the watchlist and whitelist its domain for ShopNova?&#10;&#10;It (and its subdomains) will never be flagged again. You can undo this on the brand page → whitelist."
-              data-confirm-title="Known legitimate" data-confirm-ok="Whitelist it">
-          <input type="hidden" name="next" value="/ui/candidates?state=new"><input type="hidden" name="whitelist" value="on"><input type="hidden" name="reason" value="known legitimate domain">
-          <button type="submit" class="small" title="I know this domain — it is legitimate. One click: off the watchlist and whitelisted for this brand">Known legit ✓</button>
-        </form>
-        
-        <form method="post" action="/ui/candidates/4952e586-bee9-47e8-95e6-b2e6bd2d687e/rescan" style="display:inline"><button type="submit" class="small" title="fetch and score this site again now">Rescan</button></form>
-      </td>
-      
-    </tr>
-    
-    <tr class="wrow" style="--sc:#8A97A8" data-host="coinpllot.io">
-      <td><a href="/ui/candidates/123efcdb-fbb0-4b2d-9575-72eb36b84466/"><span class="mono">coinpllot.io</span></a></td>
-      <td class="small"><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/">ShopNova</a></td><td class="small">domain name</td>
-      <td><span class="badge state st-new" title="just discovered, not visited yet">new</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="60" style="max-width:60px"></span> 20</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:53:04.395092">2026-10-14 09:53</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:53:04.395092">2026-10-14 09:53</td>
-      <td class="mono small" >—</td>
-      <td class="right mono">0</td>
-      
-      <td style="white-space:nowrap">
-        
-        <form method="post" action="/ui/candidates/123efcdb-fbb0-4b2d-9575-72eb36b84466/dismiss" style="display:inline"
-              data-confirm="Known legit: remove coinpllot.io from the watchlist and whitelist its domain for ShopNova?&#10;&#10;It (and its subdomains) will never be flagged again. You can undo this on the brand page → whitelist."
-              data-confirm-title="Known legitimate" data-confirm-ok="Whitelist it">
-          <input type="hidden" name="next" value="/ui/candidates?state=new"><input type="hidden" name="whitelist" value="on"><input type="hidden" name="reason" value="known legitimate domain">
-          <button type="submit" class="small" title="I know this domain — it is legitimate. One click: off the watchlist and whitelisted for this brand">Known legit ✓</button>
-        </form>
-        
-        <form method="post" action="/ui/candidates/123efcdb-fbb0-4b2d-9575-72eb36b84466/rescan" style="display:inline"><button type="submit" class="small" title="fetch and score this site again now">Rescan</button></form>
-      </td>
-      
-    </tr>
-    
-    <tr class="wrow" style="--sc:#8A97A8" data-host="coin-pilot.io">
-      <td><a href="/ui/candidates/34a395c5-524a-4108-9917-e124040166d9/"><span class="mono">coin-pilot.io</span></a></td>
-      <td class="small"><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/">ShopNova</a></td><td class="small">domain name</td>
-      <td><span class="badge state st-new" title="just discovered, not visited yet">new</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="60" style="max-width:60px"></span> 20</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:53:04.395092">2026-10-14 09:53</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:53:04.395092">2026-10-14 09:53</td>
-      <td class="mono small" >—</td>
-      <td class="right mono">0</td>
-      
-      <td style="white-space:nowrap">
-        
-        <form method="post" action="/ui/candidates/34a395c5-524a-4108-9917-e124040166d9/dismiss" style="display:inline"
-              data-confirm="Known legit: remove coin-pilot.io from the watchlist and whitelist its domain for ShopNova?&#10;&#10;It (and its subdomains) will never be flagged again. You can undo this on the brand page → whitelist."
-              data-confirm-title="Known legitimate" data-confirm-ok="Whitelist it">
-          <input type="hidden" name="next" value="/ui/candidates?state=new"><input type="hidden" name="whitelist" value="on"><input type="hidden" name="reason" value="known legitimate domain">
-          <button type="submit" class="small" title="I know this domain — it is legitimate. One click: off the watchlist and whitelisted for this brand">Known legit ✓</button>
-        </form>
-        
-        <form method="post" action="/ui/candidates/34a395c5-524a-4108-9917-e124040166d9/rescan" style="display:inline"><button type="submit" class="small" title="fetch and score this site again now">Rescan</button></form>
-      </td>
-      
-    </tr>
-    
-    <tr class="wrow" style="--sc:#8A97A8" data-host="vaultpay-login.com">
-      <td><a href="/ui/candidates/90326556-116b-4edb-ad02-26d53e01a006/"><span class="mono">vaultpay-login.com</span></a></td>
-      <td class="small"><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/">ShopNova</a></td><td class="small">domain name</td>
-      <td><span class="badge state st-new" title="just discovered, not visited yet">new</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="60" style="max-width:60px"></span> 20</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:53:04.395092">2026-10-14 09:53</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:53:04.395092">2026-10-14 09:53</td>
-      <td class="mono small" >—</td>
-      <td class="right mono">0</td>
-      
-      <td style="white-space:nowrap">
-        
-        <form method="post" action="/ui/candidates/90326556-116b-4edb-ad02-26d53e01a006/dismiss" style="display:inline"
-              data-confirm="Known legit: remove vaultpay-login.com from the watchlist and whitelist its domain for ShopNova?&#10;&#10;It (and its subdomains) will never be flagged again. You can undo this on the brand page → whitelist."
-              data-confirm-title="Known legitimate" data-confirm-ok="Whitelist it">
-          <input type="hidden" name="next" value="/ui/candidates?state=new"><input type="hidden" name="whitelist" value="on"><input type="hidden" name="reason" value="known legitimate domain">
-          <button type="submit" class="small" title="I know this domain — it is legitimate. One click: off the watchlist and whitelisted for this brand">Known legit ✓</button>
-        </form>
-        
-        <form method="post" action="/ui/candidates/90326556-116b-4edb-ad02-26d53e01a006/rescan" style="display:inline"><button type="submit" class="small" title="fetch and score this site again now">Rescan</button></form>
-      </td>
-      
-    </tr>
-    
-    <tr class="wrow" style="--sc:#8A97A8" data-host="vaultpay-secure.net">
-      <td><a href="/ui/candidates/ed249af2-ab24-44a7-bd07-501c8a441887/"><span class="mono">vaultpay-secure.net</span></a></td>
-      <td class="small"><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/">ShopNova</a></td><td class="small">domain name</td>
-      <td><span class="badge state st-new" title="just discovered, not visited yet">new</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="60" style="max-width:60px"></span> 20</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:53:04.395092">2026-10-14 09:53</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:53:04.395092">2026-10-14 09:53</td>
-      <td class="mono small" >—</td>
-      <td class="right mono">0</td>
-      
-      <td style="white-space:nowrap">
-        
-        <form method="post" action="/ui/candidates/ed249af2-ab24-44a7-bd07-501c8a441887/dismiss" style="display:inline"
-              data-confirm="Known legit: remove vaultpay-secure.net from the watchlist and whitelist its domain for ShopNova?&#10;&#10;It (and its subdomains) will never be flagged again. You can undo this on the brand page → whitelist."
-              data-confirm-title="Known legitimate" data-confirm-ok="Whitelist it">
-          <input type="hidden" name="next" value="/ui/candidates?state=new"><input type="hidden" name="whitelist" value="on"><input type="hidden" name="reason" value="known legitimate domain">
-          <button type="submit" class="small" title="I know this domain — it is legitimate. One click: off the watchlist and whitelisted for this brand">Known legit ✓</button>
-        </form>
-        
-        <form method="post" action="/ui/candidates/ed249af2-ab24-44a7-bd07-501c8a441887/rescan" style="display:inline"><button type="submit" class="small" title="fetch and score this site again now">Rescan</button></form>
-      </td>
-      
-    </tr>
-    
-    <tr class="wrow" style="--sc:#8A97A8" data-host="vault-pay.co">
-      <td><a href="/ui/candidates/4f4fd33c-9cc1-4682-9d7f-a381682dd39a/"><span class="mono">vault-pay.co</span></a></td>
-      <td class="small"><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/">ShopNova</a></td><td class="small">domain name</td>
-      <td><span class="badge state st-new" title="just discovered, not visited yet">new</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="60" style="max-width:60px"></span> 20</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:53:04.395092">2026-10-14 09:53</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:53:04.395092">2026-10-14 09:53</td>
-      <td class="mono small" >—</td>
-      <td class="right mono">0</td>
-      
-      <td style="white-space:nowrap">
-        
-        <form method="post" action="/ui/candidates/4f4fd33c-9cc1-4682-9d7f-a381682dd39a/dismiss" style="display:inline"
-              data-confirm="Known legit: remove vault-pay.co from the watchlist and whitelist its domain for ShopNova?&#10;&#10;It (and its subdomains) will never be flagged again. You can undo this on the brand page → whitelist."
-              data-confirm-title="Known legitimate" data-confirm-ok="Whitelist it">
-          <input type="hidden" name="next" value="/ui/candidates?state=new"><input type="hidden" name="whitelist" value="on"><input type="hidden" name="reason" value="known legitimate domain">
-          <button type="submit" class="small" title="I know this domain — it is legitimate. One click: off the watchlist and whitelisted for this brand">Known legit ✓</button>
-        </form>
-        
-        <form method="post" action="/ui/candidates/4f4fd33c-9cc1-4682-9d7f-a381682dd39a/rescan" style="display:inline"><button type="submit" class="small" title="fetch and score this site again now">Rescan</button></form>
-      </td>
-      
-    </tr>
-    
-    <tr class="wrow" style="--sc:#8A97A8" data-host="vaultpay-verify.com">
-      <td><a href="/ui/candidates/181f56a2-5e4e-4949-b6d2-be4bf8082f32/"><span class="mono">vaultpay-verify.com</span></a></td>
-      <td class="small"><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/">ShopNova</a></td><td class="small">domain name</td>
-      <td><span class="badge state st-new" title="just discovered, not visited yet">new</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="60" style="max-width:60px"></span> 20</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:53:04.395092">2026-10-14 09:53</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:53:04.395092">2026-10-14 09:53</td>
-      <td class="mono small" >—</td>
-      <td class="right mono">0</td>
-      
-      <td style="white-space:nowrap">
-        
-        <form method="post" action="/ui/candidates/181f56a2-5e4e-4949-b6d2-be4bf8082f32/dismiss" style="display:inline"
-              data-confirm="Known legit: remove vaultpay-verify.com from the watchlist and whitelist its domain for ShopNova?&#10;&#10;It (and its subdomains) will never be flagged again. You can undo this on the brand page → whitelist."
-              data-confirm-title="Known legitimate" data-confirm-ok="Whitelist it">
-          <input type="hidden" name="next" value="/ui/candidates?state=new"><input type="hidden" name="whitelist" value="on"><input type="hidden" name="reason" value="known legitimate domain">
-          <button type="submit" class="small" title="I know this domain — it is legitimate. One click: off the watchlist and whitelisted for this brand">Known legit ✓</button>
-        </form>
-        
-        <form method="post" action="/ui/candidates/181f56a2-5e4e-4949-b6d2-be4bf8082f32/rescan" style="display:inline"><button type="submit" class="small" title="fetch and score this site again now">Rescan</button></form>
-      </td>
-      
-    </tr>
-    
-    <tr class="wrow" style="--sc:#8A97A8" data-host="coinpilot-bot.io">
-      <td><a href="/ui/candidates/14a14d64-6604-41ea-838b-f51c4f34aa83/"><span class="mono">coinpilot-bot.io</span></a></td>
-      <td class="small"><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/">ShopNova</a></td><td class="small">domain name</td>
-      <td><span class="badge state st-new" title="just discovered, not visited yet">new</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="60" style="max-width:60px"></span> 20</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:53:04.395092">2026-10-14 09:53</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:53:04.395092">2026-10-14 09:53</td>
-      <td class="mono small" >—</td>
-      <td class="right mono">0</td>
-      
-      <td style="white-space:nowrap">
-        
-        <form method="post" action="/ui/candidates/14a14d64-6604-41ea-838b-f51c4f34aa83/dismiss" style="display:inline"
-              data-confirm="Known legit: remove coinpilot-bot.io from the watchlist and whitelist its domain for ShopNova?&#10;&#10;It (and its subdomains) will never be flagged again. You can undo this on the brand page → whitelist."
-              data-confirm-title="Known legitimate" data-confirm-ok="Whitelist it">
-          <input type="hidden" name="next" value="/ui/candidates?state=new"><input type="hidden" name="whitelist" value="on"><input type="hidden" name="reason" value="known legitimate domain">
-          <button type="submit" class="small" title="I know this domain — it is legitimate. One click: off the watchlist and whitelisted for this brand">Known legit ✓</button>
-        </form>
-        
-        <form method="post" action="/ui/candidates/14a14d64-6604-41ea-838b-f51c4f34aa83/rescan" style="display:inline"><button type="submit" class="small" title="fetch and score this site again now">Rescan</button></form>
-      </td>
-      
-    </tr>
-    
-    <tr class="wrow" style="--sc:#8A97A8" data-host="coinplot.io">
-      <td><a href="/ui/candidates/c6729bdc-7a71-44dc-8aec-24e28fd5c4c4/"><span class="mono">coinplot.io</span></a></td>
-      <td class="small"><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/">ShopNova</a></td><td class="small">domain name</td>
-      <td><span class="badge state st-new" title="just discovered, not visited yet">new</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="60" style="max-width:60px"></span> 20</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:53:04.395092">2026-10-14 09:53</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:53:04.395092">2026-10-14 09:53</td>
-      <td class="mono small" >—</td>
-      <td class="right mono">0</td>
-      
-      <td style="white-space:nowrap">
-        
-        <form method="post" action="/ui/candidates/c6729bdc-7a71-44dc-8aec-24e28fd5c4c4/dismiss" style="display:inline"
-              data-confirm="Known legit: remove coinplot.io from the watchlist and whitelist its domain for ShopNova?&#10;&#10;It (and its subdomains) will never be flagged again. You can undo this on the brand page → whitelist."
-              data-confirm-title="Known legitimate" data-confirm-ok="Whitelist it">
-          <input type="hidden" name="next" value="/ui/candidates?state=new"><input type="hidden" name="whitelist" value="on"><input type="hidden" name="reason" value="known legitimate domain">
-          <button type="submit" class="small" title="I know this domain — it is legitimate. One click: off the watchlist and whitelisted for this brand">Known legit ✓</button>
-        </form>
-        
-        <form method="post" action="/ui/candidates/c6729bdc-7a71-44dc-8aec-24e28fd5c4c4/rescan" style="display:inline"><button type="submit" class="small" title="fetch and score this site again now">Rescan</button></form>
-      </td>
-      
-    </tr>
-    
-    <tr class="wrow" style="--sc:#8A97A8" data-host="cooinpilot.io">
-      <td><a href="/ui/candidates/f3c2e3c5-8743-4723-8d7b-b3d4b6ed835a/"><span class="mono">cooinpilot.io</span></a></td>
-      <td class="small"><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/">ShopNova</a></td><td class="small">domain name</td>
-      <td><span class="badge state st-new" title="just discovered, not visited yet">new</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="60" style="max-width:60px"></span> 20</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:53:04.395092">2026-10-14 09:53</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:53:04.395092">2026-10-14 09:53</td>
-      <td class="mono small" >—</td>
-      <td class="right mono">0</td>
-      
-      <td style="white-space:nowrap">
-        
-        <form method="post" action="/ui/candidates/f3c2e3c5-8743-4723-8d7b-b3d4b6ed835a/dismiss" style="display:inline"
-              data-confirm="Known legit: remove cooinpilot.io from the watchlist and whitelist its domain for ShopNova?&#10;&#10;It (and its subdomains) will never be flagged again. You can undo this on the brand page → whitelist."
-              data-confirm-title="Known legitimate" data-confirm-ok="Whitelist it">
-          <input type="hidden" name="next" value="/ui/candidates?state=new"><input type="hidden" name="whitelist" value="on"><input type="hidden" name="reason" value="known legitimate domain">
-          <button type="submit" class="small" title="I know this domain — it is legitimate. One click: off the watchlist and whitelisted for this brand">Known legit ✓</button>
-        </form>
-        
-        <form method="post" action="/ui/candidates/f3c2e3c5-8743-4723-8d7b-b3d4b6ed835a/rescan" style="display:inline"><button type="submit" class="small" title="fetch and score this site again now">Rescan</button></form>
-      </td>
-      
-    </tr>
-    
-    <tr class="wrow" style="--sc:#8A97A8" data-host="koinpilot.io">
-      <td><a href="/ui/candidates/6bce9476-6d0f-42b5-89ff-56ad19ec289a/"><span class="mono">koinpilot.io</span></a></td>
-      <td class="small"><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/">ShopNova</a></td><td class="small">domain name</td>
-      <td><span class="badge state st-new" title="just discovered, not visited yet">new</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="60" style="max-width:60px"></span> 20</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:53:04.395092">2026-10-14 09:53</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:53:04.395092">2026-10-14 09:53</td>
-      <td class="mono small" >—</td>
-      <td class="right mono">0</td>
-      
-      <td style="white-space:nowrap">
-        
-        <form method="post" action="/ui/candidates/6bce9476-6d0f-42b5-89ff-56ad19ec289a/dismiss" style="display:inline"
-              data-confirm="Known legit: remove koinpilot.io from the watchlist and whitelist its domain for ShopNova?&#10;&#10;It (and its subdomains) will never be flagged again. You can undo this on the brand page → whitelist."
-              data-confirm-title="Known legitimate" data-confirm-ok="Whitelist it">
-          <input type="hidden" name="next" value="/ui/candidates?state=new"><input type="hidden" name="whitelist" value="on"><input type="hidden" name="reason" value="known legitimate domain">
-          <button type="submit" class="small" title="I know this domain — it is legitimate. One click: off the watchlist and whitelisted for this brand">Known legit ✓</button>
-        </form>
-        
-        <form method="post" action="/ui/candidates/6bce9476-6d0f-42b5-89ff-56ad19ec289a/rescan" style="display:inline"><button type="submit" class="small" title="fetch and score this site again now">Rescan</button></form>
-      </td>
-      
-    </tr>
-    
-    <tr class="wrow" style="--sc:#8A97A8" data-host="koinpilot.io">
-      <td><a href="/ui/candidates/698b3666-653c-4d1f-b6fd-14906256c923/"><span class="mono">koinpilot.io</span></a></td>
-      <td class="small"><a href="/ui/brands/a7b5cb5c-e4a0-495d-b6c9-3ac5209ac3b2/">VaultPay</a></td><td class="small">domain name</td>
-      <td><span class="badge state st-new" title="just discovered, not visited yet">new</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="60" style="max-width:60px"></span> 20</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:46:41.072365">2026-10-14 09:46</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:46:41.072365">2026-10-14 09:46</td>
-      <td class="mono small" >—</td>
-      <td class="right mono">0</td>
-      
-      <td style="white-space:nowrap">
-        
-        <form method="post" action="/ui/candidates/698b3666-653c-4d1f-b6fd-14906256c923/dismiss" style="display:inline"
-              data-confirm="Known legit: remove koinpilot.io from the watchlist and whitelist its domain for VaultPay?&#10;&#10;It (and its subdomains) will never be flagged again. You can undo this on the brand page → whitelist."
-              data-confirm-title="Known legitimate" data-confirm-ok="Whitelist it">
-          <input type="hidden" name="next" value="/ui/candidates?state=new"><input type="hidden" name="whitelist" value="on"><input type="hidden" name="reason" value="known legitimate domain">
-          <button type="submit" class="small" title="I know this domain — it is legitimate. One click: off the watchlist and whitelisted for this brand">Known legit ✓</button>
-        </form>
-        
-        <form method="post" action="/ui/candidates/698b3666-653c-4d1f-b6fd-14906256c923/rescan" style="display:inline"><button type="submit" class="small" title="fetch and score this site again now">Rescan</button></form>
-      </td>
-      
-    </tr>
-    
-    <tr class="wrow" style="--sc:#8A97A8" data-host="shopnova-eu.com">
-      <td><a href="/ui/candidates/47919a25-fb4c-4b26-9827-066ce62f32f4/"><span class="mono">shopnova-eu.com</span></a></td>
-      <td class="small"><a href="/ui/brands/a7b5cb5c-e4a0-495d-b6c9-3ac5209ac3b2/">VaultPay</a></td><td class="small">domain name</td>
-      <td><span class="badge state st-new" title="just discovered, not visited yet">new</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="60" style="max-width:60px"></span> 20</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:46:41.072365">2026-10-14 09:46</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:46:41.072365">2026-10-14 09:46</td>
-      <td class="mono small" >—</td>
-      <td class="right mono">0</td>
-      
-      <td style="white-space:nowrap">
-        
-        <form method="post" action="/ui/candidates/47919a25-fb4c-4b26-9827-066ce62f32f4/dismiss" style="display:inline"
-              data-confirm="Known legit: remove shopnova-eu.com from the watchlist and whitelist its domain for VaultPay?&#10;&#10;It (and its subdomains) will never be flagged again. You can undo this on the brand page → whitelist."
-              data-confirm-title="Known legitimate" data-confirm-ok="Whitelist it">
-          <input type="hidden" name="next" value="/ui/candidates?state=new"><input type="hidden" name="whitelist" value="on"><input type="hidden" name="reason" value="known legitimate domain">
-          <button type="submit" class="small" title="I know this domain — it is legitimate. One click: off the watchlist and whitelisted for this brand">Known legit ✓</button>
-        </form>
-        
-        <form method="post" action="/ui/candidates/47919a25-fb4c-4b26-9827-066ce62f32f4/rescan" style="display:inline"><button type="submit" class="small" title="fetch and score this site again now">Rescan</button></form>
-      </td>
-      
-    </tr>
-    
-    <tr class="wrow" style="--sc:#8A97A8" data-host="cooinpilot.io">
-      <td><a href="/ui/candidates/2b7e2894-e7c5-4bde-bd22-4445f4237056/"><span class="mono">cooinpilot.io</span></a></td>
-      <td class="small"><a href="/ui/brands/a7b5cb5c-e4a0-495d-b6c9-3ac5209ac3b2/">VaultPay</a></td><td class="small">domain name</td>
-      <td><span class="badge state st-new" title="just discovered, not visited yet">new</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="60" style="max-width:60px"></span> 20</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:46:41.070356">2026-10-14 09:46</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:46:41.070356">2026-10-14 09:46</td>
-      <td class="mono small" >—</td>
-      <td class="right mono">0</td>
-      
-      <td style="white-space:nowrap">
-        
-        <form method="post" action="/ui/candidates/2b7e2894-e7c5-4bde-bd22-4445f4237056/dismiss" style="display:inline"
-              data-confirm="Known legit: remove cooinpilot.io from the watchlist and whitelist its domain for VaultPay?&#10;&#10;It (and its subdomains) will never be flagged again. You can undo this on the brand page → whitelist."
-              data-confirm-title="Known legitimate" data-confirm-ok="Whitelist it">
-          <input type="hidden" name="next" value="/ui/candidates?state=new"><input type="hidden" name="whitelist" value="on"><input type="hidden" name="reason" value="known legitimate domain">
-          <button type="submit" class="small" title="I know this domain — it is legitimate. One click: off the watchlist and whitelisted for this brand">Known legit ✓</button>
-        </form>
-        
-        <form method="post" action="/ui/candidates/2b7e2894-e7c5-4bde-bd22-4445f4237056/rescan" style="display:inline"><button type="submit" class="small" title="fetch and score this site again now">Rescan</button></form>
-      </td>
-      
-    </tr>
-    
-    <tr class="wrow" style="--sc:#8A97A8" data-host="coinpilot-bot.io">
-      <td><a href="/ui/candidates/b8815cca-1aa8-4002-a884-b08ed5e5f309/"><span class="mono">coinpilot-bot.io</span></a></td>
-      <td class="small"><a href="/ui/brands/a7b5cb5c-e4a0-495d-b6c9-3ac5209ac3b2/">VaultPay</a></td><td class="small">domain name</td>
-      <td><span class="badge state st-new" title="just discovered, not visited yet">new</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="60" style="max-width:60px"></span> 20</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:46:41.068345">2026-10-14 09:46</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:46:41.068345">2026-10-14 09:46</td>
-      <td class="mono small" >—</td>
-      <td class="right mono">0</td>
-      
-      <td style="white-space:nowrap">
-        
-        <form method="post" action="/ui/candidates/b8815cca-1aa8-4002-a884-b08ed5e5f309/dismiss" style="display:inline"
-              data-confirm="Known legit: remove coinpilot-bot.io from the watchlist and whitelist its domain for VaultPay?&#10;&#10;It (and its subdomains) will never be flagged again. You can undo this on the brand page → whitelist."
-              data-confirm-title="Known legitimate" data-confirm-ok="Whitelist it">
-          <input type="hidden" name="next" value="/ui/candidates?state=new"><input type="hidden" name="whitelist" value="on"><input type="hidden" name="reason" value="known legitimate domain">
-          <button type="submit" class="small" title="I know this domain — it is legitimate. One click: off the watchlist and whitelisted for this brand">Known legit ✓</button>
-        </form>
-        
-        <form method="post" action="/ui/candidates/b8815cca-1aa8-4002-a884-b08ed5e5f309/rescan" style="display:inline"><button type="submit" class="small" title="fetch and score this site again now">Rescan</button></form>
-      </td>
-      
-    </tr>
-    
-    <tr class="wrow" style="--sc:#8A97A8" data-host="coinplot.io">
-      <td><a href="/ui/candidates/ad80ade2-330a-4360-ad51-4ce730ad2d20/"><span class="mono">coinplot.io</span></a></td>
-      <td class="small"><a href="/ui/brands/a7b5cb5c-e4a0-495d-b6c9-3ac5209ac3b2/">VaultPay</a></td><td class="small">domain name</td>
-      <td><span class="badge state st-new" title="just discovered, not visited yet">new</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="60" style="max-width:60px"></span> 20</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:46:41.068345">2026-10-14 09:46</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:46:41.068345">2026-10-14 09:46</td>
-      <td class="mono small" >—</td>
-      <td class="right mono">0</td>
-      
-      <td style="white-space:nowrap">
-        
-        <form method="post" action="/ui/candidates/ad80ade2-330a-4360-ad51-4ce730ad2d20/dismiss" style="display:inline"
-              data-confirm="Known legit: remove coinplot.io from the watchlist and whitelist its domain for VaultPay?&#10;&#10;It (and its subdomains) will never be flagged again. You can undo this on the brand page → whitelist."
-              data-confirm-title="Known legitimate" data-confirm-ok="Whitelist it">
-          <input type="hidden" name="next" value="/ui/candidates?state=new"><input type="hidden" name="whitelist" value="on"><input type="hidden" name="reason" value="known legitimate domain">
-          <button type="submit" class="small" title="I know this domain — it is legitimate. One click: off the watchlist and whitelisted for this brand">Known legit ✓</button>
-        </form>
-        
-        <form method="post" action="/ui/candidates/ad80ade2-330a-4360-ad51-4ce730ad2d20/rescan" style="display:inline"><button type="submit" class="small" title="fetch and score this site again now">Rescan</button></form>
-      </td>
-      
-    </tr>
-    
-    <tr class="wrow" style="--sc:#8A97A8" data-host="coin-pilot.io">
-      <td><a href="/ui/candidates/4288eadf-21d1-497c-9c7e-e14f726eda70/"><span class="mono">coin-pilot.io</span></a></td>
-      <td class="small"><a href="/ui/brands/a7b5cb5c-e4a0-495d-b6c9-3ac5209ac3b2/">VaultPay</a></td><td class="small">domain name</td>
-      <td><span class="badge state st-new" title="just discovered, not visited yet">new</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="60" style="max-width:60px"></span> 20</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:46:41.065705">2026-10-14 09:46</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:46:41.065705">2026-10-14 09:46</td>
-      <td class="mono small" >—</td>
-      <td class="right mono">0</td>
-      
-      <td style="white-space:nowrap">
-        
-        <form method="post" action="/ui/candidates/4288eadf-21d1-497c-9c7e-e14f726eda70/dismiss" style="display:inline"
-              data-confirm="Known legit: remove coin-pilot.io from the watchlist and whitelist its domain for VaultPay?&#10;&#10;It (and its subdomains) will never be flagged again. You can undo this on the brand page → whitelist."
-              data-confirm-title="Known legitimate" data-confirm-ok="Whitelist it">
-          <input type="hidden" name="next" value="/ui/candidates?state=new"><input type="hidden" name="whitelist" value="on"><input type="hidden" name="reason" value="known legitimate domain">
-          <button type="submit" class="small" title="I know this domain — it is legitimate. One click: off the watchlist and whitelisted for this brand">Known legit ✓</button>
-        </form>
-        
-        <form method="post" action="/ui/candidates/4288eadf-21d1-497c-9c7e-e14f726eda70/rescan" style="display:inline"><button type="submit" class="small" title="fetch and score this site again now">Rescan</button></form>
-      </td>
-      
-    </tr>
-    
-    <tr class="wrow" style="--sc:#8A97A8" data-host="coinpllot.io">
-      <td><a href="/ui/candidates/29d2a4af-ed4c-471d-8eed-fd9ef88c79a5/"><span class="mono">coinpllot.io</span></a></td>
-      <td class="small"><a href="/ui/brands/a7b5cb5c-e4a0-495d-b6c9-3ac5209ac3b2/">VaultPay</a></td><td class="small">domain name</td>
-      <td><span class="badge state st-new" title="just discovered, not visited yet">new</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="60" style="max-width:60px"></span> 20</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:46:41.064045">2026-10-14 09:46</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:46:41.064045">2026-10-14 09:46</td>
-      <td class="mono small" >—</td>
-      <td class="right mono">0</td>
-      
-      <td style="white-space:nowrap">
-        
-        <form method="post" action="/ui/candidates/29d2a4af-ed4c-471d-8eed-fd9ef88c79a5/dismiss" style="display:inline"
-              data-confirm="Known legit: remove coinpllot.io from the watchlist and whitelist its domain for VaultPay?&#10;&#10;It (and its subdomains) will never be flagged again. You can undo this on the brand page → whitelist."
-              data-confirm-title="Known legitimate" data-confirm-ok="Whitelist it">
-          <input type="hidden" name="next" value="/ui/candidates?state=new"><input type="hidden" name="whitelist" value="on"><input type="hidden" name="reason" value="known legitimate domain">
-          <button type="submit" class="small" title="I know this domain — it is legitimate. One click: off the watchlist and whitelisted for this brand">Known legit ✓</button>
-        </form>
-        
-        <form method="post" action="/ui/candidates/29d2a4af-ed4c-471d-8eed-fd9ef88c79a5/rescan" style="display:inline"><button type="submit" class="small" title="fetch and score this site again now">Rescan</button></form>
-      </td>
-      
-    </tr>
-    
-    <tr class="wrow" style="--sc:#8A97A8" data-host="coinpilott.io">
-      <td><a href="/ui/candidates/1e2f98bf-0829-4a3b-aa0a-41470bbc2ac6/"><span class="mono">coinpilott.io</span></a></td>
-      <td class="small"><a href="/ui/brands/a7b5cb5c-e4a0-495d-b6c9-3ac5209ac3b2/">VaultPay</a></td><td class="small">domain name</td>
-      <td><span class="badge state st-new" title="just discovered, not visited yet">new</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="60" style="max-width:60px"></span> 20</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:46:41.062885">2026-10-14 09:46</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:46:41.062885">2026-10-14 09:46</td>
-      <td class="mono small" >—</td>
-      <td class="right mono">0</td>
-      
-      <td style="white-space:nowrap">
-        
-        <form method="post" action="/ui/candidates/1e2f98bf-0829-4a3b-aa0a-41470bbc2ac6/dismiss" style="display:inline"
-              data-confirm="Known legit: remove coinpilott.io from the watchlist and whitelist its domain for VaultPay?&#10;&#10;It (and its subdomains) will never be flagged again. You can undo this on the brand page → whitelist."
-              data-confirm-title="Known legitimate" data-confirm-ok="Whitelist it">
-          <input type="hidden" name="next" value="/ui/candidates?state=new"><input type="hidden" name="whitelist" value="on"><input type="hidden" name="reason" value="known legitimate domain">
-          <button type="submit" class="small" title="I know this domain — it is legitimate. One click: off the watchlist and whitelisted for this brand">Known legit ✓</button>
-        </form>
-        
-        <form method="post" action="/ui/candidates/1e2f98bf-0829-4a3b-aa0a-41470bbc2ac6/rescan" style="display:inline"><button type="submit" class="small" title="fetch and score this site again now">Rescan</button></form>
-      </td>
-      
-    </tr>
-    
-    <tr class="wrow" style="--sc:#8A97A8" data-host="shopnowa.com">
-      <td><a href="/ui/candidates/9080f42f-d000-480c-80a6-4fe253d229f2/"><span class="mono">shopnowa.com</span></a></td>
-      <td class="small"><a href="/ui/brands/a7b5cb5c-e4a0-495d-b6c9-3ac5209ac3b2/">VaultPay</a></td><td class="small">domain name</td>
-      <td><span class="badge state st-new" title="just discovered, not visited yet">new</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="60" style="max-width:60px"></span> 20</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:46:41.047724">2026-10-14 09:46</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:46:41.047724">2026-10-14 09:46</td>
-      <td class="mono small" >—</td>
-      <td class="right mono">0</td>
-      
-      <td style="white-space:nowrap">
-        
-        <form method="post" action="/ui/candidates/9080f42f-d000-480c-80a6-4fe253d229f2/dismiss" style="display:inline"
-              data-confirm="Known legit: remove shopnowa.com from the watchlist and whitelist its domain for VaultPay?&#10;&#10;It (and its subdomains) will never be flagged again. You can undo this on the brand page → whitelist."
-              data-confirm-title="Known legitimate" data-confirm-ok="Whitelist it">
-          <input type="hidden" name="next" value="/ui/candidates?state=new"><input type="hidden" name="whitelist" value="on"><input type="hidden" name="reason" value="known legitimate domain">
-          <button type="submit" class="small" title="I know this domain — it is legitimate. One click: off the watchlist and whitelisted for this brand">Known legit ✓</button>
-        </form>
-        
-        <form method="post" action="/ui/candidates/9080f42f-d000-480c-80a6-4fe253d229f2/rescan" style="display:inline"><button type="submit" class="small" title="fetch and score this site again now">Rescan</button></form>
-      </td>
-      
-    </tr>
-    
-    <tr class="wrow" style="--sc:#8A97A8" data-host="shoqnova.com">
-      <td><a href="/ui/candidates/68254f00-dc00-46f9-9de3-48f1a18ce7b8/"><span class="mono">shoqnova.com</span></a></td>
-      <td class="small"><a href="/ui/brands/a7b5cb5c-e4a0-495d-b6c9-3ac5209ac3b2/">VaultPay</a></td><td class="small">domain name</td>
-      <td><span class="badge state st-new" title="just discovered, not visited yet">new</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="60" style="max-width:60px"></span> 20</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:46:41.047724">2026-10-14 09:46</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:46:41.047724">2026-10-14 09:46</td>
-      <td class="mono small" >—</td>
-      <td class="right mono">0</td>
-      
-      <td style="white-space:nowrap">
-        
-        <form method="post" action="/ui/candidates/68254f00-dc00-46f9-9de3-48f1a18ce7b8/dismiss" style="display:inline"
-              data-confirm="Known legit: remove shoqnova.com from the watchlist and whitelist its domain for VaultPay?&#10;&#10;It (and its subdomains) will never be flagged again. You can undo this on the brand page → whitelist."
-              data-confirm-title="Known legitimate" data-confirm-ok="Whitelist it">
-          <input type="hidden" name="next" value="/ui/candidates?state=new"><input type="hidden" name="whitelist" value="on"><input type="hidden" name="reason" value="known legitimate domain">
-          <button type="submit" class="small" title="I know this domain — it is legitimate. One click: off the watchlist and whitelisted for this brand">Known legit ✓</button>
-        </form>
-        
-        <form method="post" action="/ui/candidates/68254f00-dc00-46f9-9de3-48f1a18ce7b8/rescan" style="display:inline"><button type="submit" class="small" title="fetch and score this site again now">Rescan</button></form>
-      </td>
-      
-    </tr>
-    
-    <tr class="wrow" style="--sc:#8A97A8" data-host="shopnova-eu.com">
-      <td><a href="/ui/candidates/0db67eeb-267f-42c8-a83d-b5675bcc52e8/"><span class="mono">shopnova-eu.com</span></a></td>
-      <td class="small"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/">CoinPilot</a></td><td class="small">domain name</td>
-      <td><span class="badge state st-new" title="just discovered, not visited yet">new</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="60" style="max-width:60px"></span> 20</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:46:28.537412">2026-10-14 09:46</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:46:28.537412">2026-10-14 09:46</td>
-      <td class="mono small" >—</td>
-      <td class="right mono">0</td>
-      
-      <td style="white-space:nowrap">
-        
-        <form method="post" action="/ui/candidates/0db67eeb-267f-42c8-a83d-b5675bcc52e8/dismiss" style="display:inline"
-              data-confirm="Known legit: remove shopnova-eu.com from the watchlist and whitelist its domain for CoinPilot?&#10;&#10;It (and its subdomains) will never be flagged again. You can undo this on the brand page → whitelist."
-              data-confirm-title="Known legitimate" data-confirm-ok="Whitelist it">
-          <input type="hidden" name="next" value="/ui/candidates?state=new"><input type="hidden" name="whitelist" value="on"><input type="hidden" name="reason" value="known legitimate domain">
-          <button type="submit" class="small" title="I know this domain — it is legitimate. One click: off the watchlist and whitelisted for this brand">Known legit ✓</button>
-        </form>
-        
-        <form method="post" action="/ui/candidates/0db67eeb-267f-42c8-a83d-b5675bcc52e8/rescan" style="display:inline"><button type="submit" class="small" title="fetch and score this site again now">Rescan</button></form>
-      </td>
-      
-    </tr>
-    
-    <tr class="wrow" style="--sc:#8A97A8" data-host="vaultpay-verify.com">
-      <td><a href="/ui/candidates/35743234-5c63-4fac-85a0-53d5d79d9276/"><span class="mono">vaultpay-verify.com</span></a></td>
-      <td class="small"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/">CoinPilot</a></td><td class="small">domain name</td>
-      <td><span class="badge state st-new" title="just discovered, not visited yet">new</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="60" style="max-width:60px"></span> 20</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:46:28.535897">2026-10-14 09:46</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:46:28.535897">2026-10-14 09:46</td>
-      <td class="mono small" >—</td>
-      <td class="right mono">0</td>
-      
-      <td style="white-space:nowrap">
-        
-        <form method="post" action="/ui/candidates/35743234-5c63-4fac-85a0-53d5d79d9276/dismiss" style="display:inline"
-              data-confirm="Known legit: remove vaultpay-verify.com from the watchlist and whitelist its domain for CoinPilot?&#10;&#10;It (and its subdomains) will never be flagged again. You can undo this on the brand page → whitelist."
-              data-confirm-title="Known legitimate" data-confirm-ok="Whitelist it">
-          <input type="hidden" name="next" value="/ui/candidates?state=new"><input type="hidden" name="whitelist" value="on"><input type="hidden" name="reason" value="known legitimate domain">
-          <button type="submit" class="small" title="I know this domain — it is legitimate. One click: off the watchlist and whitelisted for this brand">Known legit ✓</button>
-        </form>
-        
-        <form method="post" action="/ui/candidates/35743234-5c63-4fac-85a0-53d5d79d9276/rescan" style="display:inline"><button type="submit" class="small" title="fetch and score this site again now">Rescan</button></form>
-      </td>
-      
-    </tr>
-    
-    <tr class="wrow" style="--sc:#8A97A8" data-host="vault-pay.co">
-      <td><a href="/ui/candidates/fc2a9924-807c-4350-afbd-367169ed6058/"><span class="mono">vault-pay.co</span></a></td>
-      <td class="small"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/">CoinPilot</a></td><td class="small">domain name</td>
-      <td><span class="badge state st-new" title="just discovered, not visited yet">new</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="60" style="max-width:60px"></span> 20</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:46:28.535175">2026-10-14 09:46</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:46:28.535175">2026-10-14 09:46</td>
-      <td class="mono small" >—</td>
-      <td class="right mono">0</td>
-      
-      <td style="white-space:nowrap">
-        
-        <form method="post" action="/ui/candidates/fc2a9924-807c-4350-afbd-367169ed6058/dismiss" style="display:inline"
-              data-confirm="Known legit: remove vault-pay.co from the watchlist and whitelist its domain for CoinPilot?&#10;&#10;It (and its subdomains) will never be flagged again. You can undo this on the brand page → whitelist."
-              data-confirm-title="Known legitimate" data-confirm-ok="Whitelist it">
-          <input type="hidden" name="next" value="/ui/candidates?state=new"><input type="hidden" name="whitelist" value="on"><input type="hidden" name="reason" value="known legitimate domain">
-          <button type="submit" class="small" title="I know this domain — it is legitimate. One click: off the watchlist and whitelisted for this brand">Known legit ✓</button>
-        </form>
-        
-        <form method="post" action="/ui/candidates/fc2a9924-807c-4350-afbd-367169ed6058/rescan" style="display:inline"><button type="submit" class="small" title="fetch and score this site again now">Rescan</button></form>
-      </td>
-      
-    </tr>
-    
-    <tr class="wrow" style="--sc:#8A97A8" data-host="shopnowa.com">
-      <td><a href="/ui/candidates/5a484f92-9264-44b8-967d-0dbdf9cf8b72/"><span class="mono">shopnowa.com</span></a></td>
-      <td class="small"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/">CoinPilot</a></td><td class="small">domain name</td>
-      <td><span class="badge state st-new" title="just discovered, not visited yet">new</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="60" style="max-width:60px"></span> 20</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:46:28.525774">2026-10-14 09:46</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:46:28.525774">2026-10-14 09:46</td>
-      <td class="mono small" >—</td>
-      <td class="right mono">0</td>
-      
-      <td style="white-space:nowrap">
-        
-        <form method="post" action="/ui/candidates/5a484f92-9264-44b8-967d-0dbdf9cf8b72/dismiss" style="display:inline"
-              data-confirm="Known legit: remove shopnowa.com from the watchlist and whitelist its domain for CoinPilot?&#10;&#10;It (and its subdomains) will never be flagged again. You can undo this on the brand page → whitelist."
-              data-confirm-title="Known legitimate" data-confirm-ok="Whitelist it">
-          <input type="hidden" name="next" value="/ui/candidates?state=new"><input type="hidden" name="whitelist" value="on"><input type="hidden" name="reason" value="known legitimate domain">
-          <button type="submit" class="small" title="I know this domain — it is legitimate. One click: off the watchlist and whitelisted for this brand">Known legit ✓</button>
-        </form>
-        
-        <form method="post" action="/ui/candidates/5a484f92-9264-44b8-967d-0dbdf9cf8b72/rescan" style="display:inline"><button type="submit" class="small" title="fetch and score this site again now">Rescan</button></form>
-      </td>
-      
-    </tr>
-    
-    <tr class="wrow" style="--sc:#8A97A8" data-host="shoqnova.com">
-      <td><a href="/ui/candidates/72dfa4a6-5273-4899-976c-9567d2395fe2/"><span class="mono">shoqnova.com</span></a></td>
-      <td class="small"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/">CoinPilot</a></td><td class="small">domain name</td>
-      <td><span class="badge state st-new" title="just discovered, not visited yet">new</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="60" style="max-width:60px"></span> 20</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:46:28.525774">2026-10-14 09:46</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:46:28.525774">2026-10-14 09:46</td>
-      <td class="mono small" >—</td>
-      <td class="right mono">0</td>
-      
-      <td style="white-space:nowrap">
-        
-        <form method="post" action="/ui/candidates/72dfa4a6-5273-4899-976c-9567d2395fe2/dismiss" style="display:inline"
-              data-confirm="Known legit: remove shoqnova.com from the watchlist and whitelist its domain for CoinPilot?&#10;&#10;It (and its subdomains) will never be flagged again. You can undo this on the brand page → whitelist."
-              data-confirm-title="Known legitimate" data-confirm-ok="Whitelist it">
-          <input type="hidden" name="next" value="/ui/candidates?state=new"><input type="hidden" name="whitelist" value="on"><input type="hidden" name="reason" value="known legitimate domain">
-          <button type="submit" class="small" title="I know this domain — it is legitimate. One click: off the watchlist and whitelisted for this brand">Known legit ✓</button>
-        </form>
-        
-        <form method="post" action="/ui/candidates/72dfa4a6-5273-4899-976c-9567d2395fe2/rescan" style="display:inline"><button type="submit" class="small" title="fetch and score this site again now">Rescan</button></form>
-      </td>
-      
-    </tr>
-    
-    <tr class="wrow" style="--sc:#8A97A8" data-host="vaultpay-login.com">
-      <td><a href="/ui/candidates/380fc15a-9a2f-4cb8-945b-04dc5f85abdd/"><span class="mono">vaultpay-login.com</span></a></td>
-      <td class="small"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/">CoinPilot</a></td><td class="small">domain name</td>
-      <td><span class="badge state st-new" title="just discovered, not visited yet">new</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="60" style="max-width:60px"></span> 20</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:46:28.525774">2026-10-14 09:46</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:46:28.525774">2026-10-14 09:46</td>
-      <td class="mono small" >—</td>
-      <td class="right mono">0</td>
-      
-      <td style="white-space:nowrap">
-        
-        <form method="post" action="/ui/candidates/380fc15a-9a2f-4cb8-945b-04dc5f85abdd/dismiss" style="display:inline"
-              data-confirm="Known legit: remove vaultpay-login.com from the watchlist and whitelist its domain for CoinPilot?&#10;&#10;It (and its subdomains) will never be flagged again. You can undo this on the brand page → whitelist."
-              data-confirm-title="Known legitimate" data-confirm-ok="Whitelist it">
-          <input type="hidden" name="next" value="/ui/candidates?state=new"><input type="hidden" name="whitelist" value="on"><input type="hidden" name="reason" value="known legitimate domain">
-          <button type="submit" class="small" title="I know this domain — it is legitimate. One click: off the watchlist and whitelisted for this brand">Known legit ✓</button>
-        </form>
-        
-        <form method="post" action="/ui/candidates/380fc15a-9a2f-4cb8-945b-04dc5f85abdd/rescan" style="display:inline"><button type="submit" class="small" title="fetch and score this site again now">Rescan</button></form>
-      </td>
-      
-    </tr>
-    
-    <tr class="wrow" style="--sc:#8A97A8" data-host="vaultpay-secure.net">
-      <td><a href="/ui/candidates/74212e6a-6989-4fec-af47-6f83e26e1f07/"><span class="mono">vaultpay-secure.net</span></a></td>
-      <td class="small"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/">CoinPilot</a></td><td class="small">domain name</td>
-      <td><span class="badge state st-new" title="just discovered, not visited yet">new</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="60" style="max-width:60px"></span> 20</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:46:28.525774">2026-10-14 09:46</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:46:28.525774">2026-10-14 09:46</td>
-      <td class="mono small" >—</td>
-      <td class="right mono">0</td>
-      
-      <td style="white-space:nowrap">
-        
-        <form method="post" action="/ui/candidates/74212e6a-6989-4fec-af47-6f83e26e1f07/dismiss" style="display:inline"
-              data-confirm="Known legit: remove vaultpay-secure.net from the watchlist and whitelist its domain for CoinPilot?&#10;&#10;It (and its subdomains) will never be flagged again. You can undo this on the brand page → whitelist."
-              data-confirm-title="Known legitimate" data-confirm-ok="Whitelist it">
-          <input type="hidden" name="next" value="/ui/candidates?state=new"><input type="hidden" name="whitelist" value="on"><input type="hidden" name="reason" value="known legitimate domain">
-          <button type="submit" class="small" title="I know this domain — it is legitimate. One click: off the watchlist and whitelisted for this brand">Known legit ✓</button>
-        </form>
-        
-        <form method="post" action="/ui/candidates/74212e6a-6989-4fec-af47-6f83e26e1f07/rescan" style="display:inline"><button type="submit" class="small" title="fetch and score this site again now">Rescan</button></form>
-      </td>
-      
-    </tr>
-    
-  </table>
-</div>
+</details>
 <script>
 (function(){
-  const q = document.getElementById('q');
-  q && q.addEventListener('input', () => { const v = q.value.toLowerCase();
-    document.querySelectorAll('#ctable tr[data-host]').forEach(tr => tr.style.display = tr.dataset.host.includes(v) ? '' : 'none'); });
-  // funnel segments carry data-w and are grown by the shared motion layer in base.html
+  const st = document.getElementById('wstats');
+  if (st) { try { st.open = localStorage.getItem('bw-watch-stats') === '1'; } catch (e) { /* ignore */ }
+    st.addEventListener('toggle', () => { try { localStorage.setItem('bw-watch-stats', st.open ? '1' : '0'); } catch (e) { /* ignore */ } }); }
+  // several domains at once → Known legit
+  const bar = document.getElementById('bulkform'), all = document.getElementById('selall');
+  const sels = () => [...document.querySelectorAll('#ctable .sel')];
+  const count = () => { const n = document.querySelectorAll('.sel:checked').length; if (bar) { bar.hidden = n === 0; document.getElementById('bulkn').textContent = n + ' selected'; } if (all) { const v = sels(); all.checked = v.length > 0 && v.every(c => c.checked); } };
+  sels().forEach(c => c.addEventListener('change', count));
+  if (all) all.addEventListener('change', () => { sels().forEach(c => { c.checked = all.checked; }); count(); });
+  const clear = document.getElementById('bulkclear'); if (clear) clear.addEventListener('click', () => { document.querySelectorAll('.sel:checked').forEach(c => { c.checked = false; }); count(); });
+  count();
+  document.addEventListener('keydown', ev => { if (ev.key === '/' && !/INPUT|SELECT|TEXTAREA/.test(document.activeElement.tagName)) { ev.preventDefault(); const q = document.getElementById('q'); if (q) { q.focus(); q.select(); } } });
 })();
 </script>
 
 </main>
+<script>
+/* A form is sent once: a double click (or Enter twice) queued two identical scans, one of which never ran.
+   Every scan form and every form marked data-busy is guarded; a data-busy form also disables the button that sent it
+   and shows "Working…" (data-busy="text" for other words) until the answer arrives.
+   Only a submit that really went out counts — a confirm dialog cancels the first one and sends it again itself. */
+(function(){
+  const once = f => f.hasAttribute('data-busy') || /\/(scan|scan-urls)$/.test(f.getAttribute('action') || '');
+  document.addEventListener('submit', e => { const f = e.target; if (once(f) && f.__sentAt && Date.now() - f.__sentAt < 4000) { e.preventDefault(); e.stopImmediatePropagation(); } }, true);
+  // read defaultPrevented after every listener ran (the confirm dialog's included), not before them
+  document.addEventListener('submit', e => { const f = e.target, b = e.submitter; if (!once(f)) return;
+    setTimeout(() => { if (e.defaultPrevented) return; f.__sentAt = Date.now();
+      if (f.hasAttribute('data-busy') && b && b.tagName === 'BUTTON') { b.disabled = true; b.dataset.was = b.textContent; b.textContent = f.getAttribute('data-busy') || 'Working…';
+        setTimeout(() => { b.disabled = false; b.textContent = b.dataset.was; }, 30000); } }, 0); });
+  // the sticky header's height, for anything that sticks under it
+  const hdr = document.querySelector('header'); const setH = () => document.documentElement.style.setProperty('--hdr', (hdr ? hdr.offsetHeight : 56) + 'px');
+  setH(); window.addEventListener('resize', setH);
+  // server timestamps are UTC: <time datetime="…" data-local> (the |ts filter) and [data-local="…"] show the viewer's local time
+  const utc = iso => /T\d\d:\d\d/.test(iso) && !/(Z|[+-]\d\d:?\d\d)$/.test(iso) ? iso + 'Z' : iso;
+  const fmt = new Intl.DateTimeFormat(undefined, {year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'});
+  document.querySelectorAll('[data-local]').forEach(el => { const raw = el.getAttribute('datetime') || el.dataset.local; if (!raw) return;
+    const d = new Date(utc(raw)); if (isNaN(d)) return; el.textContent = fmt.format(d); if (!el.title) el.title = raw.replace('T', ' ').slice(0, 19) + ' UTC'; });
+})();
+</script>
 <script>
 /* BrandWatch motion layer: count-ups, staggered entrances, animated bars / rings / histograms,
    and auto-drawn donut + sparkline charts from data-* attributes. */

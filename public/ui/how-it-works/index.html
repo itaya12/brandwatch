@@ -75,6 +75,21 @@ button:hover,.btn:hover{border-color:var(--accent);box-shadow:0 0 12px rgba(53,1
 button.danger{border-color:var(--crit);color:var(--crit)}button.ok{border-color:var(--low);color:var(--low)}
 input,select,textarea{background:#0b1220;color:var(--text);border:1px solid var(--border);border-radius:6px;padding:7px 9px;font:inherit;width:100%;transition:border-color .2s,box-shadow .2s}
 input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(53,199,242,.15)}
+/* keyboard users see where they are; mouse clicks do not get the ring */
+:focus-visible{outline:2px solid var(--accent2);outline-offset:2px;border-radius:4px}
+a:focus-visible,button:focus-visible,.btn:focus-visible{box-shadow:0 0 0 3px rgba(53,199,242,.25)}
+.skip{position:absolute;left:8px;top:-60px;z-index:100;padding:8px 14px;background:var(--panel2);border:1px solid var(--accent);border-radius:8px;color:var(--text);font-weight:600}
+.skip:focus{top:8px}
+/* the button variants every page uses */
+.btn.primary{background:rgba(53,199,242,.16);border-color:var(--accent);color:var(--accent2);font-weight:600}
+.btn.ghost,button.ghost{background:transparent}
+button.small,.btn.small{padding:4px 9px;font-size:12px;white-space:nowrap}
+button[disabled],.btn[aria-disabled=true]{opacity:.55;cursor:default;box-shadow:none}
+/* one message after a form (see _flash.html) */
+.flash{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:0 0 14px;padding:10px 14px;border:1px solid rgba(46,204,113,.5);border-radius:10px;background:rgba(46,204,113,.08);font-size:13.5px;animation:fadeUp .4s ease both}
+.flash .ic{width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:800;background:rgba(53,199,242,.15);color:var(--accent2);flex:none}
+.flash .ic.ok{background:rgba(46,204,113,.18);color:var(--low)}.flash .ic.undo{background:rgba(255,159,28,.18);color:var(--high)}
+.flash .t{flex:1;min-width:200px}.flash .undo{margin:0}.flash .x{margin-left:auto;padding:2px 8px;font-size:12px;border-color:transparent;color:var(--muted)}
 label{display:block;font-size:12px;color:var(--muted);margin:8px 0 4px;font-family:var(--mono);text-transform:uppercase;letter-spacing:.06em}
 .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
 .kpi{position:relative;overflow:hidden;background:linear-gradient(180deg,rgba(18,26,43,.95),rgba(14,20,32,.95));border:1px solid var(--border);border-radius:10px;padding:12px 14px;
@@ -175,6 +190,7 @@ header nav{display:flex;align-items:center;min-width:0}
 </style>
 </head>
 <body>
+<a class="skip" href="#main">Skip to content</a>
 <header>
   <a class="logo" href="/ui/dashboard/">BrandWatch</a>
   
@@ -193,7 +209,13 @@ header nav{display:flex;align-items:center;min-width:0}
   <span class="who"><span class="email">admin · </span>admin · <a href="/ui/logout">logout</a></span>
   
 </header>
-<main>
+<main id="main">
+
+
+
+
+
+
 
 
 
@@ -1029,7 +1051,7 @@ header nav{display:flex;align-items:center;min-width:0}
 <div class="sx-proof" aria-label="Numbers read from the code">
   <a href="#about"><b>50</b> signals in 7 groups</a>
   <a href="#about"><b>26</b> data providers</a>
-  <a href="#about"><b>606</b> automated tests</a>
+  <a href="#about"><b>622</b> automated tests</a>
   <a href="#ch-takedown"><b>26</b> report portals</a>
   <a href="#about"><b>$0</b> demo · no API keys</a>
 </div>
@@ -1307,9 +1329,9 @@ First observed    : 2026-10-12T06:41:46.604012</div>
     <div class="kpi vi rv" style="--t:160"><div class="v" data-to="26">0</div><div class="l">providers in 15 fallback chains</div></div>
     <div class="kpi ok rv" style="--t:240"><div class="v" data-to="65">0</div><div class="l">recorded golden scenarios</div></div>
     <div class="kpi rv" style="--t:320"><div class="v" data-to="10">0</div><div class="l">DB-enforced immutable tables</div></div>
-    <div class="kpi mg rv" style="--t:400"><div class="v" data-to="606">0</div><div class="l">automated tests in 64 files</div></div>
-    <div class="kpi rv" style="--t:480"><div class="v" data-to="94">0</div><div class="l">REST API operations (<a href="/docs" target="_blank">OpenAPI</a>)</div></div>
-    <div class="kpi rv" style="--t:560"><div class="v" data-to="14">0</div><div class="l">Alembic migrations · SQLite &amp; PostgreSQL</div></div>
+    <div class="kpi mg rv" style="--t:400"><div class="v" data-to="622">0</div><div class="l">automated tests in 67 files</div></div>
+    <div class="kpi rv" style="--t:480"><div class="v" data-to="95">0</div><div class="l">REST API operations (<a href="/docs" target="_blank">OpenAPI</a>)</div></div>
+    <div class="kpi rv" style="--t:560"><div class="v" data-to="15">0</div><div class="l">Alembic migrations · SQLite &amp; PostgreSQL</div></div>
   </div>
   <p class="small muted" style="margin-top:8px">Stack: FastAPI · SQLAlchemy 2 · Alembic · Jinja2 · Playwright (Chromium) · httpx · dnspython · cryptography. Scoring version <span class="mono">v7-f1ba3ebf</span>. CI: lint · test-sqlite · test-postgres.</p>
 </div>
@@ -1467,7 +1489,7 @@ First observed    : 2026-10-12T06:41:46.604012</div>
     </details>
   </div></span></div></div>
         
-        <div class="hiw-step" id="step-6"><div class="n">6 · 42 signals in 7 groups</div><b>Compare with the brand</b><p>50 signals in 7 groups compare the site with the brand: identity tricks, visual copy, what the page asks for, shared infrastructure, reputation, freshness, evasion.</p>
+        <div class="hiw-step" id="step-6"><div class="n">6 · 50 signals in 7 groups</div><b>Compare with the brand</b><p>50 signals in 7 groups compare the site with the brand: identity tricks, visual copy, what the page asks for, shared infrastructure, reputation, freshness, evasion.</p>
           <div class="hiw-foot"><a class="see" href="/ui/findings/d3cddf21-a088-4189-9f17-2cf8dba61ab0/">see it →</a>
 <span class="mi"><button type="button" class="mi-btn" aria-expanded="false" aria-label="More info about Compare with the brand">More info</button>
   <div class="deep" role="dialog" aria-label="Compare with the brand — more info">
@@ -1477,7 +1499,7 @@ First observed    : 2026-10-12T06:41:46.604012</div>
       <li><b>Calls:</b> <b class="hl">nothing outside</b> — it works on what is already stored</li>
       
       <li><b>Keeps:</b> candidates.last_analysis: signals, unavailable evidence, score — for every scored site, used to train the classifier</li>
-      <li><b>Limit:</b> 42 signals in 7 groups (config/brand_config.py)</li>
+      <li><b>Limit:</b> 50 signals in 7 groups (config/brand_config.py)</li>
     </ul>
     <details class="all"><summary>All the details ▾</summary>
     <h5>External calls · none</h5>
@@ -1485,7 +1507,7 @@ First observed    : 2026-10-12T06:41:46.604012</div>
     <h5>How it runs</h5><div class="chain">no network calls: a pure function over the collected evidence and the brand fingerprint</div>
     <div class="two"><div><h5>Computed locally</h5><ul><li>Identity: brand in the name, combosquat, Levenshtein ≤ 2, IDN homoglyph, TLD swap, title claims the brand, brand in subdomain / path</li><li>Visual: favicon exact or pHash ≤ 6 bits; screenshot ≥ 0.90 similar to the home or login page; palette ≥ 0.67; login DOM ≥ 0.80</li><li>Behaviour: password / card / seed fields, off-site form action, e-mail prefill, 17 lure phrases, /login-style path</li><li>Infrastructure: shares an IP, certificate or tracking ID with a confirmed or critical finding, or a mapped attacker node</li><li>Reputation fires only on a positive verdict (unknown is never clean) · Freshness: &lt; 7 / &lt; 30 days, woke up · Evasion: cloaking</li></ul></div>
       <div><h5>Stored</h5><ul><li>candidates.last_analysis: signals, unavailable evidence, score — for every scored site, used to train the classifier</li><li>one trace line per site with every fired signal and its plain-language reason</li></ul></div></div>
-    <h5>Limits</h5><ul><li>42 signals in 7 groups (config/brand_config.py)</li><li>favicon near-match ≤ 6 bits · screenshot ≥ 0.90 · palette ≥ 0.67 · login DOM ≥ 0.80</li><li>colours count as close at L1 distance ≤ 54 · DOM signature ≤ 400 tokens</li></ul>
+    <h5>Limits</h5><ul><li>50 signals in 7 groups (config/brand_config.py)</li><li>favicon near-match ≤ 6 bits · screenshot ≥ 0.90 · palette ≥ 0.67 · login DOM ≥ 0.80</li><li>colours count as close at L1 distance ≤ 54 · DOM signature ≤ 400 tokens</li></ul>
     <h5>Demo vs live</h5><div style="font-size:12.5px;line-height:1.5">Same code. Demo inputs are synthetic screenshots built to match or differ, so visual signals are deterministic; live inputs are real captures.</div>
     <h5>Code</h5><div class="mods"><span>detection/analysis.py</span><span>detection/dom.py</span><span>detection/images.py</span><span>detection/html.py</span></div>
     </details>
@@ -1733,7 +1755,7 @@ First observed    : 2026-10-12T06:41:46.604012</div>
           <p>Every query is workspace-scoped; RBAC (admin / analyst / viewer) is identical in the UI and the API.</p>
           <div class="mod">keys.py · config/secrets.py · tenancy.py · api/auth.py</div></div>
         <div class="card" id="tests"><h3>Tests &amp; CI</h3>
-          <p>606 test functions in 64 files: schema and trigger enforcement, SSRF cases, provider resilience, every UI page, the golden gate. CI runs lint, test-sqlite, test-postgres, including migrations up and down on PostgreSQL 16.</p>
+          <p>622 test functions in 67 files: schema and trigger enforcement, SSRF cases, provider resilience, every UI page, the golden gate. CI runs lint, test-sqlite, test-postgres, including migrations up and down on PostgreSQL 16.</p>
           <div class="mod">tests/ · .github/workflows/ci.yml</div></div>
       </div>
       <h2>Trust &amp; safety</h2>
@@ -1750,7 +1772,7 @@ First observed    : 2026-10-12T06:41:46.604012</div>
     <summary><b>Glossary</b><span>· every “?” on the site links here</span></summary>
     <div class="in">
       <dl class="gl">
-        <dt id="g-baseline">Baseline</dt><dd>The fingerprint of the brand&#39;s real site — favicon hash, screenshot hash, colours, login pages, keywords. Every suspect is compared against it.</dd><dt id="g-candidate">Candidate / watched domain</dt><dd>Any domain discovered for a brand. It lives on the Watchlist until it scores high enough to become a finding, expires, or is dismissed.</dd><dt id="g-finding">Finding</dt><dd>A candidate that scored Medium or higher. An analyst confirms it as phishing or dismisses it; nothing happens automatically.</dd><dt id="g-signal">Signal</dt><dd>One piece of evidence (e.g. &#39;identical favicon&#39;). 42 signals in 7 groups; each adds points.</dd><dt id="g-group-cap">Group cap</dt><dd>Each group can add at most its cap, so ten weak visual hints never outweigh one strong behaviour signal.</dd><dt id="g-risk">Risk score</dt><dd>How dangerous the site is, 0–100. Medium ≥ 25, High ≥ 50, Critical ≥ 75. Combination rules can raise the severity.</dd><dt id="g-confidence">Confidence</dt><dd>How complete and consistent the evidence is (breadth, completeness, provider agreement) — separate from risk.</dd><dt id="g-cloaking">Cloaking</dt><dd>A kit that shows a harmless decoy to scanners and the phishing page to victims. BrandWatch fetches as a bot, as a victim link, from a search referer and from a home IP.</dd><dt id="g-tracks">Detection track</dt><dd>Light, Standard or Deep: which discovery streams run, how many sites are visited, how often the watchlist is re-checked.</dd><dt id="g-attack-infrastructure">Attack infrastructure</dt><dd>The map built from one confirmed site: every server, certificate and sister domain it shares, triaged so reverse-IP noise is excluded. The pivot is budgeted (at most 2 hops, 100 nodes, a fixed number of API calls) and those limits are frozen in code.</dd><dt id="g-advisory">Advisory opinions</dt><dd>An AI model and a trained classifier each give a second opinion on Medium+ findings. The page text is passed as untrusted input and the answer must match a strict JSON schema. Shown for context only: the deterministic score never depends on them.</dd><dt id="g-ioc">IOC</dt><dd>Indicator of compromise: a domain, IP, certificate hash or tracking ID a firewall / SIEM can block. Exported as CSV, JSON or STIX 2.1.</dd><dt id="g-takedown">Takedown</dt><dd>The request to remove a site. Draft → review → approved → sent → taken down; sent to the registrar, the hosting provider and the CDN, and reported to blocklists.</dd><dt id="g-evidence">Evidence</dt><dd>Every screenshot, HTML page, DNS / WHOIS answer and reputation lookup, stored append-only with its SHA-256 — the database rejects edits and deletes.</dd><dt id="g-demo">Demo mode</dt><dd>Recorded scenarios replace every external service: the full pipeline runs deterministically, offline, at $0.</dd>
+        <dt id="g-baseline">Baseline</dt><dd>The fingerprint of the brand&#39;s real site — favicon hash, screenshot hash, colours, login pages, keywords. Every suspect is compared against it.</dd><dt id="g-candidate">Candidate / watched domain</dt><dd>Any domain discovered for a brand. It lives on the Watchlist until it scores high enough to become a finding, expires, or is dismissed.</dd><dt id="g-finding">Finding</dt><dd>A candidate that scored Medium or higher. An analyst confirms it as phishing or dismisses it; nothing happens automatically.</dd><dt id="g-signal">Signal</dt><dd>One piece of evidence (e.g. &#39;identical favicon&#39;). 50 signals in 7 groups; each adds points.</dd><dt id="g-group-cap">Group cap</dt><dd>Each group can add at most its cap, so ten weak visual hints never outweigh one strong behaviour signal.</dd><dt id="g-risk">Risk score</dt><dd>How dangerous the site is, 0–100. Medium ≥ 25, High ≥ 50, Critical ≥ 75. Combination rules can raise the severity.</dd><dt id="g-confidence">Confidence</dt><dd>How complete and consistent the evidence is (breadth, completeness, provider agreement) — separate from risk.</dd><dt id="g-cloaking">Cloaking</dt><dd>A kit that shows a harmless decoy to scanners and the phishing page to victims. BrandWatch fetches as a bot, as a victim link, from a search referer and from a home IP.</dd><dt id="g-tracks">Detection track</dt><dd>Light, Standard or Deep: which discovery streams run, how many sites are visited, how often the watchlist is re-checked.</dd><dt id="g-attack-infrastructure">Attack infrastructure</dt><dd>The map built from one confirmed site: every server, certificate and sister domain it shares, triaged so reverse-IP noise is excluded. The pivot is budgeted (at most 2 hops, 100 nodes, a fixed number of API calls) and those limits are frozen in code.</dd><dt id="g-advisory">Advisory opinions</dt><dd>An AI model and a trained classifier each give a second opinion on Medium+ findings. The page text is passed as untrusted input and the answer must match a strict JSON schema. Shown for context only: the deterministic score never depends on them.</dd><dt id="g-ioc">IOC</dt><dd>Indicator of compromise: a domain, IP, certificate hash or tracking ID a firewall / SIEM can block. Exported as CSV, JSON or STIX 2.1.</dd><dt id="g-takedown">Takedown</dt><dd>The request to remove a site. Draft → review → approved → sent → taken down; sent to the registrar, the hosting provider and the CDN, and reported to blocklists.</dd><dt id="g-evidence">Evidence</dt><dd>Every screenshot, HTML page, DNS / WHOIS answer and reputation lookup, stored append-only with its SHA-256 — the database rejects edits and deletes.</dd><dt id="g-demo">Demo mode</dt><dd>Recorded scenarios replace every external service: the full pipeline runs deterministically, offline, at $0.</dd>
       </dl>
     </div>
   </details>
@@ -1923,6 +1945,29 @@ First observed    : 2026-10-12T06:41:46.604012</div>
 </script>
 
 </main>
+<script>
+/* A form is sent once: a double click (or Enter twice) queued two identical scans, one of which never ran.
+   Every scan form and every form marked data-busy is guarded; a data-busy form also disables the button that sent it
+   and shows "Working…" (data-busy="text" for other words) until the answer arrives.
+   Only a submit that really went out counts — a confirm dialog cancels the first one and sends it again itself. */
+(function(){
+  const once = f => f.hasAttribute('data-busy') || /\/(scan|scan-urls)$/.test(f.getAttribute('action') || '');
+  document.addEventListener('submit', e => { const f = e.target; if (once(f) && f.__sentAt && Date.now() - f.__sentAt < 4000) { e.preventDefault(); e.stopImmediatePropagation(); } }, true);
+  // read defaultPrevented after every listener ran (the confirm dialog's included), not before them
+  document.addEventListener('submit', e => { const f = e.target, b = e.submitter; if (!once(f)) return;
+    setTimeout(() => { if (e.defaultPrevented) return; f.__sentAt = Date.now();
+      if (f.hasAttribute('data-busy') && b && b.tagName === 'BUTTON') { b.disabled = true; b.dataset.was = b.textContent; b.textContent = f.getAttribute('data-busy') || 'Working…';
+        setTimeout(() => { b.disabled = false; b.textContent = b.dataset.was; }, 30000); } }, 0); });
+  // the sticky header's height, for anything that sticks under it
+  const hdr = document.querySelector('header'); const setH = () => document.documentElement.style.setProperty('--hdr', (hdr ? hdr.offsetHeight : 56) + 'px');
+  setH(); window.addEventListener('resize', setH);
+  // server timestamps are UTC: <time datetime="…" data-local> (the |ts filter) and [data-local="…"] show the viewer's local time
+  const utc = iso => /T\d\d:\d\d/.test(iso) && !/(Z|[+-]\d\d:?\d\d)$/.test(iso) ? iso + 'Z' : iso;
+  const fmt = new Intl.DateTimeFormat(undefined, {year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'});
+  document.querySelectorAll('[data-local]').forEach(el => { const raw = el.getAttribute('datetime') || el.dataset.local; if (!raw) return;
+    const d = new Date(utc(raw)); if (isNaN(d)) return; el.textContent = fmt.format(d); if (!el.title) el.title = raw.replace('T', ' ').slice(0, 19) + ' UTC'; });
+})();
+</script>
 <script>
 /* BrandWatch motion layer: count-ups, staggered entrances, animated bars / rings / histograms,
    and auto-drawn donut + sparkline charts from data-* attributes. */

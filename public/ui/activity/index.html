@@ -73,6 +73,21 @@ button:hover,.btn:hover{border-color:var(--accent);box-shadow:0 0 12px rgba(53,1
 button.danger{border-color:var(--crit);color:var(--crit)}button.ok{border-color:var(--low);color:var(--low)}
 input,select,textarea{background:#0b1220;color:var(--text);border:1px solid var(--border);border-radius:6px;padding:7px 9px;font:inherit;width:100%;transition:border-color .2s,box-shadow .2s}
 input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(53,199,242,.15)}
+/* keyboard users see where they are; mouse clicks do not get the ring */
+:focus-visible{outline:2px solid var(--accent2);outline-offset:2px;border-radius:4px}
+a:focus-visible,button:focus-visible,.btn:focus-visible{box-shadow:0 0 0 3px rgba(53,199,242,.25)}
+.skip{position:absolute;left:8px;top:-60px;z-index:100;padding:8px 14px;background:var(--panel2);border:1px solid var(--accent);border-radius:8px;color:var(--text);font-weight:600}
+.skip:focus{top:8px}
+/* the button variants every page uses */
+.btn.primary{background:rgba(53,199,242,.16);border-color:var(--accent);color:var(--accent2);font-weight:600}
+.btn.ghost,button.ghost{background:transparent}
+button.small,.btn.small{padding:4px 9px;font-size:12px;white-space:nowrap}
+button[disabled],.btn[aria-disabled=true]{opacity:.55;cursor:default;box-shadow:none}
+/* one message after a form (see _flash.html) */
+.flash{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:0 0 14px;padding:10px 14px;border:1px solid rgba(46,204,113,.5);border-radius:10px;background:rgba(46,204,113,.08);font-size:13.5px;animation:fadeUp .4s ease both}
+.flash .ic{width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:800;background:rgba(53,199,242,.15);color:var(--accent2);flex:none}
+.flash .ic.ok{background:rgba(46,204,113,.18);color:var(--low)}.flash .ic.undo{background:rgba(255,159,28,.18);color:var(--high)}
+.flash .t{flex:1;min-width:200px}.flash .undo{margin:0}.flash .x{margin-left:auto;padding:2px 8px;font-size:12px;border-color:transparent;color:var(--muted)}
 label{display:block;font-size:12px;color:var(--muted);margin:8px 0 4px;font-family:var(--mono);text-transform:uppercase;letter-spacing:.06em}
 .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
 .kpi{position:relative;overflow:hidden;background:linear-gradient(180deg,rgba(18,26,43,.95),rgba(14,20,32,.95));border:1px solid var(--border);border-radius:10px;padding:12px 14px;
@@ -173,6 +188,7 @@ header nav{display:flex;align-items:center;min-width:0}
 </style>
 </head>
 <body>
+<a class="skip" href="#main">Skip to content</a>
 <header>
   <a class="logo" href="/ui/dashboard/">BrandWatch</a>
   
@@ -191,7 +207,13 @@ header nav{display:flex;align-items:center;min-width:0}
   <span class="who"><span class="email">admin · </span>admin · <a href="/ui/logout">logout</a></span>
   
 </header>
-<main>
+<main id="main">
+
+
+
+
+
+
 
 <style>
   .feed{position:relative;padding-left:8px}
@@ -215,9 +237,9 @@ header nav{display:flex;align-items:center;min-width:0}
 <p class="intro">The append-only audit trail: who did what, when, old → new, and why. The database itself refuses to edit or delete it.</p>
 
 <div class="kpis">
-  <div class="kpi"><div class="v" data-count="236">0</div><div class="l">events (latest)</div></div>
-  <div class="kpi"><div class="v" data-count="56">0</div><div class="l">analyst actions</div></div>
-  <div class="kpi"><div class="v" data-count="180">0</div><div class="l">system actions</div></div>
+  <div class="kpi"><div class="v" data-count="214">0</div><div class="l">events (latest)</div></div>
+  <div class="kpi"><div class="v" data-count="53">0</div><div class="l">analyst actions</div></div>
+  <div class="kpi"><div class="v" data-count="161">0</div><div class="l">system actions</div></div>
   <div class="kpi"><div class="v" data-count="25">0</div><div class="l">verdicts recorded</div></div>
   <div class="kpi"><div class="v" data-count="7">0</div><div class="l">logins (24h)</div></div>
 </div>
@@ -236,12 +258,12 @@ header nav{display:flex;align-items:center;min-width:0}
       <div class="ev " data-cat="user" data-notable="0" style="--r:0;display:none">
         <div class="av " title="admin">AD</div>
         <div>
-          <div class="what"><span class="muted">admin</span> <b>user</b> · login <span class="pill" title="9 consecutive events, first 2026-10-18 17:10">×9</span>
+          <div class="what"><span class="muted">admin</span> <b>user</b> · login <span class="pill" title="31 consecutive events, first 2026-10-18 17:10">×31</span>
             
             <span class="muted small">user bc089017</span></div>
           
         </div>
-        <div class="when" data-rel="2026-10-18T18:12:59.927544+00:00" title="2026-10-18T18:12:59.927544+00:00">2026-10-18 18:12:59</div>
+        <div class="when" data-rel="2026-10-18T19:59:55.211725+00:00" title="2026-10-18T19:59:55.211725+00:00">2026-10-18 19:59:55</div>
       </div>
       
       
@@ -3625,354 +3647,6 @@ header nav{display:flex;align-items:center;min-width:0}
       </div>
       
       
-      <div class="ev " data-cat="brand" data-notable="1" style="--r:30">
-        <div class="av " title="admin">AD</div>
-        <div>
-          <div class="what"><span class="muted">admin</span> <b>brand</b> · profile updated
-            
-            <span class="muted small">brand <a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/" class="mono">ShopNova · Israel ↗</a></span></div>
-          
-          
-          <div class="diff"><span class="old">{"ad_keywords": ["shopnova runner"], "ad_searches_max": 6, "ads_per_search": 30, "baseline_url": null, "countries": ["IL"], "kind": "retail", "official_apps": [], "official_pages": [], "official_social":...</span> → <span class="new">{"ad_keywords": ["shopnova runner"], "countries": ["IL"], "kind": "retail", "products": 2, "retailers_added": []}</span>
-            </div>
-          
-        </div>
-        <div class="when" data-rel="2026-10-14T09:48:35.611450+00:00" title="2026-10-14T09:48:35.611450+00:00">2026-10-14 09:48:35</div>
-      </div>
-      
-      
-      <div class="ev " data-cat="user" data-notable="0" style="--r:30;display:none">
-        <div class="av " title="admin">AD</div>
-        <div>
-          <div class="what"><span class="muted">admin</span> <b>user</b> · login
-            
-            <span class="muted small">user bc089017</span></div>
-          
-        </div>
-        <div class="when" data-rel="2026-10-14T09:48:23.497670+00:00" title="2026-10-14T09:48:23.497670+00:00">2026-10-14 09:48:23</div>
-      </div>
-      
-      
-      <div class="ev " data-cat="report" data-notable="1" style="--r:30">
-        <div class="av sys" title="system">SYS</div>
-        <div>
-          <div class="what"><span class="muted">system</span> <b>report</b> · generated
-            
-            <span class="muted small">finding <a href="/ui/findings/9e972300-3ba9-4bc8-9db8-d56527f3cc8e/" class="mono">vaultpay-verify.com ↗</a></span></div>
-          
-          
-          <div class="diff"><span class="new">{"reports": {"html": "6279277e-4f1b-4331-bc77-79d8f74c6490", "json": "aeaef1dd-fccc-4c9e-b6f8-a398157a0fb1"}}</span>
-            </div>
-          
-        </div>
-        <div class="when" data-rel="2026-10-14T09:46:52.129199+00:00" title="2026-10-14T09:46:52.129199+00:00">2026-10-14 09:46:52</div>
-      </div>
-      
-      
-      <div class="ev " data-cat="report" data-notable="1" style="--r:30">
-        <div class="av sys" title="system">SYS</div>
-        <div>
-          <div class="what"><span class="muted">system</span> <b>report</b> · generated
-            
-            <span class="muted small">finding <a href="/ui/findings/ab239662-2d39-4d17-aeaf-c1b7d3575bd7/" class="mono">vault-pay.co ↗</a></span></div>
-          
-          
-          <div class="diff"><span class="new">{"reports": {"html": "9994a7ab-575b-453b-b6aa-81aef7f5493b", "json": "c590b9a9-b9fa-4061-9c59-7b1815885286"}}</span>
-            </div>
-          
-        </div>
-        <div class="when" data-rel="2026-10-14T09:46:51.932179+00:00" title="2026-10-14T09:46:51.932179+00:00">2026-10-14 09:46:51</div>
-      </div>
-      
-      
-      <div class="ev " data-cat="report" data-notable="1" style="--r:30">
-        <div class="av sys" title="system">SYS</div>
-        <div>
-          <div class="what"><span class="muted">system</span> <b>report</b> · generated
-            
-            <span class="muted small">finding <a href="/ui/findings/be5f0a7c-d96e-4260-b413-a70d917bbfe9/" class="mono">vaultpay-login.com ↗</a></span></div>
-          
-          
-          <div class="diff"><span class="new">{"reports": {"html": "8fb7c5fb-9fae-4371-829d-154749826510", "json": "4483af89-49d3-4873-8a0f-b5dc9bc3eb1b"}}</span>
-            </div>
-          
-        </div>
-        <div class="when" data-rel="2026-10-14T09:46:51.822014+00:00" title="2026-10-14T09:46:51.822014+00:00">2026-10-14 09:46:51</div>
-      </div>
-      
-      
-      <div class="ev " data-cat="report" data-notable="1" style="--r:30">
-        <div class="av sys" title="system">SYS</div>
-        <div>
-          <div class="what"><span class="muted">system</span> <b>report</b> · generated
-            
-            <span class="muted small">finding <a href="/ui/findings/f65ec535-db25-4b14-a8d0-76442a4b4e6e/" class="mono">vaultpay-secure.net ↗</a></span></div>
-          
-          
-          <div class="diff"><span class="new">{"reports": {"html": "c123771c-d4a7-4efc-9e57-40cfe598d538", "json": "c481f4d2-718c-461c-baaa-05f327234c30"}}</span>
-            </div>
-          
-        </div>
-        <div class="when" data-rel="2026-10-14T09:46:51.723758+00:00" title="2026-10-14T09:46:51.723758+00:00">2026-10-14 09:46:51</div>
-      </div>
-      
-      
-      <div class="ev " data-cat="intel" data-notable="1" style="--r:30">
-        <div class="av sys" title="system">SYS</div>
-        <div>
-          <div class="what"><span class="muted">system</span> <b>intel</b> · started
-            
-            <span class="muted small">finding <a href="/ui/findings/9e972300-3ba9-4bc8-9db8-d56527f3cc8e/" class="mono">vaultpay-verify.com ↗</a></span></div>
-          
-          
-          <div class="diff"><span class="new">force: no · light: yes · package: yes · auto: yes</span>
-            </div>
-          
-        </div>
-        <div class="when" data-rel="2026-10-14T09:46:51.089714+00:00" title="2026-10-14T09:46:51.089714+00:00">2026-10-14 09:46:51</div>
-      </div>
-      
-      
-      <div class="ev " data-cat="intel" data-notable="1" style="--r:30">
-        <div class="av sys" title="system">SYS</div>
-        <div>
-          <div class="what"><span class="muted">system</span> <b>intel</b> · started
-            
-            <span class="muted small">finding <a href="/ui/findings/ab239662-2d39-4d17-aeaf-c1b7d3575bd7/" class="mono">vault-pay.co ↗</a></span></div>
-          
-          
-          <div class="diff"><span class="new">force: no · light: yes · package: yes · auto: yes</span>
-            </div>
-          
-        </div>
-        <div class="when" data-rel="2026-10-14T09:46:51.085889+00:00" title="2026-10-14T09:46:51.085889+00:00">2026-10-14 09:46:51</div>
-      </div>
-      
-      
-      <div class="ev " data-cat="intel" data-notable="1" style="--r:30">
-        <div class="av sys" title="system">SYS</div>
-        <div>
-          <div class="what"><span class="muted">system</span> <b>intel</b> · started
-            
-            <span class="muted small">finding <a href="/ui/findings/f65ec535-db25-4b14-a8d0-76442a4b4e6e/" class="mono">vaultpay-secure.net ↗</a></span></div>
-          
-          
-          <div class="diff"><span class="new">force: no · light: yes · package: yes · auto: yes</span>
-            </div>
-          
-        </div>
-        <div class="when" data-rel="2026-10-14T09:46:51.083828+00:00" title="2026-10-14T09:46:51.083828+00:00">2026-10-14 09:46:51</div>
-      </div>
-      
-      
-      <div class="ev " data-cat="intel" data-notable="1" style="--r:30">
-        <div class="av sys" title="system">SYS</div>
-        <div>
-          <div class="what"><span class="muted">system</span> <b>intel</b> · started
-            
-            <span class="muted small">finding <a href="/ui/findings/be5f0a7c-d96e-4260-b413-a70d917bbfe9/" class="mono">vaultpay-login.com ↗</a></span></div>
-          
-          
-          <div class="diff"><span class="new">force: no · light: yes · package: yes · auto: yes</span>
-            </div>
-          
-        </div>
-        <div class="when" data-rel="2026-10-14T09:46:51.079751+00:00" title="2026-10-14T09:46:51.079751+00:00">2026-10-14 09:46:51</div>
-      </div>
-      
-      
-      <div class="ev " data-cat="campaign" data-notable="1" style="--r:30">
-        <div class="av sys" title="system">SYS</div>
-        <div>
-          <div class="what"><span class="muted">system</span> <b>campaign</b> · investigated
-            
-            <span class="muted small">campaign <a href="/ui/campaigns/a91d5194-a6d6-4fa8-836c-c8dfa5a522b2/" class="mono">VaultPay campaign BE5F0A7C ↗</a></span></div>
-          
-          
-          <div class="diff"><span class="new">{"api_calls": 15, "budget_exhausted": null, "edges": 33, "included": 18, "iocs": 8, "nodes": 19}</span>
-            </div>
-          
-        </div>
-        <div class="when" data-rel="2026-10-14T09:46:50.643628+00:00" title="2026-10-14T09:46:50.643628+00:00">2026-10-14 09:46:50</div>
-      </div>
-      
-      
-      <div class="ev " data-cat="campaign" data-notable="1" style="--r:30">
-        <div class="av sys" title="system">SYS</div>
-        <div>
-          <div class="what"><span class="muted">system</span> <b>campaign</b> · investigated
-            
-            <span class="muted small">campaign <a href="/ui/campaigns/a91d5194-a6d6-4fa8-836c-c8dfa5a522b2/" class="mono">VaultPay campaign BE5F0A7C ↗</a></span></div>
-          
-          
-          <div class="diff"><span class="new">{"api_calls": 15, "budget_exhausted": null, "edges": 33, "included": 18, "iocs": 8, "nodes": 19}</span>
-            </div>
-          
-        </div>
-        <div class="when" data-rel="2026-10-14T09:46:47.468107+00:00" title="2026-10-14T09:46:47.468107+00:00">2026-10-14 09:46:47</div>
-      </div>
-      
-      
-      <div class="ev " data-cat="campaign" data-notable="1" style="--r:30">
-        <div class="av sys" title="system">SYS</div>
-        <div>
-          <div class="what"><span class="muted">system</span> <b>campaign</b> · investigated
-            
-            <span class="muted small">campaign <a href="/ui/campaigns/a91d5194-a6d6-4fa8-836c-c8dfa5a522b2/" class="mono">VaultPay campaign BE5F0A7C ↗</a></span></div>
-          
-          
-          <div class="diff"><span class="new">{"api_calls": 15, "budget_exhausted": null, "edges": 33, "included": 18, "iocs": 8, "nodes": 19}</span>
-            </div>
-          
-        </div>
-        <div class="when" data-rel="2026-10-14T09:46:44.285734+00:00" title="2026-10-14T09:46:44.285734+00:00">2026-10-14 09:46:44</div>
-      </div>
-      
-      
-      <div class="ev " data-cat="campaign" data-notable="1" style="--r:30">
-        <div class="av sys" title="system">SYS</div>
-        <div>
-          <div class="what"><span class="muted">system</span> <b>campaign</b> · investigated
-            
-            <span class="muted small">campaign <a href="/ui/campaigns/a91d5194-a6d6-4fa8-836c-c8dfa5a522b2/" class="mono">VaultPay campaign BE5F0A7C ↗</a></span></div>
-          
-          
-          <div class="diff"><span class="new">{"api_calls": 15, "budget_exhausted": null, "edges": 33, "included": 18, "iocs": 8, "nodes": 19}</span>
-            </div>
-          
-        </div>
-        <div class="when" data-rel="2026-10-14T09:46:41.080803+00:00" title="2026-10-14T09:46:41.080803+00:00">2026-10-14 09:46:41</div>
-      </div>
-      
-      
-      <div class="ev " data-cat="investigation" data-notable="1" style="--r:30">
-        <div class="av " title="admin">AD</div>
-        <div>
-          <div class="what"><span class="muted">admin</span> <b>investigation</b> · map all
-            
-            <span class="muted small">workspace 5edcdd68</span></div>
-          
-          
-          <div class="diff"><span class="new">count: 4 · remap: no</span>
-            </div>
-          
-        </div>
-        <div class="when" data-rel="2026-10-14T09:46:37.877638+00:00" title="2026-10-14T09:46:37.877638+00:00">2026-10-14 09:46:37</div>
-      </div>
-      
-      
-      <div class="ev " data-cat="report" data-notable="1" style="--r:30">
-        <div class="av sys" title="system">SYS</div>
-        <div>
-          <div class="what"><span class="muted">system</span> <b>report</b> · generated
-            
-            <span class="muted small">finding <a href="/ui/findings/198e2d54-3884-47d5-a887-1d328cce77c2/" class="mono">coinpllot.io ↗</a></span></div>
-          
-          
-          <div class="diff"><span class="new">{"reports": {"html": "4dd12ece-9eb3-4826-962a-5a614884e603", "json": "74ae2487-9a29-40ab-9709-8968e0da93f4"}}</span>
-            </div>
-          
-        </div>
-        <div class="when" data-rel="2026-10-14T09:46:37.594151+00:00" title="2026-10-14T09:46:37.594151+00:00">2026-10-14 09:46:37</div>
-      </div>
-      
-      
-      <div class="ev " data-cat="report" data-notable="1" style="--r:30">
-        <div class="av sys" title="system">SYS</div>
-        <div>
-          <div class="what"><span class="muted">system</span> <b>report</b> · generated
-            
-            <span class="muted small">finding <a href="/ui/findings/63381bcd-78de-4d7a-b9e2-cd7b4a59a00d/" class="mono">coinpilot-bot.io ↗</a></span></div>
-          
-          
-          <div class="diff"><span class="new">{"reports": {"html": "d2594017-192a-4230-b43d-371260088b3f", "json": "e574c273-9317-4728-b7db-21deea5f5e57"}}</span>
-            </div>
-          
-        </div>
-        <div class="when" data-rel="2026-10-14T09:46:37.393399+00:00" title="2026-10-14T09:46:37.393399+00:00">2026-10-14 09:46:37</div>
-      </div>
-      
-      
-      <div class="ev " data-cat="report" data-notable="1" style="--r:30">
-        <div class="av sys" title="system">SYS</div>
-        <div>
-          <div class="what"><span class="muted">system</span> <b>report</b> · generated
-            
-            <span class="muted small">finding <a href="/ui/findings/2fdd823a-9baa-49d3-82b8-e1ce0bda2c44/" class="mono">coin-pilot.io ↗</a></span></div>
-          
-          
-          <div class="diff"><span class="new">{"reports": {"html": "a168a7c7-ed3a-4edb-9474-aa95608f658b", "json": "e2197202-9d9e-4933-884f-45614fd4a4ac"}}</span>
-            </div>
-          
-        </div>
-        <div class="when" data-rel="2026-10-14T09:46:37.165696+00:00" title="2026-10-14T09:46:37.165696+00:00">2026-10-14 09:46:37</div>
-      </div>
-      
-      
-      <div class="ev " data-cat="report" data-notable="1" style="--r:30">
-        <div class="av sys" title="system">SYS</div>
-        <div>
-          <div class="what"><span class="muted">system</span> <b>report</b> · generated
-            
-            <span class="muted small">finding <a href="/ui/findings/6a5a2896-2bbf-4f37-b51a-6df99b0d48fe/" class="mono">cooinpilot.io ↗</a></span></div>
-          
-          
-          <div class="diff"><span class="new">{"reports": {"html": "0e59a19b-e09f-4551-83cc-f89706c92fac", "json": "a4890326-0f8b-41c8-ab8b-9e60d797d8d4"}}</span>
-            </div>
-          
-        </div>
-        <div class="when" data-rel="2026-10-14T09:46:36.993886+00:00" title="2026-10-14T09:46:36.993886+00:00">2026-10-14 09:46:36</div>
-      </div>
-      
-      
-      <div class="ev " data-cat="report" data-notable="1" style="--r:30">
-        <div class="av sys" title="system">SYS</div>
-        <div>
-          <div class="what"><span class="muted">system</span> <b>report</b> · generated
-            
-            <span class="muted small">finding <a href="/ui/findings/4aa4555a-8a52-4bab-a6da-8427753c97d3/" class="mono">koinpilot.io ↗</a></span></div>
-          
-          
-          <div class="diff"><span class="new">{"reports": {"html": "38c6af8a-ab07-4b9c-8755-dfe08a2b5db4", "json": "4ed58933-6abd-4049-b3d0-ae051caac1fa"}}</span>
-            </div>
-          
-        </div>
-        <div class="when" data-rel="2026-10-14T09:46:36.751584+00:00" title="2026-10-14T09:46:36.751584+00:00">2026-10-14 09:46:36</div>
-      </div>
-      
-      
-      <div class="ev " data-cat="report" data-notable="1" style="--r:30">
-        <div class="av sys" title="system">SYS</div>
-        <div>
-          <div class="what"><span class="muted">system</span> <b>report</b> · generated
-            
-            <span class="muted small">finding <a href="/ui/findings/fd5a72c5-532f-4614-a113-c4d848d99888/" class="mono">coinplot.io ↗</a></span></div>
-          
-          
-          <div class="diff"><span class="new">{"reports": {"html": "439ecba3-12d8-4ea7-8235-1f7e2ddec82e", "json": "548df6f1-d880-42bc-aaf7-d1eee522db10"}}</span>
-            </div>
-          
-        </div>
-        <div class="when" data-rel="2026-10-14T09:46:36.380908+00:00" title="2026-10-14T09:46:36.380908+00:00">2026-10-14 09:46:36</div>
-      </div>
-      
-      
-      <div class="ev " data-cat="report" data-notable="1" style="--r:30">
-        <div class="av sys" title="system">SYS</div>
-        <div>
-          <div class="what"><span class="muted">system</span> <b>report</b> · generated
-            
-            <span class="muted small">finding <a href="/ui/findings/5da0ffd7-d892-4cfd-9f55-c87b543dfac7/" class="mono">coinpilott.io ↗</a></span></div>
-          
-          
-          <div class="diff"><span class="new">{"reports": {"html": "b692f5de-2ae6-4749-a7c4-8e886d0807f9", "json": "1fac1c95-5335-43e1-9621-3d7794a0dace"}}</span>
-            </div>
-          
-        </div>
-        <div class="when" data-rel="2026-10-14T09:46:36.245869+00:00" title="2026-10-14T09:46:36.245869+00:00">2026-10-14 09:46:36</div>
-      </div>
-      
-      
     </div>
     <div class="more"><button type="button" id="more" style="display:none">Show older events</button></div>
   </div>
@@ -3981,38 +3655,38 @@ header nav{display:flex;align-items:center;min-width:0}
       <h2>By category</h2>
       
       
-      <div class="hbar"><span>user</span><div class="bar"><i data-w="100"></i></div><b>73</b></div>
+      <div class="hbar"><span>user</span><div class="bar"><i data-w="100"></i></div><b>94</b></div>
       
-      <div class="hbar"><span>finding</span><div class="bar"><i data-w="77"></i></div><b>56</b></div>
+      <div class="hbar"><span>finding</span><div class="bar"><i data-w="60"></i></div><b>56</b></div>
       
-      <div class="hbar"><span>report</span><div class="bar"><i data-w="49"></i></div><b>36</b></div>
+      <div class="hbar"><span>notification</span><div class="bar"><i data-w="33"></i></div><b>31</b></div>
       
-      <div class="hbar"><span>notification</span><div class="bar"><i data-w="42"></i></div><b>31</b></div>
+      <div class="hbar"><span>report</span><div class="bar"><i data-w="27"></i></div><b>25</b></div>
       
-      <div class="hbar"><span>intel</span><div class="bar"><i data-w="40"></i></div><b>29</b></div>
+      <div class="hbar"><span>intel</span><div class="bar"><i data-w="27"></i></div><b>25</b></div>
       
-      <div class="hbar"><span>campaign</span><div class="bar"><i data-w="38"></i></div><b>28</b></div>
+      <div class="hbar"><span>investigation</span><div class="bar"><i data-w="27"></i></div><b>25</b></div>
       
-      <div class="hbar"><span>investigation</span><div class="bar"><i data-w="36"></i></div><b>26</b></div>
+      <div class="hbar"><span>campaign</span><div class="bar"><i data-w="26"></i></div><b>24</b></div>
       
-      <div class="hbar"><span>Brand use</span><div class="bar"><i data-w="15"></i></div><b>11</b></div>
+      <div class="hbar"><span>scan</span><div class="bar"><i data-w="11"></i></div><b>10</b></div>
       
     </div>
     <div class="panel" style="margin-top:14px">
       <h2>Activity · 14 days</h2>
-      <svg class="spark" data-spark='{"series": [{"color": "#35C7F2", "values": [0, 0, 0, 0, 0, 0, 0, 0, 0, 184, 0, 0, 0, 52]}]}'></svg>
+      <svg class="spark" data-spark='{"series": [{"color": "#35C7F2", "values": [0, 0, 0, 0, 0, 0, 0, 0, 0, 162, 0, 0, 0, 52]}]}'></svg>
     </div>
     <div class="panel" style="margin-top:14px">
       <h2>Most active</h2>
       
       <div style="display:grid;grid-template-columns:1fr 40px;gap:8px;align-items:center;margin:8px 0">
-        <div><div class="small mono">system</div><div class="bar" style="height:6px;margin-top:3px"><i data-w="100"></i></div></div>
-        <div class="mono small right">155</div>
+        <div><div class="small mono">admin</div><div class="bar" style="height:6px;margin-top:3px"><i data-w="100"></i></div></div>
+        <div class="mono small right">164</div>
       </div>
       
       <div style="display:grid;grid-template-columns:1fr 40px;gap:8px;align-items:center;margin:8px 0">
-        <div><div class="small mono">admin</div><div class="bar" style="height:6px;margin-top:3px"><i data-w="94"></i></div></div>
-        <div class="mono small right">145</div>
+        <div><div class="small mono">system</div><div class="bar" style="height:6px;margin-top:3px"><i data-w="83"></i></div></div>
+        <div class="mono small right">136</div>
       </div>
       
     </div>
@@ -4048,6 +3722,29 @@ header nav{display:flex;align-items:center;min-width:0}
 </script>
 
 </main>
+<script>
+/* A form is sent once: a double click (or Enter twice) queued two identical scans, one of which never ran.
+   Every scan form and every form marked data-busy is guarded; a data-busy form also disables the button that sent it
+   and shows "Working…" (data-busy="text" for other words) until the answer arrives.
+   Only a submit that really went out counts — a confirm dialog cancels the first one and sends it again itself. */
+(function(){
+  const once = f => f.hasAttribute('data-busy') || /\/(scan|scan-urls)$/.test(f.getAttribute('action') || '');
+  document.addEventListener('submit', e => { const f = e.target; if (once(f) && f.__sentAt && Date.now() - f.__sentAt < 4000) { e.preventDefault(); e.stopImmediatePropagation(); } }, true);
+  // read defaultPrevented after every listener ran (the confirm dialog's included), not before them
+  document.addEventListener('submit', e => { const f = e.target, b = e.submitter; if (!once(f)) return;
+    setTimeout(() => { if (e.defaultPrevented) return; f.__sentAt = Date.now();
+      if (f.hasAttribute('data-busy') && b && b.tagName === 'BUTTON') { b.disabled = true; b.dataset.was = b.textContent; b.textContent = f.getAttribute('data-busy') || 'Working…';
+        setTimeout(() => { b.disabled = false; b.textContent = b.dataset.was; }, 30000); } }, 0); });
+  // the sticky header's height, for anything that sticks under it
+  const hdr = document.querySelector('header'); const setH = () => document.documentElement.style.setProperty('--hdr', (hdr ? hdr.offsetHeight : 56) + 'px');
+  setH(); window.addEventListener('resize', setH);
+  // server timestamps are UTC: <time datetime="…" data-local> (the |ts filter) and [data-local="…"] show the viewer's local time
+  const utc = iso => /T\d\d:\d\d/.test(iso) && !/(Z|[+-]\d\d:?\d\d)$/.test(iso) ? iso + 'Z' : iso;
+  const fmt = new Intl.DateTimeFormat(undefined, {year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'});
+  document.querySelectorAll('[data-local]').forEach(el => { const raw = el.getAttribute('datetime') || el.dataset.local; if (!raw) return;
+    const d = new Date(utc(raw)); if (isNaN(d)) return; el.textContent = fmt.format(d); if (!el.title) el.title = raw.replace('T', ' ').slice(0, 19) + ' UTC'; });
+})();
+</script>
 <script>
 /* BrandWatch motion layer: count-ups, staggered entrances, animated bars / rings / histograms,
    and auto-drawn donut + sparkline charts from data-* attributes. */

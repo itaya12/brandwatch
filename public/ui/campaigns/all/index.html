@@ -73,6 +73,21 @@ button:hover,.btn:hover{border-color:var(--accent);box-shadow:0 0 12px rgba(53,1
 button.danger{border-color:var(--crit);color:var(--crit)}button.ok{border-color:var(--low);color:var(--low)}
 input,select,textarea{background:#0b1220;color:var(--text);border:1px solid var(--border);border-radius:6px;padding:7px 9px;font:inherit;width:100%;transition:border-color .2s,box-shadow .2s}
 input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(53,199,242,.15)}
+/* keyboard users see where they are; mouse clicks do not get the ring */
+:focus-visible{outline:2px solid var(--accent2);outline-offset:2px;border-radius:4px}
+a:focus-visible,button:focus-visible,.btn:focus-visible{box-shadow:0 0 0 3px rgba(53,199,242,.25)}
+.skip{position:absolute;left:8px;top:-60px;z-index:100;padding:8px 14px;background:var(--panel2);border:1px solid var(--accent);border-radius:8px;color:var(--text);font-weight:600}
+.skip:focus{top:8px}
+/* the button variants every page uses */
+.btn.primary{background:rgba(53,199,242,.16);border-color:var(--accent);color:var(--accent2);font-weight:600}
+.btn.ghost,button.ghost{background:transparent}
+button.small,.btn.small{padding:4px 9px;font-size:12px;white-space:nowrap}
+button[disabled],.btn[aria-disabled=true]{opacity:.55;cursor:default;box-shadow:none}
+/* one message after a form (see _flash.html) */
+.flash{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:0 0 14px;padding:10px 14px;border:1px solid rgba(46,204,113,.5);border-radius:10px;background:rgba(46,204,113,.08);font-size:13.5px;animation:fadeUp .4s ease both}
+.flash .ic{width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:800;background:rgba(53,199,242,.15);color:var(--accent2);flex:none}
+.flash .ic.ok{background:rgba(46,204,113,.18);color:var(--low)}.flash .ic.undo{background:rgba(255,159,28,.18);color:var(--high)}
+.flash .t{flex:1;min-width:200px}.flash .undo{margin:0}.flash .x{margin-left:auto;padding:2px 8px;font-size:12px;border-color:transparent;color:var(--muted)}
 label{display:block;font-size:12px;color:var(--muted);margin:8px 0 4px;font-family:var(--mono);text-transform:uppercase;letter-spacing:.06em}
 .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
 .kpi{position:relative;overflow:hidden;background:linear-gradient(180deg,rgba(18,26,43,.95),rgba(14,20,32,.95));border:1px solid var(--border);border-radius:10px;padding:12px 14px;
@@ -173,6 +188,7 @@ header nav{display:flex;align-items:center;min-width:0}
 </style>
 </head>
 <body>
+<a class="skip" href="#main">Skip to content</a>
 <header>
   <a class="logo" href="/ui/dashboard/">BrandWatch</a>
   
@@ -191,7 +207,13 @@ header nav{display:flex;align-items:center;min-width:0}
   <span class="who"><span class="email">admin · </span>admin · <a href="/ui/logout">logout</a></span>
   
 </header>
-<main>
+<main id="main">
+
+
+
+
+
+
 
 <style>
   line.flow{stroke-dasharray:7 5;animation:flow 1.1s linear infinite}
@@ -391,6 +413,9 @@ header nav{display:flex;align-items:center;min-width:0}
       </div>
       <div class="opbtns">
         <button type="button" class="small" onclick="pickGroup('1')">show only this group on the map ↑</button>
+        
+        <form method="post" action="/ui/campaigns/draft-takedowns" style="display:inline" data-confirm="Draft one takedown request for each of these 13 site(s)? A site that already has one keeps it. You review and send each request yourself." data-confirm-title="Draft takedowns" data-confirm-ok="Draft 13 request(s)">
+          <input type="hidden" name="ids" value="2fdd823a-9baa-49d3-82b8-e1ce0bda2c44"><input type="hidden" name="ids" value="63381bcd-78de-4d7a-b9e2-cd7b4a59a00d"><input type="hidden" name="ids" value="5da0ffd7-d892-4cfd-9f55-c87b543dfac7"><input type="hidden" name="ids" value="198e2d54-3884-47d5-a887-1d328cce77c2"><input type="hidden" name="ids" value="fd5a72c5-532f-4614-a113-c4d848d99888"><input type="hidden" name="ids" value="6a5a2896-2bbf-4f37-b51a-6df99b0d48fe"><input type="hidden" name="ids" value="4aa4555a-8a52-4bab-a6da-8427753c97d3"><input type="hidden" name="ids" value="f08c0261-6754-4724-baf4-94c5e6354112"><input type="hidden" name="ids" value="0ffa1b59-424d-4892-a04e-bee9c93b7eb6"><input type="hidden" name="ids" value="ab239662-2d39-4d17-aeaf-c1b7d3575bd7"><input type="hidden" name="ids" value="be5f0a7c-d96e-4260-b413-a70d917bbfe9"><input type="hidden" name="ids" value="f65ec535-db25-4b14-a8d0-76442a4b4e6e"><input type="hidden" name="ids" value="9e972300-3ba9-4bc8-9db8-d56527f3cc8e"><button type="submit" class="small" title="one request per confirmed site of this operation (a site that already has one keeps it)">✉ Draft takedowns for 13 sites</button></form>
         <a class="btn small" style="padding:3px 10px;font-size:11.5px" href="/ui/campaigns/operation-report/_d5019368e5/" target="_blank" rel="noopener" title="the whole operation as a readable, printable page with every table">HTML report ↗</a>
         <a class="btn small" style="padding:3px 10px;font-size:11.5px" href="/ui/campaigns/operation-report?group=1&download=1" title="save it as a file you can send">download .html</a>
         <button type="button" class="small" data-copy-from="rep-1">copy report (text)</button>
@@ -785,6 +810,9 @@ koinpilot.io">copy domains</button></div></div>
       </div>
       <div class="opbtns">
         <button type="button" class="small" onclick="pickGroup('2')">show only this group on the map ↑</button>
+        
+        <form method="post" action="/ui/campaigns/draft-takedowns" style="display:inline" data-confirm="Draft one takedown request for each of these 4 site(s)? A site that already has one keeps it. You review and send each request yourself." data-confirm-title="Draft takedowns" data-confirm-ok="Draft 4 request(s)">
+          <input type="hidden" name="ids" value="2abe1b4c-5c19-475a-9809-bcfa3ca3146b"><input type="hidden" name="ids" value="570ae512-6ffc-4714-8115-deadd322f8ee"><input type="hidden" name="ids" value="5d2ee722-749b-41e5-8f7d-d89bccda56f9"><input type="hidden" name="ids" value="f091cd7c-448b-4aee-a165-217d48127136"><button type="submit" class="small" title="one request per confirmed site of this operation (a site that already has one keeps it)">✉ Draft takedowns for 4 sites</button></form>
         <a class="btn small" style="padding:3px 10px;font-size:11.5px" href="/ui/campaigns/operation-report/_e893c5abbf/" target="_blank" rel="noopener" title="the whole operation as a readable, printable page with every table">HTML report ↗</a>
         <a class="btn small" style="padding:3px 10px;font-size:11.5px" href="/ui/campaigns/operation-report?group=2&download=1" title="save it as a file you can send">download .html</a>
         <button type="button" class="small" data-copy-from="rep-2">copy report (text)</button>
@@ -1009,6 +1037,9 @@ shopnova.co">copy domains</button></div></div>
       </div>
       <div class="opbtns">
         <button type="button" class="small" onclick="pickGroup('3')">show only this group on the map ↑</button>
+        
+        <form method="post" action="/ui/campaigns/draft-takedowns" style="display:inline" data-confirm="Draft one takedown request for each of these 2 site(s)? A site that already has one keeps it. You review and send each request yourself." data-confirm-title="Draft takedowns" data-confirm-ok="Draft 2 request(s)">
+          <input type="hidden" name="ids" value="4432be9e-24d0-4136-87ff-af50eb57fe11"><input type="hidden" name="ids" value="393fd129-3312-45a5-aa49-769f1043e156"><button type="submit" class="small" title="one request per confirmed site of this operation (a site that already has one keeps it)">✉ Draft takedowns for 2 sites</button></form>
         <a class="btn small" style="padding:3px 10px;font-size:11.5px" href="/ui/campaigns/operation-report/_62d175cb78/" target="_blank" rel="noopener" title="the whole operation as a readable, printable page with every table">HTML report ↗</a>
         <a class="btn small" style="padding:3px 10px;font-size:11.5px" href="/ui/campaigns/operation-report?group=3&download=1" title="save it as a file you can send">download .html</a>
         <button type="button" class="small" data-copy-from="rep-3">copy report (text)</button>
@@ -1126,6 +1157,9 @@ shopnova-press.com">copy domains</button></div></div>
       </div>
       <div class="opbtns">
         <button type="button" class="small" onclick="pickGroup('4')">show only this group on the map ↑</button>
+        
+        <form method="post" action="/ui/campaigns/draft-takedowns" style="display:inline" data-confirm="Draft one takedown request for each of these 2 site(s)? A site that already has one keeps it. You review and send each request yourself." data-confirm-title="Draft takedowns" data-confirm-ok="Draft 2 request(s)">
+          <input type="hidden" name="ids" value="226b88f3-c048-4394-987b-32bc526c461c"><input type="hidden" name="ids" value="d3cddf21-a088-4189-9f17-2cf8dba61ab0"><button type="submit" class="small" title="one request per confirmed site of this operation (a site that already has one keeps it)">✉ Draft takedowns for 2 sites</button></form>
         <a class="btn small" style="padding:3px 10px;font-size:11.5px" href="/ui/campaigns/operation-report/_3efb5350ae/" target="_blank" rel="noopener" title="the whole operation as a readable, printable page with every table">HTML report ↗</a>
         <a class="btn small" style="padding:3px 10px;font-size:11.5px" href="/ui/campaigns/operation-report?group=4&download=1" title="save it as a file you can send">download .html</a>
         <button type="button" class="small" data-copy-from="rep-4">copy report (text)</button>
@@ -1927,6 +1961,29 @@ shopnova-verification.com">copy domains</button></div></div>
 </script>
 
 </main>
+<script>
+/* A form is sent once: a double click (or Enter twice) queued two identical scans, one of which never ran.
+   Every scan form and every form marked data-busy is guarded; a data-busy form also disables the button that sent it
+   and shows "Working…" (data-busy="text" for other words) until the answer arrives.
+   Only a submit that really went out counts — a confirm dialog cancels the first one and sends it again itself. */
+(function(){
+  const once = f => f.hasAttribute('data-busy') || /\/(scan|scan-urls)$/.test(f.getAttribute('action') || '');
+  document.addEventListener('submit', e => { const f = e.target; if (once(f) && f.__sentAt && Date.now() - f.__sentAt < 4000) { e.preventDefault(); e.stopImmediatePropagation(); } }, true);
+  // read defaultPrevented after every listener ran (the confirm dialog's included), not before them
+  document.addEventListener('submit', e => { const f = e.target, b = e.submitter; if (!once(f)) return;
+    setTimeout(() => { if (e.defaultPrevented) return; f.__sentAt = Date.now();
+      if (f.hasAttribute('data-busy') && b && b.tagName === 'BUTTON') { b.disabled = true; b.dataset.was = b.textContent; b.textContent = f.getAttribute('data-busy') || 'Working…';
+        setTimeout(() => { b.disabled = false; b.textContent = b.dataset.was; }, 30000); } }, 0); });
+  // the sticky header's height, for anything that sticks under it
+  const hdr = document.querySelector('header'); const setH = () => document.documentElement.style.setProperty('--hdr', (hdr ? hdr.offsetHeight : 56) + 'px');
+  setH(); window.addEventListener('resize', setH);
+  // server timestamps are UTC: <time datetime="…" data-local> (the |ts filter) and [data-local="…"] show the viewer's local time
+  const utc = iso => /T\d\d:\d\d/.test(iso) && !/(Z|[+-]\d\d:?\d\d)$/.test(iso) ? iso + 'Z' : iso;
+  const fmt = new Intl.DateTimeFormat(undefined, {year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'});
+  document.querySelectorAll('[data-local]').forEach(el => { const raw = el.getAttribute('datetime') || el.dataset.local; if (!raw) return;
+    const d = new Date(utc(raw)); if (isNaN(d)) return; el.textContent = fmt.format(d); if (!el.title) el.title = raw.replace('T', ' ').slice(0, 19) + ' UTC'; });
+})();
+</script>
 <script>
 /* BrandWatch motion layer: count-ups, staggered entrances, animated bars / rings / histograms,
    and auto-drawn donut + sparkline charts from data-* attributes. */

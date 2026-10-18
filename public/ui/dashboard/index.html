@@ -73,6 +73,21 @@ button:hover,.btn:hover{border-color:var(--accent);box-shadow:0 0 12px rgba(53,1
 button.danger{border-color:var(--crit);color:var(--crit)}button.ok{border-color:var(--low);color:var(--low)}
 input,select,textarea{background:#0b1220;color:var(--text);border:1px solid var(--border);border-radius:6px;padding:7px 9px;font:inherit;width:100%;transition:border-color .2s,box-shadow .2s}
 input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(53,199,242,.15)}
+/* keyboard users see where they are; mouse clicks do not get the ring */
+:focus-visible{outline:2px solid var(--accent2);outline-offset:2px;border-radius:4px}
+a:focus-visible,button:focus-visible,.btn:focus-visible{box-shadow:0 0 0 3px rgba(53,199,242,.25)}
+.skip{position:absolute;left:8px;top:-60px;z-index:100;padding:8px 14px;background:var(--panel2);border:1px solid var(--accent);border-radius:8px;color:var(--text);font-weight:600}
+.skip:focus{top:8px}
+/* the button variants every page uses */
+.btn.primary{background:rgba(53,199,242,.16);border-color:var(--accent);color:var(--accent2);font-weight:600}
+.btn.ghost,button.ghost{background:transparent}
+button.small,.btn.small{padding:4px 9px;font-size:12px;white-space:nowrap}
+button[disabled],.btn[aria-disabled=true]{opacity:.55;cursor:default;box-shadow:none}
+/* one message after a form (see _flash.html) */
+.flash{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:0 0 14px;padding:10px 14px;border:1px solid rgba(46,204,113,.5);border-radius:10px;background:rgba(46,204,113,.08);font-size:13.5px;animation:fadeUp .4s ease both}
+.flash .ic{width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:800;background:rgba(53,199,242,.15);color:var(--accent2);flex:none}
+.flash .ic.ok{background:rgba(46,204,113,.18);color:var(--low)}.flash .ic.undo{background:rgba(255,159,28,.18);color:var(--high)}
+.flash .t{flex:1;min-width:200px}.flash .undo{margin:0}.flash .x{margin-left:auto;padding:2px 8px;font-size:12px;border-color:transparent;color:var(--muted)}
 label{display:block;font-size:12px;color:var(--muted);margin:8px 0 4px;font-family:var(--mono);text-transform:uppercase;letter-spacing:.06em}
 .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
 .kpi{position:relative;overflow:hidden;background:linear-gradient(180deg,rgba(18,26,43,.95),rgba(14,20,32,.95));border:1px solid var(--border);border-radius:10px;padding:12px 14px;
@@ -173,6 +188,7 @@ header nav{display:flex;align-items:center;min-width:0}
 </style>
 </head>
 <body>
+<a class="skip" href="#main">Skip to content</a>
 <header>
   <a class="logo" href="/ui/dashboard/">BrandWatch</a>
   
@@ -191,7 +207,13 @@ header nav{display:flex;align-items:center;min-width:0}
   <span class="who"><span class="email">admin · </span>admin · <a href="/ui/logout">logout</a></span>
   
 </header>
-<main>
+<main id="main">
+
+
+
+
+
+
 
 
 <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
@@ -226,8 +248,6 @@ header nav{display:flex;align-items:center;min-width:0}
   @keyframes packet{from{left:0}to{left:calc(100% - 60px)}}
   .cta{display:flex;flex-wrap:wrap;gap:10px}
   .btn.big{padding:11px 16px;font-size:14px;border-radius:10px}
-  .btn.primary{background:rgba(53,199,242,.16);border-color:var(--accent);color:var(--accent2);font-weight:600}
-  .btn.ghost{background:transparent}
   /* caught in the act */
   .cases{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(340px,100%),1fr));gap:12px}
   .case{display:flex;flex-direction:column;border:1px solid var(--border);border-radius:12px;overflow:hidden;background:var(--panel2);color:var(--text);text-decoration:none;transition:border-color .2s,transform .2s}
@@ -321,7 +341,7 @@ header nav{display:flex;align-items:center;min-width:0}
 </style>
 <div class="dash">
 <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:12px">
-  <h1 style="margin:0;font-family:Rajdhani;font-size:26px;letter-spacing:.04em">DASHBOARD <span class="muted small" style="font-family:var(--sans)">· BRAND MONITOR · all brands · updated <span id="updated">18:13:02</span> UTC</span></h1>
+  <h1 style="margin:0;font-family:Rajdhani;font-size:26px;letter-spacing:.04em">DASHBOARD <span class="muted small" style="font-family:var(--sans)">· BRAND MONITOR · all brands · updated <span id="updated">19:59:56</span> UTC</span></h1>
   <form method="get" action="/ui/dashboard/" style="margin-left:auto;display:flex;gap:8px;align-items:center">
     <select name="brand_id" onchange="this.form.submit()"><option value="">all brands</option><option value="eb019060-41b6-4160-871c-14094ad558a4" >ShopNova</option><option value="1909c3e0-295d-4d38-bb7e-a2b05c9287d4" >ShopNova · Israel</option><option value="f46bffed-4795-4cdd-ad8f-abd3d26fcc60" >CoinPilot</option><option value="a7b5cb5c-e4a0-495d-b6c9-3ac5209ac3b2" >VaultPay</option></select>
   </form>
@@ -338,7 +358,7 @@ header nav{display:flex;align-items:center;min-width:0}
     <p class="sub">BrandWatch finds impostors of your brand on the web and on social media — look-alike websites, fake Facebook pages and Instagram profiles that use the brand&#39;s name (an AI reads what they post), and ads that sell fakes of its products. It visits each site in a sandbox, scores and explains everything, maps the attacker&#39;s infrastructure and drafts the takedown, including the report to Meta. Nothing is sent automatically: an analyst decides every step.</p>
     <div class="flow" id="how-strip" aria-label="What BrandWatch has done so far">
       <a class="fstep" href="/ui/candidates/"><span class="fn">1 · Find</span><b class="num" data-count="1217">0</b><span class="fl">look-alike domains found</span><span class="fd">typos · new certificates · new domains · Google · Facebook &amp; Instagram ads</span></a>
-      <a class="fstep" href="/ui/findings/"><span class="fn">2 · Prove</span><b class="num" data-count="48">0</b><span class="fl">scored as phishing risk</span><span class="fd">visited in a sandbox · 42 signals · evidence kept</span></a>
+      <a class="fstep" href="/ui/findings/"><span class="fn">2 · Prove</span><b class="num" data-count="48">0</b><span class="fl">scored as phishing risk</span><span class="fd">visited in a sandbox · 50 signals · evidence kept</span></a>
       <a class="fstep" href="/ui/findings/_b25f1804f2/"><span class="fn">3 · Decide</span><b class="num" data-count="39">0</b><span class="fl">confirmed phishing</span><span class="fd">an analyst decides, with the evidence</span></a>
       <a class="fstep" href="/ui/campaigns/"><span class="fn">4 · Map</span><b class="num" data-count="23">0</b><span class="fl">attacker networks mapped</span><span class="fd">150 indicators to block</span></a>
       <a class="fstep" href="/ui/takedowns/"><span class="fn">5 · Take down</span><b class="num" data-count="1">0</b><span class="fl">takedown sent</span><span class="fd">registrar · host · CDN + 26 blocklists</span></a>
@@ -501,14 +521,14 @@ header nav{display:flex;align-items:center;min-width:0}
     <div class="small" style="padding:6px 0;border-bottom:1px solid var(--border)"><span class="badge sev-critical">critical</span>  <a href="/ui/findings/6d7c2f47-cf77-4992-9dce-622f09bbf0bf/"><span class="mono">shopnova-login.com</span></a> <span class="muted">100 · awaiting verdict</span>
       <div style="margin-top:3px"><span class="pill g-" title="shopnova-login.com is a phishing site BrandWatch confirmed · +40 pts">a known phishing site</span> <span class="pill g-" title="Gemini sent users to shopnova-login.com, which is not a site of ShopNova · +40 pts">sends users elsewhere</span> <span class="pill g-" title="shopnova-login.com carries the brand&#39;s name but is not one of its domains · +30 pts">published by a look-alike</span> </div></div>
     
-    <div class="small" style="padding:6px 0;border-bottom:1px solid var(--border)"><span class="badge sev-high">high</span>  <a href="/ui/findings/de838d76-5b19-4caf-9212-8d9a60589653/"><span class="mono">help@shopnova-care.net</span></a> <span class="muted">70 · awaiting verdict</span>
-      <div style="margin-top:3px"><span class="pill g-" title="Gemini gave the e-mail help@shopnova-care.net — it is on none of ShopNova&#39;s pages · +40 pts">not on the brand&#39;s site</span> <span class="pill g-" title="2 page(s) the AI cited were opened: none of them carries help@shopnova-care.net · +15 pts">the cited page does not say it</span> <span class="pill g-" title="asked for the proof, the AI took it back · +15 pts">the AI took it back</span> </div></div>
-    
     <div class="small" style="padding:6px 0;border-bottom:1px solid var(--border)"><span class="badge sev-critical">critical</span>  <a href="/ui/findings/27ceca7f-5129-4f1d-ad51-b194ed5448f9/"><span class="mono">03-9817777</span></a> <span class="muted">100 · awaiting verdict</span>
       <div style="margin-top:3px"><span class="pill g-" title="ChatGPT gave the phone 03-9817777 — it is on none of ShopNova&#39;s pages · +40 pts">not on the brand&#39;s site</span> <span class="pill g-" title="shopnova-support-center.com (a phishing site BrandWatch confirmed) · +40 pts">a known phishing site</span> <span class="pill g-" title="shopnova-support-center.com carries the brand&#39;s name: a look-alike publishes the number · +30 pts">published by a look-alike</span> </div></div>
     
     <div class="small" style="padding:6px 0;border-bottom:1px solid var(--border)"><span class="badge sev-critical">critical</span> <span class="badge" style="border:1px solid rgba(230,237,245,.35);color:var(--text);background:rgba(230,237,245,.05)" title="the kit hides from scanners: BrandWatch revealed the real page with its cloaking probes">CLOAKED KIT</span> <a href="/ui/findings/6fc97f7b-606c-4e8f-89dd-19b57358c6ff/"><span class="mono">shopnova-refund.net</span></a> <span class="muted">89 · awaiting verdict</span>
       <div style="margin-top:3px"><span class="pill g-visual" title="favicon mmh3 -2029202433 equals the brand&#39;s favicon hash · +22 pts">identical favicon</span> <span class="pill g-visual" title="homepage screenshot is 99% similar to the brand&#39;s (pHash) · +18 pts">looks like the real site</span> <span class="pill g-infrastructure" title="shares server 203.0.113.102 with known phishing of this brand · +15 pts">shares a server with phishing</span> </div></div>
+    
+    <div class="small" style="padding:6px 0;border-bottom:1px solid var(--border)"><span class="badge sev-critical">critical</span> <span class="badge" style="border:1px solid rgba(230,237,245,.35);color:var(--text);background:rgba(230,237,245,.05)" title="the kit hides from scanners: BrandWatch revealed the real page with its cloaking probes">CLOAKED KIT</span> <a href="/ui/findings/6ed451ca-2fd1-464b-b381-03f8df804f34/"><span class="mono">shopnova-eu.com</span></a> <span class="muted">75 · awaiting verdict</span>
+      <div style="margin-top:3px"><span class="pill g-visual" title="favicon mmh3 -2029202433 equals the brand&#39;s favicon hash · +22 pts">identical favicon</span> <span class="pill g-visual" title="homepage screenshot is 100% similar to the brand&#39;s (pHash) · +18 pts">looks like the real site</span> <span class="pill g-behavior" title="page contains a password field · +14 pts">asks for a password</span> </div></div>
     
     
   </div>
@@ -529,7 +549,7 @@ header nav{display:flex;align-items:center;min-width:0}
     <div class="step"><div class="n">Normalize · dedup · pre-filter</div><div class="d" style="color:var(--text);margin:4px 0 6px">one candidate per URL, N sources; whitelist drops own domains</div>
       <div class="d mono">16 runs · 1298 hits · 0 API calls · avg 459 ms</div></div>
     
-    <div class="step"><div class="n">Evidence · signals · scoring</div><div class="d" style="color:var(--text);margin:4px 0 6px">DNS · HTTP · WHOIS · favicon · screenshot · reputation → 42 signals → risk + confidence</div>
+    <div class="step"><div class="n">Evidence · signals · scoring</div><div class="d" style="color:var(--text);margin:4px 0 6px">DNS · HTTP · WHOIS · favicon · screenshot · reputation → 50 signals → risk + confidence</div>
       <div class="d mono">16 runs · 130 hits · 3478 API calls · avg 5675 ms</div></div>
     
     <div class="step"><div class="n">Cloaking probes</div><div class="d" style="color:var(--text);margin:4px 0 6px">kits that hide from scanners are fetched as a bot, a victim link, a search visitor and a home IP (Tier 3/4)</div></div>
@@ -547,7 +567,7 @@ header nav{display:flex;align-items:center;min-width:0}
       <tr><th>Labelled findings</th><td class="right mono">40</td></tr>
       <tr><th>Precision <span class="muted">(from 40 analyst verdicts)</span></th><td class="right mono">0.84</td></tr>
       <tr><th>False-positive rate</th><td class="right mono">0.15</td></tr>
-      <tr><th title="mean time to detect">Time to detect <span class="muted">(hours after the domain was registered)</span></th><td class="right mono">160.8</td></tr>
+      <tr><th title="mean time to detect">Time to detect <span class="muted">(hours after the domain was registered)</span></th><td class="right mono">179.2</td></tr>
       <tr><th title="mean time to confirm">Time to confirm <span class="muted">(hours from finding to verdict)</span></th><td class="right mono">25.58</td></tr>
     </table>
   </div>
@@ -1155,6 +1175,29 @@ header nav{display:flex;align-items:center;min-width:0}
 </script>
 
 </main>
+<script>
+/* A form is sent once: a double click (or Enter twice) queued two identical scans, one of which never ran.
+   Every scan form and every form marked data-busy is guarded; a data-busy form also disables the button that sent it
+   and shows "Working…" (data-busy="text" for other words) until the answer arrives.
+   Only a submit that really went out counts — a confirm dialog cancels the first one and sends it again itself. */
+(function(){
+  const once = f => f.hasAttribute('data-busy') || /\/(scan|scan-urls)$/.test(f.getAttribute('action') || '');
+  document.addEventListener('submit', e => { const f = e.target; if (once(f) && f.__sentAt && Date.now() - f.__sentAt < 4000) { e.preventDefault(); e.stopImmediatePropagation(); } }, true);
+  // read defaultPrevented after every listener ran (the confirm dialog's included), not before them
+  document.addEventListener('submit', e => { const f = e.target, b = e.submitter; if (!once(f)) return;
+    setTimeout(() => { if (e.defaultPrevented) return; f.__sentAt = Date.now();
+      if (f.hasAttribute('data-busy') && b && b.tagName === 'BUTTON') { b.disabled = true; b.dataset.was = b.textContent; b.textContent = f.getAttribute('data-busy') || 'Working…';
+        setTimeout(() => { b.disabled = false; b.textContent = b.dataset.was; }, 30000); } }, 0); });
+  // the sticky header's height, for anything that sticks under it
+  const hdr = document.querySelector('header'); const setH = () => document.documentElement.style.setProperty('--hdr', (hdr ? hdr.offsetHeight : 56) + 'px');
+  setH(); window.addEventListener('resize', setH);
+  // server timestamps are UTC: <time datetime="…" data-local> (the |ts filter) and [data-local="…"] show the viewer's local time
+  const utc = iso => /T\d\d:\d\d/.test(iso) && !/(Z|[+-]\d\d:?\d\d)$/.test(iso) ? iso + 'Z' : iso;
+  const fmt = new Intl.DateTimeFormat(undefined, {year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'});
+  document.querySelectorAll('[data-local]').forEach(el => { const raw = el.getAttribute('datetime') || el.dataset.local; if (!raw) return;
+    const d = new Date(utc(raw)); if (isNaN(d)) return; el.textContent = fmt.format(d); if (!el.title) el.title = raw.replace('T', ' ').slice(0, 19) + ' UTC'; });
+})();
+</script>
 <script>
 /* BrandWatch motion layer: count-ups, staggered entrances, animated bars / rings / histograms,
    and auto-drawn donut + sparkline charts from data-* attributes. */

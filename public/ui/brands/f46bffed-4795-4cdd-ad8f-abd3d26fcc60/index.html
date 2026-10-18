@@ -73,6 +73,21 @@ button:hover,.btn:hover{border-color:var(--accent);box-shadow:0 0 12px rgba(53,1
 button.danger{border-color:var(--crit);color:var(--crit)}button.ok{border-color:var(--low);color:var(--low)}
 input,select,textarea{background:#0b1220;color:var(--text);border:1px solid var(--border);border-radius:6px;padding:7px 9px;font:inherit;width:100%;transition:border-color .2s,box-shadow .2s}
 input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(53,199,242,.15)}
+/* keyboard users see where they are; mouse clicks do not get the ring */
+:focus-visible{outline:2px solid var(--accent2);outline-offset:2px;border-radius:4px}
+a:focus-visible,button:focus-visible,.btn:focus-visible{box-shadow:0 0 0 3px rgba(53,199,242,.25)}
+.skip{position:absolute;left:8px;top:-60px;z-index:100;padding:8px 14px;background:var(--panel2);border:1px solid var(--accent);border-radius:8px;color:var(--text);font-weight:600}
+.skip:focus{top:8px}
+/* the button variants every page uses */
+.btn.primary{background:rgba(53,199,242,.16);border-color:var(--accent);color:var(--accent2);font-weight:600}
+.btn.ghost,button.ghost{background:transparent}
+button.small,.btn.small{padding:4px 9px;font-size:12px;white-space:nowrap}
+button[disabled],.btn[aria-disabled=true]{opacity:.55;cursor:default;box-shadow:none}
+/* one message after a form (see _flash.html) */
+.flash{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:0 0 14px;padding:10px 14px;border:1px solid rgba(46,204,113,.5);border-radius:10px;background:rgba(46,204,113,.08);font-size:13.5px;animation:fadeUp .4s ease both}
+.flash .ic{width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:800;background:rgba(53,199,242,.15);color:var(--accent2);flex:none}
+.flash .ic.ok{background:rgba(46,204,113,.18);color:var(--low)}.flash .ic.undo{background:rgba(255,159,28,.18);color:var(--high)}
+.flash .t{flex:1;min-width:200px}.flash .undo{margin:0}.flash .x{margin-left:auto;padding:2px 8px;font-size:12px;border-color:transparent;color:var(--muted)}
 label{display:block;font-size:12px;color:var(--muted);margin:8px 0 4px;font-family:var(--mono);text-transform:uppercase;letter-spacing:.06em}
 .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
 .kpi{position:relative;overflow:hidden;background:linear-gradient(180deg,rgba(18,26,43,.95),rgba(14,20,32,.95));border:1px solid var(--border);border-radius:10px;padding:12px 14px;
@@ -173,6 +188,7 @@ header nav{display:flex;align-items:center;min-width:0}
 </style>
 </head>
 <body>
+<a class="skip" href="#main">Skip to content</a>
 <header>
   <a class="logo" href="/ui/dashboard/">BrandWatch</a>
   
@@ -191,7 +207,13 @@ header nav{display:flex;align-items:center;min-width:0}
   <span class="who"><span class="email">admin · </span>admin · <a href="/ui/logout">logout</a></span>
   
 </header>
-<main>
+<main id="main">
+
+
+
+
+
+
 
 
 <style>
@@ -639,7 +661,7 @@ header nav{display:flex;align-items:center;min-width:0}
       <tr><th>Screenshot pHash</th><td class="mono">a8696e721b5f440f</td></tr>
       <tr><th>Keywords</th><td><span class="pill">coinpilot</span> <span class="pill">automated</span> <span class="pill">crypto</span> <span class="pill">trading</span> <span class="pill">bots</span> <span class="pill">trade</span> <span class="pill">autopilot</span> </td></tr>
       <tr><th>Google queries <span class="muted small">(AI proposal)</span></th><td><span class="pill" style="color:var(--accent2)">coinpilot login</span> <span class="pill" style="color:var(--accent2)">coinpilot sign up</span> <span class="pill" style="color:var(--accent2)">coinpilot support</span> <span class="pill" style="color:var(--accent2)">coinpilot app</span> <span class="pill" style="color:var(--accent2)">coin pilot login</span> <span class="pill" style="color:var(--accent2)">coin pilot</span> 
-        <div class="small muted" style="margin-top:4px">What the AI thinks people and impostors search for, given the type of business. Only a proposal: Google is searched with the list approved in <a href="#queries">Google search queries ↑</a>.</div></td></tr>
+        <div class="small muted" style="margin-top:4px">What the AI thinks people and impostors search for, given the type of business. Only a proposal: Google is searched with the list approved in <a href="#queries">Google search queries</a> (Scan setup tab).</div></td></tr>
       <tr><th>Login / sign-up pages</th><td>
         
         <span class="muted">none linked from the homepage</span>
@@ -771,12 +793,12 @@ header nav{display:flex;align-items:center;min-width:0}
           <div class="small" style="margin:2px 0 6px;text-transform:none;color:var(--muted)">Never more than the workspace limit, <b>500</b>. <a href="/ui/settings/#budget">Settings → Workspace &amp; budget</a> (an admin changes it).</div>
           <label title="dnstwist look-alike names checked in DNS - keyword combinations, other TLDs and typos first">Max look-alike names to check</label><input name="max_names_checked" value="3000" >
           <label>Google search queries</label>
-          <div class="small" style="margin:2px 0 6px;text-transform:none">Edited and approved in <a href="#queries">Google search queries ↑</a> — 6 waiting for approval.</div>
+          <div class="small" style="margin:2px 0 6px;text-transform:none">Edited and approved in <a href="#queries">Google search queries ↓</a> — 6 waiting for approval.</div>
           <label>Max queries per scan</label><input name="search_queries_max" value="10" >
           <label>Search countries · languages <span style="text-transform:none">(each country, in one or more languages)</span></label>
           
 
-<div class="mkt" id="mk306558" data-markets='[{"country": "us", "langs": ["en"]}]' data-disabled="0">
+<div class="mkt" id="mk540558" data-markets='[{"country": "us", "langs": ["en"]}]' data-disabled="0">
   <input type="hidden" name="search_geo" value="us">
   <input type="hidden" name="search_lang" value="en">
   <input type="hidden" name="search_markets" value='[{"country": "us", "langs": ["en"]}]'>
@@ -807,7 +829,7 @@ header nav{display:flex;align-items:center;min-width:0}
 </style>
 <script>
 (function(){
-  const root = document.getElementById('mk306558');
+  const root = document.getElementById('mk540558');
   if (!root) return;
   const D = {"countries": [{"code": "al", "name": "Albania"}, {"code": "dz", "name": "Algeria"}, {"code": "ar", "name": "Argentina"}, {"code": "am", "name": "Armenia"}, {"code": "au", "name": "Australia"}, {"code": "at", "name": "Austria"}, {"code": "az", "name": "Azerbaijan"}, {"code": "bh", "name": "Bahrain"}, {"code": "bd", "name": "Bangladesh"}, {"code": "by", "name": "Belarus"}, {"code": "be", "name": "Belgium"}, {"code": "bo", "name": "Bolivia"}, {"code": "ba", "name": "Bosnia and Herzegovina"}, {"code": "br", "name": "Brazil"}, {"code": "bg", "name": "Bulgaria"}, {"code": "kh", "name": "Cambodia"}, {"code": "ca", "name": "Canada"}, {"code": "cl", "name": "Chile"}, {"code": "cn", "name": "China"}, {"code": "co", "name": "Colombia"}, {"code": "cr", "name": "Costa Rica"}, {"code": "hr", "name": "Croatia"}, {"code": "cy", "name": "Cyprus"}, {"code": "cz", "name": "Czechia"}, {"code": "dk", "name": "Denmark"}, {"code": "do", "name": "Dominican Republic"}, {"code": "ec", "name": "Ecuador"}, {"code": "eg", "name": "Egypt"}, {"code": "ee", "name": "Estonia"}, {"code": "fi", "name": "Finland"}, {"code": "fr", "name": "France"}, {"code": "ge", "name": "Georgia"}, {"code": "de", "name": "Germany"}, {"code": "gh", "name": "Ghana"}, {"code": "gr", "name": "Greece"}, {"code": "gt", "name": "Guatemala"}, {"code": "hk", "name": "Hong Kong"}, {"code": "hu", "name": "Hungary"}, {"code": "is", "name": "Iceland"}, {"code": "in", "name": "India"}, {"code": "id", "name": "Indonesia"}, {"code": "ir", "name": "Iran"}, {"code": "iq", "name": "Iraq"}, {"code": "ie", "name": "Ireland"}, {"code": "il", "name": "Israel"}, {"code": "it", "name": "Italy"}, {"code": "jm", "name": "Jamaica"}, {"code": "jp", "name": "Japan"}, {"code": "jo", "name": "Jordan"}, {"code": "kz", "name": "Kazakhstan"}, {"code": "ke", "name": "Kenya"}, {"code": "kw", "name": "Kuwait"}, {"code": "lv", "name": "Latvia"}, {"code": "lb", "name": "Lebanon"}, {"code": "lt", "name": "Lithuania"}, {"code": "lu", "name": "Luxembourg"}, {"code": "my", "name": "Malaysia"}, {"code": "mt", "name": "Malta"}, {"code": "mx", "name": "Mexico"}, {"code": "md", "name": "Moldova"}, {"code": "ma", "name": "Morocco"}, {"code": "np", "name": "Nepal"}, {"code": "nl", "name": "Netherlands"}, {"code": "nz", "name": "New Zealand"}, {"code": "ng", "name": "Nigeria"}, {"code": "mk", "name": "North Macedonia"}, {"code": "no", "name": "Norway"}, {"code": "om", "name": "Oman"}, {"code": "pk", "name": "Pakistan"}, {"code": "pa", "name": "Panama"}, {"code": "py", "name": "Paraguay"}, {"code": "pe", "name": "Peru"}, {"code": "ph", "name": "Philippines"}, {"code": "pl", "name": "Poland"}, {"code": "pt", "name": "Portugal"}, {"code": "pr", "name": "Puerto Rico"}, {"code": "qa", "name": "Qatar"}, {"code": "ro", "name": "Romania"}, {"code": "ru", "name": "Russia"}, {"code": "sa", "name": "Saudi Arabia"}, {"code": "rs", "name": "Serbia"}, {"code": "sc", "name": "Seychelles"}, {"code": "sg", "name": "Singapore"}, {"code": "sk", "name": "Slovakia"}, {"code": "si", "name": "Slovenia"}, {"code": "za", "name": "South Africa"}, {"code": "kr", "name": "South Korea"}, {"code": "es", "name": "Spain"}, {"code": "lk", "name": "Sri Lanka"}, {"code": "se", "name": "Sweden"}, {"code": "ch", "name": "Switzerland"}, {"code": "tw", "name": "Taiwan"}, {"code": "tz", "name": "Tanzania"}, {"code": "th", "name": "Thailand"}, {"code": "tn", "name": "Tunisia"}, {"code": "tr", "name": "T\u00fcrkiye"}, {"code": "ug", "name": "Uganda"}, {"code": "ua", "name": "Ukraine"}, {"code": "ae", "name": "United Arab Emirates"}, {"code": "gb", "name": "United Kingdom"}, {"code": "us", "name": "United States"}, {"code": "uy", "name": "Uruguay"}, {"code": "uz", "name": "Uzbekistan"}, {"code": "ve", "name": "Venezuela"}, {"code": "vn", "name": "Vietnam"}], "defaults": {"ae": "ar", "ar": "es", "at": "de", "au": "en", "bd": "bn", "be": "fr", "bg": "bg", "br": "pt", "by": "ru", "ca": "en", "ch": "de", "cl": "es", "cn": "zh", "co": "es", "cy": "el", "cz": "cs", "de": "de", "dk": "da", "ee": "et", "eg": "ar", "es": "es", "fi": "fi", "fr": "fr", "gb": "en", "gr": "el", "hk": "zh", "hr": "hr", "hu": "hu", "id": "id", "ie": "en", "il": "he", "in": "en", "ir": "fa", "it": "it", "jp": "ja", "ke": "en", "kr": "ko", "kz": "ru", "lt": "lt", "lu": "fr", "lv": "lv", "md": "ro", "mx": "es", "my": "ms", "ng": "en", "nl": "nl", "no": "no", "nz": "en", "ph": "en", "pk": "ur", "pl": "pl", "pt": "pt", "ro": "ro", "rs": "sr", "ru": "ru", "sa": "ar", "se": "sv", "sg": "en", "si": "sl", "sk": "sk", "th": "th", "tr": "tr", "tw": "zh", "ua": "uk", "us": "en", "vn": "vi", "za": "en"}, "languages": [{"code": "en", "name": "English"}, {"code": "es", "name": "Spanish"}, {"code": "he", "name": "Hebrew"}, {"code": "ar", "name": "Arabic"}, {"code": "fr", "name": "French"}, {"code": "de", "name": "German"}, {"code": "it", "name": "Italian"}, {"code": "pt", "name": "Portuguese"}, {"code": "nl", "name": "Dutch"}, {"code": "ru", "name": "Russian"}, {"code": "pl", "name": "Polish"}, {"code": "tr", "name": "Turkish"}, {"code": "uk", "name": "Ukrainian"}, {"code": "cs", "name": "Czech"}, {"code": "sv", "name": "Swedish"}, {"code": "no", "name": "Norwegian"}, {"code": "da", "name": "Danish"}, {"code": "fi", "name": "Finnish"}, {"code": "el", "name": "Greek"}, {"code": "hu", "name": "Hungarian"}, {"code": "ro", "name": "Romanian"}, {"code": "bg", "name": "Bulgarian"}, {"code": "sr", "name": "Serbian"}, {"code": "hr", "name": "Croatian"}, {"code": "sk", "name": "Slovak"}, {"code": "sl", "name": "Slovenian"}, {"code": "lt", "name": "Lithuanian"}, {"code": "lv", "name": "Latvian"}, {"code": "et", "name": "Estonian"}, {"code": "ja", "name": "Japanese"}, {"code": "ko", "name": "Korean"}, {"code": "zh", "name": "Chinese"}, {"code": "hi", "name": "Hindi"}, {"code": "bn", "name": "Bengali"}, {"code": "ur", "name": "Urdu"}, {"code": "fa", "name": "Persian"}, {"code": "id", "name": "Indonesian"}, {"code": "ms", "name": "Malay"}, {"code": "th", "name": "Thai"}, {"code": "vi", "name": "Vietnamese"}, {"code": "tl", "name": "Filipino"}, {"code": "sw", "name": "Swahili"}, {"code": "af", "name": "Afrikaans"}]};
   const cname = Object.fromEntries(D.countries.map(c => [c.code, c.name])), lname = Object.fromEntries(D.languages.map(l => [l.code, l.name]));
@@ -879,7 +901,7 @@ header nav{display:flex;align-items:center;min-width:0}
           <h3>Cadence</h3>
           <label>Watch window (days) · re-check cadence (hours)</label>
           <div class="actions"><input name="watch_window_days" value="14" style="flex:1" ><input name="watch_cadence_hours" value="12" style="flex:1" ></div>
-          <div class="small" style="margin-top:8px;text-transform:none">Full automatic scans — how often, when and what — are set in <a href="#schedule">Automatic scans ↑</a>.</div>
+          <div class="small" style="margin-top:8px;text-transform:none">Full automatic scans — how often, when and what — are set in <a href="#schedule">Automatic scans ↓</a>.</div>
           <label>Residential probe (Tier 4)</label><select name="residential_probe" ><option selected>gated</option><option >off</option><option >always</option></select>
           <label>Residential country <span style="text-transform:none">(ISO code, e.g. us; empty = auto from search country / language)</span></label>
           <input name="residential_country" value="" placeholder="auto" >
@@ -1250,7 +1272,7 @@ header nav{display:flex;align-items:center;min-width:0}
       
       <label class="task "><input type="checkbox" name="tasks" value="search"  >
         <div><b>Google search</b><span>the approved Google search queries, in each search country</span>
-          <br><span class="warn">skipped until you approve the Google queries ↑</span>
+          <br><span class="warn">skipped until you approve the Google queries ↑ (above)</span>
           
           
         </div></label>
@@ -1267,7 +1289,7 @@ header nav{display:flex;align-items:center;min-width:0}
       <label class="task "><input type="checkbox" name="tasks" value="meta_ads"  >
         <div><b>Facebook / Instagram ads</b><span>ads that use the brand&#39;s name and the sites they send people to — scam shops for a brand that shops resell, phishing for any other</span>
           
-          <br><span>for CoinPilot: phishing ads — the ad keywords and countries are in the brand profile ↓</span>
+          <br><span>for CoinPilot: phishing ads — the ad keywords and countries are in the <a href="#profile">brand profile</a> (Brand &amp; site tab)</span>
           
         </div></label>
       
@@ -1557,7 +1579,7 @@ header nav{display:flex;align-items:center;min-width:0}
 </script></div>
     <div style="grid-column:1/-1"><button type="submit">Save brand</button></div>
   </form>
-  <p class="small muted" style="margin-top:8px">Changing the official domains does not touch the whitelist or past findings; rebuild the baseline afterwards. Search rules and the detection track are edited just below.</p>
+  <p class="small muted" style="margin-top:8px">Changing the official domains does not touch the whitelist or past findings; rebuild the baseline afterwards. Search rules and the detection track are in the <a href="#config">Scan setup tab</a>.</p>
   
 </div>
 
@@ -1898,6 +1920,29 @@ header nav{display:flex;align-items:center;min-width:0}
 </script>
 
 </main>
+<script>
+/* A form is sent once: a double click (or Enter twice) queued two identical scans, one of which never ran.
+   Every scan form and every form marked data-busy is guarded; a data-busy form also disables the button that sent it
+   and shows "Working…" (data-busy="text" for other words) until the answer arrives.
+   Only a submit that really went out counts — a confirm dialog cancels the first one and sends it again itself. */
+(function(){
+  const once = f => f.hasAttribute('data-busy') || /\/(scan|scan-urls)$/.test(f.getAttribute('action') || '');
+  document.addEventListener('submit', e => { const f = e.target; if (once(f) && f.__sentAt && Date.now() - f.__sentAt < 4000) { e.preventDefault(); e.stopImmediatePropagation(); } }, true);
+  // read defaultPrevented after every listener ran (the confirm dialog's included), not before them
+  document.addEventListener('submit', e => { const f = e.target, b = e.submitter; if (!once(f)) return;
+    setTimeout(() => { if (e.defaultPrevented) return; f.__sentAt = Date.now();
+      if (f.hasAttribute('data-busy') && b && b.tagName === 'BUTTON') { b.disabled = true; b.dataset.was = b.textContent; b.textContent = f.getAttribute('data-busy') || 'Working…';
+        setTimeout(() => { b.disabled = false; b.textContent = b.dataset.was; }, 30000); } }, 0); });
+  // the sticky header's height, for anything that sticks under it
+  const hdr = document.querySelector('header'); const setH = () => document.documentElement.style.setProperty('--hdr', (hdr ? hdr.offsetHeight : 56) + 'px');
+  setH(); window.addEventListener('resize', setH);
+  // server timestamps are UTC: <time datetime="…" data-local> (the |ts filter) and [data-local="…"] show the viewer's local time
+  const utc = iso => /T\d\d:\d\d/.test(iso) && !/(Z|[+-]\d\d:?\d\d)$/.test(iso) ? iso + 'Z' : iso;
+  const fmt = new Intl.DateTimeFormat(undefined, {year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'});
+  document.querySelectorAll('[data-local]').forEach(el => { const raw = el.getAttribute('datetime') || el.dataset.local; if (!raw) return;
+    const d = new Date(utc(raw)); if (isNaN(d)) return; el.textContent = fmt.format(d); if (!el.title) el.title = raw.replace('T', ' ').slice(0, 19) + ' UTC'; });
+})();
+</script>
 <script>
 /* BrandWatch motion layer: count-ups, staggered entrances, animated bars / rings / histograms,
    and auto-drawn donut + sparkline charts from data-* attributes. */

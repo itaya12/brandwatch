@@ -3,12 +3,12 @@
 <head><script>window.__BW_GITHUB=""</script><script src="/_demo/map.js"></script><script src="/_demo/shim.js"></script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>shopnowa.com · BrandWatch</title>
+<title>shopnowa.com · ShopNova · critical · BrandWatch</title>
 
 <meta name="description" content="BrandWatch finds the fake sites impersonating a brand, proves it with tamper-proof evidence, maps the attackers behind them and gets them taken down.">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="BrandWatch">
-<meta property="og:title" content="shopnowa.com · BrandWatch">
+<meta property="og:title" content="shopnowa.com · ShopNova · critical · BrandWatch">
 <meta property="og:description" content="BrandWatch finds the fake sites impersonating a brand, proves it with tamper-proof evidence, maps the attackers behind them and gets them taken down.">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -73,6 +73,21 @@ button:hover,.btn:hover{border-color:var(--accent);box-shadow:0 0 12px rgba(53,1
 button.danger{border-color:var(--crit);color:var(--crit)}button.ok{border-color:var(--low);color:var(--low)}
 input,select,textarea{background:#0b1220;color:var(--text);border:1px solid var(--border);border-radius:6px;padding:7px 9px;font:inherit;width:100%;transition:border-color .2s,box-shadow .2s}
 input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(53,199,242,.15)}
+/* keyboard users see where they are; mouse clicks do not get the ring */
+:focus-visible{outline:2px solid var(--accent2);outline-offset:2px;border-radius:4px}
+a:focus-visible,button:focus-visible,.btn:focus-visible{box-shadow:0 0 0 3px rgba(53,199,242,.25)}
+.skip{position:absolute;left:8px;top:-60px;z-index:100;padding:8px 14px;background:var(--panel2);border:1px solid var(--accent);border-radius:8px;color:var(--text);font-weight:600}
+.skip:focus{top:8px}
+/* the button variants every page uses */
+.btn.primary{background:rgba(53,199,242,.16);border-color:var(--accent);color:var(--accent2);font-weight:600}
+.btn.ghost,button.ghost{background:transparent}
+button.small,.btn.small{padding:4px 9px;font-size:12px;white-space:nowrap}
+button[disabled],.btn[aria-disabled=true]{opacity:.55;cursor:default;box-shadow:none}
+/* one message after a form (see _flash.html) */
+.flash{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:0 0 14px;padding:10px 14px;border:1px solid rgba(46,204,113,.5);border-radius:10px;background:rgba(46,204,113,.08);font-size:13.5px;animation:fadeUp .4s ease both}
+.flash .ic{width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:800;background:rgba(53,199,242,.15);color:var(--accent2);flex:none}
+.flash .ic.ok{background:rgba(46,204,113,.18);color:var(--low)}.flash .ic.undo{background:rgba(255,159,28,.18);color:var(--high)}
+.flash .t{flex:1;min-width:200px}.flash .undo{margin:0}.flash .x{margin-left:auto;padding:2px 8px;font-size:12px;border-color:transparent;color:var(--muted)}
 label{display:block;font-size:12px;color:var(--muted);margin:8px 0 4px;font-family:var(--mono);text-transform:uppercase;letter-spacing:.06em}
 .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
 .kpi{position:relative;overflow:hidden;background:linear-gradient(180deg,rgba(18,26,43,.95),rgba(14,20,32,.95));border:1px solid var(--border);border-radius:10px;padding:12px 14px;
@@ -173,6 +188,7 @@ header nav{display:flex;align-items:center;min-width:0}
 </style>
 </head>
 <body>
+<a class="skip" href="#main">Skip to content</a>
 <header>
   <a class="logo" href="/ui/dashboard/">BrandWatch</a>
   
@@ -191,7 +207,13 @@ header nav{display:flex;align-items:center;min-width:0}
   <span class="who"><span class="email">admin · </span>admin · <a href="/ui/logout">logout</a></span>
   
 </header>
-<main>
+<main id="main">
+
+
+
+
+
+
 
 
 
@@ -317,18 +339,30 @@ header nav{display:flex;align-items:center;min-width:0}
   .invbar .ib-t{flex:1;min-width:min(320px,100%)}
   .invbar .ib-t b{font-size:14px}
   .invbar .progress{flex:0 0 100%;margin-top:0}
-  .jump{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:0 0 12px;color:var(--muted)}
+  .jump{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:10px 0 0;color:var(--muted);font-size:12px}
+  .jump[hidden]{display:none}
   .jump a{padding:3px 10px;border:1px solid var(--border);border-radius:999px;background:var(--panel2);color:var(--text);text-decoration:none}
   .jump a:hover{border-color:var(--accent)}
   .inv-empty{border-style:dashed}
   .why-grid{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:18px}
   .why-grid>*,.fhead>*{min-width:0}
   @media (max-width:900px){.why-grid,.verdict-form,.fhead{grid-template-columns:minmax(0,1fr)}.fhead .ringwrap{text-align:left}}
+  .verdict-form .chk{display:flex;gap:6px;align-items:center;font-size:12.5px;color:var(--muted);grid-column:1 / -1}.verdict-form .chk input{width:auto;margin:0}
+  .qnav{display:flex;gap:8px;align-items:center;margin:0 0 10px;font-size:12.5px;color:var(--muted)}
+  .qnav .btn{padding:4px 10px;font-size:12px}.qnav .off{opacity:.4;pointer-events:none}
 </style>
 
 
 
 <div class="crumbs"><a href="/ui/brands/">Brands &amp; Scans</a><span class="sep">›</span><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/">ShopNova</a><span class="sep">›</span><a href="/ui/findings/_9e35fa5890/">Findings</a><span class="sep">›</span><span class="cur">shopnowa.com</span><span class="side"><a href="/ui/candidates/c71c47ed-f12c-4547-8675-4bec5c13074c">Domain timeline</a><a href="/ui/campaigns/1f54139f-12e0-4e3f-bd57-1ad298cdb1dd/">Attack infrastructure map</a></span></div>
+
+<nav class="qnav" aria-label="Queue">
+  <span class="btn off" aria-disabled="true">← previous</span>
+  <span>8 open for <bdi>ShopNova</bdi> · this one is confirmed phishing</span>
+  <a class="btn" href="/ui/findings/6d7c2f47-cf77-4992-9dce-622f09bbf0bf/" rel="next" accesskey="j">next →</a>
+  <a class="small" href="/ui/findings/_9e35fa5890/">the queue</a>
+</nav>
+
 
 
 <div class="panel fhead">
@@ -392,7 +426,7 @@ header nav{display:flex;align-items:center;min-width:0}
 
   
     <div class="done-box">
-      <div style="margin-bottom:10px"><b style="color:var(--low)">✓ Confirmed phishing</b> <span class="muted small">· 2026-10-14 09:53</span>
+      <div style="margin-bottom:10px"><b style="color:var(--low)">✓ Confirmed phishing</b> <span class="muted small">· <time datetime="2026-10-14T09:53:04.384423" data-local title="2026-10-14T09:53:04.384423 UTC">2026-10-14 09:53</time></span>
         </div>
       
       
@@ -430,19 +464,14 @@ header nav{display:flex;align-items:center;min-width:0}
   
   
   
-  <button role="tab" data-tab="why">Why flagged <span class="n">12 signals</span></button>
   
-  <button role="tab" data-tab="looks">Looks like ShopNova <span class="n">100%</span></button>
-  <span class="grp" aria-hidden="true"></span>
-  <button role="tab" data-tab="reputation" title="site & network investigation">Reputation <span class="n ">0/90</span></button>
-  <button role="tab" data-tab="domain" title="site & network investigation">Domain &amp; registration <span class="n">1 WHOIS</span></button>
-  <button role="tab" data-tab="network" title="site & network investigation">Hosting &amp; network <span class="n bad">1 server</span></button>
+  <button role="tab" data-tab="evidence" aria-controls="tab-looks" title="the screenshots side by side, and every signal that fired">Evidence <span class="n">12 signals · 100% alike</span></button>
+  <button role="tab" data-tab="investigation" aria-controls="tab-reputation" title="reputation · domain & registration · hosting & network">Investigation <span class="n bad">0/90 detections · 1 server</span></button>
   
-  <span class="grp" aria-hidden="true"></span>
-  <button role="tab" data-tab="timeline">Timeline <span class="n">4</span></button>
-  <button role="tab" data-tab="evidence">Evidence <span class="n">56</span></button>
-  <button role="tab" data-tab="ai">AI opinions</button>
+  <button role="tab" data-tab="history" aria-controls="tab-timeline" title="observation timeline and the evidence chain">History <span class="n">4 visits · 56 items</span></button>
+  <button role="tab" data-tab="ai" aria-controls="tab-ai">AI opinions</button>
 </nav>
+<div class="jump" id="jump" hidden></div>
 
 <div class="panel invbar" id="invbar" hidden>
   <div class="ib-t">
@@ -466,7 +495,7 @@ header nav{display:flex;align-items:center;min-width:0}
 
 
 
-<section class="tabpane" id="tab-why">
+<section class="tabpane" role="tabpanel" id="tab-why">
   
   <div class="why-grid">
     <div class="panel">
@@ -551,7 +580,7 @@ header nav{display:flex;align-items:center;min-width:0}
   
 </section>
 
-<section class="tabpane" id="tab-looks">
+<section class="tabpane" role="tabpanel" id="tab-looks">
   <div class="panel">
     <h2>Suspect vs. official <span class="pill">similarity 100%</span></h2>
     
@@ -633,7 +662,7 @@ header nav{display:flex;align-items:center;min-width:0}
 
 <section class="tabpane" id="tab-domain">
   
-  <div class="jump small">Jump to <a href="#registration" data-goto="registration">Registration</a><a href="#history" data-goto="history">WHOIS history</a><a href="#dns" data-goto="dns">DNS records</a><a href="#cert" data-goto="cert">Certificate</a></div>
+  <div class="jump small">Jump to <a href="#registration" data-goto="registration">Registration</a><a href="#whois" data-goto="whois">WHOIS history</a><a href="#dns" data-goto="dns">DNS records</a><a href="#cert" data-goto="cert">Certificate</a></div>
   
   <div id="sec-registration" class="cards">
     <div class="card"><h3>Registration data (RDAP) </h3>
@@ -718,7 +747,7 @@ Name Server: NS2.MOCK-DNS.EXAMPLE</div></details></td></tr>
       
       <dl class="kv"><dt>Common name</dt><dd class="mono">shopnowa.com</dd>
         <dt>Issuer</dt><dd>C=US O=Mock Trust Services CN=MT1</dd>
-        <dt>Valid</dt><dd class="mono small">2026-09-20 00:00:00 → 2026-12-19 00:00:00<div class="vbar"><i style="width:31%"></i></div><span class="muted">31% of the validity period elapsed</span></dd>
+        <dt>Valid</dt><dd class="mono small">2026-09-20 00:00:00 → 2026-12-19 00:00:00<div class="vbar"><i style="width:32%"></i></div><span class="muted">32% of the validity period elapsed</span></dd>
         <dt>Alt names (2)</dt><dd><span class="pill mono">shopnowa.com</span> <span class="pill mono">www.shopnowa.com</span> </dd>
         <dt>SHA-256</dt><dd class="mono small">af484ba5b39d6bf88198d3b62f60b8949a78fe38f8ba00e29b0538fb40c97541 · <a href="https://crt.sh/?sha256=af484ba5b39d6bf88198d3b62f60b8949a78fe38f8ba00e29b0538fb40c97541" target="_blank" rel="noreferrer noopener">crt.sh ↗</a></dd></dl>
       <details><summary>serial, signature, key, TLS and the full certificate</summary>
@@ -987,7 +1016,7 @@ abuse-mailbox: abuse@fast.example
   
 </section>
 
-<section class="tabpane" id="tab-timeline">
+<section class="tabpane" role="tabpanel" id="tab-timeline">
   <div class="cols">
     <div class="panel">
       <h2>Observation timeline</h2>
@@ -1018,7 +1047,7 @@ abuse-mailbox: abuse@fast.example
           · <a href="/_r/5c424f8ad54bc4.png" target="_blank">screenshot</a></li>
         
       </ul>
-      <p class="small muted">first seen 2026-10-12 06:41 · scans 4 · next 2026-10-12 12:46 · candidate state flagged · <a href="#history" data-goto="history">WHOIS history →</a></p>
+      <p class="small muted">first seen 2026-10-12 06:41 · scans 4 · next 2026-10-12 12:46 · candidate state flagged · <a href="#whois" data-goto="whois">WHOIS history →</a></p>
     </div>
     <div class="panel">
       <h2>Score history</h2>
@@ -1029,7 +1058,7 @@ abuse-mailbox: abuse@fast.example
   </div>
 </section>
 
-<section class="tabpane" id="tab-evidence">
+<section class="tabpane" role="tabpanel" id="tab-evidence">
   <div class="panel">
     <h2>Evidence · chain of custody <span class="help" tabindex="0" role="link" data-href="/ui/how-it-works/#g-evidence" data-tip="Every screenshot, HTML page, DNS / WHOIS answer and reputation lookup, stored append-only with its SHA-256 — the database rejects edits and deletes." title="Every screenshot, HTML page, DNS / WHOIS answer and reputation lookup, stored append-only with its SHA-256 — the database rejects edits and deletes." aria-label="What is this? Every screenshot, HTML page, DNS / WHOIS answer and reputation lookup, stored append-only with its SHA-256 — the database rejects edits and deletes.">?</span> <a class="pill cap" href="/ui/how-it-works/#evidence" title="database triggers reject UPDATE and DELETE on evidence tables; artifacts are content-addressed by SHA-256">⚙ immutable · DB-enforced</a></h2>
     <p class="small muted" style="margin:0 0 8px">Append-only by the database: UPDATE and DELETE are rejected by triggers, even for an admin. Every artifact is stored under its own SHA-256, so the hash is literally the file name — any tampering is visible.
@@ -1496,7 +1525,7 @@ abuse-mailbox: abuse@fast.example
 </section>
 
 
-<section class="tabpane" id="tab-ai">
+<section class="tabpane" role="tabpanel" id="tab-ai">
   <div class="panel">
     <h2>Advisory opinions <span class="muted">· shown for context, never part of the score</span> <a class="pill cap" href="/ui/how-it-works/#g-advisory" title="strict JSON schema, page text framed as untrusted input; the deterministic score never depends on it">⚙ AI advisory · JSON schema</a></h2>
     <p class="small"><span class="pill">AI · mock:openai</span>
@@ -1512,17 +1541,29 @@ abuse-mailbox: abuse@fast.example
 (function(){
   const $ = id => document.getElementById(id);
   const tabs = [...document.querySelectorAll('#tabs [role=tab]')];
-  const INV = ['reputation', 'domain', 'network'];
-  // old Site & network intel tab names, and the sections inside the investigation tabs
-  const ALIAS = {detections: 'reputation', links: 'reputation', registration: 'domain:sec-registration', history: 'domain:sec-history',
+  // a tab is a group of panes, shown in this order (the screenshots before the signal table)
+  const GROUPS = {evidence: ["looks", "why"], investigation: ['reputation', 'domain', 'network'],
+                  history: ['timeline', 'evidence'], ai: ['ai'], ads: ['ads'], shop: ['shop'], social: ['social'], aianswer: ['aianswer']};
+  const OWNER = {}; for (const g in GROUPS) GROUPS[g].forEach(p => { OWNER[p] = g; });
+  // old tab names (#why, #looks, #network …) and the sections inside the investigation panes
+  const ALIAS = {detections: 'reputation', links: 'reputation', registration: 'domain:sec-registration', whois: 'domain:sec-history', history_: 'domain:sec-history',
                  dns: 'domain:sec-dns', cert: 'domain:sec-cert', ips: 'network:sec-ips', urlscan: 'network:sec-urlscan', relations: 'network:sec-relations'};
+  const jump = $('jump'), bar = $('invbar');
   function select(name, push){
     let section = null, hash = name;
     if (ALIAS[name]) [name, section] = ALIAS[name].split(':');
+    if (OWNER[name] && !GROUPS[name]) { section = section || ('tab-' + name); name = OWNER[name]; }  // a pane name: its group, scrolled to it
     if (!tabs.some(t => t.dataset.tab === name)) { name = tabs[0].dataset.tab; hash = name; section = null; }
     tabs.forEach(t => t.setAttribute('aria-selected', t.dataset.tab === name));
-    document.querySelectorAll('.tabpane').forEach(p => p.classList.toggle('on', p.id === 'tab-' + name));
-    $('invbar').hidden = !INV.includes(name);
+    const panes = (GROUPS[name] || []).map(p => $('tab-' + p)).filter(Boolean);
+    document.querySelectorAll('.tabpane').forEach(p => p.classList.toggle('on', panes.includes(p)));
+    panes.slice().reverse().forEach(p => bar.after(p));  // the group's panes right after the bar, in order
+    bar.hidden = name !== 'investigation';
+    // the sections of the group, as a jump row (only when there is more than one)
+    if (jump) { jump.innerHTML = ''; jump.hidden = panes.length < 2;
+      panes.forEach(p => { const h = p.querySelector('h2'); if (!h) return; const a = document.createElement('a'); a.href = '#' + p.id;
+        a.textContent = (h.childNodes[0] && h.childNodes[0].textContent || h.textContent).trim().replace(/\s*·.*$/, '').slice(0, 40);
+        a.addEventListener('click', e => { e.preventDefault(); p.scrollIntoView({behavior: 'smooth', block: 'start'}); }); jump.appendChild(a); }); }
     if (push) history.replaceState(null, '', '#' + hash);
     const el = section && $(section);
     if (el) setTimeout(() => el.scrollIntoView({behavior: 'smooth', block: 'start'}), 30);
@@ -1538,9 +1579,10 @@ abuse-mailbox: abuse@fast.example
     e.preventDefault();
     if (!select(a.dataset.goto, true)) $('tabs').scrollIntoView({behavior: 'smooth', block: 'start'});
   }));
-  select((location.hash || '').slice(1) || 'why', false);
+  const DEFAULT = 'evidence';
+  select((location.hash || '').slice(1) || DEFAULT, false);
   // back / forward and typed hashes (#history, #ips …) re-select without a reload
-  window.addEventListener('hashchange', () => select((location.hash || '').slice(1) || 'why', false));
+  window.addEventListener('hashchange', () => select((location.hash || '').slice(1) || DEFAULT, false));
 
   // --- the investigation job: start / refresh, stream its narration, reload as results land ---
   const startUrl = "/api/findings/f08c0261-6754-4724-baf4-94c5e6354112/intel";
@@ -1589,6 +1631,29 @@ abuse-mailbox: abuse@fast.example
 </script>
 
 </main>
+<script>
+/* A form is sent once: a double click (or Enter twice) queued two identical scans, one of which never ran.
+   Every scan form and every form marked data-busy is guarded; a data-busy form also disables the button that sent it
+   and shows "Working…" (data-busy="text" for other words) until the answer arrives.
+   Only a submit that really went out counts — a confirm dialog cancels the first one and sends it again itself. */
+(function(){
+  const once = f => f.hasAttribute('data-busy') || /\/(scan|scan-urls)$/.test(f.getAttribute('action') || '');
+  document.addEventListener('submit', e => { const f = e.target; if (once(f) && f.__sentAt && Date.now() - f.__sentAt < 4000) { e.preventDefault(); e.stopImmediatePropagation(); } }, true);
+  // read defaultPrevented after every listener ran (the confirm dialog's included), not before them
+  document.addEventListener('submit', e => { const f = e.target, b = e.submitter; if (!once(f)) return;
+    setTimeout(() => { if (e.defaultPrevented) return; f.__sentAt = Date.now();
+      if (f.hasAttribute('data-busy') && b && b.tagName === 'BUTTON') { b.disabled = true; b.dataset.was = b.textContent; b.textContent = f.getAttribute('data-busy') || 'Working…';
+        setTimeout(() => { b.disabled = false; b.textContent = b.dataset.was; }, 30000); } }, 0); });
+  // the sticky header's height, for anything that sticks under it
+  const hdr = document.querySelector('header'); const setH = () => document.documentElement.style.setProperty('--hdr', (hdr ? hdr.offsetHeight : 56) + 'px');
+  setH(); window.addEventListener('resize', setH);
+  // server timestamps are UTC: <time datetime="…" data-local> (the |ts filter) and [data-local="…"] show the viewer's local time
+  const utc = iso => /T\d\d:\d\d/.test(iso) && !/(Z|[+-]\d\d:?\d\d)$/.test(iso) ? iso + 'Z' : iso;
+  const fmt = new Intl.DateTimeFormat(undefined, {year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'});
+  document.querySelectorAll('[data-local]').forEach(el => { const raw = el.getAttribute('datetime') || el.dataset.local; if (!raw) return;
+    const d = new Date(utc(raw)); if (isNaN(d)) return; el.textContent = fmt.format(d); if (!el.title) el.title = raw.replace('T', ' ').slice(0, 19) + ' UTC'; });
+})();
+</script>
 <script>
 /* BrandWatch motion layer: count-ups, staggered entrances, animated bars / rings / histograms,
    and auto-drawn donut + sparkline charts from data-* attributes. */

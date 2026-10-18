@@ -1,0 +1,720 @@
+<!doctype html>
+<html lang="en">
+<head><script>window.__BW_GITHUB=""</script><script src="/_demo/map.js"></script><script src="/_demo/shim.js"></script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Findings · BrandWatch</title>
+
+<meta name="description" content="BrandWatch finds the fake sites impersonating a brand, proves it with tamper-proof evidence, maps the attackers behind them and gets them taken down.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="BrandWatch">
+<meta property="og:title" content="Findings · BrandWatch">
+<meta property="og:description" content="BrandWatch finds the fake sites impersonating a brand, proves it with tamper-proof evidence, maps the attackers behind them and gets them taken down.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=JetBrains+Mono:wght@400;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#080B14;--panel:#0E1420;--panel2:#121A2B;--border:#1E2A3D;--accent:#35C7F2;--accent2:#5FE3FF;
+--crit:#FF4D4D;--high:#FF9F1C;--med:#F5C518;--low:#2ECC71;--violet:#5b9bb5;--magenta:#c9d3df;--text:#E6EDF5;--muted:#8A97A8;
+--mono:"JetBrains Mono",ui-monospace,Consolas,monospace;--sans:Inter,system-ui,Segoe UI,Roboto,sans-serif;--display:Rajdhani,var(--mono)}
+@property --p{syntax:'<number>';inherits:false;initial-value:0}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14px;line-height:1.45;min-height:100vh}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:repeating-linear-gradient(0deg,rgba(53,199,242,.022) 0 1px,transparent 1px 3px),
+             radial-gradient(ellipse at 50% -10%,rgba(53,199,242,.10),transparent 55%)}
+body::after{content:"";position:fixed;left:0;right:0;top:-40%;height:40%;pointer-events:none;z-index:0;
+  background:linear-gradient(180deg,transparent,rgba(53,199,242,.035),transparent);animation:sweep 9s linear infinite}
+@keyframes sweep{to{transform:translateY(350%)}}
+a{color:var(--accent);text-decoration:none;transition:color .2s}a:hover{color:var(--accent2)}
+header{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:24px;padding:10px 20px;border-bottom:1px solid var(--border);
+  background:rgba(14,20,32,.86);backdrop-filter:blur(8px)}
+@media (max-width:900px){header{background:#0e1420;backdrop-filter:none;-webkit-backdrop-filter:none}}  /* a blurred sticky bar flickers while a phone scrolls */
+header .logo{font-family:var(--mono);font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);display:flex;align-items:center;gap:8px}
+header .logo::before{content:"";width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 10px var(--accent);animation:beat 2.2s ease-in-out infinite}
+@keyframes beat{0%,100%{opacity:.45;transform:scale(.85)}50%{opacity:1;transform:scale(1.1)}}
+header nav a{position:relative;font-family:var(--mono);font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-right:16px;padding:4px 0}
+header nav a::after{content:"";position:absolute;left:0;right:0;bottom:-2px;height:2px;background:var(--accent);transform:scaleX(0);transform-origin:left;transition:transform .3s}
+header nav a.active,header nav a:hover{color:var(--text)}header nav a.active::after,header nav a:hover::after{transform:scaleX(1)}
+header nav a.active::after{box-shadow:0 0 8px var(--accent)}
+header .who{margin-left:auto;color:var(--muted);font-size:12px}
+main{position:relative;z-index:1;padding:20px;max-width:1440px;margin:0 auto}
+h1{font-family:var(--display);font-size:26px;letter-spacing:.04em;margin:0 0 14px;font-weight:700;
+  background:linear-gradient(90deg,#E6EDF5 0%,#E6EDF5 55%,var(--accent2) 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+h1 .muted,h1 .small{-webkit-text-fill-color:var(--muted);font-family:var(--sans);font-size:13px;letter-spacing:0;font-weight:400}
+h2{font-size:12px;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);font-family:var(--mono);margin:22px 0 10px;line-height:1.5}
+h2::before{content:"";width:6px;height:6px;background:var(--accent);display:inline-block;margin-right:8px;vertical-align:2px}
+h2 .muted{text-transform:none;letter-spacing:.02em;font-family:var(--sans);font-size:12px;opacity:.85}
+.panel{position:relative;background:linear-gradient(180deg,rgba(18,26,43,.92),rgba(14,20,32,.92));border:1px solid var(--border);border-radius:10px;padding:14px 16px;
+  transition:border-color .3s,box-shadow .3s,transform .3s;animation:fadeUp .6s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(var(--i,0)*70ms)}
+.panel:hover{border-color:rgba(53,199,242,.35);box-shadow:0 0 0 1px rgba(53,199,242,.08),0 8px 30px rgba(0,0,0,.35)}
+.panel > h2:first-child{margin-top:0}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+@keyframes rowIn{from{opacity:0;transform:translateX(-6px)}to{opacity:1;transform:none}}
+.grid{display:grid;gap:14px}.grid.two{grid-template-columns:1fr 1fr}.grid.three{grid-template-columns:repeat(3,1fr)}.grid.four{grid-template-columns:repeat(4,1fr)}
+table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:8px 8px;border-bottom:1px solid var(--border);vertical-align:middle}
+th{font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:500}
+tbody tr,table tr{animation:rowIn .45s ease both;animation-delay:calc(var(--r,0)*28ms)}
+tr:hover td{background:rgba(53,199,242,.05)}
+.mono{font-family:var(--mono)}.muted{color:var(--muted)}.small{font-size:12px}.right{text-align:right}
+.badge{display:inline-block;padding:2px 8px;border-radius:999px;font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.06em;font-weight:600;white-space:nowrap}
+.sev-critical{background:rgba(255,77,77,.15);color:var(--crit);border:1px solid var(--crit)}
+.sev-high{background:rgba(255,159,28,.15);color:var(--high);border:1px solid var(--high)}
+.sev-medium{background:rgba(245,197,24,.15);color:var(--med);border:1px solid var(--med)}
+.sev-low{background:rgba(46,204,113,.15);color:var(--low);border:1px solid var(--low)}
+.state{background:var(--panel2);color:var(--muted);border:1px solid var(--border)}
+.st-open,.st-new{color:var(--text)}.st-confirmed,.st-flagged{color:var(--crit);border-color:rgba(255,77,77,.5)}
+.st-dismissed{color:#5a6678}.st-watching{color:var(--accent);border-color:rgba(53,199,242,.4)}.st-long_watch{color:var(--muted)}
+.pill{background:var(--panel2);border:1px solid var(--border);border-radius:6px;padding:1px 6px;font-family:var(--mono);font-size:11px;color:var(--text);white-space:nowrap}
+/* signal pills: one neutral style for every group (the group is in the tooltip and the Explain table) */
+.pill[class*="g-"]{border-color:var(--border);color:#c9d3df}
+button,.btn{background:var(--panel2);color:var(--text);border:1px solid var(--border);border-radius:6px;padding:7px 12px;font:inherit;cursor:pointer;transition:all .2s}
+button:hover,.btn:hover{border-color:var(--accent);box-shadow:0 0 12px rgba(53,199,242,.2)}button.primary{background:rgba(53,199,242,.15);border-color:var(--accent);color:var(--accent2)}
+button.danger{border-color:var(--crit);color:var(--crit)}button.ok{border-color:var(--low);color:var(--low)}
+input,select,textarea{background:#0b1220;color:var(--text);border:1px solid var(--border);border-radius:6px;padding:7px 9px;font:inherit;width:100%;transition:border-color .2s,box-shadow .2s}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(53,199,242,.15)}
+/* keyboard users see where they are; mouse clicks do not get the ring */
+:focus-visible{outline:2px solid var(--accent2);outline-offset:2px;border-radius:4px}
+a:focus-visible,button:focus-visible,.btn:focus-visible{box-shadow:0 0 0 3px rgba(53,199,242,.25)}
+.skip{position:absolute;left:8px;top:-60px;z-index:100;padding:8px 14px;background:var(--panel2);border:1px solid var(--accent);border-radius:8px;color:var(--text);font-weight:600}
+.skip:focus{top:8px}
+/* the button variants every page uses */
+.btn.primary{background:rgba(53,199,242,.16);border-color:var(--accent);color:var(--accent2);font-weight:600}
+.btn.ghost,button.ghost{background:transparent}
+button.small,.btn.small{padding:4px 9px;font-size:12px;white-space:nowrap}
+button[disabled],.btn[aria-disabled=true]{opacity:.55;cursor:default;box-shadow:none}
+/* one message after a form (see _flash.html) */
+.flash{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:0 0 14px;padding:10px 14px;border:1px solid rgba(46,204,113,.5);border-radius:10px;background:rgba(46,204,113,.08);font-size:13.5px;animation:fadeUp .4s ease both}
+.flash .ic{width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:800;background:rgba(53,199,242,.15);color:var(--accent2);flex:none}
+.flash .ic.ok{background:rgba(46,204,113,.18);color:var(--low)}.flash .ic.undo{background:rgba(255,159,28,.18);color:var(--high)}
+.flash .t{flex:1;min-width:200px}.flash .undo{margin:0}.flash .x{margin-left:auto;padding:2px 8px;font-size:12px;border-color:transparent;color:var(--muted)}
+label{display:block;font-size:12px;color:var(--muted);margin:8px 0 4px;font-family:var(--mono);text-transform:uppercase;letter-spacing:.06em}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.kpi{position:relative;overflow:hidden;background:linear-gradient(180deg,rgba(18,26,43,.95),rgba(14,20,32,.95));border:1px solid var(--border);border-radius:10px;padding:12px 14px;
+  animation:fadeUp .55s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(var(--i,0)*55ms);transition:transform .25s,border-color .25s,box-shadow .25s}
+.kpi::after{content:"";position:absolute;right:-28px;top:-28px;width:86px;height:86px;border-radius:50%;background:radial-gradient(circle,rgba(53,199,242,.07),transparent 70%)}
+.kpi:hover{transform:translateY(-2px);border-color:rgba(53,199,242,.4);box-shadow:0 6px 24px rgba(0,0,0,.35)}
+.kpi .v{font-family:var(--display);font-size:34px;line-height:1;font-weight:700;letter-spacing:.02em}
+.kpi .l{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-top:4px}
+/* number colors carry meaning: severity only (critical / high / medium); every other number is plain */
+.kpi.crit .v{color:var(--crit)}.kpi.hi .v{color:var(--high)}.kpi.med .v{color:var(--med)}
+.kpi.ok .v,.kpi.cy .v,.kpi.vi .v,.kpi.mg .v{color:var(--text)}
+a.kpi{color:inherit;display:block}a.kpi.on{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent) inset}
+.ring{--c:var(--accent);width:96px;height:96px;border-radius:50%;background:conic-gradient(var(--c) calc(var(--p)*1%),#1E2A3D 0);display:grid;place-items:center;transition:--p 1.4s cubic-bezier(.2,.8,.2,1)}
+.ring>div{width:76px;height:76px;border-radius:50%;background:var(--panel);display:grid;place-items:center;font-family:var(--display);font-size:28px;font-weight:700}
+.ring.sm{width:38px;height:38px}.ring.sm>div{width:28px;height:28px;font-size:11px;font-family:var(--mono)}
+.bar{height:8px;background:#1E2A3D;border-radius:4px;overflow:hidden}.bar>i{display:block;height:100%;background:var(--accent);transition:width 1.3s cubic-bezier(.2,.8,.2,1)}
+.bar>i[data-w]{width:0}
+.scorebar{height:6px;width:90px;background:#1E2A3D;border-radius:3px;overflow:hidden;display:inline-block;vertical-align:middle;margin-left:8px}
+.scorebar>i{display:block;height:100%;width:0;border-radius:3px;background:rgba(230,237,245,.55);transition:width 1.3s cubic-bezier(.2,.8,.2,1)}
+.stack{display:flex;height:10px;border-radius:5px;overflow:hidden;background:#1E2A3D}.stack>i{display:block;height:100%;width:0;transition:width 1.3s cubic-bezier(.2,.8,.2,1)}
+.hist{display:flex;align-items:flex-end;gap:5px;height:110px;padding-bottom:18px}
+.hist i{flex:1;position:relative;border-radius:4px 4px 0 0;min-height:2px;height:0;transition:height 1.2s cubic-bezier(.2,.8,.2,1);background:linear-gradient(180deg,var(--c,var(--accent2)),rgba(53,199,242,.15))}
+.hist i span{position:absolute;bottom:-17px;left:0;right:0;text-align:center;font-size:10px;color:var(--muted);font-family:var(--mono)}
+.hist i b{position:absolute;top:-16px;left:0;right:0;text-align:center;font-size:10px;color:var(--text);font-family:var(--mono);font-weight:400}
+svg.donut{width:150px;height:150px;flex:none}svg.spark{width:100%;height:64px;display:block}
+.donut-wrap{display:flex;gap:16px;align-items:center}.legend{display:grid;gap:5px;font-size:12px}
+.legend div{display:flex;align-items:center;gap:8px}.legend i{width:9px;height:9px;border-radius:2px;flex:none}.legend b{margin-left:auto;font-family:var(--mono);font-weight:400;color:var(--muted)}
+.pulse{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--crit);box-shadow:0 0 0 0 rgba(255,77,77,.7);animation:pulse 1.6s infinite;vertical-align:middle}
+.pulse.cy{background:var(--accent);animation-name:pulsecy}.pulse.ok{background:var(--low);animation-name:pulseok}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(255,77,77,.7)}70%{box-shadow:0 0 0 10px rgba(255,77,77,0)}100%{box-shadow:0 0 0 0 rgba(255,77,77,0)}}
+@keyframes pulsecy{0%{box-shadow:0 0 0 0 rgba(53,199,242,.7)}70%{box-shadow:0 0 0 10px rgba(53,199,242,0)}100%{box-shadow:0 0 0 0 rgba(53,199,242,0)}}
+@keyframes pulseok{0%{box-shadow:0 0 0 0 rgba(46,204,113,.7)}70%{box-shadow:0 0 0 10px rgba(46,204,113,0)}100%{box-shadow:0 0 0 0 rgba(46,204,113,0)}}
+.sevrow td:first-child{box-shadow:inset 3px 0 0 var(--sc,var(--border))}
+.sevrow.critical{--sc:var(--crit)}.sevrow.high{--sc:var(--high)}.sevrow.medium{--sc:var(--med)}.sevrow.low{--sc:var(--low)}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border:1px solid var(--border);border-radius:999px;font-family:var(--mono);font-size:11px;color:var(--muted);cursor:pointer;background:var(--panel2);transition:all .2s;user-select:none}
+.chip i{display:none}.chip.on{color:var(--text);border-color:var(--accent);box-shadow:0 0 10px rgba(53,199,242,.18)}
+.radar{width:14px;height:14px;border-radius:50%;border:1px solid var(--accent);position:relative;display:inline-block;vertical-align:middle;overflow:hidden}
+.radar::after{content:"";position:absolute;inset:0;background:conic-gradient(rgba(53,199,242,.8),transparent 40%);animation:spin 1.2s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.error{color:var(--crit);border:1px solid var(--crit);background:rgba(255,77,77,.08);padding:8px 10px;border-radius:6px;margin-bottom:12px}
+.console{font-family:var(--mono);font-size:12px;background:#060910;border:1px solid var(--border);border-radius:8px;padding:12px;height:420px;overflow:auto;white-space:pre-wrap}
+.console .running{color:var(--accent)}.console .done{color:var(--low)}.console .error{color:var(--crit);border:0;background:none;padding:0;margin:0}.console .warn{color:var(--high)}
+.console div{animation:rowIn .3s ease both}
+.timeline{list-style:none;padding:0;margin:0}.timeline li{padding:6px 0 6px 14px;border-left:2px solid var(--border);position:relative;animation:fadeUp .5s ease both;animation-delay:calc(var(--r,0)*40ms)}
+.timeline li::before{content:"";position:absolute;left:-6px;top:11px;width:10px;height:10px;border-radius:50%;background:var(--accent);box-shadow:0 0 8px var(--accent)}
+.timeline li.changed::before{background:var(--high);box-shadow:0 0 8px var(--high)}
+img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:#000;image-rendering:pixelated}
+.thumb{width:64px;height:40px;object-fit:cover;border:1px solid var(--border);border-radius:4px;background:#000;transition:transform .25s,box-shadow .25s,filter .25s;position:relative;filter:saturate(.2) brightness(.8)}
+.thumb:hover{transform:scale(2.6);z-index:5;box-shadow:0 10px 30px rgba(0,0,0,.7);border-color:var(--accent);filter:none}
+.actions{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.fade{animation:fadeUp .6s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(var(--i,0)*70ms)}
+/* ---- responsive layer: grid children may shrink, wide tables scroll inside their own box ---- */
+.grid>*,.cols>*{min-width:0}
+.tw{overflow-x:auto;-webkit-overflow-scrolling:touch;max-width:100%;overscroll-behavior-x:contain}
+.tw>table{min-width:100%}
+header nav{display:flex;align-items:center;min-width:0}
+@media (max-width:1100px){.grid.four{grid-template-columns:1fr 1fr}}
+@media (max-width:900px){
+  .grid,.grid.two,.grid.three,.grid.four,.cols{grid-template-columns:1fr!important}
+  header{flex-wrap:wrap;gap:6px 14px;padding:10px 12px 0}
+  header nav{order:3;flex:1 0 100%;overflow-x:auto;scrollbar-width:none;white-space:nowrap;padding:4px 0 8px;
+    -webkit-mask-image:linear-gradient(90deg,#000 88%,transparent);mask-image:linear-gradient(90deg,#000 88%,transparent)}
+  header nav::-webkit-scrollbar{display:none}
+  header nav a{margin-right:18px;padding:6px 0}
+  header .who .email{display:none}
+  main{padding:14px 12px 28px}
+  h1{font-size:22px;line-height:1.2}
+  h1 .muted,h1 .small{display:block;margin-top:4px;font-size:12px;line-height:1.4}
+  .kpis{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+  .kpi{padding:10px 12px}.kpi .v{font-size:28px}
+  .panel{padding:12px}
+  h2{line-height:1.45}
+  th,td{padding:7px 6px}
+  .thumb:hover{transform:none}
+  .console{height:320px}
+  .pill{white-space:normal;overflow-wrap:anywhere;display:inline-block;max-width:100%}
+}
+@media (max-width:520px){
+  svg.donut{width:118px;height:118px}.donut-wrap{gap:12px}
+  .actions>div,.actions>input,.actions>select{flex:1 1 140px}
+}
+.help{display:inline-grid;place-items:center;width:15px;height:15px;margin-left:4px;border-radius:50%;border:1px solid var(--border);color:var(--muted);font:600 10px/1 var(--mono);text-decoration:none;cursor:help;position:relative;vertical-align:1px;text-transform:none;letter-spacing:0}
+.help:hover,.help:focus-visible{color:var(--accent2);border-color:var(--accent);outline:none}
+.help::after{content:attr(data-tip);display:none;position:absolute;left:50%;bottom:calc(100% + 8px);transform:translateX(-50%);width:max-content;max-width:min(320px,80vw);padding:8px 10px;border-radius:8px;background:#0b1220;border:1px solid var(--accent);color:var(--text);font:400 12px/1.45 var(--sans);text-align:left;white-space:normal;box-shadow:0 10px 30px rgba(0,0,0,.5);opacity:0;pointer-events:none;transition:opacity .15s;z-index:50}
+.help:hover::after,.help:focus-visible::after{display:block;opacity:1}
+.help[data-href]{cursor:pointer}
+@media (max-width:600px){.help::after{left:auto;right:-8px;transform:none}}
+.pill.cap{font-size:10px;color:var(--muted);border-color:var(--border);text-decoration:none;font-family:var(--mono);letter-spacing:.02em;vertical-align:2px}
+.pill.cap:hover{color:var(--accent2);border-color:var(--accent)}
+.intro{margin:4px 0 14px;max-width:980px;color:var(--muted);font-size:13px;line-height:1.55}
+.crumbs{display:flex;flex-wrap:wrap;align-items:center;gap:4px;font-size:12px;color:var(--muted);margin:0 0 8px;font-family:var(--mono)}
+.crumbs a{color:var(--accent2);text-decoration:none}.crumbs a:hover{text-decoration:underline}.crumbs .sep{opacity:.55;margin:0 4px}.crumbs .cur{color:var(--text)}
+.crumbs .side{margin-left:auto;display:flex;flex-wrap:wrap;gap:4px 12px}.crumbs .side a::before{content:"→ ";opacity:.6}
+.kpi.lnk{text-decoration:none;color:inherit;display:block}.kpi.lnk:hover{border-color:var(--accent)}
+@media (max-width:700px){.crumbs .side{margin-left:0;width:100%}}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header>
+  <a class="logo" href="/ui/dashboard/">BrandWatch</a>
+  
+  <nav>
+    <a href="/ui/dashboard/" class="">Dashboard</a>
+    <a href="/ui/how-it-works/" class="">How it works</a>
+    <a href="/ui/brands/" class="">Brands &amp; Scans</a>
+    <a href="/ui/findings/" class="active">Findings</a>
+    <a href="/ui/candidates/" class="">Watchlist</a>
+    <a href="/ui/campaigns/" class="">Attack infrastructure</a>
+    <a href="/ui/takedowns/" class="">Takedowns</a>
+    <a href="/ui/activity/" class="">Activity</a>
+    <a href="/ui/settings/" class="">Settings</a>
+    <a href="/docs" target="_blank">API</a>
+  </nav>
+  <span class="who"><span class="email">admin · </span>admin · <a href="/ui/logout">logout</a></span>
+  
+</header>
+<main id="main">
+
+
+
+
+
+
+
+
+<style>
+  .hbar{display:grid;grid-template-columns:96px 1fr 34px;gap:8px;align-items:center;margin:7px 0;font-size:12px}
+  .hbar .bar{height:6px}.hbar b{font-family:var(--mono);font-weight:400;color:var(--muted);text-align:right}
+  .fhead{display:flex;align-items:flex-end;gap:14px;flex-wrap:wrap;margin-bottom:8px}
+  .fhead h1{margin:0}
+  .fhead .keys{margin-left:auto}
+  .qtiles{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 12px}
+  .qtiles a{display:flex;flex-direction:column;gap:2px;min-width:96px;padding:8px 12px;border:1px solid var(--border);border-radius:10px;background:var(--panel2);color:var(--text);text-decoration:none}
+  .qtiles a:hover{border-color:var(--accent)}.qtiles a.on{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+  .qtiles .v{font-family:var(--display);font-size:22px;font-weight:700;line-height:1}
+  .qtiles .l{font-size:11.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;font-family:var(--mono)}
+  .qtiles .crit .v{color:var(--crit)}.qtiles .hi .v{color:var(--high)}.qtiles .med .v{color:var(--med)}.qtiles .ok .v{color:var(--low)}.qtiles .cy .v{color:var(--accent2)}
+  .filters{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px 10px;align-items:end;margin-bottom:8px}
+  .filters label{display:block;font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:3px}
+  .filters .wide{grid-column:span 2}
+  .filters .go{display:flex;gap:6px}
+  .bchips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+  .bchips a{padding:4px 12px;font-size:12.5px}.bchips a.on{border-color:var(--accent);color:var(--accent2)}
+  .shotsw{display:flex;gap:6px;align-items:center;text-transform:none;letter-spacing:0;font-size:13px;color:var(--text);cursor:pointer;margin-top:6px}
+  .shotsw input{width:auto;margin:0}
+  #ftable:not(.shots) .shotcol{display:none}
+  #ftable tr.cur td{background:rgba(53,199,242,.09);box-shadow:inset 3px 0 0 var(--accent)}
+  .bigshot{width:220px;height:138px;object-fit:cover;object-position:top;border:1px solid var(--border);border-radius:6px;background:#000;cursor:zoom-in;display:block}
+  .noshot{width:220px;height:138px;border:1px dashed var(--border);border-radius:6px;display:flex;align-items:center;justify-content:center;text-align:center;padding:10px;font-size:11.5px;color:var(--muted)}
+  .selcol{width:28px}
+  .selcol input{width:16px;height:16px;margin:0;cursor:pointer}
+  /* the bulk bar sits under the sticky header (z-index 20 in main{z-index:1} slid under it before) */
+  .bulkbar{position:sticky;top:calc(var(--hdr,56px) + 8px);z-index:19;display:grid;grid-template-columns:auto 1fr;gap:6px 10px;align-items:center;padding:8px 12px;margin-bottom:8px;border:1px solid var(--accent);border-radius:10px;background:#0a121e;box-shadow:0 8px 24px rgba(0,0,0,.45)}
+  .bulkbar[hidden]{display:none}
+  .bulkbar .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  .bulkbar input[name=reason]{flex:1;min-width:180px;margin:0}
+  .bulkbar select{width:auto}
+  .bulkbar .chk{display:flex;gap:6px;align-items:center;font-size:12.5px;white-space:nowrap}.bulkbar .chk input{width:auto;margin:0}
+  .fstats summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:8px;margin:18px 0 8px}
+  .fstats summary::-webkit-details-marker{display:none}
+  .fstats summary h2{margin:0}
+  .fstats summary .tog{font-size:12px;color:var(--accent)}
+  .fstats[open] summary .tog.o{display:none}.fstats:not([open]) summary .tog.c{display:none}
+  .keys{display:inline-flex;gap:6px;align-items:center;font-size:12px;color:var(--muted)}
+  kbd{font-family:var(--mono);font-size:11px;border:1px solid var(--border);border-bottom-width:2px;border-radius:4px;padding:0 5px;background:var(--panel2);color:var(--text)}
+  #keysheet{position:fixed;inset:0;z-index:70;background:rgba(3,6,10,.8);display:flex;align-items:center;justify-content:center;padding:16px}
+  #keysheet[hidden]{display:none}
+  #keysheet .inner{background:linear-gradient(180deg,#121c2b,#0c131e);border:1px solid var(--border);border-radius:14px;padding:18px 22px;width:min(440px,100%)}
+  #keysheet table td{padding:5px 8px;border:0}#keysheet td:first-child{white-space:nowrap}
+  #shotbox{position:fixed;inset:0;z-index:60;background:rgba(3,6,10,.85);display:flex;align-items:center;justify-content:center;padding:20px}
+  #shotbox[hidden]{display:none}
+  #shotbox .inner{max-width:min(1200px,96vw);max-height:92vh;display:flex;flex-direction:column;gap:8px}
+  #shotbox img{max-width:100%;max-height:82vh;object-fit:contain;border:1px solid var(--border);border-radius:8px;background:#000}
+  #shotbox .cap{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+  #shotbox .cap button{margin-left:auto}
+  .pager{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:10px}
+  .pager .off{opacity:.4;pointer-events:none}
+  @media (max-width:700px){
+    .fhead .keys{display:none}  /* no keyboard on a phone */
+    .filters{grid-template-columns:1fr 1fr}.filters .wide{grid-column:span 2}
+    .qtiles a{min-width:calc(33% - 6px)}
+    .bulkbar{top:calc(var(--hdr,56px) + 4px);grid-template-columns:1fr}
+    #ftable th:nth-child(6),#ftable td:nth-child(6),#ftable th:nth-child(7),#ftable td:nth-child(7){display:none}
+  }
+</style>
+<div class="fhead">
+  <h1>FINDINGS <span class="muted">· 0 match</span></h1>
+  <span class="keys" title="keyboard shortcuts"><kbd>j</kbd><kbd>k</kbd> move · <kbd>x</kbd> select · <kbd>c</kbd> confirm · <kbd>d</kbd> dismiss · <kbd>/</kbd> search · <button type="button" id="keysbtn" class="small" aria-label="keyboard shortcuts">?</button></span>
+</div>
+<p class="intro">A finding is a look-alike that scored Medium or higher and waits for an analyst&#39;s verdict. Everything below the threshold stays on the Watchlist and is re-checked on a schedule.</p>
+
+
+<div class="qtiles" aria-label="Queue">
+  <a class="cy " href="?state=open&amp;brand_id=f46bffed-4795-4cdd-ad8f-abd3d26fcc60"><span class="v" data-count="0">0</span><span class="l">awaiting verdict</span></a>
+  <a class="crit on" href="?state=open&severity=critical&amp;brand_id=f46bffed-4795-4cdd-ad8f-abd3d26fcc60"><span class="v" data-count="0">0</span><span class="l">critical</span></a>
+  <a class="hi " href="?state=open&severity=high&amp;brand_id=f46bffed-4795-4cdd-ad8f-abd3d26fcc60"><span class="v" data-count="0">0</span><span class="l">high</span></a>
+  <a class="med " href="?state=open&severity=medium&amp;brand_id=f46bffed-4795-4cdd-ad8f-abd3d26fcc60"><span class="v" data-count="0">0</span><span class="l">medium</span></a>
+  <a class="" href="?state=open&since=24h&amp;brand_id=f46bffed-4795-4cdd-ad8f-abd3d26fcc60"><span class="v" data-count="0">0</span><span class="l">new in 24h</span></a>
+  <a class="ok " href="?state=confirmed&amp;brand_id=f46bffed-4795-4cdd-ad8f-abd3d26fcc60"><span class="v" data-count="7">0</span><span class="l">confirmed</span></a>
+  <a class="" href="?state=dismissed&amp;brand_id=f46bffed-4795-4cdd-ad8f-abd3d26fcc60"><span class="v" data-count="0">0</span><span class="l">dismissed</span></a>
+</div>
+
+<div class="ftable-wrap">
+  <div class="panel" style="padding-top:10px;overflow-x:auto">
+    
+    
+    <div class="bchips">
+      <a class="btn " href="/ui/findings/_7a6d611c38/">All brands <b>8</b></a>
+      <a class="btn " href="/ui/findings/_a7957a9361/"><bdi>ShopNova</bdi> <b>7</b></a><a class="btn " href="/ui/findings/_cfcac7106b/"><bdi>ShopNova · Israel</bdi> <b>2</b></a><a class="btn on" href="/ui/findings/_479dd49a2e/"><bdi>CoinPilot</bdi> <b>0</b></a><a class="btn " href="/ui/findings/_15e42f5e2c/"><bdi>VaultPay</bdi> <b>1</b></a>
+    </div>
+    <form method="get" action="/ui/findings/" class="filters" id="filters">
+      <input type="hidden" name="brand_id" value="f46bffed-4795-4cdd-ad8f-abd3d26fcc60">
+      <div class="wide"><label for="q">Search host</label><input id="q" name="q" value="" placeholder="part of a host name, e.g. login" autocomplete="off" maxlength="120"></div>
+      <div><label for="f-state">State</label><select id="f-state" name="state"><option value="">all</option><option value="open" selected>awaiting verdict</option><option value="confirmed" >confirmed phishing</option><option value="dismissed" >dismissed</option></select></div>
+      <div><label for="f-sev">Severity</label><select id="f-sev" name="severity"><option value="">all</option><option value="low" >low</option><option value="medium" >medium</option><option value="high" >high</option><option value="critical" selected>critical</option></select></div>
+      <div><label for="f-kind">Kind</label><select id="f-kind" name="kind"><option value="">all</option><option value="phishing" >phishing</option><option value="shop" >suspicious shop</option><option value="social" >fake social account</option><option value="ai_answer" >AI answer</option></select></div>
+      <div><label for="f-since">Found</label><select id="f-since" name="since"><option value="">any time</option><option value="24h" >last 24 hours</option><option value="7d" >last 7 days</option><option value="visit" >since my last visit</option></select></div>
+      <div><label for="f-sort">Sort by</label><select id="f-sort" name="sort"><option value="severity" selected>severity, then score</option><option value="score" >score</option><option value="newest" >newest first</option><option value="oldest" >oldest first</option><option value="confidence" >confidence</option></select></div>
+      <div class="go"><button type="submit" class="primary">Apply</button><a class="btn" href="/ui/findings/_9ffb45703e/" title="back to the open queue">Reset</a></div>
+      <div><label class="shotsw" title="a screenshot next to every site (off by default: the list stays short)"><input type="checkbox" id="t-shots"> show screenshots</label></div>
+    </form>
+    
+    
+    
+    
+    
+    
+    <p class="muted">Nothing matches these filters. <a href="/ui/findings/_9ffb45703e/">Back to the open queue</a>.</p>
+    
+    
+  </div>
+</div>
+
+<details class="fstats" id="fstats">
+  <summary><h2 style="margin:0">Statistics <span class="muted">· across open findings of the chosen brand</span></h2><span class="tog o">show ▾</span><span class="tog c">hide ▴</span></summary>
+<div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(260px,1fr))">
+  <div class="panel">
+    <h2>Open by severity <span class="muted">· Medium ≥ 25 · High ≥ 50 · Critical ≥ 75</span></h2>
+    <div class="donut-wrap">
+      <svg class="donut" data-donut='[]' data-center="open"></svg>
+      <div class="legend">
+        <span class="muted small">no open findings</span></div>
+    </div>
+  </div>
+  <div class="panel">
+    <h2>Why things are flagged <span class="muted">· signals fired per group across open findings</span></h2>
+    
+    
+    <div class="hbar"><span>Visual</span><div class="bar"><i data-w="100"></i></div><b>28</b></div>
+    
+    <div class="hbar"><span>Infrastructure</span><div class="bar"><i data-w="96"></i></div><b>27</b></div>
+    
+    <div class="hbar"><span>Behaviour</span><div class="bar"><i data-w="75"></i></div><b>21</b></div>
+    
+    <div class="hbar"><span>Identity</span><div class="bar"><i data-w="32"></i></div><b>9</b></div>
+    
+    <div class="hbar"><span>Reputation</span><div class="bar"><i data-w="7"></i></div><b>2</b></div>
+    
+    
+  </div>
+  <div class="panel">
+    <h2>Risk score distribution</h2>
+    <div class="hist">
+      
+      <i data-h="0" style="--c:#2ECC71" title="0–9: 0"><span>0</span></i>
+      <i data-h="0" style="--c:#2ECC71" title="10–19: 0"><span>10</span></i>
+      <i data-h="0" style="--c:#F5C518" title="20–29: 0"><span>20</span></i>
+      <i data-h="0" style="--c:#F5C518" title="30–39: 0"><span>30</span></i>
+      <i data-h="0" style="--c:#F5C518" title="40–49: 0"><span>40</span></i>
+      <i data-h="0" style="--c:#FF9F1C" title="50–59: 0"><span>50</span></i>
+      <i data-h="0" style="--c:#FF9F1C" title="60–69: 0"><span>60</span></i>
+      <i data-h="100" style="--c:#FF4D4D" title="70–79: 7"><b>7</b><span>70</span></i>
+      <i data-h="0" style="--c:#FF4D4D" title="80–89: 0"><span>80</span></i>
+      <i data-h="0" style="--c:#FF4D4D" title="90–99: 0"><span>90</span></i>
+    </div>
+  </div>
+  <div class="panel">
+    <h2>New findings · 14 days</h2>
+    <svg class="spark" data-spark='{"series": [{"color": "#35C7F2", "values": [0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 0, 0, 0, 0]}]}'></svg>
+    <div class="small muted" style="display:flex;justify-content:space-between;margin-top:6px"><span>14 days ago</span><span>today · 0</span></div>
+    <h2>Surface <span class="muted">· where the brand appears: domain name · subdomain · URL path</span></h2>
+    <div class="stack"><i data-w="100.0" style="background:#35C7F2" title="domain name: 7"></i></div>
+    <div class="small muted" style="margin-top:6px"><span style="color:#35C7F2">■</span> domain name 7 &nbsp;</div>
+  </div>
+  <div class="panel">
+    <h2>Top fired signals</h2>
+    
+    <div style="display:grid;grid-template-columns:1fr 34px;gap:8px;align-items:center;margin:6px 0">
+      <div><div class="small" title="affiliate_redirect">forwards with an affiliate id</div><div class="bar" style="height:6px;margin-top:3px"><i data-w="100"></i></div></div>
+      <div class="mono small right">7</div>
+    </div>
+    
+    <div style="display:grid;grid-template-columns:1fr 34px;gap:8px;align-items:center;margin:6px 0">
+      <div><div class="small" title="redirect_via_third_party">forwards through another host</div><div class="bar" style="height:6px;margin-top:3px"><i data-w="100"></i></div></div>
+      <div class="mono small right">7</div>
+    </div>
+    
+    <div style="display:grid;grid-template-columns:1fr 34px;gap:8px;align-items:center;margin:6px 0">
+      <div><div class="small" title="favicon_exact">identical favicon</div><div class="bar" style="height:6px;margin-top:3px"><i data-w="100"></i></div></div>
+      <div class="mono small right">7</div>
+    </div>
+    
+    <div style="display:grid;grid-template-columns:1fr 34px;gap:8px;align-items:center;margin:6px 0">
+      <div><div class="small" title="screenshot_similarity_ge_90">looks like the real site</div><div class="bar" style="height:6px;margin-top:3px"><i data-w="100"></i></div></div>
+      <div class="mono small right">7</div>
+    </div>
+    
+    <div style="display:grid;grid-template-columns:1fr 34px;gap:8px;align-items:center;margin:6px 0">
+      <div><div class="small" title="palette_match">same colours</div><div class="bar" style="height:6px;margin-top:3px"><i data-w="100"></i></div></div>
+      <div class="mono small right">7</div>
+    </div>
+    
+    <div style="display:grid;grid-template-columns:1fr 34px;gap:8px;align-items:center;margin:6px 0">
+      <div><div class="small" title="login_dom_similarity">cloned login form</div><div class="bar" style="height:6px;margin-top:3px"><i data-w="100"></i></div></div>
+      <div class="mono small right">7</div>
+    </div>
+    
+    <div style="display:grid;grid-template-columns:1fr 34px;gap:8px;align-items:center;margin:6px 0">
+      <div><div class="small" title="credential_form">asks for a password</div><div class="bar" style="height:6px;margin-top:3px"><i data-w="100"></i></div></div>
+      <div class="mono small right">7</div>
+    </div>
+    
+    <div style="display:grid;grid-template-columns:1fr 34px;gap:8px;align-items:center;margin:6px 0">
+      <div><div class="small" title="brand_keywords_in_content">brand words in the text</div><div class="bar" style="height:6px;margin-top:3px"><i data-w="100"></i></div></div>
+      <div class="mono small right">7</div>
+    </div>
+    
+    <div style="display:grid;grid-template-columns:1fr 34px;gap:8px;align-items:center;margin:6px 0">
+      <div><div class="small" title="cohosted_with_known_phish">shares a server with phishing</div><div class="bar" style="height:6px;margin-top:3px"><i data-w="100"></i></div></div>
+      <div class="mono small right">7</div>
+    </div>
+    
+    <div style="display:grid;grid-template-columns:1fr 34px;gap:8px;align-items:center;margin:6px 0">
+      <div><div class="small" title="cert_shared_with_phish">shares a certificate with phishing</div><div class="bar" style="height:6px;margin-top:3px"><i data-w="100"></i></div></div>
+      <div class="mono small right">7</div>
+    </div>
+    
+    
+    <p class="small muted" style="margin-top:14px">Every signal belongs to one of 7 groups, and each group has a points cap so correlated evidence is not counted twice. Hover a signal for its evidence and points. <a href="/ui/how-it-works/#g-signal">How scoring works →</a></p>
+  </div>
+</div>
+</details>
+
+<div id="shotbox" hidden><div class="inner"><img alt=""><div class="cap"><b class="mono"></b> <a>open the finding →</a> <button type="button" class="small">close ✕</button></div></div></div>
+<div id="keysheet" hidden role="dialog" aria-modal="true" aria-labelledby="keysheet-t"><div class="inner">
+  <h3 id="keysheet-t" style="margin:0 0 8px">Keyboard shortcuts</h3>
+  <table>
+    <tr><td><kbd>j</kbd> / <kbd>k</kbd></td><td>next / previous finding</td></tr>
+    <tr><td><kbd>Enter</kbd></td><td>open the highlighted finding</td></tr>
+    <tr><td><kbd>x</kbd></td><td>select / unselect it</td></tr>
+    <tr><td><kbd>c</kbd></td><td>confirm the selected (or highlighted) findings as phishing</td></tr>
+    <tr><td><kbd>d</kbd></td><td>dismiss them — the bar asks for the reason</td></tr>
+    <tr><td><kbd>/</kbd></td><td>search by host</td></tr>
+    <tr><td><kbd>s</kbd></td><td>show / hide the statistics</td></tr>
+    <tr><td><kbd>?</kbd></td><td>this sheet · <kbd>Esc</kbd> closes it</td></tr>
+  </table>
+  <div style="text-align:right;margin-top:10px"><button type="button" class="small" id="keysclose">close</button></div>
+</div></div>
+<script>
+(function(){
+  // screenshots next to every site: a view the analyst switches on (remembered in this browser), off by default
+  const table = document.getElementById('ftable'), sw = document.getElementById('t-shots');
+  const showShots = on => { if (!table) return; table.classList.toggle('shots', on); if (on) table.querySelectorAll('img.bigshot[data-src]').forEach(i => { i.src = i.dataset.src; i.removeAttribute('data-src'); }); };
+  let on = false; try { on = localStorage.getItem('bw-findings-shots') === '1'; } catch (e) { /* private window */ }
+  if (sw) { sw.checked = on; sw.addEventListener('change', () => { showShots(sw.checked); try { localStorage.setItem('bw-findings-shots', sw.checked ? '1' : '0'); } catch (e) { /* ignore */ } }); }
+  showShots(on);
+  const box = document.getElementById('shotbox');
+  if (table && box) {
+    table.addEventListener('click', ev => { const im = ev.target.closest('img.bigshot'); if (!im) return; box.querySelector('img').src = im.src; box.querySelector('b').textContent = im.dataset.host; box.querySelector('a').href = im.dataset.href; box.hidden = false; });
+    box.addEventListener('click', ev => { if (ev.target === box || ev.target.closest('button')) box.hidden = true; });
+  }
+  // the statistics fold away; the choice is remembered in this browser
+  const st = document.getElementById('fstats');
+  if (st) { try { st.open = localStorage.getItem('bw-findings-stats') === '1'; } catch (e) { /* ignore */ }
+    st.addEventListener('toggle', () => { try { localStorage.setItem('bw-findings-stats', st.open ? '1' : '0'); } catch (e) { /* ignore */ } }); }
+  // one verdict for many: tick the rows, then Confirm phishing or Not phishing
+  const bar = document.getElementById('bulkform'), all = document.getElementById('selall');
+  const sels = () => [...document.querySelectorAll('#ftable .sel')];
+  const count = () => { const n = document.querySelectorAll('.sel:checked').length; if (bar) { bar.hidden = n === 0; document.getElementById('bulkn').textContent = n + ' selected'; } if (all) { const v = sels(); all.checked = v.length > 0 && v.every(c => c.checked); } };
+  sels().forEach(c => c.addEventListener('change', count));
+  if (all) all.addEventListener('change', () => { sels().forEach(c => { c.checked = all.checked; }); count(); });
+  const clear = document.getElementById('bulkclear'); if (clear) clear.addEventListener('click', () => { document.querySelectorAll('.sel:checked').forEach(c => { c.checked = false; }); count(); });
+  count();
+  // keyboard: j/k move a highlight, x selects, c / d give the verdict through the bulk bar, / searches, ? explains
+  const rows = () => [...document.querySelectorAll('#ftable tbody tr[data-id]')];
+  let cur = -1;
+  const setCur = i => { const r = rows(); if (!r.length) return; cur = Math.max(0, Math.min(r.length - 1, i)); r.forEach((tr, k) => tr.classList.toggle('cur', k === cur)); r[cur].scrollIntoView({block: 'nearest'}); };
+  const sheet = document.getElementById('keysheet'), kb = document.getElementById('keysbtn'), kc = document.getElementById('keysclose');
+  const toggleSheet = v => { if (sheet) sheet.hidden = v === undefined ? !sheet.hidden : !v; };
+  if (kb) kb.addEventListener('click', () => toggleSheet()); if (kc) kc.addEventListener('click', () => toggleSheet(false));
+  if (sheet) sheet.addEventListener('click', ev => { if (ev.target === sheet) toggleSheet(false); });
+  const typing = () => { const a = document.activeElement; return a && (a.tagName === 'INPUT' || a.tagName === 'SELECT' || a.tagName === 'TEXTAREA' || a.isContentEditable); };
+  const verdict = action => { if (!bar) return; const r = rows();
+    if (!document.querySelector('.sel:checked') && cur >= 0) { const c = r[cur].querySelector('.sel'); if (c) { c.checked = true; count(); } }
+    if (!document.querySelector('.sel:checked')) return;
+    if (action === 'dismiss') { bar.querySelector('input[name=reason]').focus(); return; }  // the reason first; Enter sends it
+    bar.querySelector('button[value=confirm]').click(); };
+  document.addEventListener('keydown', ev => {
+    if (ev.key === 'Escape') { if (box) box.hidden = true; toggleSheet(false); return; }
+    if (ev.ctrlKey || ev.metaKey || ev.altKey) return;
+    if (typing()) { if (ev.key === 'Enter' && ev.target === bar?.querySelector('input[name=reason]')) { ev.preventDefault(); bar.querySelector('button[value=dismiss]').click(); } return; }
+    if (sheet && !sheet.hidden && ev.key !== '?') return;
+    switch (ev.key) {
+      case 'j': case 'ArrowDown': if (table) { ev.preventDefault(); setCur(cur + 1); } break;
+      case 'k': case 'ArrowUp': if (table) { ev.preventDefault(); setCur(cur - 1); } break;
+      case 'x': if (cur >= 0) { const c = rows()[cur].querySelector('.sel'); if (c) { c.checked = !c.checked; count(); } } break;
+      case 'Enter': if (cur >= 0) { const a = rows()[cur].querySelector('a.flink'); if (a) location.href = a.href; } break;
+      case 'c': verdict('confirm'); break;
+      case 'd': verdict('dismiss'); break;
+      case '/': { const q = document.getElementById('q'); if (q) { ev.preventDefault(); q.focus(); q.select(); } break; }
+      case 's': if (st) st.open = !st.open; break;
+      case '?': ev.preventDefault(); toggleSheet(); break;
+    }
+  });
+})();
+</script>
+
+</main>
+<script>
+/* A form is sent once: a double click (or Enter twice) queued two identical scans, one of which never ran.
+   Every scan form and every form marked data-busy is guarded; a data-busy form also disables the button that sent it
+   and shows "Working…" (data-busy="text" for other words) until the answer arrives.
+   Only a submit that really went out counts — a confirm dialog cancels the first one and sends it again itself. */
+(function(){
+  const once = f => f.hasAttribute('data-busy') || /\/(scan|scan-urls)$/.test(f.getAttribute('action') || '');
+  document.addEventListener('submit', e => { const f = e.target; if (once(f) && f.__sentAt && Date.now() - f.__sentAt < 4000) { e.preventDefault(); e.stopImmediatePropagation(); } }, true);
+  // read defaultPrevented after every listener ran (the confirm dialog's included), not before them
+  document.addEventListener('submit', e => { const f = e.target, b = e.submitter; if (!once(f)) return;
+    setTimeout(() => { if (e.defaultPrevented) return; f.__sentAt = Date.now();
+      if (f.hasAttribute('data-busy') && b && b.tagName === 'BUTTON') { b.disabled = true; b.dataset.was = b.textContent; b.textContent = f.getAttribute('data-busy') || 'Working…';
+        setTimeout(() => { b.disabled = false; b.textContent = b.dataset.was; }, 30000); } }, 0); });
+  // the sticky header's height, for anything that sticks under it
+  const hdr = document.querySelector('header'); const setH = () => document.documentElement.style.setProperty('--hdr', (hdr ? hdr.offsetHeight : 56) + 'px');
+  setH(); window.addEventListener('resize', setH);
+  // server timestamps are UTC: <time datetime="…" data-local> (the |ts filter) and [data-local="…"] show the viewer's local time
+  const utc = iso => /T\d\d:\d\d/.test(iso) && !/(Z|[+-]\d\d:?\d\d)$/.test(iso) ? iso + 'Z' : iso;
+  const fmt = new Intl.DateTimeFormat(undefined, {year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'});
+  document.querySelectorAll('[data-local]').forEach(el => { const raw = el.getAttribute('datetime') || el.dataset.local; if (!raw) return;
+    const d = new Date(utc(raw)); if (isNaN(d)) return; el.textContent = fmt.format(d); if (!el.title) el.title = raw.replace('T', ' ').slice(0, 19) + ' UTC'; });
+})();
+</script>
+<script>
+/* BrandWatch motion layer: count-ups, staggered entrances, animated bars / rings / histograms,
+   and auto-drawn donut + sparkline charts from data-* attributes. */
+(function(){
+  const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // wide tables scroll inside their own box instead of stretching the page
+  document.querySelectorAll('main table').forEach(t => { if (t.parentElement.classList.contains('tw')) return;
+    const w = document.createElement('div'); w.className = 'tw'; t.parentNode.insertBefore(w, t); w.appendChild(t); });
+  // keep the active tab visible in the scrollable mobile nav
+  const act = document.querySelector('header nav a.active'); if (act && act.scrollIntoView) act.scrollIntoView({block: 'nearest', inline: 'center'});
+  // stagger entrances
+  document.querySelectorAll('.kpis').forEach(g => [...g.children].forEach((el, i) => el.style.setProperty('--i', i)));
+  document.querySelectorAll('main .panel').forEach((el, i) => el.style.setProperty('--i', Math.min(i, 12)));
+  document.querySelectorAll('table').forEach(t => [...t.querySelectorAll('tr')].forEach((tr, i) => tr.style.setProperty('--r', Math.min(i, 30))));
+  document.querySelectorAll('.timeline').forEach(t => [...t.children].forEach((li, i) => li.style.setProperty('--r', Math.min(i, 30))));
+  // count-up numbers
+  const fmt = v => Number.isInteger(v) ? v.toLocaleString('en-US') : v.toFixed(1);
+  document.querySelectorAll('[data-count]').forEach(el => {
+    const target = parseFloat(el.dataset.count) || 0, suffix = el.dataset.suffix || '';
+    if (reduce) { el.textContent = fmt(target) + suffix; return; }
+    const t0 = performance.now(), dur = 1100 + Math.min(900, target * 4);
+    const tick = t => { const k = Math.min(1, (t - t0) / dur), e = 1 - Math.pow(1 - k, 3);
+      el.textContent = fmt(Number.isInteger(target) ? Math.round(target * e) : target * e) + suffix; if (k < 1) requestAnimationFrame(tick); };
+    requestAnimationFrame(tick);
+    setTimeout(() => { el.textContent = fmt(target) + suffix; }, dur + 400);  // final value even if rAF is paused
+  });
+  // grow bars, histograms, rings after first paint
+  const later = fn => { let ran = false; const go = () => { if (!ran) { ran = true; fn(); } };
+    requestAnimationFrame(() => requestAnimationFrame(go)); setTimeout(go, 350); };
+  const grow = () => {
+    document.querySelectorAll('[data-w]').forEach(el => el.style.width = Math.max(0, Math.min(100, +el.dataset.w)) + '%');
+    document.querySelectorAll('[data-h]').forEach(el => el.style.height = Math.max(2, Math.min(100, +el.dataset.h)) + '%');
+    document.querySelectorAll('[data-p]').forEach(el => el.style.setProperty('--p', +el.dataset.p));
+  };
+  later(grow);  // rAF is paused in hidden tabs: later() also has a timer fallback
+  // donuts: <svg class="donut" data-donut='[{"label","value","color"}]' data-center="label">
+  const NS = 'http://www.w3.org/2000/svg';
+  document.querySelectorAll('svg.donut[data-donut]').forEach(svg => {
+    const segs = JSON.parse(svg.dataset.donut || '[]'), total = segs.reduce((a, s) => a + s.value, 0);
+    svg.setAttribute('viewBox', '0 0 120 120');
+    const r = 46, C = 2 * Math.PI * r; let off = 0;
+    const bg = document.createElementNS(NS, 'circle'); bg.setAttribute('cx', 60); bg.setAttribute('cy', 60); bg.setAttribute('r', r);
+    bg.setAttribute('fill', 'none'); bg.setAttribute('stroke', '#1E2A3D'); bg.setAttribute('stroke-width', 13); svg.appendChild(bg);
+    segs.forEach((s, i) => {
+      const len = total ? s.value / total * C : 0, c = document.createElementNS(NS, 'circle');
+      c.setAttribute('cx', 60); c.setAttribute('cy', 60); c.setAttribute('r', r); c.setAttribute('fill', 'none');
+      c.setAttribute('stroke', s.color); c.setAttribute('stroke-width', 13); c.setAttribute('stroke-linecap', 'butt');
+      c.setAttribute('transform', 'rotate(-90 60 60)'); c.setAttribute('stroke-dasharray', `0 ${C}`); c.setAttribute('stroke-dashoffset', -off);
+      c.style.transition = `stroke-dasharray 1.1s cubic-bezier(.2,.8,.2,1) ${i * 120}ms`; c.style.filter = `drop-shadow(0 0 4px ${s.color}66)`;
+      const title = document.createElementNS(NS, 'title'); title.textContent = `${s.label}: ${s.value}`; c.appendChild(title);
+      svg.appendChild(c); off += len;
+      later(() => c.setAttribute('stroke-dasharray', `${Math.max(0, len - 1.5)} ${C}`));
+    });
+    const t1 = document.createElementNS(NS, 'text'); t1.setAttribute('x', 60); t1.setAttribute('y', 62); t1.setAttribute('text-anchor', 'middle');
+    t1.setAttribute('fill', '#E6EDF5'); t1.setAttribute('font-family', 'Rajdhani, monospace'); t1.setAttribute('font-size', 26); t1.setAttribute('font-weight', 700); t1.textContent = total;
+    const t2 = document.createElementNS(NS, 'text'); t2.setAttribute('x', 60); t2.setAttribute('y', 78); t2.setAttribute('text-anchor', 'middle');
+    t2.setAttribute('fill', '#8A97A8'); t2.setAttribute('font-family', 'JetBrains Mono, monospace'); t2.setAttribute('font-size', 7.5); t2.textContent = (svg.dataset.center || 'total').toUpperCase();
+    svg.appendChild(t1); svg.appendChild(t2);
+  });
+  // sparklines: <svg class="spark" data-spark='{"series":[{"values":[...],"color":"#..."}]}'>
+  document.querySelectorAll('svg.spark[data-spark]').forEach(svg => {
+    const spec = JSON.parse(svg.dataset.spark || '{}'), series = spec.series || [];
+    const W = 300, H = 64, mx = Math.max(1, ...series.flatMap(s => s.values));
+    svg.setAttribute('viewBox', `0 0 ${W} ${H}`); svg.setAttribute('preserveAspectRatio', 'none');
+    series.forEach((s, si) => {
+      const n = s.values.length, pts = s.values.map((v, i) => [n > 1 ? i / (n - 1) * W : 0, H - 4 - v / mx * (H - 10)]);
+      const d = pts.map((p, i) => (i ? 'L' : 'M') + p[0].toFixed(1) + ',' + p[1].toFixed(1)).join(' ');
+      const id = 'g' + Math.random().toString(36).slice(2);
+      const defs = document.createElementNS(NS, 'defs'); defs.innerHTML = `<linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${s.color}" stop-opacity=".35"/><stop offset="1" stop-color="${s.color}" stop-opacity="0"/></linearGradient>`;
+      svg.appendChild(defs);
+      if (si === 0) { const area = document.createElementNS(NS, 'path'); area.setAttribute('d', d + ` L${W},${H} L0,${H} Z`); area.setAttribute('fill', `url(#${id})`); area.style.opacity = 0; area.style.transition = 'opacity 1.2s ease .6s'; svg.appendChild(area); later(() => area.style.opacity = 1); }
+      const line = document.createElementNS(NS, 'path'); line.setAttribute('d', d); line.setAttribute('fill', 'none'); line.setAttribute('stroke', s.color);
+      line.setAttribute('stroke-width', 2); line.setAttribute('vector-effect', 'non-scaling-stroke'); line.style.filter = `drop-shadow(0 0 3px ${s.color})`;
+      svg.appendChild(line);
+      const L = line.getTotalLength ? line.getTotalLength() : 600; line.style.strokeDasharray = L; line.style.strokeDashoffset = L;
+      line.style.transition = `stroke-dashoffset 1.6s cubic-bezier(.2,.8,.2,1) ${si * 200}ms`;
+      later(() => line.style.strokeDashoffset = 0);
+      const last = pts[pts.length - 1]; if (last) { const dot = document.createElementNS(NS, 'circle'); dot.setAttribute('cx', last[0]); dot.setAttribute('cy', last[1]); dot.setAttribute('r', 3); dot.setAttribute('fill', s.color); svg.appendChild(dot); }
+    });
+  });
+  // '?' help tips open their glossary entry (a <span>, so it can sit inside a link or a card)
+  const openHelp = e => { const h = e.target.closest && e.target.closest('.help[data-href]'); if (!h) return;
+    if (e.type === 'keydown' && e.key !== 'Enter') return; e.preventDefault(); e.stopPropagation(); location.href = h.dataset.href; };
+  document.addEventListener('click', openHelp, true); document.addEventListener('keydown', openHelp, true);
+  // relative times: <span data-rel="iso">
+  // server timestamps are UTC; one without a zone (SQLite returns naive datetimes) would otherwise
+  // be read as the viewer's local time and be off by their UTC offset
+  const utc = iso => /T\d\d:\d\d/.test(iso) && !/(Z|[+-]\d\d:?\d\d)$/.test(iso) ? iso + 'Z' : iso;
+  const rel = iso => { const d = (new Date(utc(iso)) - Date.now()) / 1000, a = Math.abs(d), f = d > 0;
+    if (!isFinite(d)) return '';
+    const u = a < 60 ? [a, 's'] : a < 3600 ? [a / 60, 'm'] : a < 86400 ? [a / 3600, 'h'] : [a / 86400, 'd'];
+    return f ? `in ${Math.round(u[0])}${u[1]}` : `${Math.round(u[0])}${u[1]} ago`; };
+  // data-due: a scheduled time already past reads "due now", not "7h ago"
+  const tickRel = () => document.querySelectorAll('[data-rel]').forEach(el => {
+    if (el.dataset.due && new Date(utc(el.dataset.rel)) <= Date.now()) { el.textContent = 'due now'; return; }
+    const r = rel(el.dataset.rel); if (r) el.textContent = r; });
+  tickRel(); setInterval(tickRel, 15000);
+})();
+</script>
+<div id="bw-modal" hidden>
+  <div class="bw-dlg" role="dialog" aria-modal="true" aria-labelledby="bw-dlg-t">
+    <div class="bw-dlg-icon">!</div>
+    <div class="bw-dlg-body">
+      <h3 id="bw-dlg-t"></h3>
+      <div class="bw-dlg-m"></div>
+      <input class="bw-dlg-in" type="text" autocomplete="off" hidden>
+      <div class="bw-dlg-err small" hidden></div>
+    </div>
+    <div class="bw-dlg-btns"><button type="button" class="bw-cancel">Cancel</button><button type="button" class="bw-ok primary">OK</button></div>
+  </div>
+</div>
+<style>
+  #bw-modal{position:fixed;inset:0;z-index:1000;background:rgba(3,6,10,.72);backdrop-filter:blur(3px);display:flex;align-items:center;justify-content:center;padding:16px;animation:bwfade .15s ease-out}
+  #bw-modal[hidden]{display:none}
+  @keyframes bwfade{from{opacity:0}to{opacity:1}}
+  @keyframes bwpop{from{transform:translateY(8px) scale(.98);opacity:0}to{transform:none;opacity:1}}
+  .bw-dlg{width:min(480px,100%);background:linear-gradient(180deg,#121c2b,#0c131e);border:1px solid var(--border);border-top:3px solid var(--accent);border-radius:14px;box-shadow:0 20px 60px rgba(0,0,0,.6);padding:20px 22px 16px;display:grid;grid-template-columns:auto 1fr;gap:4px 14px;animation:bwpop .18s ease-out}
+  .bw-dlg.danger{border-top-color:var(--crit)}
+  .bw-dlg-icon{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;background:rgba(53,199,242,.15);color:var(--accent)}
+  .bw-dlg.danger .bw-dlg-icon{background:rgba(255,77,77,.15);color:var(--crit)}
+  .bw-dlg h3{margin:4px 0 6px;font-size:16px;letter-spacing:0;text-transform:none}
+  .bw-dlg-m{font-size:13.5px;line-height:1.55;color:var(--text);white-space:pre-line;word-break:break-word}
+  .bw-dlg-in{margin-top:10px;width:100%}
+  .bw-dlg-err{color:var(--crit);margin-top:6px}
+  .bw-dlg-btns{grid-column:1 / -1;display:flex;justify-content:flex-end;gap:8px;margin-top:16px}
+  .bw-dlg.danger .bw-ok{background:rgba(255,77,77,.15);border-color:var(--crit);color:var(--crit)}
+</style>
+<script>
+/* The interface's own dialog, instead of the browser's confirm() / prompt() boxes.
+   bwConfirm(message, {title, ok, cancel, danger})            -> Promise<boolean>
+   bwDialog({title, message, ok, cancel, danger, expect})     -> Promise<boolean>; with expect the analyst must type that text
+   Declarative: data-confirm="message" on a <form> (asked on submit) or on a submit button (asked when that button submits);
+   data-confirm-title, data-confirm-ok, data-confirm-danger, data-confirm-expect (type-to-confirm). "{n}" in the message is replaced by
+   the number of elements matching data-confirm-count (e.g. ".sel:checked"). */
+(function(){
+  const modal = document.getElementById('bw-modal'); if (!modal) return;
+  const dlg = modal.querySelector('.bw-dlg'), t = modal.querySelector('h3'), m = modal.querySelector('.bw-dlg-m'), inp = modal.querySelector('.bw-dlg-in'),
+        err = modal.querySelector('.bw-dlg-err'), ok = modal.querySelector('.bw-ok'), cancel = modal.querySelector('.bw-cancel');
+  let done = null, last = null;
+  function close(v){ modal.hidden = true; const d = done; done = null; if (last && last.focus) last.focus(); if (d) d(v); }
+  window.bwDialog = function(o){
+    o = o || {};
+    if (done) close(false);
+    last = document.activeElement;
+    t.textContent = o.title || (o.danger ? 'Are you sure?' : 'Please confirm');
+    m.textContent = o.message || '';
+    ok.textContent = o.ok || 'OK'; cancel.textContent = o.cancel || 'Cancel';
+    cancel.hidden = o.cancel === false;
+    dlg.classList.toggle('danger', !!o.danger);
+    inp.hidden = !o.expect; inp.value = ''; inp.placeholder = o.expect ? 'type: ' + o.expect : ''; err.hidden = true;
+    modal.hidden = false;
+    setTimeout(() => (o.expect ? inp : ok).focus(), 0);
+    return new Promise(res => { done = v => res(v); modal._expect = o.expect || null; });
+  };
+  window.bwConfirm = (message, o) => window.bwDialog({...(o || {}), message});
+  window.bwAlert = (message, o) => window.bwDialog({...(o || {}), message, cancel: false, ok: (o && o.ok) || 'OK'});
+  ok.addEventListener('click', () => {
+    if (modal._expect && inp.value.trim() !== modal._expect) { err.textContent = 'That is not it: type “' + modal._expect + '” exactly.'; err.hidden = false; inp.focus(); return; }
+    close(true);
+  });
+  cancel.addEventListener('click', () => close(false));
+  modal.addEventListener('click', ev => { if (ev.target === modal) close(false); });
+  document.addEventListener('keydown', ev => {
+    if (modal.hidden) return;
+    if (ev.key === 'Escape') { ev.preventDefault(); close(false); }
+    else if (ev.key === 'Enter' && document.activeElement !== cancel) { ev.preventDefault(); ok.click(); }
+  });
+  // forms and buttons that ask first
+  document.addEventListener('submit', ev => {
+    const form = ev.target, btn = ev.submitter;
+    const src = (btn && btn.dataset && btn.dataset.confirm !== undefined) ? btn : (form.dataset && form.dataset.confirm !== undefined ? form : null);
+    if (!src || form._bwOk) { form._bwOk = false; return; }
+    ev.preventDefault();
+    let msg = src.dataset.confirm || '';
+    if (src.dataset.confirmCount) msg = msg.replace('{n}', document.querySelectorAll(src.dataset.confirmCount).length);
+    window.bwDialog({message: msg, title: src.dataset.confirmTitle, ok: src.dataset.confirmOk, danger: src.dataset.confirmDanger !== undefined,
+                     expect: src.dataset.confirmExpect}).then(yes => {
+      if (!yes) return;
+      form._bwOk = true;
+      if (form.requestSubmit) form.requestSubmit(btn || undefined); else form.submit();
+    });
+  }, true);
+})();
+</script>
+</body>
+</html>

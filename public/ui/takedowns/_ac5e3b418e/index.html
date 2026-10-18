@@ -73,6 +73,21 @@ button:hover,.btn:hover{border-color:var(--accent);box-shadow:0 0 12px rgba(53,1
 button.danger{border-color:var(--crit);color:var(--crit)}button.ok{border-color:var(--low);color:var(--low)}
 input,select,textarea{background:#0b1220;color:var(--text);border:1px solid var(--border);border-radius:6px;padding:7px 9px;font:inherit;width:100%;transition:border-color .2s,box-shadow .2s}
 input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(53,199,242,.15)}
+/* keyboard users see where they are; mouse clicks do not get the ring */
+:focus-visible{outline:2px solid var(--accent2);outline-offset:2px;border-radius:4px}
+a:focus-visible,button:focus-visible,.btn:focus-visible{box-shadow:0 0 0 3px rgba(53,199,242,.25)}
+.skip{position:absolute;left:8px;top:-60px;z-index:100;padding:8px 14px;background:var(--panel2);border:1px solid var(--accent);border-radius:8px;color:var(--text);font-weight:600}
+.skip:focus{top:8px}
+/* the button variants every page uses */
+.btn.primary{background:rgba(53,199,242,.16);border-color:var(--accent);color:var(--accent2);font-weight:600}
+.btn.ghost,button.ghost{background:transparent}
+button.small,.btn.small{padding:4px 9px;font-size:12px;white-space:nowrap}
+button[disabled],.btn[aria-disabled=true]{opacity:.55;cursor:default;box-shadow:none}
+/* one message after a form (see _flash.html) */
+.flash{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:0 0 14px;padding:10px 14px;border:1px solid rgba(46,204,113,.5);border-radius:10px;background:rgba(46,204,113,.08);font-size:13.5px;animation:fadeUp .4s ease both}
+.flash .ic{width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:800;background:rgba(53,199,242,.15);color:var(--accent2);flex:none}
+.flash .ic.ok{background:rgba(46,204,113,.18);color:var(--low)}.flash .ic.undo{background:rgba(255,159,28,.18);color:var(--high)}
+.flash .t{flex:1;min-width:200px}.flash .undo{margin:0}.flash .x{margin-left:auto;padding:2px 8px;font-size:12px;border-color:transparent;color:var(--muted)}
 label{display:block;font-size:12px;color:var(--muted);margin:8px 0 4px;font-family:var(--mono);text-transform:uppercase;letter-spacing:.06em}
 .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
 .kpi{position:relative;overflow:hidden;background:linear-gradient(180deg,rgba(18,26,43,.95),rgba(14,20,32,.95));border:1px solid var(--border);border-radius:10px;padding:12px 14px;
@@ -173,6 +188,7 @@ header nav{display:flex;align-items:center;min-width:0}
 </style>
 </head>
 <body>
+<a class="skip" href="#main">Skip to content</a>
 <header>
   <a class="logo" href="/ui/dashboard/">BrandWatch</a>
   
@@ -191,9 +207,16 @@ header nav{display:flex;align-items:center;min-width:0}
   <span class="who"><span class="email">admin · </span>admin · <a href="/ui/logout">logout</a></span>
   
 </header>
-<main>
+<main id="main">
+
+
+
+
+
+
 
 <style>
+  @media (max-width:700px){.kpis{grid-template-columns:1fr 1fr}}
   .cta{display:inline-flex;align-items:center;gap:8px;padding:7px 12px;border-radius:9px;border:1px solid var(--crit);color:var(--crit);background:rgba(255,77,77,.08);font-weight:600;font-size:12px;cursor:pointer}
   .cta:hover{background:rgba(255,77,77,.18)}
 </style>
@@ -214,6 +237,9 @@ header nav{display:flex;align-items:center;min-width:0}
   <a class="kpi " href="/ui/takedowns/_fbdcfb1314/" title="sent, acknowledged or in progress">
     <div class="v" data-count="0" style="color:var(--text)">0</div><div class="l">sent, waiting for the host</div></a>
   
+  <a class="kpi " href="/ui/takedowns/_4b5ac7972a/" title="sent or acknowledged more than a week ago and still not resolved — chase it, or try another channel">
+    <div class="v" data-count="0" style="color:var(--text)">0</div><div class="l">no answer for 7+ days</div></a>
+  
   <a class="kpi " href="/ui/takedowns/_c539cb40ed/" title="the site is gone">
     <div class="v" data-count="0" style="color:var(--text)">0</div><div class="l">taken down</div></a>
   
@@ -226,11 +252,13 @@ header nav{display:flex;align-items:center;min-width:0}
     <a class="btn" style="padding:4px 12px;font-size:12.5px;" href="/ui/takedowns/_f4048bbfd4/">ShopNova <b>0</b></a><a class="btn" style="padding:4px 12px;font-size:12.5px;" href="/ui/takedowns/_5a22c2b2ea/">ShopNova · Israel <b>0</b></a><a class="btn" style="padding:4px 12px;font-size:12.5px;" href="/ui/takedowns/_5ecfa5c404/">CoinPilot <b>0</b></a><a class="btn" style="padding:4px 12px;font-size:12.5px;border-color:var(--accent);color:var(--accent2)" href="/ui/takedowns/_ac5e3b418e/">VaultPay <b>0</b></a>
   </div>
   <form method="get" action="/ui/takedowns/" class="actions" style="margin-bottom:8px">
-    <div><label>Brand</label><select name="brand_id" onchange="this.form.submit()"><option value="">all</option><option value="eb019060-41b6-4160-871c-14094ad558a4" >ShopNova</option><option value="1909c3e0-295d-4d38-bb7e-a2b05c9287d4" >ShopNova · Israel</option><option value="f46bffed-4795-4cdd-ad8f-abd3d26fcc60" >CoinPilot</option><option value="a7b5cb5c-e4a0-495d-b6c9-3ac5209ac3b2" selected>VaultPay</option></select></div>
-    <div><label>Takedown state</label><select name="state" onchange="this.form.submit()"><option value="">all</option><option value="none" >no takedown yet</option><option value="draft" >draft</option><option value="review" >in review</option><option value="approved" >approved</option><option value="sent" >sent</option><option value="acknowledged" >acknowledged</option><option value="in_progress" >in progress</option><option value="resolved" >taken down</option><option value="rejected" >rejected</option><option value="reopened" >reopened</option></select></div>
+    <div><label for="t-brand">Brand</label><select id="t-brand" name="brand_id" onchange="this.form.submit()"><option value="">all</option><option value="eb019060-41b6-4160-871c-14094ad558a4" >ShopNova</option><option value="1909c3e0-295d-4d38-bb7e-a2b05c9287d4" >ShopNova · Israel</option><option value="f46bffed-4795-4cdd-ad8f-abd3d26fcc60" >CoinPilot</option><option value="a7b5cb5c-e4a0-495d-b6c9-3ac5209ac3b2" selected>VaultPay</option></select></div>
+    <div><label for="t-state">Takedown state</label><select id="t-state" name="state" onchange="this.form.submit()"><option value="">all</option><option value="none" >no takedown yet</option><option value="draft" >draft</option><option value="review" >in review</option><option value="approved" >approved</option><option value="sent" >sent</option><option value="acknowledged" >acknowledged</option><option value="in_progress" >in progress</option><option value="resolved" >taken down</option><option value="rejected" >rejected</option><option value="reopened" >reopened</option><option value="stale" >no answer for 7+ days</option></select></div>
     <div><button type="submit">Apply</button></div>
     <div><a class="btn" href="/ui/takedowns/">clear</a></div>
   </form>
+  
+  
   
   <p class="muted">Nothing matches these filters. <a href="/ui/takedowns/">Clear them</a>.</p>
   
@@ -238,6 +266,29 @@ header nav{display:flex;align-items:center;min-width:0}
 </div>
 
 </main>
+<script>
+/* A form is sent once: a double click (or Enter twice) queued two identical scans, one of which never ran.
+   Every scan form and every form marked data-busy is guarded; a data-busy form also disables the button that sent it
+   and shows "Working…" (data-busy="text" for other words) until the answer arrives.
+   Only a submit that really went out counts — a confirm dialog cancels the first one and sends it again itself. */
+(function(){
+  const once = f => f.hasAttribute('data-busy') || /\/(scan|scan-urls)$/.test(f.getAttribute('action') || '');
+  document.addEventListener('submit', e => { const f = e.target; if (once(f) && f.__sentAt && Date.now() - f.__sentAt < 4000) { e.preventDefault(); e.stopImmediatePropagation(); } }, true);
+  // read defaultPrevented after every listener ran (the confirm dialog's included), not before them
+  document.addEventListener('submit', e => { const f = e.target, b = e.submitter; if (!once(f)) return;
+    setTimeout(() => { if (e.defaultPrevented) return; f.__sentAt = Date.now();
+      if (f.hasAttribute('data-busy') && b && b.tagName === 'BUTTON') { b.disabled = true; b.dataset.was = b.textContent; b.textContent = f.getAttribute('data-busy') || 'Working…';
+        setTimeout(() => { b.disabled = false; b.textContent = b.dataset.was; }, 30000); } }, 0); });
+  // the sticky header's height, for anything that sticks under it
+  const hdr = document.querySelector('header'); const setH = () => document.documentElement.style.setProperty('--hdr', (hdr ? hdr.offsetHeight : 56) + 'px');
+  setH(); window.addEventListener('resize', setH);
+  // server timestamps are UTC: <time datetime="…" data-local> (the |ts filter) and [data-local="…"] show the viewer's local time
+  const utc = iso => /T\d\d:\d\d/.test(iso) && !/(Z|[+-]\d\d:?\d\d)$/.test(iso) ? iso + 'Z' : iso;
+  const fmt = new Intl.DateTimeFormat(undefined, {year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'});
+  document.querySelectorAll('[data-local]').forEach(el => { const raw = el.getAttribute('datetime') || el.dataset.local; if (!raw) return;
+    const d = new Date(utc(raw)); if (isNaN(d)) return; el.textContent = fmt.format(d); if (!el.title) el.title = raw.replace('T', ' ').slice(0, 19) + ' UTC'; });
+})();
+</script>
 <script>
 /* BrandWatch motion layer: count-ups, staggered entrances, animated bars / rings / histograms,
    and auto-drawn donut + sparkline charts from data-* attributes. */

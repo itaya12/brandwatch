@@ -3,12 +3,12 @@
 <head><script>window.__BW_GITHUB=""</script><script src="/_demo/map.js"></script><script src="/_demo/shim.js"></script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Scan 6f8a6616 · BrandWatch</title>
+<title>Brand scan · done · BrandWatch</title>
 
 <meta name="description" content="BrandWatch finds the fake sites impersonating a brand, proves it with tamper-proof evidence, maps the attackers behind them and gets them taken down.">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="BrandWatch">
-<meta property="og:title" content="Scan 6f8a6616 · BrandWatch">
+<meta property="og:title" content="Brand scan · done · BrandWatch">
 <meta property="og:description" content="BrandWatch finds the fake sites impersonating a brand, proves it with tamper-proof evidence, maps the attackers behind them and gets them taken down.">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -73,6 +73,21 @@ button:hover,.btn:hover{border-color:var(--accent);box-shadow:0 0 12px rgba(53,1
 button.danger{border-color:var(--crit);color:var(--crit)}button.ok{border-color:var(--low);color:var(--low)}
 input,select,textarea{background:#0b1220;color:var(--text);border:1px solid var(--border);border-radius:6px;padding:7px 9px;font:inherit;width:100%;transition:border-color .2s,box-shadow .2s}
 input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(53,199,242,.15)}
+/* keyboard users see where they are; mouse clicks do not get the ring */
+:focus-visible{outline:2px solid var(--accent2);outline-offset:2px;border-radius:4px}
+a:focus-visible,button:focus-visible,.btn:focus-visible{box-shadow:0 0 0 3px rgba(53,199,242,.25)}
+.skip{position:absolute;left:8px;top:-60px;z-index:100;padding:8px 14px;background:var(--panel2);border:1px solid var(--accent);border-radius:8px;color:var(--text);font-weight:600}
+.skip:focus{top:8px}
+/* the button variants every page uses */
+.btn.primary{background:rgba(53,199,242,.16);border-color:var(--accent);color:var(--accent2);font-weight:600}
+.btn.ghost,button.ghost{background:transparent}
+button.small,.btn.small{padding:4px 9px;font-size:12px;white-space:nowrap}
+button[disabled],.btn[aria-disabled=true]{opacity:.55;cursor:default;box-shadow:none}
+/* one message after a form (see _flash.html) */
+.flash{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:0 0 14px;padding:10px 14px;border:1px solid rgba(46,204,113,.5);border-radius:10px;background:rgba(46,204,113,.08);font-size:13.5px;animation:fadeUp .4s ease both}
+.flash .ic{width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:800;background:rgba(53,199,242,.15);color:var(--accent2);flex:none}
+.flash .ic.ok{background:rgba(46,204,113,.18);color:var(--low)}.flash .ic.undo{background:rgba(255,159,28,.18);color:var(--high)}
+.flash .t{flex:1;min-width:200px}.flash .undo{margin:0}.flash .x{margin-left:auto;padding:2px 8px;font-size:12px;border-color:transparent;color:var(--muted)}
 label{display:block;font-size:12px;color:var(--muted);margin:8px 0 4px;font-family:var(--mono);text-transform:uppercase;letter-spacing:.06em}
 .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
 .kpi{position:relative;overflow:hidden;background:linear-gradient(180deg,rgba(18,26,43,.95),rgba(14,20,32,.95));border:1px solid var(--border);border-radius:10px;padding:12px 14px;
@@ -173,6 +188,7 @@ header nav{display:flex;align-items:center;min-width:0}
 </style>
 </head>
 <body>
+<a class="skip" href="#main">Skip to content</a>
 <header>
   <a class="logo" href="/ui/dashboard/">BrandWatch</a>
   
@@ -191,7 +207,13 @@ header nav{display:flex;align-items:center;min-width:0}
   <span class="who"><span class="email">admin · </span>admin · <a href="/ui/logout">logout</a></span>
   
 </header>
-<main>
+<main id="main">
+
+
+
+
+
+
 
 
 <style>
@@ -331,6 +353,9 @@ header nav{display:flex;align-items:center;min-width:0}
           
           <div class="alert error" style="opacity:.7"><div class="t"><span class="k">quota</span>Daily budget reached</div>
             <div class="f">The workspace&#39;s daily limit (API calls or spend) is used up, so VirusTotal is skipped for the rest of today. Raise the limits under Settings → Workspace &amp; budget, or run the scan again tomorrow.</div></div>
+          
+          <div class="alert warn" style="opacity:.7"><div class="t"><span class="k">credits</span>VirusTotal: the account has no requests left</div>
+            <div class="f">The provider answered that this account&#39;s requests are used up (a free trial ends after its first requests), so VirusTotal is skipped. Top up or choose a plan on the provider&#39;s site; the key in Settings → API keys stays the same. Waiting does not help. ({error})</div></div>
           
           <div class="alert warn" style="opacity:.7"><div class="t"><span class="k">rate limit</span>VirusTotal: rate limit hit</div>
             <div class="f">The provider asked us to slow down (retry after 60 s). Free plans allow only a few requests per minute, so some candidates have no VirusTotal evidence. Re-run the scan later or upgrade the plan.</div></div>
@@ -544,7 +569,7 @@ https://www.virustotal.com/gui/domain/account-review-center.com"><a href="https:
     if (a.kind !== 'fallback' && a.kind !== 'site') { alertCount++; $('k-alerts').textContent = alertCount; }
     $('alerts-empty').style.display = 'none';
     const d = document.createElement('div'); d.className = 'alert ' + ((a.kind === 'fallback' || a.kind === 'site') ? 'info' : (level === 'error' ? 'error' : 'warn'));
-    const link = (a.kind === 'auth' || a.kind === 'quota' || a.kind === 'not_configured') ? ` <a href="${esc(a.settings_url || '/ui/settings')}">Open settings →</a>`
+    const link = (a.kind === 'auth' || a.kind === 'quota' || a.kind === 'credits' || a.kind === 'not_configured') ? ` <a href="${esc(a.settings_url || '/ui/settings')}">Open settings →</a>`
       : (a.kind === 'approval' ? ` <a href="${esc(a.settings_url || '/ui/brands')}">Review the queries →</a>`
       : (a.kind === 'profile' ? ` <a href="${esc(a.settings_url || '/ui/brands')}">Open the brand profile →</a>`
       : (a.kind === 'baseline' ? ` <a href="${esc(a.settings_url || '/ui/brands')}">Fix it →</a>` : '')));
@@ -628,6 +653,29 @@ https://www.virustotal.com/gui/domain/account-review-center.com"><a href="https:
 </script>
 
 </main>
+<script>
+/* A form is sent once: a double click (or Enter twice) queued two identical scans, one of which never ran.
+   Every scan form and every form marked data-busy is guarded; a data-busy form also disables the button that sent it
+   and shows "Working…" (data-busy="text" for other words) until the answer arrives.
+   Only a submit that really went out counts — a confirm dialog cancels the first one and sends it again itself. */
+(function(){
+  const once = f => f.hasAttribute('data-busy') || /\/(scan|scan-urls)$/.test(f.getAttribute('action') || '');
+  document.addEventListener('submit', e => { const f = e.target; if (once(f) && f.__sentAt && Date.now() - f.__sentAt < 4000) { e.preventDefault(); e.stopImmediatePropagation(); } }, true);
+  // read defaultPrevented after every listener ran (the confirm dialog's included), not before them
+  document.addEventListener('submit', e => { const f = e.target, b = e.submitter; if (!once(f)) return;
+    setTimeout(() => { if (e.defaultPrevented) return; f.__sentAt = Date.now();
+      if (f.hasAttribute('data-busy') && b && b.tagName === 'BUTTON') { b.disabled = true; b.dataset.was = b.textContent; b.textContent = f.getAttribute('data-busy') || 'Working…';
+        setTimeout(() => { b.disabled = false; b.textContent = b.dataset.was; }, 30000); } }, 0); });
+  // the sticky header's height, for anything that sticks under it
+  const hdr = document.querySelector('header'); const setH = () => document.documentElement.style.setProperty('--hdr', (hdr ? hdr.offsetHeight : 56) + 'px');
+  setH(); window.addEventListener('resize', setH);
+  // server timestamps are UTC: <time datetime="…" data-local> (the |ts filter) and [data-local="…"] show the viewer's local time
+  const utc = iso => /T\d\d:\d\d/.test(iso) && !/(Z|[+-]\d\d:?\d\d)$/.test(iso) ? iso + 'Z' : iso;
+  const fmt = new Intl.DateTimeFormat(undefined, {year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'});
+  document.querySelectorAll('[data-local]').forEach(el => { const raw = el.getAttribute('datetime') || el.dataset.local; if (!raw) return;
+    const d = new Date(utc(raw)); if (isNaN(d)) return; el.textContent = fmt.format(d); if (!el.title) el.title = raw.replace('T', ' ').slice(0, 19) + ' UTC'; });
+})();
+</script>
 <script>
 /* BrandWatch motion layer: count-ups, staggered entrances, animated bars / rings / histograms,
    and auto-drawn donut + sparkline charts from data-* attributes. */

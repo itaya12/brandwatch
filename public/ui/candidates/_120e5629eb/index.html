@@ -73,6 +73,21 @@ button:hover,.btn:hover{border-color:var(--accent);box-shadow:0 0 12px rgba(53,1
 button.danger{border-color:var(--crit);color:var(--crit)}button.ok{border-color:var(--low);color:var(--low)}
 input,select,textarea{background:#0b1220;color:var(--text);border:1px solid var(--border);border-radius:6px;padding:7px 9px;font:inherit;width:100%;transition:border-color .2s,box-shadow .2s}
 input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(53,199,242,.15)}
+/* keyboard users see where they are; mouse clicks do not get the ring */
+:focus-visible{outline:2px solid var(--accent2);outline-offset:2px;border-radius:4px}
+a:focus-visible,button:focus-visible,.btn:focus-visible{box-shadow:0 0 0 3px rgba(53,199,242,.25)}
+.skip{position:absolute;left:8px;top:-60px;z-index:100;padding:8px 14px;background:var(--panel2);border:1px solid var(--accent);border-radius:8px;color:var(--text);font-weight:600}
+.skip:focus{top:8px}
+/* the button variants every page uses */
+.btn.primary{background:rgba(53,199,242,.16);border-color:var(--accent);color:var(--accent2);font-weight:600}
+.btn.ghost,button.ghost{background:transparent}
+button.small,.btn.small{padding:4px 9px;font-size:12px;white-space:nowrap}
+button[disabled],.btn[aria-disabled=true]{opacity:.55;cursor:default;box-shadow:none}
+/* one message after a form (see _flash.html) */
+.flash{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:0 0 14px;padding:10px 14px;border:1px solid rgba(46,204,113,.5);border-radius:10px;background:rgba(46,204,113,.08);font-size:13.5px;animation:fadeUp .4s ease both}
+.flash .ic{width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:800;background:rgba(53,199,242,.15);color:var(--accent2);flex:none}
+.flash .ic.ok{background:rgba(46,204,113,.18);color:var(--low)}.flash .ic.undo{background:rgba(255,159,28,.18);color:var(--high)}
+.flash .t{flex:1;min-width:200px}.flash .undo{margin:0}.flash .x{margin-left:auto;padding:2px 8px;font-size:12px;border-color:transparent;color:var(--muted)}
 label{display:block;font-size:12px;color:var(--muted);margin:8px 0 4px;font-family:var(--mono);text-transform:uppercase;letter-spacing:.06em}
 .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
 .kpi{position:relative;overflow:hidden;background:linear-gradient(180deg,rgba(18,26,43,.95),rgba(14,20,32,.95));border:1px solid var(--border);border-radius:10px;padding:12px 14px;
@@ -173,6 +188,7 @@ header nav{display:flex;align-items:center;min-width:0}
 </style>
 </head>
 <body>
+<a class="skip" href="#main">Skip to content</a>
 <header>
   <a class="logo" href="/ui/dashboard/">BrandWatch</a>
   
@@ -191,7 +207,13 @@ header nav{display:flex;align-items:center;min-width:0}
   <span class="who"><span class="email">admin · </span>admin · <a href="/ui/logout">logout</a></span>
   
 </header>
-<main>
+<main id="main">
+
+
+
+
+
+
 
 
 <style>
@@ -206,8 +228,24 @@ header nav{display:flex;align-items:center;min-width:0}
   .count{font-family:var(--display);font-size:18px;color:var(--accent2)}
   .wrow td:first-child{box-shadow:inset 3px 0 0 var(--sc)}
   .prio{display:inline-block;height:6px;border-radius:3px;background:var(--accent);vertical-align:middle;width:0;transition:width 1.2s}
-  button.small{padding:4px 9px;font-size:12px;white-space:nowrap}
   td form{margin:0 4px 0 0}
+  .filters{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px 10px;align-items:end;margin-bottom:8px}
+  .filters label{display:block;font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:3px}
+  .filters .wide{grid-column:span 2}.filters .go{display:flex;gap:6px}
+  .bchips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+  .bchips a{padding:4px 12px;font-size:12.5px}.bchips a.on{border-color:var(--accent);color:var(--accent2)}
+  .selcol{width:28px}.selcol input{width:16px;height:16px;margin:0;cursor:pointer}
+  .bulkbar{position:sticky;top:calc(var(--hdr,56px) + 8px);z-index:19;display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:8px 12px;margin-bottom:8px;border:1px solid var(--accent);border-radius:10px;background:#0a121e;box-shadow:0 8px 24px rgba(0,0,0,.45)}
+  .bulkbar[hidden]{display:none}
+  .bulkbar input[name=reason]{flex:1;min-width:180px;margin:0}
+  .why{font-size:12px;color:var(--muted);max-width:280px}
+  .why b{color:var(--text);font-weight:500}
+  .pager{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:10px}.pager .off{opacity:.4;pointer-events:none}
+  .wstats summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:8px;margin:18px 0 8px}
+  .wstats summary::-webkit-details-marker{display:none}.wstats summary h2{margin:0}.wstats summary .tog{font-size:12px;color:var(--accent)}
+  .wstats[open] summary .tog.o{display:none}.wstats:not([open]) summary .tog.c{display:none}
+  @media (max-width:700px){.filters{grid-template-columns:1fr 1fr}.kpis{grid-template-columns:1fr 1fr}
+    #ctable th:nth-child(4),#ctable td:nth-child(4),#ctable th:nth-child(8),#ctable td:nth-child(8),#ctable th:nth-child(9),#ctable td:nth-child(9),#ctable th:nth-child(11),#ctable td:nth-child(11){display:none}}
 </style>
 <h1>WATCHLIST <span class="muted">· every domain the system is observing over time · 70 total</span></h1>
 <p class="intro">Every domain ever discovered for your brands — parked, empty or legitimate-looking — re-checked on a schedule. One that suddenly grows a login form jumps to the front.</p>
@@ -234,8 +272,1006 @@ header nav{display:flex;align-items:center;min-width:0}
 </div>
 
 <div class="panel" style="margin-top:14px">
+  
+  <div class="bchips">
+    <a class="btn " href="/ui/candidates/_dbf7168028/">All brands <b>1100</b></a>
+    <a class="btn " href="/ui/candidates/_3a5455ea3a/"><bdi>ShopNova</bdi> <b>108</b></a><a class="btn on" href="/ui/candidates/_120e5629eb/"><bdi>ShopNova · Israel</bdi> <b>48</b></a><a class="btn " href="/ui/candidates/_1289f19d75/"><bdi>CoinPilot</bdi> <b>494</b></a><a class="btn " href="/ui/candidates/_9e4dfbbbe1/"><bdi>VaultPay</bdi> <b>498</b></a>
+  </div>
+  <form method="get" action="/ui/candidates/" class="filters" id="filters">
+    <input type="hidden" name="brand_id" value="1909c3e0-295d-4d38-bb7e-a2b05c9287d4">
+    <div class="wide"><label for="q">Search host</label><input id="q" name="q" value="" placeholder="part of a host name" autocomplete="off" maxlength="120"></div>
+    <div><label for="c-state">State</label><select id="c-state" name="state"><option value="">all</option><option value="new" >new</option><option value="watching" >watching</option><option value="analyzing" >analysing</option><option value="flagged" >flagged (finding)</option><option value="long_watch" >long watch</option><option value="dismissed" selected>dismissed</option></select></div>
+    <div class="go"><button type="submit" class="primary">Apply</button><a class="btn" href="/ui/candidates/_be3dfbc9dc/">Reset</a></div>
+    <div class="muted small" style="align-self:center">48 domains</div>
+  </form>
+  
+  
+  
+  
+  <form id="bulkform" method="post" action="/ui/candidates/bulk-dismiss" class="bulkbar" hidden>
+    <input type="hidden" name="next" value="/ui/candidates?brand_id=1909c3e0-295d-4d38-bb7e-a2b05c9287d4&amp;state=dismissed&amp;q="><input type="hidden" name="whitelist" value="on">
+    <b id="bulkn">0 selected</b>
+    <input name="reason" placeholder="reason (optional, kept in the audit log)" maxlength="2000" aria-label="reason">
+    <button type="submit" class="primary" data-confirm="Known legit: remove {n} domain(s) from the watchlist and allowlist each one for its brand? They (and their subdomains) are never flagged again. Undo on the brand page → whitelist." data-confirm-count=".sel:checked" data-confirm-title="Known legitimate" data-confirm-ok="Allowlist them">Known legit ✓</button>
+    <button type="button" id="bulkclear" class="small">clear</button>
+  </form>
+  
+  <table id="ctable">
+    <thead><tr><th class="selcol"><input type="checkbox" id="selall" aria-label="select every domain on this page"></th><th>Domain</th><th>Brand</th><th>Why it is here</th><th>State</th><th>Finding</th><th>Priority</th><th>First seen</th><th>Last seen</th><th>Next scan</th><th class="right">Scans</th><th>Actions</th></tr></thead>
+    <tbody>
+    
+    <tr class="wrow" style="--sc:#3a4658" data-host="shopnovo.co.il">
+      <td class="selcol"></td>
+      <td><a href="/ui/candidates/5f68018c-bf80-4b1d-ba4c-086cc801d968/"><span class="mono">shopnovo.co.il</span></a><div class="small muted">domain name</div></td>
+      <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/"><bdi>ShopNova · Israel</bdi></a></td>
+      <td class="why"><b>Look-alike names</b> <span class="mono" dir="ltr">vowel-swap:shopnova.co.il</span></td>
+      <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
+      <td><span class="muted small">—</span></td>
+      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:52:24.097264" data-local title="2026-10-14T09:52:24.097264 UTC">2026-10-14 09:52</time></td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:52:27.565373" data-local title="2026-10-14T09:52:27.565373 UTC">2026-10-14 09:52</time></td>
+      <td class="mono small" >—</td>
+      <td class="right mono">1</td>
+      
+      <td style="white-space:nowrap">
+        
+        <form method="post" action="/ui/candidates/5f68018c-bf80-4b1d-ba4c-086cc801d968/rescan" style="display:inline" data-busy="Queued…"><input type="hidden" name="next" value="/ui/candidates?brand_id=1909c3e0-295d-4d38-bb7e-a2b05c9287d4&amp;state=dismissed&amp;q="><button type="submit" class="small" title="fetch and score this site again now; you stay on the list">Rescan</button></form>
+      </td>
+      
+    </tr>
+    
+    <tr class="wrow" style="--sc:#3a4658" data-host="shopoova.co.il">
+      <td class="selcol"></td>
+      <td><a href="/ui/candidates/a88cb3f1-96f2-4d1f-8d17-315c44d8d4c4/"><span class="mono">shopoova.co.il</span></a><div class="small muted">domain name</div></td>
+      <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/"><bdi>ShopNova · Israel</bdi></a></td>
+      <td class="why"><b>Look-alike names</b> <span class="mono" dir="ltr">bitsquatting:shopnova.co.il</span></td>
+      <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
+      <td><span class="muted small">—</span></td>
+      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:52:24.097264" data-local title="2026-10-14T09:52:24.097264 UTC">2026-10-14 09:52</time></td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:52:27.549324" data-local title="2026-10-14T09:52:27.549324 UTC">2026-10-14 09:52</time></td>
+      <td class="mono small" >—</td>
+      <td class="right mono">1</td>
+      
+      <td style="white-space:nowrap">
+        
+        <form method="post" action="/ui/candidates/a88cb3f1-96f2-4d1f-8d17-315c44d8d4c4/rescan" style="display:inline" data-busy="Queued…"><input type="hidden" name="next" value="/ui/candidates?brand_id=1909c3e0-295d-4d38-bb7e-a2b05c9287d4&amp;state=dismissed&amp;q="><button type="submit" class="small" title="fetch and score this site again now; you stay on the list">Rescan</button></form>
+      </td>
+      
+    </tr>
+    
+    <tr class="wrow" style="--sc:#3a4658" data-host="shopnovy.co.il">
+      <td class="selcol"></td>
+      <td><a href="/ui/candidates/733db5aa-ef1e-47e4-b2ab-0330db5fd32e/"><span class="mono">shopnovy.co.il</span></a><div class="small muted">domain name</div></td>
+      <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/"><bdi>ShopNova · Israel</bdi></a></td>
+      <td class="why"><b>Look-alike names</b> <span class="mono" dir="ltr">replacement:shopnova.co.il</span></td>
+      <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
+      <td><span class="muted small">—</span></td>
+      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:52:24.092169" data-local title="2026-10-14T09:52:24.092169 UTC">2026-10-14 09:52</time></td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:52:27.492744" data-local title="2026-10-14T09:52:27.492744 UTC">2026-10-14 09:52</time></td>
+      <td class="mono small" >—</td>
+      <td class="right mono">1</td>
+      
+      <td style="white-space:nowrap">
+        
+        <form method="post" action="/ui/candidates/733db5aa-ef1e-47e4-b2ab-0330db5fd32e/rescan" style="display:inline" data-busy="Queued…"><input type="hidden" name="next" value="/ui/candidates?brand_id=1909c3e0-295d-4d38-bb7e-a2b05c9287d4&amp;state=dismissed&amp;q="><button type="submit" class="small" title="fetch and score this site again now; you stay on the list">Rescan</button></form>
+      </td>
+      
+    </tr>
+    
+    <tr class="wrow" style="--sc:#3a4658" data-host="shhopnova.co.il">
+      <td class="selcol"></td>
+      <td><a href="/ui/candidates/b65d7df8-7310-4f89-99f0-03a4f186f92c/"><span class="mono">shhopnova.co.il</span></a><div class="small muted">domain name</div></td>
+      <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/"><bdi>ShopNova · Israel</bdi></a></td>
+      <td class="why"><b>Look-alike names</b> <span class="mono" dir="ltr">repetition:shopnova.co.il</span></td>
+      <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
+      <td><span class="muted small">—</span></td>
+      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:52:24.086408" data-local title="2026-10-14T09:52:24.086408 UTC">2026-10-14 09:52</time></td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:52:27.446941" data-local title="2026-10-14T09:52:27.446941 UTC">2026-10-14 09:52</time></td>
+      <td class="mono small" >—</td>
+      <td class="right mono">1</td>
+      
+      <td style="white-space:nowrap">
+        
+        <form method="post" action="/ui/candidates/b65d7df8-7310-4f89-99f0-03a4f186f92c/rescan" style="display:inline" data-busy="Queued…"><input type="hidden" name="next" value="/ui/candidates?brand_id=1909c3e0-295d-4d38-bb7e-a2b05c9287d4&amp;state=dismissed&amp;q="><button type="submit" class="small" title="fetch and score this site again now; you stay on the list">Rescan</button></form>
+      </td>
+      
+    </tr>
+    
+    <tr class="wrow" style="--sc:#3a4658" data-host="shopnvoa.co.il">
+      <td class="selcol"></td>
+      <td><a href="/ui/candidates/66566c18-cd00-4286-99db-d5ee4d511315/"><span class="mono">shopnvoa.co.il</span></a><div class="small muted">domain name</div></td>
+      <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/"><bdi>ShopNova · Israel</bdi></a></td>
+      <td class="why"><b>Look-alike names</b> <span class="mono" dir="ltr">transposition:shopnova.co.il</span></td>
+      <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
+      <td><span class="muted small">—</span></td>
+      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:52:24.077582" data-local title="2026-10-14T09:52:24.077582 UTC">2026-10-14 09:52</time></td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:52:27.419931" data-local title="2026-10-14T09:52:27.419931 UTC">2026-10-14 09:52</time></td>
+      <td class="mono small" >—</td>
+      <td class="right mono">1</td>
+      
+      <td style="white-space:nowrap">
+        
+        <form method="post" action="/ui/candidates/66566c18-cd00-4286-99db-d5ee4d511315/rescan" style="display:inline" data-busy="Queued…"><input type="hidden" name="next" value="/ui/candidates?brand_id=1909c3e0-295d-4d38-bb7e-a2b05c9287d4&amp;state=dismissed&amp;q="><button type="submit" class="small" title="fetch and score this site again now; you stay on the list">Rescan</button></form>
+      </td>
+      
+    </tr>
+    
+    <tr class="wrow" style="--sc:#3a4658" data-host="shopnoa.co.il">
+      <td class="selcol"></td>
+      <td><a href="/ui/candidates/adca22e2-3a23-4723-986a-a76a7566880f/"><span class="mono">shopnoa.co.il</span></a><div class="small muted">domain name</div></td>
+      <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/"><bdi>ShopNova · Israel</bdi></a></td>
+      <td class="why"><b>Look-alike names</b> <span class="mono" dir="ltr">omission:shopnova.co.il</span></td>
+      <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
+      <td><span class="muted small">—</span></td>
+      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:52:24.067933" data-local title="2026-10-14T09:52:24.067933 UTC">2026-10-14 09:52</time></td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:52:27.395040" data-local title="2026-10-14T09:52:27.395040 UTC">2026-10-14 09:52</time></td>
+      <td class="mono small" >—</td>
+      <td class="right mono">1</td>
+      
+      <td style="white-space:nowrap">
+        
+        <form method="post" action="/ui/candidates/adca22e2-3a23-4723-986a-a76a7566880f/rescan" style="display:inline" data-busy="Queued…"><input type="hidden" name="next" value="/ui/candidates?brand_id=1909c3e0-295d-4d38-bb7e-a2b05c9287d4&amp;state=dismissed&amp;q="><button type="submit" class="small" title="fetch and score this site again now; you stay on the list">Rescan</button></form>
+      </td>
+      
+    </tr>
+    
+    <tr class="wrow" style="--sc:#3a4658" data-host="shopnova1.co.il">
+      <td class="selcol"></td>
+      <td><a href="/ui/candidates/61191d8a-b0c0-4357-ab3c-e4c23d23b1c0/"><span class="mono">shopnova1.co.il</span></a><div class="small muted">domain name</div></td>
+      <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/"><bdi>ShopNova · Israel</bdi></a></td>
+      <td class="why"><b>Look-alike names</b> <span class="mono" dir="ltr">addition:shopnova.co.il</span></td>
+      <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
+      <td><span class="muted small">—</span></td>
+      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:52:24.065910" data-local title="2026-10-14T09:52:24.065910 UTC">2026-10-14 09:52</time></td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:52:27.375094" data-local title="2026-10-14T09:52:27.375094 UTC">2026-10-14 09:52</time></td>
+      <td class="mono small" >—</td>
+      <td class="right mono">1</td>
+      
+      <td style="white-space:nowrap">
+        
+        <form method="post" action="/ui/candidates/61191d8a-b0c0-4357-ab3c-e4c23d23b1c0/rescan" style="display:inline" data-busy="Queued…"><input type="hidden" name="next" value="/ui/candidates?brand_id=1909c3e0-295d-4d38-bb7e-a2b05c9287d4&amp;state=dismissed&amp;q="><button type="submit" class="small" title="fetch and score this site again now; you stay on the list">Rescan</button></form>
+      </td>
+      
+    </tr>
+    
+    <tr class="wrow" style="--sc:#3a4658" data-host="shopnova.sb">
+      <td class="selcol"></td>
+      <td><a href="/ui/candidates/771c3eeb-c13e-4fc9-aa53-ef09c8da2e40/"><span class="mono">shopnova.sb</span></a><div class="small muted">domain name</div></td>
+      <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/"><bdi>ShopNova · Israel</bdi></a></td>
+      <td class="why"><b>Look-alike names</b> <span class="mono" dir="ltr">tld-swap:shopnova.co.il</span></td>
+      <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
+      <td><span class="muted small">—</span></td>
+      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:52:24.045755" data-local title="2026-10-14T09:52:24.045755 UTC">2026-10-14 09:52</time></td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:52:27.347310" data-local title="2026-10-14T09:52:27.347310 UTC">2026-10-14 09:52</time></td>
+      <td class="mono small" >—</td>
+      <td class="right mono">1</td>
+      
+      <td style="white-space:nowrap">
+        
+        <form method="post" action="/ui/candidates/771c3eeb-c13e-4fc9-aa53-ef09c8da2e40/rescan" style="display:inline" data-busy="Queued…"><input type="hidden" name="next" value="/ui/candidates?brand_id=1909c3e0-295d-4d38-bb7e-a2b05c9287d4&amp;state=dismissed&amp;q="><button type="submit" class="small" title="fetch and score this site again now; you stay on the list">Rescan</button></form>
+      </td>
+      
+    </tr>
+    
+    <tr class="wrow" style="--sc:#3a4658" data-host="shopn-ova.co.il">
+      <td class="selcol"></td>
+      <td><a href="/ui/candidates/426b53b5-89f0-4ca8-a15e-e453e0cc5f4f"><span class="mono">shopn-ova.co.il</span></a><div class="small muted">domain name</div></td>
+      <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/"><bdi>ShopNova · Israel</bdi></a></td>
+      <td class="why"><b>Look-alike names</b> <span class="mono" dir="ltr">hyphenation:shopnova.co.il</span></td>
+      <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
+      <td><span class="muted small">—</span></td>
+      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:48:37.275498" data-local title="2026-10-14T09:48:37.275498 UTC">2026-10-14 09:48</time></td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:52:24.067933" data-local title="2026-10-14T09:52:24.067933 UTC">2026-10-14 09:52</time></td>
+      <td class="mono small" >—</td>
+      <td class="right mono">1</td>
+      
+      <td style="white-space:nowrap">
+        
+        <form method="post" action="/ui/candidates/426b53b5-89f0-4ca8-a15e-e453e0cc5f4f/rescan" style="display:inline" data-busy="Queued…"><input type="hidden" name="next" value="/ui/candidates?brand_id=1909c3e0-295d-4d38-bb7e-a2b05c9287d4&amp;state=dismissed&amp;q="><button type="submit" class="small" title="fetch and score this site again now; you stay on the list">Rescan</button></form>
+      </td>
+      
+    </tr>
+    
+    <tr class="wrow" style="--sc:#3a4658" data-host="shopnovalogin.co.il">
+      <td class="selcol"></td>
+      <td><a href="/ui/candidates/c481597e-1a68-40f2-90ca-14d2007db26d"><span class="mono">shopnovalogin.co.il</span></a><div class="small muted">domain name</div></td>
+      <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/"><bdi>ShopNova · Israel</bdi></a></td>
+      <td class="why"><b>Look-alike names</b> <span class="mono" dir="ltr">dictionary:shopnova.co.il</span></td>
+      <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
+      <td><span class="muted small">—</span></td>
+      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:48:37.248578" data-local title="2026-10-14T09:48:37.248578 UTC">2026-10-14 09:48</time></td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:52:24.045755" data-local title="2026-10-14T09:52:24.045755 UTC">2026-10-14 09:52</time></td>
+      <td class="mono small" >—</td>
+      <td class="right mono">1</td>
+      
+      <td style="white-space:nowrap">
+        
+        <form method="post" action="/ui/candidates/c481597e-1a68-40f2-90ca-14d2007db26d/rescan" style="display:inline" data-busy="Queued…"><input type="hidden" name="next" value="/ui/candidates?brand_id=1909c3e0-295d-4d38-bb7e-a2b05c9287d4&amp;state=dismissed&amp;q="><button type="submit" class="small" title="fetch and score this site again now; you stay on the list">Rescan</button></form>
+      </td>
+      
+    </tr>
+    
+    <tr class="wrow" style="--sc:#3a4658" data-host="www.shopnova-news.com">
+      <td class="selcol"></td>
+      <td><a href="/ui/candidates/895506ee-480e-4c26-bf13-c60900d29fa3"><span class="mono">www.shopnova-news.com</span></a><div class="small muted">subdomain</div></td>
+      <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/"><bdi>ShopNova · Israel</bdi></a></td>
+      <td class="why"><b>Certificate logs</b> <span class="mono" dir="ltr">san:b5052a5fcbc2</span></td>
+      <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
+      <td><span class="muted small">—</span></td>
+      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:48:37.175327" data-local title="2026-10-14T09:48:37.175327 UTC">2026-10-14 09:48</time></td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:52:23.987756" data-local title="2026-10-14T09:52:23.987756 UTC">2026-10-14 09:52</time></td>
+      <td class="mono small" >—</td>
+      <td class="right mono">1</td>
+      
+      <td style="white-space:nowrap">
+        
+        <form method="post" action="/ui/candidates/895506ee-480e-4c26-bf13-c60900d29fa3/rescan" style="display:inline" data-busy="Queued…"><input type="hidden" name="next" value="/ui/candidates?brand_id=1909c3e0-295d-4d38-bb7e-a2b05c9287d4&amp;state=dismissed&amp;q="><button type="submit" class="small" title="fetch and score this site again now; you stay on the list">Rescan</button></form>
+      </td>
+      
+    </tr>
+    
+    <tr class="wrow" style="--sc:#3a4658" data-host="www.shopnova-fanclub.com">
+      <td class="selcol"></td>
+      <td><a href="/ui/candidates/71c25113-4b36-460e-a9ba-55b4c426dc11"><span class="mono">www.shopnova-fanclub.com</span></a><div class="small muted">subdomain</div></td>
+      <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/"><bdi>ShopNova · Israel</bdi></a></td>
+      <td class="why"><b>Certificate logs</b> <span class="mono" dir="ltr">san:e5167c0e8125</span></td>
+      <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
+      <td><span class="muted small">—</span></td>
+      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:48:37.161325" data-local title="2026-10-14T09:48:37.161325 UTC">2026-10-14 09:48</time></td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:52:23.986747" data-local title="2026-10-14T09:52:23.986747 UTC">2026-10-14 09:52</time></td>
+      <td class="mono small" >—</td>
+      <td class="right mono">1</td>
+      
+      <td style="white-space:nowrap">
+        
+        <form method="post" action="/ui/candidates/71c25113-4b36-460e-a9ba-55b4c426dc11/rescan" style="display:inline" data-busy="Queued…"><input type="hidden" name="next" value="/ui/candidates?brand_id=1909c3e0-295d-4d38-bb7e-a2b05c9287d4&amp;state=dismissed&amp;q="><button type="submit" class="small" title="fetch and score this site again now; you stay on the list">Rescan</button></form>
+      </td>
+      
+    </tr>
+    
+    <tr class="wrow" style="--sc:#3a4658" data-host="www.shopnova-outlet-store.com">
+      <td class="selcol"></td>
+      <td><a href="/ui/candidates/07ecc2ea-af00-454c-aa90-e5af3a9f4ec5"><span class="mono">www.shopnova-outlet-store.com</span></a><div class="small muted">subdomain</div></td>
+      <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/"><bdi>ShopNova · Israel</bdi></a></td>
+      <td class="why"><b>Certificate logs</b> <span class="mono" dir="ltr">san:8b7b976a0b1b</span></td>
+      <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
+      <td><span class="muted small">—</span></td>
+      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:48:37.116404" data-local title="2026-10-14T09:48:37.116404 UTC">2026-10-14 09:48</time></td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:52:23.963846" data-local title="2026-10-14T09:52:23.963846 UTC">2026-10-14 09:52</time></td>
+      <td class="mono small" >—</td>
+      <td class="right mono">1</td>
+      
+      <td style="white-space:nowrap">
+        
+        <form method="post" action="/ui/candidates/07ecc2ea-af00-454c-aa90-e5af3a9f4ec5/rescan" style="display:inline" data-busy="Queued…"><input type="hidden" name="next" value="/ui/candidates?brand_id=1909c3e0-295d-4d38-bb7e-a2b05c9287d4&amp;state=dismissed&amp;q="><button type="submit" class="small" title="fetch and score this site again now; you stay on the list">Rescan</button></form>
+      </td>
+      
+    </tr>
+    
+    <tr class="wrow" style="--sc:#3a4658" data-host="www.shopnovaa.com">
+      <td class="selcol"></td>
+      <td><a href="/ui/candidates/0bfc4c20-b971-40bc-80b6-d2f5944f9836"><span class="mono">www.shopnovaa.com</span></a><div class="small muted">subdomain</div></td>
+      <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/"><bdi>ShopNova · Israel</bdi></a></td>
+      <td class="why"><b>Certificate logs</b> <span class="mono" dir="ltr">san:c5844bae6057</span></td>
+      <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
+      <td><span class="muted small">—</span></td>
+      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:48:37.130460" data-local title="2026-10-14T09:48:37.130460 UTC">2026-10-14 09:48</time></td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:52:23.963846" data-local title="2026-10-14T09:52:23.963846 UTC">2026-10-14 09:52</time></td>
+      <td class="mono small" >—</td>
+      <td class="right mono">1</td>
+      
+      <td style="white-space:nowrap">
+        
+        <form method="post" action="/ui/candidates/0bfc4c20-b971-40bc-80b6-d2f5944f9836/rescan" style="display:inline" data-busy="Queued…"><input type="hidden" name="next" value="/ui/candidates?brand_id=1909c3e0-295d-4d38-bb7e-a2b05c9287d4&amp;state=dismissed&amp;q="><button type="submit" class="small" title="fetch and score this site again now; you stay on the list">Rescan</button></form>
+      </td>
+      
+    </tr>
+    
+    <tr class="wrow" style="--sc:#3a4658" data-host="www.shopnova-outlet.com">
+      <td class="selcol"></td>
+      <td><a href="/ui/candidates/e15fd24b-1490-4b07-9d51-92d1637d3ce1"><span class="mono">www.shopnova-outlet.com</span></a><div class="small muted">subdomain</div></td>
+      <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/"><bdi>ShopNova · Israel</bdi></a></td>
+      <td class="why"><b>Certificate logs</b> <span class="mono" dir="ltr">san:85fa970792d5</span></td>
+      <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
+      <td><span class="muted small">—</span></td>
+      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:48:37.144363" data-local title="2026-10-14T09:48:37.144363 UTC">2026-10-14 09:48</time></td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:52:23.963846" data-local title="2026-10-14T09:52:23.963846 UTC">2026-10-14 09:52</time></td>
+      <td class="mono small" >—</td>
+      <td class="right mono">1</td>
+      
+      <td style="white-space:nowrap">
+        
+        <form method="post" action="/ui/candidates/e15fd24b-1490-4b07-9d51-92d1637d3ce1/rescan" style="display:inline" data-busy="Queued…"><input type="hidden" name="next" value="/ui/candidates?brand_id=1909c3e0-295d-4d38-bb7e-a2b05c9287d4&amp;state=dismissed&amp;q="><button type="submit" class="small" title="fetch and score this site again now; you stay on the list">Rescan</button></form>
+      </td>
+      
+    </tr>
+    
+    <tr class="wrow" style="--sc:#3a4658" data-host="www.shopnova-login-help.com">
+      <td class="selcol"></td>
+      <td><a href="/ui/candidates/cddecea1-0f46-4725-bc3d-9728a9e6ee34"><span class="mono">www.shopnova-login-help.com</span></a><div class="small muted">subdomain</div></td>
+      <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/"><bdi>ShopNova · Israel</bdi></a></td>
+      <td class="why"><b>Certificate logs</b> <span class="mono" dir="ltr">san:cd17df811cc3</span></td>
+      <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
+      <td><span class="muted small">—</span></td>
+      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:48:37.096146" data-local title="2026-10-14T09:48:37.096146 UTC">2026-10-14 09:48</time></td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:52:23.961679" data-local title="2026-10-14T09:52:23.961679 UTC">2026-10-14 09:52</time></td>
+      <td class="mono small" >—</td>
+      <td class="right mono">1</td>
+      
+      <td style="white-space:nowrap">
+        
+        <form method="post" action="/ui/candidates/cddecea1-0f46-4725-bc3d-9728a9e6ee34/rescan" style="display:inline" data-busy="Queued…"><input type="hidden" name="next" value="/ui/candidates?brand_id=1909c3e0-295d-4d38-bb7e-a2b05c9287d4&amp;state=dismissed&amp;q="><button type="submit" class="small" title="fetch and score this site again now; you stay on the list">Rescan</button></form>
+      </td>
+      
+    </tr>
+    
+    <tr class="wrow" style="--sc:#3a4658" data-host="www.shopnova-support.com">
+      <td class="selcol"></td>
+      <td><a href="/ui/candidates/3c2bfddc-7a7f-419d-a909-a284bb92d03d"><span class="mono">www.shopnova-support.com</span></a><div class="small muted">subdomain</div></td>
+      <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/"><bdi>ShopNova · Israel</bdi></a></td>
+      <td class="why"><b>Certificate logs</b> <span class="mono" dir="ltr">san:4b4d801b63ea</span></td>
+      <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
+      <td><span class="muted small">—</span></td>
+      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:48:37.060566" data-local title="2026-10-14T09:48:37.060566 UTC">2026-10-14 09:48</time></td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:52:23.947293" data-local title="2026-10-14T09:52:23.947293 UTC">2026-10-14 09:52</time></td>
+      <td class="mono small" >—</td>
+      <td class="right mono">1</td>
+      
+      <td style="white-space:nowrap">
+        
+        <form method="post" action="/ui/candidates/3c2bfddc-7a7f-419d-a909-a284bb92d03d/rescan" style="display:inline" data-busy="Queued…"><input type="hidden" name="next" value="/ui/candidates?brand_id=1909c3e0-295d-4d38-bb7e-a2b05c9287d4&amp;state=dismissed&amp;q="><button type="submit" class="small" title="fetch and score this site again now; you stay on the list">Rescan</button></form>
+      </td>
+      
+    </tr>
+    
+    <tr class="wrow" style="--sc:#3a4658" data-host="www.shopnova-review.com">
+      <td class="selcol"></td>
+      <td><a href="/ui/candidates/6deee2be-8546-43d0-93c7-adc53a30725f"><span class="mono">www.shopnova-review.com</span></a><div class="small muted">subdomain</div></td>
+      <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/"><bdi>ShopNova · Israel</bdi></a></td>
+      <td class="why"><b>Certificate logs</b> <span class="mono" dir="ltr">san:e672d48342c7</span></td>
+      <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
+      <td><span class="muted small">—</span></td>
+      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:48:37.076629" data-local title="2026-10-14T09:48:37.076629 UTC">2026-10-14 09:48</time></td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:52:23.947293" data-local title="2026-10-14T09:52:23.947293 UTC">2026-10-14 09:52</time></td>
+      <td class="mono small" >—</td>
+      <td class="right mono">1</td>
+      
+      <td style="white-space:nowrap">
+        
+        <form method="post" action="/ui/candidates/6deee2be-8546-43d0-93c7-adc53a30725f/rescan" style="display:inline" data-busy="Queued…"><input type="hidden" name="next" value="/ui/candidates?brand_id=1909c3e0-295d-4d38-bb7e-a2b05c9287d4&amp;state=dismissed&amp;q="><button type="submit" class="small" title="fetch and score this site again now; you stay on the list">Rescan</button></form>
+      </td>
+      
+    </tr>
+    
+    <tr class="wrow" style="--sc:#3a4658" data-host="www.shopnova-coupons.com">
+      <td class="selcol"></td>
+      <td><a href="/ui/candidates/54df1797-6fc8-4291-bcc2-9a33e76fccc0"><span class="mono">www.shopnova-coupons.com</span></a><div class="small muted">subdomain</div></td>
+      <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/"><bdi>ShopNova · Israel</bdi></a></td>
+      <td class="why"><b>Certificate logs</b> <span class="mono" dir="ltr">san:a5d7f8fbbcf3</span></td>
+      <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
+      <td><span class="muted small">—</span></td>
+      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:48:37.082188" data-local title="2026-10-14T09:48:37.082188 UTC">2026-10-14 09:48</time></td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:52:23.947293" data-local title="2026-10-14T09:52:23.947293 UTC">2026-10-14 09:52</time></td>
+      <td class="mono small" >—</td>
+      <td class="right mono">1</td>
+      
+      <td style="white-space:nowrap">
+        
+        <form method="post" action="/ui/candidates/54df1797-6fc8-4291-bcc2-9a33e76fccc0/rescan" style="display:inline" data-busy="Queued…"><input type="hidden" name="next" value="/ui/candidates?brand_id=1909c3e0-295d-4d38-bb7e-a2b05c9287d4&amp;state=dismissed&amp;q="><button type="submit" class="small" title="fetch and score this site again now; you stay on the list">Rescan</button></form>
+      </td>
+      
+    </tr>
+    
+    <tr class="wrow" style="--sc:#3a4658" data-host="www.shopnova-id-check.com">
+      <td class="selcol"></td>
+      <td><a href="/ui/candidates/3ae32dbf-8d3f-413f-94bd-5c57ef2dd1e3"><span class="mono">www.shopnova-id-check.com</span></a><div class="small muted">subdomain</div></td>
+      <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/"><bdi>ShopNova · Israel</bdi></a></td>
+      <td class="why"><b>Certificate logs</b> <span class="mono" dir="ltr">san:4dc364ebca25</span></td>
+      <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
+      <td><span class="muted small">—</span></td>
+      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:48:37.039342" data-local title="2026-10-14T09:48:37.039342 UTC">2026-10-14 09:48</time></td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:52:23.936609" data-local title="2026-10-14T09:52:23.936609 UTC">2026-10-14 09:52</time></td>
+      <td class="mono small" >—</td>
+      <td class="right mono">1</td>
+      
+      <td style="white-space:nowrap">
+        
+        <form method="post" action="/ui/candidates/3ae32dbf-8d3f-413f-94bd-5c57ef2dd1e3/rescan" style="display:inline" data-busy="Queued…"><input type="hidden" name="next" value="/ui/candidates?brand_id=1909c3e0-295d-4d38-bb7e-a2b05c9287d4&amp;state=dismissed&amp;q="><button type="submit" class="small" title="fetch and score this site again now; you stay on the list">Rescan</button></form>
+      </td>
+      
+    </tr>
+    
+    <tr class="wrow" style="--sc:#3a4658" data-host="www.shopnova--sneakers.com">
+      <td class="selcol"></td>
+      <td><a href="/ui/candidates/6b7b238f-88f2-43bf-bedc-eeb857f2a1db"><span class="mono">www.shopnova--sneakers.com</span></a><div class="small muted">subdomain</div></td>
+      <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/"><bdi>ShopNova · Israel</bdi></a></td>
+      <td class="why"><b>Certificate logs</b> <span class="mono" dir="ltr">san:ddf37e07c876</span></td>
+      <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
+      <td><span class="muted small">—</span></td>
+      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:48:36.993637" data-local title="2026-10-14T09:48:36.993637 UTC">2026-10-14 09:48</time></td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:52:23.920750" data-local title="2026-10-14T09:52:23.920750 UTC">2026-10-14 09:52</time></td>
+      <td class="mono small" >—</td>
+      <td class="right mono">1</td>
+      
+      <td style="white-space:nowrap">
+        
+        <form method="post" action="/ui/candidates/6b7b238f-88f2-43bf-bedc-eeb857f2a1db/rescan" style="display:inline" data-busy="Queued…"><input type="hidden" name="next" value="/ui/candidates?brand_id=1909c3e0-295d-4d38-bb7e-a2b05c9287d4&amp;state=dismissed&amp;q="><button type="submit" class="small" title="fetch and score this site again now; you stay on the list">Rescan</button></form>
+      </td>
+      
+    </tr>
+    
+    <tr class="wrow" style="--sc:#3a4658" data-host="www.shopnova-eu.com">
+      <td class="selcol"></td>
+      <td><a href="/ui/candidates/1ca8d8b0-077c-40c3-a28b-227a861a22b5"><span class="mono">www.shopnova-eu.com</span></a><div class="small muted">subdomain</div></td>
+      <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/"><bdi>ShopNova · Israel</bdi></a></td>
+      <td class="why"><b>Certificate logs</b> <span class="mono" dir="ltr">san:cfe0a3f2eab0</span></td>
+      <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
+      <td><span class="muted small">—</span></td>
+      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:48:37.010280" data-local title="2026-10-14T09:48:37.010280 UTC">2026-10-14 09:48</time></td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:52:23.920750" data-local title="2026-10-14T09:52:23.920750 UTC">2026-10-14 09:52</time></td>
+      <td class="mono small" >—</td>
+      <td class="right mono">1</td>
+      
+      <td style="white-space:nowrap">
+        
+        <form method="post" action="/ui/candidates/1ca8d8b0-077c-40c3-a28b-227a861a22b5/rescan" style="display:inline" data-busy="Queued…"><input type="hidden" name="next" value="/ui/candidates?brand_id=1909c3e0-295d-4d38-bb7e-a2b05c9287d4&amp;state=dismissed&amp;q="><button type="submit" class="small" title="fetch and score this site again now; you stay on the list">Rescan</button></form>
+      </td>
+      
+    </tr>
+    
+    <tr class="wrow" style="--sc:#3a4658" data-host="www.shopnova-refund.net">
+      <td class="selcol"></td>
+      <td><a href="/ui/candidates/bc92ce32-21b2-4861-8b0d-e61a75866fc7"><span class="mono">www.shopnova-refund.net</span></a><div class="small muted">subdomain</div></td>
+      <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/"><bdi>ShopNova · Israel</bdi></a></td>
+      <td class="why"><b>Certificate logs</b> <span class="mono" dir="ltr">san:6aaefd363c66</span></td>
+      <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
+      <td><span class="muted small">—</span></td>
+      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:48:36.963825" data-local title="2026-10-14T09:48:36.963825 UTC">2026-10-14 09:48</time></td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:52:23.909258" data-local title="2026-10-14T09:52:23.909258 UTC">2026-10-14 09:52</time></td>
+      <td class="mono small" >—</td>
+      <td class="right mono">1</td>
+      
+      <td style="white-space:nowrap">
+        
+        <form method="post" action="/ui/candidates/bc92ce32-21b2-4861-8b0d-e61a75866fc7/rescan" style="display:inline" data-busy="Queued…"><input type="hidden" name="next" value="/ui/candidates?brand_id=1909c3e0-295d-4d38-bb7e-a2b05c9287d4&amp;state=dismissed&amp;q="><button type="submit" class="small" title="fetch and score this site again now; you stay on the list">Rescan</button></form>
+      </td>
+      
+    </tr>
+    
+    <tr class="wrow" style="--sc:#3a4658" data-host="www.shopnova-verification.com">
+      <td class="selcol"></td>
+      <td><a href="/ui/candidates/334bfe89-d9d8-415e-a5b6-3946819a994f"><span class="mono">www.shopnova-verification.com</span></a><div class="small muted">subdomain</div></td>
+      <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/"><bdi>ShopNova · Israel</bdi></a></td>
+      <td class="why"><b>Certificate logs</b> <span class="mono" dir="ltr">san:e5fe41802aab</span></td>
+      <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
+      <td><span class="muted small">—</span></td>
+      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:48:36.976993" data-local title="2026-10-14T09:48:36.976993 UTC">2026-10-14 09:48</time></td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:52:23.909258" data-local title="2026-10-14T09:52:23.909258 UTC">2026-10-14 09:52</time></td>
+      <td class="mono small" >—</td>
+      <td class="right mono">1</td>
+      
+      <td style="white-space:nowrap">
+        
+        <form method="post" action="/ui/candidates/334bfe89-d9d8-415e-a5b6-3946819a994f/rescan" style="display:inline" data-busy="Queued…"><input type="hidden" name="next" value="/ui/candidates?brand_id=1909c3e0-295d-4d38-bb7e-a2b05c9287d4&amp;state=dismissed&amp;q="><button type="submit" class="small" title="fetch and score this site again now; you stay on the list">Rescan</button></form>
+      </td>
+      
+    </tr>
+    
+    <tr class="wrow" style="--sc:#3a4658" data-host="www.shopnova-giftcard.com">
+      <td class="selcol"></td>
+      <td><a href="/ui/candidates/37b775ac-705c-4ceb-b065-08289fba9d50"><span class="mono">www.shopnova-giftcard.com</span></a><div class="small muted">subdomain</div></td>
+      <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/"><bdi>ShopNova · Israel</bdi></a></td>
+      <td class="why"><b>Certificate logs</b> <span class="mono" dir="ltr">san:5a09a5acbf21</span></td>
+      <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
+      <td><span class="muted small">—</span></td>
+      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:48:36.958489" data-local title="2026-10-14T09:48:36.958489 UTC">2026-10-14 09:48</time></td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:52:23.904685" data-local title="2026-10-14T09:52:23.904685 UTC">2026-10-14 09:52</time></td>
+      <td class="mono small" >—</td>
+      <td class="right mono">1</td>
+      
+      <td style="white-space:nowrap">
+        
+        <form method="post" action="/ui/candidates/37b775ac-705c-4ceb-b065-08289fba9d50/rescan" style="display:inline" data-busy="Queued…"><input type="hidden" name="next" value="/ui/candidates?brand_id=1909c3e0-295d-4d38-bb7e-a2b05c9287d4&amp;state=dismissed&amp;q="><button type="submit" class="small" title="fetch and score this site again now; you stay on the list">Rescan</button></form>
+      </td>
+      
+    </tr>
+    
+    <tr class="wrow" style="--sc:#3a4658" data-host="www.shopnova.co">
+      <td class="selcol"></td>
+      <td><a href="/ui/candidates/91622899-de82-4228-be33-0684c8137ee1"><span class="mono">www.shopnova.co</span></a><div class="small muted">subdomain</div></td>
+      <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/"><bdi>ShopNova · Israel</bdi></a></td>
+      <td class="why"><b>Certificate logs</b> <span class="mono" dir="ltr">san:0bf35f3ff063</span></td>
+      <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
+      <td><span class="muted small">—</span></td>
+      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:48:36.941753" data-local title="2026-10-14T09:48:36.941753 UTC">2026-10-14 09:48</time></td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:52:23.899789" data-local title="2026-10-14T09:52:23.899789 UTC">2026-10-14 09:52</time></td>
+      <td class="mono small" >—</td>
+      <td class="right mono">1</td>
+      
+      <td style="white-space:nowrap">
+        
+        <form method="post" action="/ui/candidates/91622899-de82-4228-be33-0684c8137ee1/rescan" style="display:inline" data-busy="Queued…"><input type="hidden" name="next" value="/ui/candidates?brand_id=1909c3e0-295d-4d38-bb7e-a2b05c9287d4&amp;state=dismissed&amp;q="><button type="submit" class="small" title="fetch and score this site again now; you stay on the list">Rescan</button></form>
+      </td>
+      
+    </tr>
+    
+    <tr class="wrow" style="--sc:#3a4658" data-host="www.shopnova-account.net">
+      <td class="selcol"></td>
+      <td><a href="/ui/candidates/7bac85ab-0fa9-4448-88a2-727ca1a90d0b"><span class="mono">www.shopnova-account.net</span></a><div class="small muted">subdomain</div></td>
+      <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/"><bdi>ShopNova · Israel</bdi></a></td>
+      <td class="why"><b>Certificate logs</b> <span class="mono" dir="ltr">san:08613253d97b</span></td>
+      <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
+      <td><span class="muted small">—</span></td>
+      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:48:36.910054" data-local title="2026-10-14T09:48:36.910054 UTC">2026-10-14 09:48</time></td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:52:23.891079" data-local title="2026-10-14T09:52:23.891079 UTC">2026-10-14 09:52</time></td>
+      <td class="mono small" >—</td>
+      <td class="right mono">1</td>
+      
+      <td style="white-space:nowrap">
+        
+        <form method="post" action="/ui/candidates/7bac85ab-0fa9-4448-88a2-727ca1a90d0b/rescan" style="display:inline" data-busy="Queued…"><input type="hidden" name="next" value="/ui/candidates?brand_id=1909c3e0-295d-4d38-bb7e-a2b05c9287d4&amp;state=dismissed&amp;q="><button type="submit" class="small" title="fetch and score this site again now; you stay on the list">Rescan</button></form>
+      </td>
+      
+    </tr>
+    
+    <tr class="wrow" style="--sc:#3a4658" data-host="www.shopnova-support-center.com">
+      <td class="selcol"></td>
+      <td><a href="/ui/candidates/2ea80673-ebad-4757-84ec-60360db31c6d"><span class="mono">www.shopnova-support-center.com</span></a><div class="small muted">subdomain</div></td>
+      <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/"><bdi>ShopNova · Israel</bdi></a></td>
+      <td class="why"><b>Certificate logs</b> <span class="mono" dir="ltr">san:f3ee7bffaf74</span></td>
+      <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
+      <td><span class="muted small">—</span></td>
+      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:48:36.925089" data-local title="2026-10-14T09:48:36.925089 UTC">2026-10-14 09:48</time></td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:52:23.891079" data-local title="2026-10-14T09:52:23.891079 UTC">2026-10-14 09:52</time></td>
+      <td class="mono small" >—</td>
+      <td class="right mono">1</td>
+      
+      <td style="white-space:nowrap">
+        
+        <form method="post" action="/ui/candidates/2ea80673-ebad-4757-84ec-60360db31c6d/rescan" style="display:inline" data-busy="Queued…"><input type="hidden" name="next" value="/ui/candidates?brand_id=1909c3e0-295d-4d38-bb7e-a2b05c9287d4&amp;state=dismissed&amp;q="><button type="submit" class="small" title="fetch and score this site again now; you stay on the list">Rescan</button></form>
+      </td>
+      
+    </tr>
+    
+    <tr class="wrow" style="--sc:#3a4658" data-host="www.secure-shopnova.com">
+      <td class="selcol"></td>
+      <td><a href="/ui/candidates/7d2a2e1a-9a9e-4657-ad15-2c3de3c60c32"><span class="mono">www.secure-shopnova.com</span></a><div class="small muted">subdomain</div></td>
+      <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/"><bdi>ShopNova · Israel</bdi></a></td>
+      <td class="why"><b>Certificate logs</b> <span class="mono" dir="ltr">san:b97b9b26e8d9</span></td>
+      <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
+      <td><span class="muted small">—</span></td>
+      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:48:36.897029" data-local title="2026-10-14T09:48:36.897029 UTC">2026-10-14 09:48</time></td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:52:23.872915" data-local title="2026-10-14T09:52:23.872915 UTC">2026-10-14 09:52</time></td>
+      <td class="mono small" >—</td>
+      <td class="right mono">1</td>
+      
+      <td style="white-space:nowrap">
+        
+        <form method="post" action="/ui/candidates/7d2a2e1a-9a9e-4657-ad15-2c3de3c60c32/rescan" style="display:inline" data-busy="Queued…"><input type="hidden" name="next" value="/ui/candidates?brand_id=1909c3e0-295d-4d38-bb7e-a2b05c9287d4&amp;state=dismissed&amp;q="><button type="submit" class="small" title="fetch and score this site again now; you stay on the list">Rescan</button></form>
+      </td>
+      
+    </tr>
+    
+    <tr class="wrow" style="--sc:#3a4658" data-host="www.shopnova-verify.com">
+      <td class="selcol"></td>
+      <td><a href="/ui/candidates/07538850-0fa4-440e-9e7d-292e99f74b82"><span class="mono">www.shopnova-verify.com</span></a><div class="small muted">subdomain</div></td>
+      <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/"><bdi>ShopNova · Israel</bdi></a></td>
+      <td class="why"><b>Certificate logs</b> <span class="mono" dir="ltr">san:d5c3befed05b</span></td>
+      <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
+      <td><span class="muted small">—</span></td>
+      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:48:36.897029" data-local title="2026-10-14T09:48:36.897029 UTC">2026-10-14 09:48</time></td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:52:23.872915" data-local title="2026-10-14T09:52:23.872915 UTC">2026-10-14 09:52</time></td>
+      <td class="mono small" >—</td>
+      <td class="right mono">1</td>
+      
+      <td style="white-space:nowrap">
+        
+        <form method="post" action="/ui/candidates/07538850-0fa4-440e-9e7d-292e99f74b82/rescan" style="display:inline" data-busy="Queued…"><input type="hidden" name="next" value="/ui/candidates?brand_id=1909c3e0-295d-4d38-bb7e-a2b05c9287d4&amp;state=dismissed&amp;q="><button type="submit" class="small" title="fetch and score this site again now; you stay on the list">Rescan</button></form>
+      </td>
+      
+    </tr>
+    
+    <tr class="wrow" style="--sc:#3a4658" data-host="www.shopnova-press.com">
+      <td class="selcol"></td>
+      <td><a href="/ui/candidates/5bb5ba94-1e97-4469-b181-5f46d0e1a2db"><span class="mono">www.shopnova-press.com</span></a><div class="small muted">subdomain</div></td>
+      <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/"><bdi>ShopNova · Israel</bdi></a></td>
+      <td class="why"><b>Certificate logs</b> <span class="mono" dir="ltr">san:3259ea70d248</span></td>
+      <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
+      <td><span class="muted small">—</span></td>
+      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:48:36.860113" data-local title="2026-10-14T09:48:36.860113 UTC">2026-10-14 09:48</time></td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:52:23.863727" data-local title="2026-10-14T09:52:23.863727 UTC">2026-10-14 09:52</time></td>
+      <td class="mono small" >—</td>
+      <td class="right mono">1</td>
+      
+      <td style="white-space:nowrap">
+        
+        <form method="post" action="/ui/candidates/5bb5ba94-1e97-4469-b181-5f46d0e1a2db/rescan" style="display:inline" data-busy="Queued…"><input type="hidden" name="next" value="/ui/candidates?brand_id=1909c3e0-295d-4d38-bb7e-a2b05c9287d4&amp;state=dismissed&amp;q="><button type="submit" class="small" title="fetch and score this site again now; you stay on the list">Rescan</button></form>
+      </td>
+      
+    </tr>
+    
+    <tr class="wrow" style="--sc:#3a4658" data-host="www.shopnova-events.com">
+      <td class="selcol"></td>
+      <td><a href="/ui/candidates/f3152067-3c0d-453a-a788-8852c2c8e2b2"><span class="mono">www.shopnova-events.com</span></a><div class="small muted">subdomain</div></td>
+      <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/"><bdi>ShopNova · Israel</bdi></a></td>
+      <td class="why"><b>Certificate logs</b> <span class="mono" dir="ltr">san:cb0526f89f22</span></td>
+      <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
+      <td><span class="muted small">—</span></td>
+      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:48:36.876363" data-local title="2026-10-14T09:48:36.876363 UTC">2026-10-14 09:48</time></td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:52:23.863727" data-local title="2026-10-14T09:52:23.863727 UTC">2026-10-14 09:52</time></td>
+      <td class="mono small" >—</td>
+      <td class="right mono">1</td>
+      
+      <td style="white-space:nowrap">
+        
+        <form method="post" action="/ui/candidates/f3152067-3c0d-453a-a788-8852c2c8e2b2/rescan" style="display:inline" data-busy="Queued…"><input type="hidden" name="next" value="/ui/candidates?brand_id=1909c3e0-295d-4d38-bb7e-a2b05c9287d4&amp;state=dismissed&amp;q="><button type="submit" class="small" title="fetch and score this site again now; you stay on the list">Rescan</button></form>
+      </td>
+      
+    </tr>
+    
+    <tr class="wrow" style="--sc:#3a4658" data-host="www.shopnova-login.com">
+      <td class="selcol"></td>
+      <td><a href="/ui/candidates/52bcf79d-109c-493e-a0ff-b3b51ebff85a"><span class="mono">www.shopnova-login.com</span></a><div class="small muted">subdomain</div></td>
+      <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/"><bdi>ShopNova · Israel</bdi></a></td>
+      <td class="why"><b>Certificate logs</b> <span class="mono" dir="ltr">san:69d4c596d715</span></td>
+      <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
+      <td><span class="muted small">—</span></td>
+      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:48:36.892728" data-local title="2026-10-14T09:48:36.892728 UTC">2026-10-14 09:48</time></td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:52:23.863727" data-local title="2026-10-14T09:52:23.863727 UTC">2026-10-14 09:52</time></td>
+      <td class="mono small" >—</td>
+      <td class="right mono">1</td>
+      
+      <td style="white-space:nowrap">
+        
+        <form method="post" action="/ui/candidates/52bcf79d-109c-493e-a0ff-b3b51ebff85a/rescan" style="display:inline" data-busy="Queued…"><input type="hidden" name="next" value="/ui/candidates?brand_id=1909c3e0-295d-4d38-bb7e-a2b05c9287d4&amp;state=dismissed&amp;q="><button type="submit" class="small" title="fetch and score this site again now; you stay on the list">Rescan</button></form>
+      </td>
+      
+    </tr>
+    
+    <tr class="wrow" style="--sc:#3a4658" data-host="www.shopnova-community.org">
+      <td class="selcol"></td>
+      <td><a href="/ui/candidates/9207d0e0-52df-433a-8a01-1cf28152e8be"><span class="mono">www.shopnova-community.org</span></a><div class="small muted">subdomain</div></td>
+      <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/"><bdi>ShopNova · Israel</bdi></a></td>
+      <td class="why"><b>Certificate logs</b> <span class="mono" dir="ltr">san:83b5669ea040</span></td>
+      <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
+      <td><span class="muted small">—</span></td>
+      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:48:36.860113" data-local title="2026-10-14T09:48:36.860113 UTC">2026-10-14 09:48</time></td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:52:23.857255" data-local title="2026-10-14T09:52:23.857255 UTC">2026-10-14 09:52</time></td>
+      <td class="mono small" >—</td>
+      <td class="right mono">1</td>
+      
+      <td style="white-space:nowrap">
+        
+        <form method="post" action="/ui/candidates/9207d0e0-52df-433a-8a01-1cf28152e8be/rescan" style="display:inline" data-busy="Queued…"><input type="hidden" name="next" value="/ui/candidates?brand_id=1909c3e0-295d-4d38-bb7e-a2b05c9287d4&amp;state=dismissed&amp;q="><button type="submit" class="small" title="fetch and score this site again now; you stay on the list">Rescan</button></form>
+      </td>
+      
+    </tr>
+    
+    <tr class="wrow" style="--sc:#3a4658" data-host="www.shopnova-careers.com">
+      <td class="selcol"></td>
+      <td><a href="/ui/candidates/4340e674-a1eb-48e6-8e48-06f103179f46"><span class="mono">www.shopnova-careers.com</span></a><div class="small muted">subdomain</div></td>
+      <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/"><bdi>ShopNova · Israel</bdi></a></td>
+      <td class="why"><b>Certificate logs</b> <span class="mono" dir="ltr">san:b75f538d86a3</span></td>
+      <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
+      <td><span class="muted small">—</span></td>
+      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:48:36.825132" data-local title="2026-10-14T09:48:36.825132 UTC">2026-10-14 09:48</time></td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:52:23.847041" data-local title="2026-10-14T09:52:23.847041 UTC">2026-10-14 09:52</time></td>
+      <td class="mono small" >—</td>
+      <td class="right mono">1</td>
+      
+      <td style="white-space:nowrap">
+        
+        <form method="post" action="/ui/candidates/4340e674-a1eb-48e6-8e48-06f103179f46/rescan" style="display:inline" data-busy="Queued…"><input type="hidden" name="next" value="/ui/candidates?brand_id=1909c3e0-295d-4d38-bb7e-a2b05c9287d4&amp;state=dismissed&amp;q="><button type="submit" class="small" title="fetch and score this site again now; you stay on the list">Rescan</button></form>
+      </td>
+      
+    </tr>
+    
+    <tr class="wrow" style="--sc:#3a4658" data-host="www.shopnova-deals.com">
+      <td class="selcol"></td>
+      <td><a href="/ui/candidates/3f0a012a-0e70-4892-a060-abb317d9925c"><span class="mono">www.shopnova-deals.com</span></a><div class="small muted">subdomain</div></td>
+      <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/"><bdi>ShopNova · Israel</bdi></a></td>
+      <td class="why"><b>Certificate logs</b> <span class="mono" dir="ltr">san:8a313d7a8ae7</span></td>
+      <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
+      <td><span class="muted small">—</span></td>
+      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:48:36.825132" data-local title="2026-10-14T09:48:36.825132 UTC">2026-10-14 09:48</time></td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:52:23.847041" data-local title="2026-10-14T09:52:23.847041 UTC">2026-10-14 09:52</time></td>
+      <td class="mono small" >—</td>
+      <td class="right mono">1</td>
+      
+      <td style="white-space:nowrap">
+        
+        <form method="post" action="/ui/candidates/3f0a012a-0e70-4892-a060-abb317d9925c/rescan" style="display:inline" data-busy="Queued…"><input type="hidden" name="next" value="/ui/candidates?brand_id=1909c3e0-295d-4d38-bb7e-a2b05c9287d4&amp;state=dismissed&amp;q="><button type="submit" class="small" title="fetch and score this site again now; you stay on the list">Rescan</button></form>
+      </td>
+      
+    </tr>
+    
+    <tr class="wrow" style="--sc:#3a4658" data-host="www.shopnova-status.com">
+      <td class="selcol"></td>
+      <td><a href="/ui/candidates/b1b7a14f-d96b-4a23-abe0-a432a2689aad"><span class="mono">www.shopnova-status.com</span></a><div class="small muted">subdomain</div></td>
+      <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/"><bdi>ShopNova · Israel</bdi></a></td>
+      <td class="why"><b>Certificate logs</b> <span class="mono" dir="ltr">san:b992f3f29d67</span></td>
+      <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
+      <td><span class="muted small">—</span></td>
+      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:48:36.847863" data-local title="2026-10-14T09:48:36.847863 UTC">2026-10-14 09:48</time></td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:52:23.847041" data-local title="2026-10-14T09:52:23.847041 UTC">2026-10-14 09:52</time></td>
+      <td class="mono small" >—</td>
+      <td class="right mono">1</td>
+      
+      <td style="white-space:nowrap">
+        
+        <form method="post" action="/ui/candidates/b1b7a14f-d96b-4a23-abe0-a432a2689aad/rescan" style="display:inline" data-busy="Queued…"><input type="hidden" name="next" value="/ui/candidates?brand_id=1909c3e0-295d-4d38-bb7e-a2b05c9287d4&amp;state=dismissed&amp;q="><button type="submit" class="small" title="fetch and score this site again now; you stay on the list">Rescan</button></form>
+      </td>
+      
+    </tr>
+    
+    <tr class="wrow" style="--sc:#3a4658" data-host="www.shopnova-reviews.com">
+      <td class="selcol"></td>
+      <td><a href="/ui/candidates/c58c09a2-167b-458a-9919-b014b38ad5d2"><span class="mono">www.shopnova-reviews.com</span></a><div class="small muted">subdomain</div></td>
+      <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/"><bdi>ShopNova · Israel</bdi></a></td>
+      <td class="why"><b>Certificate logs</b> <span class="mono" dir="ltr">san:beec35b02f8d</span></td>
+      <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
+      <td><span class="muted small">—</span></td>
+      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:48:36.818122" data-local title="2026-10-14T09:48:36.818122 UTC">2026-10-14 09:48</time></td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:52:23.841130" data-local title="2026-10-14T09:52:23.841130 UTC">2026-10-14 09:52</time></td>
+      <td class="mono small" >—</td>
+      <td class="right mono">1</td>
+      
+      <td style="white-space:nowrap">
+        
+        <form method="post" action="/ui/candidates/c58c09a2-167b-458a-9919-b014b38ad5d2/rescan" style="display:inline" data-busy="Queued…"><input type="hidden" name="next" value="/ui/candidates?brand_id=1909c3e0-295d-4d38-bb7e-a2b05c9287d4&amp;state=dismissed&amp;q="><button type="submit" class="small" title="fetch and score this site again now; you stay on the list">Rescan</button></form>
+      </td>
+      
+    </tr>
+    
+    <tr class="wrow" style="--sc:#3a4658" data-host="www.shopnovafans.com">
+      <td class="selcol"></td>
+      <td><a href="/ui/candidates/9c573f00-f7d8-4ad0-a52b-86b4d8f70a09"><span class="mono">www.shopnovafans.com</span></a><div class="small muted">subdomain</div></td>
+      <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/"><bdi>ShopNova · Israel</bdi></a></td>
+      <td class="why"><b>Certificate logs</b> <span class="mono" dir="ltr">san:ac506c294959</span></td>
+      <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
+      <td><span class="muted small">—</span></td>
+      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:48:36.809847" data-local title="2026-10-14T09:48:36.809847 UTC">2026-10-14 09:48</time></td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:52:23.836484" data-local title="2026-10-14T09:52:23.836484 UTC">2026-10-14 09:52</time></td>
+      <td class="mono small" >—</td>
+      <td class="right mono">1</td>
+      
+      <td style="white-space:nowrap">
+        
+        <form method="post" action="/ui/candidates/9c573f00-f7d8-4ad0-a52b-86b4d8f70a09/rescan" style="display:inline" data-busy="Queued…"><input type="hidden" name="next" value="/ui/candidates?brand_id=1909c3e0-295d-4d38-bb7e-a2b05c9287d4&amp;state=dismissed&amp;q="><button type="submit" class="small" title="fetch and score this site again now; you stay on the list">Rescan</button></form>
+      </td>
+      
+    </tr>
+    
+    <tr class="wrow" style="--sc:#3a4658" data-host="www.shopnova-blog.net">
+      <td class="selcol"></td>
+      <td><a href="/ui/candidates/9585f2b7-145e-4789-bbd1-b949fea225dc"><span class="mono">www.shopnova-blog.net</span></a><div class="small muted">subdomain</div></td>
+      <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/"><bdi>ShopNova · Israel</bdi></a></td>
+      <td class="why"><b>Certificate logs</b> <span class="mono" dir="ltr">san:527c870f34b3</span></td>
+      <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
+      <td><span class="muted small">—</span></td>
+      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:48:36.795323" data-local title="2026-10-14T09:48:36.795323 UTC">2026-10-14 09:48</time></td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:52:23.825321" data-local title="2026-10-14T09:52:23.825321 UTC">2026-10-14 09:52</time></td>
+      <td class="mono small" >—</td>
+      <td class="right mono">1</td>
+      
+      <td style="white-space:nowrap">
+        
+        <form method="post" action="/ui/candidates/9585f2b7-145e-4789-bbd1-b949fea225dc/rescan" style="display:inline" data-busy="Queued…"><input type="hidden" name="next" value="/ui/candidates?brand_id=1909c3e0-295d-4d38-bb7e-a2b05c9287d4&amp;state=dismissed&amp;q="><button type="submit" class="small" title="fetch and score this site again now; you stay on the list">Rescan</button></form>
+      </td>
+      
+    </tr>
+    
+    <tr class="wrow" style="--sc:#3a4658" data-host="shapnova.co.il">
+      <td class="selcol"></td>
+      <td><a href="/ui/candidates/2e31aa14-7a48-43b8-a945-0fb451a7c5e6"><span class="mono">shapnova.co.il</span></a><div class="small muted">domain name</div></td>
+      <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/"><bdi>ShopNova · Israel</bdi></a></td>
+      <td class="why"><b>Look-alike names</b> <span class="mono" dir="ltr">vowel-swap:shopnova.co.il</span></td>
+      <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
+      <td><span class="muted small">—</span></td>
+      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:48:37.311991" data-local title="2026-10-14T09:48:37.311991 UTC">2026-10-14 09:48</time></td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:48:41.658965" data-local title="2026-10-14T09:48:41.658965 UTC">2026-10-14 09:48</time></td>
+      <td class="mono small" >—</td>
+      <td class="right mono">1</td>
+      
+      <td style="white-space:nowrap">
+        
+        <form method="post" action="/ui/candidates/2e31aa14-7a48-43b8-a945-0fb451a7c5e6/rescan" style="display:inline" data-busy="Queued…"><input type="hidden" name="next" value="/ui/candidates?brand_id=1909c3e0-295d-4d38-bb7e-a2b05c9287d4&amp;state=dismissed&amp;q="><button type="submit" class="small" title="fetch and score this site again now; you stay on the list">Rescan</button></form>
+      </td>
+      
+    </tr>
+    
+    <tr class="wrow" style="--sc:#3a4658" data-host="shgpnova.co.il">
+      <td class="selcol"></td>
+      <td><a href="/ui/candidates/f51a7973-73a4-4e9a-bf0b-828842e7f8b9"><span class="mono">shgpnova.co.il</span></a><div class="small muted">domain name</div></td>
+      <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/"><bdi>ShopNova · Israel</bdi></a></td>
+      <td class="why"><b>Look-alike names</b> <span class="mono" dir="ltr">bitsquatting:shopnova.co.il</span></td>
+      <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
+      <td><span class="muted small">—</span></td>
+      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:48:37.293072" data-local title="2026-10-14T09:48:37.293072 UTC">2026-10-14 09:48</time></td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:48:41.638963" data-local title="2026-10-14T09:48:41.638963 UTC">2026-10-14 09:48</time></td>
+      <td class="mono small" >—</td>
+      <td class="right mono">1</td>
+      
+      <td style="white-space:nowrap">
+        
+        <form method="post" action="/ui/candidates/f51a7973-73a4-4e9a-bf0b-828842e7f8b9/rescan" style="display:inline" data-busy="Queued…"><input type="hidden" name="next" value="/ui/candidates?brand_id=1909c3e0-295d-4d38-bb7e-a2b05c9287d4&amp;state=dismissed&amp;q="><button type="submit" class="small" title="fetch and score this site again now; you stay on the list">Rescan</button></form>
+      </td>
+      
+    </tr>
+    
+    <tr class="wrow" style="--sc:#3a4658" data-host="shopnoba.co.il">
+      <td class="selcol"></td>
+      <td><a href="/ui/candidates/703a892c-4e21-414a-9590-bd77d93bc108"><span class="mono">shopnoba.co.il</span></a><div class="small muted">domain name</div></td>
+      <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/"><bdi>ShopNova · Israel</bdi></a></td>
+      <td class="why"><b>Look-alike names</b> <span class="mono" dir="ltr">replacement:shopnova.co.il</span></td>
+      <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
+      <td><span class="muted small">—</span></td>
+      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:48:37.293072" data-local title="2026-10-14T09:48:37.293072 UTC">2026-10-14 09:48</time></td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:48:41.617126" data-local title="2026-10-14T09:48:41.617126 UTC">2026-10-14 09:48</time></td>
+      <td class="mono small" >—</td>
+      <td class="right mono">1</td>
+      
+      <td style="white-space:nowrap">
+        
+        <form method="post" action="/ui/candidates/703a892c-4e21-414a-9590-bd77d93bc108/rescan" style="display:inline" data-busy="Queued…"><input type="hidden" name="next" value="/ui/candidates?brand_id=1909c3e0-295d-4d38-bb7e-a2b05c9287d4&amp;state=dismissed&amp;q="><button type="submit" class="small" title="fetch and score this site again now; you stay on the list">Rescan</button></form>
+      </td>
+      
+    </tr>
+    
+    <tr class="wrow" style="--sc:#3a4658" data-host="sshopnova.co.il">
+      <td class="selcol"></td>
+      <td><a href="/ui/candidates/bffa2af6-c188-4a4f-98d1-b32f52003085"><span class="mono">sshopnova.co.il</span></a><div class="small muted">domain name</div></td>
+      <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/"><bdi>ShopNova · Israel</bdi></a></td>
+      <td class="why"><b>Look-alike names</b> <span class="mono" dir="ltr">repetition:shopnova.co.il</span></td>
+      <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
+      <td><span class="muted small">—</span></td>
+      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:48:37.282697" data-local title="2026-10-14T09:48:37.282697 UTC">2026-10-14 09:48</time></td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:48:41.594957" data-local title="2026-10-14T09:48:41.594957 UTC">2026-10-14 09:48</time></td>
+      <td class="mono small" >—</td>
+      <td class="right mono">1</td>
+      
+      <td style="white-space:nowrap">
+        
+        <form method="post" action="/ui/candidates/bffa2af6-c188-4a4f-98d1-b32f52003085/rescan" style="display:inline" data-busy="Queued…"><input type="hidden" name="next" value="/ui/candidates?brand_id=1909c3e0-295d-4d38-bb7e-a2b05c9287d4&amp;state=dismissed&amp;q="><button type="submit" class="small" title="fetch and score this site again now; you stay on the list">Rescan</button></form>
+      </td>
+      
+    </tr>
+    
+    <tr class="wrow" style="--sc:#3a4658" data-host="shopnoav.co.il">
+      <td class="selcol"></td>
+      <td><a href="/ui/candidates/10303e41-bdd4-4fc6-85eb-8e74f1b4f68d"><span class="mono">shopnoav.co.il</span></a><div class="small muted">domain name</div></td>
+      <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/"><bdi>ShopNova · Israel</bdi></a></td>
+      <td class="why"><b>Look-alike names</b> <span class="mono" dir="ltr">transposition:shopnova.co.il</span></td>
+      <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
+      <td><span class="muted small">—</span></td>
+      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:48:37.282697" data-local title="2026-10-14T09:48:37.282697 UTC">2026-10-14 09:48</time></td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:48:41.569825" data-local title="2026-10-14T09:48:41.569825 UTC">2026-10-14 09:48</time></td>
+      <td class="mono small" >—</td>
+      <td class="right mono">1</td>
+      
+      <td style="white-space:nowrap">
+        
+        <form method="post" action="/ui/candidates/10303e41-bdd4-4fc6-85eb-8e74f1b4f68d/rescan" style="display:inline" data-busy="Queued…"><input type="hidden" name="next" value="/ui/candidates?brand_id=1909c3e0-295d-4d38-bb7e-a2b05c9287d4&amp;state=dismissed&amp;q="><button type="submit" class="small" title="fetch and score this site again now; you stay on the list">Rescan</button></form>
+      </td>
+      
+    </tr>
+    
+    <tr class="wrow" style="--sc:#3a4658" data-host="hopnova.co.il">
+      <td class="selcol"></td>
+      <td><a href="/ui/candidates/b0f5547c-f38c-432c-a8d0-eb65369666d9"><span class="mono">hopnova.co.il</span></a><div class="small muted">domain name</div></td>
+      <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/"><bdi>ShopNova · Israel</bdi></a></td>
+      <td class="why"><b>Look-alike names</b> <span class="mono" dir="ltr">omission:shopnova.co.il</span></td>
+      <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
+      <td><span class="muted small">—</span></td>
+      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:48:37.267811" data-local title="2026-10-14T09:48:37.267811 UTC">2026-10-14 09:48</time></td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:48:41.494972" data-local title="2026-10-14T09:48:41.494972 UTC">2026-10-14 09:48</time></td>
+      <td class="mono small" >—</td>
+      <td class="right mono">1</td>
+      
+      <td style="white-space:nowrap">
+        
+        <form method="post" action="/ui/candidates/b0f5547c-f38c-432c-a8d0-eb65369666d9/rescan" style="display:inline" data-busy="Queued…"><input type="hidden" name="next" value="/ui/candidates?brand_id=1909c3e0-295d-4d38-bb7e-a2b05c9287d4&amp;state=dismissed&amp;q="><button type="submit" class="small" title="fetch and score this site again now; you stay on the list">Rescan</button></form>
+      </td>
+      
+    </tr>
+    
+    <tr class="wrow" style="--sc:#3a4658" data-host="shopnovah.co.il">
+      <td class="selcol"></td>
+      <td><a href="/ui/candidates/444d354b-dcfa-4df1-8830-21482d61b1c0"><span class="mono">shopnovah.co.il</span></a><div class="small muted">domain name</div></td>
+      <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/"><bdi>ShopNova · Israel</bdi></a></td>
+      <td class="why"><b>Look-alike names</b> <span class="mono" dir="ltr">addition:shopnova.co.il</span></td>
+      <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
+      <td><span class="muted small">—</span></td>
+      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:48:37.261811" data-local title="2026-10-14T09:48:37.261811 UTC">2026-10-14 09:48</time></td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:48:41.462370" data-local title="2026-10-14T09:48:41.462370 UTC">2026-10-14 09:48</time></td>
+      <td class="mono small" >—</td>
+      <td class="right mono">1</td>
+      
+      <td style="white-space:nowrap">
+        
+        <form method="post" action="/ui/candidates/444d354b-dcfa-4df1-8830-21482d61b1c0/rescan" style="display:inline" data-busy="Queued…"><input type="hidden" name="next" value="/ui/candidates?brand_id=1909c3e0-295d-4d38-bb7e-a2b05c9287d4&amp;state=dismissed&amp;q="><button type="submit" class="small" title="fetch and score this site again now; you stay on the list">Rescan</button></form>
+      </td>
+      
+    </tr>
+    
+    <tr class="wrow" style="--sc:#3a4658" data-host="shopnova.claims">
+      <td class="selcol"></td>
+      <td><a href="/ui/candidates/ed84b992-3fa3-4fd0-bc86-54e525a61e25"><span class="mono">shopnova.claims</span></a><div class="small muted">domain name</div></td>
+      <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/"><bdi>ShopNova · Israel</bdi></a></td>
+      <td class="why"><b>Look-alike names</b> <span class="mono" dir="ltr">tld-swap:shopnova.co.il</span></td>
+      <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
+      <td><span class="muted small">—</span></td>
+      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:48:37.254579" data-local title="2026-10-14T09:48:37.254579 UTC">2026-10-14 09:48</time></td>
+      <td class="mono small muted"><time datetime="2026-10-14T09:48:41.445590" data-local title="2026-10-14T09:48:41.445590 UTC">2026-10-14 09:48</time></td>
+      <td class="mono small" >—</td>
+      <td class="right mono">1</td>
+      
+      <td style="white-space:nowrap">
+        
+        <form method="post" action="/ui/candidates/ed84b992-3fa3-4fd0-bc86-54e525a61e25/rescan" style="display:inline" data-busy="Queued…"><input type="hidden" name="next" value="/ui/candidates?brand_id=1909c3e0-295d-4d38-bb7e-a2b05c9287d4&amp;state=dismissed&amp;q="><button type="submit" class="small" title="fetch and score this site again now; you stay on the list">Rescan</button></form>
+      </td>
+      
+    </tr>
+    
+    </tbody>
+  </table>
+  
+<div class="muted small" style="margin-top:8px">48 in total</div>
+  
+</div>
+
+<details class="wstats" id="wstats">
+  <summary><h2 style="margin:0">Statistics <span class="muted">· lifecycle, re-scans, streams, priority</span></h2><span class="tog o">show ▾</span><span class="tog c">hide ▴</span></summary>
+<div class="panel" style="margin-top:4px">
   <h2>Lifecycle funnel <span class="muted">· new → watching → flagged / long watch / dismissed</span></h2>
-  <p class="small muted" style="margin:0 0 8px"><b>new</b> just discovered · <b>watching</b> visited, below the finding threshold, re-checked on a schedule · <b>flagged</b> scored Medium+, there is a finding · <b>long watch</b> quiet for the whole watch window, checked less often · <b>dismissed</b> dead, legitimate or whitelisted.</p>
+  <p class="small muted" style="margin:0 0 8px"><b>new</b> just discovered · <b>watching</b> visited, below the finding threshold, re-checked on a schedule · <b>flagged</b> scored Medium+, there is a finding · <b>long watch</b> quiet for the whole watch window, checked less often · <b>dismissed</b> dead, legitimate or allowlisted.</p>
   <div class="funnel">
     
     <a href="/ui/candidates/_1176969a39/" data-w="25.7" style="background:#35C7F2;" title="watching: 18 (25.7%)"><span class="lbl">watching </span>18</a>
@@ -306,900 +1342,48 @@ header nav{display:flex;align-items:center;min-width:0}
       <div class="legend"><div><i style="background:#35C7F2"></i>domain name<b>37</b></div><div><i style="background:#2386a6"></i>subdomain<b>30</b></div><div><i style="background:#8A97A8"></i>content<b>3</b></div></div></div>
   </div>
 </div>
-
-<div class="panel" style="margin-top:14px">
-  <div class="bchips" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px">
-    <a class="btn" style="padding:4px 12px;font-size:12.5px;" href="/ui/candidates/_dbf7168028/">All brands <b>1100</b></a>
-    <a class="btn" style="padding:4px 12px;font-size:12.5px;" href="/ui/candidates/_3a5455ea3a/">ShopNova <b>108</b></a><a class="btn" style="padding:4px 12px;font-size:12.5px;border-color:var(--accent);color:var(--accent2)" href="/ui/candidates/_120e5629eb/">ShopNova · Israel <b>48</b></a><a class="btn" style="padding:4px 12px;font-size:12.5px;" href="/ui/candidates/_1289f19d75/">CoinPilot <b>494</b></a><a class="btn" style="padding:4px 12px;font-size:12.5px;" href="/ui/candidates/_9e4dfbbbe1/">VaultPay <b>498</b></a>
-  </div>
-  <form method="get" action="/ui/candidates/" class="actions" style="margin-bottom:8px">
-    <div><label>Brand</label><select name="brand_id" onchange="this.form.submit()"><option value="">all</option><option value="eb019060-41b6-4160-871c-14094ad558a4" >ShopNova</option><option value="1909c3e0-295d-4d38-bb7e-a2b05c9287d4" selected>ShopNova · Israel</option><option value="f46bffed-4795-4cdd-ad8f-abd3d26fcc60" >CoinPilot</option><option value="a7b5cb5c-e4a0-495d-b6c9-3ac5209ac3b2" >VaultPay</option></select></div>
-    <div><label>State</label><select name="state" onchange="this.form.submit()"><option value="">all</option><option value="new" >new</option><option value="watching" >watching</option><option value="analyzing" >analyzing</option><option value="flagged" >flagged</option><option value="long_watch" >long_watch</option><option value="dismissed" selected>dismissed</option></select></div>
-    <div><label>Search host</label><input id="q" placeholder="type to filter…" autocomplete="off"></div>
-    <div><button type="submit">Apply</button></div>
-    <div class="muted small" style="margin-left:auto">48 domain(s)</div>
-  </form>
-  
-  
-  <table id="ctable">
-    <tr><th>Domain</th><th>Brand</th><th>Surface</th><th>State</th><th>Finding</th><th>Priority</th><th>First seen</th><th>Last seen</th><th>Next scan</th><th class="right">Scans</th><th>Actions</th></tr>
-    
-    <tr class="wrow" style="--sc:#3a4658" data-host="shopnovo.co.il">
-      <td><a href="/ui/candidates/5f68018c-bf80-4b1d-ba4c-086cc801d968/"><span class="mono">shopnovo.co.il</span></a></td>
-      <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/">ShopNova · Israel</a></td><td class="small">domain name</td>
-      <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:52:24.097264">2026-10-14 09:52</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:52:27.565373">2026-10-14 09:52</td>
-      <td class="mono small" >—</td>
-      <td class="right mono">1</td>
-      
-      <td style="white-space:nowrap">
-        
-        <form method="post" action="/ui/candidates/5f68018c-bf80-4b1d-ba4c-086cc801d968/rescan" style="display:inline"><button type="submit" class="small" title="fetch and score this site again now">Rescan</button></form>
-      </td>
-      
-    </tr>
-    
-    <tr class="wrow" style="--sc:#3a4658" data-host="shopoova.co.il">
-      <td><a href="/ui/candidates/a88cb3f1-96f2-4d1f-8d17-315c44d8d4c4/"><span class="mono">shopoova.co.il</span></a></td>
-      <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/">ShopNova · Israel</a></td><td class="small">domain name</td>
-      <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:52:24.097264">2026-10-14 09:52</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:52:27.549324">2026-10-14 09:52</td>
-      <td class="mono small" >—</td>
-      <td class="right mono">1</td>
-      
-      <td style="white-space:nowrap">
-        
-        <form method="post" action="/ui/candidates/a88cb3f1-96f2-4d1f-8d17-315c44d8d4c4/rescan" style="display:inline"><button type="submit" class="small" title="fetch and score this site again now">Rescan</button></form>
-      </td>
-      
-    </tr>
-    
-    <tr class="wrow" style="--sc:#3a4658" data-host="shopnovy.co.il">
-      <td><a href="/ui/candidates/733db5aa-ef1e-47e4-b2ab-0330db5fd32e/"><span class="mono">shopnovy.co.il</span></a></td>
-      <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/">ShopNova · Israel</a></td><td class="small">domain name</td>
-      <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:52:24.092169">2026-10-14 09:52</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:52:27.492744">2026-10-14 09:52</td>
-      <td class="mono small" >—</td>
-      <td class="right mono">1</td>
-      
-      <td style="white-space:nowrap">
-        
-        <form method="post" action="/ui/candidates/733db5aa-ef1e-47e4-b2ab-0330db5fd32e/rescan" style="display:inline"><button type="submit" class="small" title="fetch and score this site again now">Rescan</button></form>
-      </td>
-      
-    </tr>
-    
-    <tr class="wrow" style="--sc:#3a4658" data-host="shhopnova.co.il">
-      <td><a href="/ui/candidates/b65d7df8-7310-4f89-99f0-03a4f186f92c/"><span class="mono">shhopnova.co.il</span></a></td>
-      <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/">ShopNova · Israel</a></td><td class="small">domain name</td>
-      <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:52:24.086408">2026-10-14 09:52</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:52:27.446941">2026-10-14 09:52</td>
-      <td class="mono small" >—</td>
-      <td class="right mono">1</td>
-      
-      <td style="white-space:nowrap">
-        
-        <form method="post" action="/ui/candidates/b65d7df8-7310-4f89-99f0-03a4f186f92c/rescan" style="display:inline"><button type="submit" class="small" title="fetch and score this site again now">Rescan</button></form>
-      </td>
-      
-    </tr>
-    
-    <tr class="wrow" style="--sc:#3a4658" data-host="shopnvoa.co.il">
-      <td><a href="/ui/candidates/66566c18-cd00-4286-99db-d5ee4d511315/"><span class="mono">shopnvoa.co.il</span></a></td>
-      <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/">ShopNova · Israel</a></td><td class="small">domain name</td>
-      <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:52:24.077582">2026-10-14 09:52</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:52:27.419931">2026-10-14 09:52</td>
-      <td class="mono small" >—</td>
-      <td class="right mono">1</td>
-      
-      <td style="white-space:nowrap">
-        
-        <form method="post" action="/ui/candidates/66566c18-cd00-4286-99db-d5ee4d511315/rescan" style="display:inline"><button type="submit" class="small" title="fetch and score this site again now">Rescan</button></form>
-      </td>
-      
-    </tr>
-    
-    <tr class="wrow" style="--sc:#3a4658" data-host="shopnoa.co.il">
-      <td><a href="/ui/candidates/adca22e2-3a23-4723-986a-a76a7566880f/"><span class="mono">shopnoa.co.il</span></a></td>
-      <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/">ShopNova · Israel</a></td><td class="small">domain name</td>
-      <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:52:24.067933">2026-10-14 09:52</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:52:27.395040">2026-10-14 09:52</td>
-      <td class="mono small" >—</td>
-      <td class="right mono">1</td>
-      
-      <td style="white-space:nowrap">
-        
-        <form method="post" action="/ui/candidates/adca22e2-3a23-4723-986a-a76a7566880f/rescan" style="display:inline"><button type="submit" class="small" title="fetch and score this site again now">Rescan</button></form>
-      </td>
-      
-    </tr>
-    
-    <tr class="wrow" style="--sc:#3a4658" data-host="shopnova1.co.il">
-      <td><a href="/ui/candidates/61191d8a-b0c0-4357-ab3c-e4c23d23b1c0/"><span class="mono">shopnova1.co.il</span></a></td>
-      <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/">ShopNova · Israel</a></td><td class="small">domain name</td>
-      <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:52:24.065910">2026-10-14 09:52</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:52:27.375094">2026-10-14 09:52</td>
-      <td class="mono small" >—</td>
-      <td class="right mono">1</td>
-      
-      <td style="white-space:nowrap">
-        
-        <form method="post" action="/ui/candidates/61191d8a-b0c0-4357-ab3c-e4c23d23b1c0/rescan" style="display:inline"><button type="submit" class="small" title="fetch and score this site again now">Rescan</button></form>
-      </td>
-      
-    </tr>
-    
-    <tr class="wrow" style="--sc:#3a4658" data-host="shopnova.sb">
-      <td><a href="/ui/candidates/771c3eeb-c13e-4fc9-aa53-ef09c8da2e40/"><span class="mono">shopnova.sb</span></a></td>
-      <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/">ShopNova · Israel</a></td><td class="small">domain name</td>
-      <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:52:24.045755">2026-10-14 09:52</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:52:27.347310">2026-10-14 09:52</td>
-      <td class="mono small" >—</td>
-      <td class="right mono">1</td>
-      
-      <td style="white-space:nowrap">
-        
-        <form method="post" action="/ui/candidates/771c3eeb-c13e-4fc9-aa53-ef09c8da2e40/rescan" style="display:inline"><button type="submit" class="small" title="fetch and score this site again now">Rescan</button></form>
-      </td>
-      
-    </tr>
-    
-    <tr class="wrow" style="--sc:#3a4658" data-host="shopn-ova.co.il">
-      <td><a href="/ui/candidates/426b53b5-89f0-4ca8-a15e-e453e0cc5f4f"><span class="mono">shopn-ova.co.il</span></a></td>
-      <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/">ShopNova · Israel</a></td><td class="small">domain name</td>
-      <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:48:37.275498">2026-10-14 09:48</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:52:24.067933">2026-10-14 09:52</td>
-      <td class="mono small" >—</td>
-      <td class="right mono">1</td>
-      
-      <td style="white-space:nowrap">
-        
-        <form method="post" action="/ui/candidates/426b53b5-89f0-4ca8-a15e-e453e0cc5f4f/rescan" style="display:inline"><button type="submit" class="small" title="fetch and score this site again now">Rescan</button></form>
-      </td>
-      
-    </tr>
-    
-    <tr class="wrow" style="--sc:#3a4658" data-host="shopnovalogin.co.il">
-      <td><a href="/ui/candidates/c481597e-1a68-40f2-90ca-14d2007db26d"><span class="mono">shopnovalogin.co.il</span></a></td>
-      <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/">ShopNova · Israel</a></td><td class="small">domain name</td>
-      <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:48:37.248578">2026-10-14 09:48</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:52:24.045755">2026-10-14 09:52</td>
-      <td class="mono small" >—</td>
-      <td class="right mono">1</td>
-      
-      <td style="white-space:nowrap">
-        
-        <form method="post" action="/ui/candidates/c481597e-1a68-40f2-90ca-14d2007db26d/rescan" style="display:inline"><button type="submit" class="small" title="fetch and score this site again now">Rescan</button></form>
-      </td>
-      
-    </tr>
-    
-    <tr class="wrow" style="--sc:#3a4658" data-host="www.shopnova-news.com">
-      <td><a href="/ui/candidates/895506ee-480e-4c26-bf13-c60900d29fa3"><span class="mono">www.shopnova-news.com</span></a></td>
-      <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/">ShopNova · Israel</a></td><td class="small">subdomain</td>
-      <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:48:37.175327">2026-10-14 09:48</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:52:23.987756">2026-10-14 09:52</td>
-      <td class="mono small" >—</td>
-      <td class="right mono">1</td>
-      
-      <td style="white-space:nowrap">
-        
-        <form method="post" action="/ui/candidates/895506ee-480e-4c26-bf13-c60900d29fa3/rescan" style="display:inline"><button type="submit" class="small" title="fetch and score this site again now">Rescan</button></form>
-      </td>
-      
-    </tr>
-    
-    <tr class="wrow" style="--sc:#3a4658" data-host="www.shopnova-fanclub.com">
-      <td><a href="/ui/candidates/71c25113-4b36-460e-a9ba-55b4c426dc11"><span class="mono">www.shopnova-fanclub.com</span></a></td>
-      <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/">ShopNova · Israel</a></td><td class="small">subdomain</td>
-      <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:48:37.161325">2026-10-14 09:48</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:52:23.986747">2026-10-14 09:52</td>
-      <td class="mono small" >—</td>
-      <td class="right mono">1</td>
-      
-      <td style="white-space:nowrap">
-        
-        <form method="post" action="/ui/candidates/71c25113-4b36-460e-a9ba-55b4c426dc11/rescan" style="display:inline"><button type="submit" class="small" title="fetch and score this site again now">Rescan</button></form>
-      </td>
-      
-    </tr>
-    
-    <tr class="wrow" style="--sc:#3a4658" data-host="www.shopnova-outlet-store.com">
-      <td><a href="/ui/candidates/07ecc2ea-af00-454c-aa90-e5af3a9f4ec5"><span class="mono">www.shopnova-outlet-store.com</span></a></td>
-      <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/">ShopNova · Israel</a></td><td class="small">subdomain</td>
-      <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:48:37.116404">2026-10-14 09:48</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:52:23.963846">2026-10-14 09:52</td>
-      <td class="mono small" >—</td>
-      <td class="right mono">1</td>
-      
-      <td style="white-space:nowrap">
-        
-        <form method="post" action="/ui/candidates/07ecc2ea-af00-454c-aa90-e5af3a9f4ec5/rescan" style="display:inline"><button type="submit" class="small" title="fetch and score this site again now">Rescan</button></form>
-      </td>
-      
-    </tr>
-    
-    <tr class="wrow" style="--sc:#3a4658" data-host="www.shopnovaa.com">
-      <td><a href="/ui/candidates/0bfc4c20-b971-40bc-80b6-d2f5944f9836"><span class="mono">www.shopnovaa.com</span></a></td>
-      <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/">ShopNova · Israel</a></td><td class="small">subdomain</td>
-      <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:48:37.130460">2026-10-14 09:48</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:52:23.963846">2026-10-14 09:52</td>
-      <td class="mono small" >—</td>
-      <td class="right mono">1</td>
-      
-      <td style="white-space:nowrap">
-        
-        <form method="post" action="/ui/candidates/0bfc4c20-b971-40bc-80b6-d2f5944f9836/rescan" style="display:inline"><button type="submit" class="small" title="fetch and score this site again now">Rescan</button></form>
-      </td>
-      
-    </tr>
-    
-    <tr class="wrow" style="--sc:#3a4658" data-host="www.shopnova-outlet.com">
-      <td><a href="/ui/candidates/e15fd24b-1490-4b07-9d51-92d1637d3ce1"><span class="mono">www.shopnova-outlet.com</span></a></td>
-      <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/">ShopNova · Israel</a></td><td class="small">subdomain</td>
-      <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:48:37.144363">2026-10-14 09:48</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:52:23.963846">2026-10-14 09:52</td>
-      <td class="mono small" >—</td>
-      <td class="right mono">1</td>
-      
-      <td style="white-space:nowrap">
-        
-        <form method="post" action="/ui/candidates/e15fd24b-1490-4b07-9d51-92d1637d3ce1/rescan" style="display:inline"><button type="submit" class="small" title="fetch and score this site again now">Rescan</button></form>
-      </td>
-      
-    </tr>
-    
-    <tr class="wrow" style="--sc:#3a4658" data-host="www.shopnova-login-help.com">
-      <td><a href="/ui/candidates/cddecea1-0f46-4725-bc3d-9728a9e6ee34"><span class="mono">www.shopnova-login-help.com</span></a></td>
-      <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/">ShopNova · Israel</a></td><td class="small">subdomain</td>
-      <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:48:37.096146">2026-10-14 09:48</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:52:23.961679">2026-10-14 09:52</td>
-      <td class="mono small" >—</td>
-      <td class="right mono">1</td>
-      
-      <td style="white-space:nowrap">
-        
-        <form method="post" action="/ui/candidates/cddecea1-0f46-4725-bc3d-9728a9e6ee34/rescan" style="display:inline"><button type="submit" class="small" title="fetch and score this site again now">Rescan</button></form>
-      </td>
-      
-    </tr>
-    
-    <tr class="wrow" style="--sc:#3a4658" data-host="www.shopnova-support.com">
-      <td><a href="/ui/candidates/3c2bfddc-7a7f-419d-a909-a284bb92d03d"><span class="mono">www.shopnova-support.com</span></a></td>
-      <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/">ShopNova · Israel</a></td><td class="small">subdomain</td>
-      <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:48:37.060566">2026-10-14 09:48</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:52:23.947293">2026-10-14 09:52</td>
-      <td class="mono small" >—</td>
-      <td class="right mono">1</td>
-      
-      <td style="white-space:nowrap">
-        
-        <form method="post" action="/ui/candidates/3c2bfddc-7a7f-419d-a909-a284bb92d03d/rescan" style="display:inline"><button type="submit" class="small" title="fetch and score this site again now">Rescan</button></form>
-      </td>
-      
-    </tr>
-    
-    <tr class="wrow" style="--sc:#3a4658" data-host="www.shopnova-review.com">
-      <td><a href="/ui/candidates/6deee2be-8546-43d0-93c7-adc53a30725f"><span class="mono">www.shopnova-review.com</span></a></td>
-      <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/">ShopNova · Israel</a></td><td class="small">subdomain</td>
-      <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:48:37.076629">2026-10-14 09:48</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:52:23.947293">2026-10-14 09:52</td>
-      <td class="mono small" >—</td>
-      <td class="right mono">1</td>
-      
-      <td style="white-space:nowrap">
-        
-        <form method="post" action="/ui/candidates/6deee2be-8546-43d0-93c7-adc53a30725f/rescan" style="display:inline"><button type="submit" class="small" title="fetch and score this site again now">Rescan</button></form>
-      </td>
-      
-    </tr>
-    
-    <tr class="wrow" style="--sc:#3a4658" data-host="www.shopnova-coupons.com">
-      <td><a href="/ui/candidates/54df1797-6fc8-4291-bcc2-9a33e76fccc0"><span class="mono">www.shopnova-coupons.com</span></a></td>
-      <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/">ShopNova · Israel</a></td><td class="small">subdomain</td>
-      <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:48:37.082188">2026-10-14 09:48</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:52:23.947293">2026-10-14 09:52</td>
-      <td class="mono small" >—</td>
-      <td class="right mono">1</td>
-      
-      <td style="white-space:nowrap">
-        
-        <form method="post" action="/ui/candidates/54df1797-6fc8-4291-bcc2-9a33e76fccc0/rescan" style="display:inline"><button type="submit" class="small" title="fetch and score this site again now">Rescan</button></form>
-      </td>
-      
-    </tr>
-    
-    <tr class="wrow" style="--sc:#3a4658" data-host="www.shopnova-id-check.com">
-      <td><a href="/ui/candidates/3ae32dbf-8d3f-413f-94bd-5c57ef2dd1e3"><span class="mono">www.shopnova-id-check.com</span></a></td>
-      <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/">ShopNova · Israel</a></td><td class="small">subdomain</td>
-      <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:48:37.039342">2026-10-14 09:48</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:52:23.936609">2026-10-14 09:52</td>
-      <td class="mono small" >—</td>
-      <td class="right mono">1</td>
-      
-      <td style="white-space:nowrap">
-        
-        <form method="post" action="/ui/candidates/3ae32dbf-8d3f-413f-94bd-5c57ef2dd1e3/rescan" style="display:inline"><button type="submit" class="small" title="fetch and score this site again now">Rescan</button></form>
-      </td>
-      
-    </tr>
-    
-    <tr class="wrow" style="--sc:#3a4658" data-host="www.shopnova--sneakers.com">
-      <td><a href="/ui/candidates/6b7b238f-88f2-43bf-bedc-eeb857f2a1db"><span class="mono">www.shopnova--sneakers.com</span></a></td>
-      <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/">ShopNova · Israel</a></td><td class="small">subdomain</td>
-      <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:48:36.993637">2026-10-14 09:48</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:52:23.920750">2026-10-14 09:52</td>
-      <td class="mono small" >—</td>
-      <td class="right mono">1</td>
-      
-      <td style="white-space:nowrap">
-        
-        <form method="post" action="/ui/candidates/6b7b238f-88f2-43bf-bedc-eeb857f2a1db/rescan" style="display:inline"><button type="submit" class="small" title="fetch and score this site again now">Rescan</button></form>
-      </td>
-      
-    </tr>
-    
-    <tr class="wrow" style="--sc:#3a4658" data-host="www.shopnova-eu.com">
-      <td><a href="/ui/candidates/1ca8d8b0-077c-40c3-a28b-227a861a22b5"><span class="mono">www.shopnova-eu.com</span></a></td>
-      <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/">ShopNova · Israel</a></td><td class="small">subdomain</td>
-      <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:48:37.010280">2026-10-14 09:48</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:52:23.920750">2026-10-14 09:52</td>
-      <td class="mono small" >—</td>
-      <td class="right mono">1</td>
-      
-      <td style="white-space:nowrap">
-        
-        <form method="post" action="/ui/candidates/1ca8d8b0-077c-40c3-a28b-227a861a22b5/rescan" style="display:inline"><button type="submit" class="small" title="fetch and score this site again now">Rescan</button></form>
-      </td>
-      
-    </tr>
-    
-    <tr class="wrow" style="--sc:#3a4658" data-host="www.shopnova-refund.net">
-      <td><a href="/ui/candidates/bc92ce32-21b2-4861-8b0d-e61a75866fc7"><span class="mono">www.shopnova-refund.net</span></a></td>
-      <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/">ShopNova · Israel</a></td><td class="small">subdomain</td>
-      <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:48:36.963825">2026-10-14 09:48</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:52:23.909258">2026-10-14 09:52</td>
-      <td class="mono small" >—</td>
-      <td class="right mono">1</td>
-      
-      <td style="white-space:nowrap">
-        
-        <form method="post" action="/ui/candidates/bc92ce32-21b2-4861-8b0d-e61a75866fc7/rescan" style="display:inline"><button type="submit" class="small" title="fetch and score this site again now">Rescan</button></form>
-      </td>
-      
-    </tr>
-    
-    <tr class="wrow" style="--sc:#3a4658" data-host="www.shopnova-verification.com">
-      <td><a href="/ui/candidates/334bfe89-d9d8-415e-a5b6-3946819a994f"><span class="mono">www.shopnova-verification.com</span></a></td>
-      <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/">ShopNova · Israel</a></td><td class="small">subdomain</td>
-      <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:48:36.976993">2026-10-14 09:48</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:52:23.909258">2026-10-14 09:52</td>
-      <td class="mono small" >—</td>
-      <td class="right mono">1</td>
-      
-      <td style="white-space:nowrap">
-        
-        <form method="post" action="/ui/candidates/334bfe89-d9d8-415e-a5b6-3946819a994f/rescan" style="display:inline"><button type="submit" class="small" title="fetch and score this site again now">Rescan</button></form>
-      </td>
-      
-    </tr>
-    
-    <tr class="wrow" style="--sc:#3a4658" data-host="www.shopnova-giftcard.com">
-      <td><a href="/ui/candidates/37b775ac-705c-4ceb-b065-08289fba9d50"><span class="mono">www.shopnova-giftcard.com</span></a></td>
-      <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/">ShopNova · Israel</a></td><td class="small">subdomain</td>
-      <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:48:36.958489">2026-10-14 09:48</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:52:23.904685">2026-10-14 09:52</td>
-      <td class="mono small" >—</td>
-      <td class="right mono">1</td>
-      
-      <td style="white-space:nowrap">
-        
-        <form method="post" action="/ui/candidates/37b775ac-705c-4ceb-b065-08289fba9d50/rescan" style="display:inline"><button type="submit" class="small" title="fetch and score this site again now">Rescan</button></form>
-      </td>
-      
-    </tr>
-    
-    <tr class="wrow" style="--sc:#3a4658" data-host="www.shopnova.co">
-      <td><a href="/ui/candidates/91622899-de82-4228-be33-0684c8137ee1"><span class="mono">www.shopnova.co</span></a></td>
-      <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/">ShopNova · Israel</a></td><td class="small">subdomain</td>
-      <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:48:36.941753">2026-10-14 09:48</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:52:23.899789">2026-10-14 09:52</td>
-      <td class="mono small" >—</td>
-      <td class="right mono">1</td>
-      
-      <td style="white-space:nowrap">
-        
-        <form method="post" action="/ui/candidates/91622899-de82-4228-be33-0684c8137ee1/rescan" style="display:inline"><button type="submit" class="small" title="fetch and score this site again now">Rescan</button></form>
-      </td>
-      
-    </tr>
-    
-    <tr class="wrow" style="--sc:#3a4658" data-host="www.shopnova-account.net">
-      <td><a href="/ui/candidates/7bac85ab-0fa9-4448-88a2-727ca1a90d0b"><span class="mono">www.shopnova-account.net</span></a></td>
-      <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/">ShopNova · Israel</a></td><td class="small">subdomain</td>
-      <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:48:36.910054">2026-10-14 09:48</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:52:23.891079">2026-10-14 09:52</td>
-      <td class="mono small" >—</td>
-      <td class="right mono">1</td>
-      
-      <td style="white-space:nowrap">
-        
-        <form method="post" action="/ui/candidates/7bac85ab-0fa9-4448-88a2-727ca1a90d0b/rescan" style="display:inline"><button type="submit" class="small" title="fetch and score this site again now">Rescan</button></form>
-      </td>
-      
-    </tr>
-    
-    <tr class="wrow" style="--sc:#3a4658" data-host="www.shopnova-support-center.com">
-      <td><a href="/ui/candidates/2ea80673-ebad-4757-84ec-60360db31c6d"><span class="mono">www.shopnova-support-center.com</span></a></td>
-      <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/">ShopNova · Israel</a></td><td class="small">subdomain</td>
-      <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:48:36.925089">2026-10-14 09:48</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:52:23.891079">2026-10-14 09:52</td>
-      <td class="mono small" >—</td>
-      <td class="right mono">1</td>
-      
-      <td style="white-space:nowrap">
-        
-        <form method="post" action="/ui/candidates/2ea80673-ebad-4757-84ec-60360db31c6d/rescan" style="display:inline"><button type="submit" class="small" title="fetch and score this site again now">Rescan</button></form>
-      </td>
-      
-    </tr>
-    
-    <tr class="wrow" style="--sc:#3a4658" data-host="www.secure-shopnova.com">
-      <td><a href="/ui/candidates/7d2a2e1a-9a9e-4657-ad15-2c3de3c60c32"><span class="mono">www.secure-shopnova.com</span></a></td>
-      <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/">ShopNova · Israel</a></td><td class="small">subdomain</td>
-      <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:48:36.897029">2026-10-14 09:48</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:52:23.872915">2026-10-14 09:52</td>
-      <td class="mono small" >—</td>
-      <td class="right mono">1</td>
-      
-      <td style="white-space:nowrap">
-        
-        <form method="post" action="/ui/candidates/7d2a2e1a-9a9e-4657-ad15-2c3de3c60c32/rescan" style="display:inline"><button type="submit" class="small" title="fetch and score this site again now">Rescan</button></form>
-      </td>
-      
-    </tr>
-    
-    <tr class="wrow" style="--sc:#3a4658" data-host="www.shopnova-verify.com">
-      <td><a href="/ui/candidates/07538850-0fa4-440e-9e7d-292e99f74b82"><span class="mono">www.shopnova-verify.com</span></a></td>
-      <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/">ShopNova · Israel</a></td><td class="small">subdomain</td>
-      <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:48:36.897029">2026-10-14 09:48</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:52:23.872915">2026-10-14 09:52</td>
-      <td class="mono small" >—</td>
-      <td class="right mono">1</td>
-      
-      <td style="white-space:nowrap">
-        
-        <form method="post" action="/ui/candidates/07538850-0fa4-440e-9e7d-292e99f74b82/rescan" style="display:inline"><button type="submit" class="small" title="fetch and score this site again now">Rescan</button></form>
-      </td>
-      
-    </tr>
-    
-    <tr class="wrow" style="--sc:#3a4658" data-host="www.shopnova-press.com">
-      <td><a href="/ui/candidates/5bb5ba94-1e97-4469-b181-5f46d0e1a2db"><span class="mono">www.shopnova-press.com</span></a></td>
-      <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/">ShopNova · Israel</a></td><td class="small">subdomain</td>
-      <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:48:36.860113">2026-10-14 09:48</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:52:23.863727">2026-10-14 09:52</td>
-      <td class="mono small" >—</td>
-      <td class="right mono">1</td>
-      
-      <td style="white-space:nowrap">
-        
-        <form method="post" action="/ui/candidates/5bb5ba94-1e97-4469-b181-5f46d0e1a2db/rescan" style="display:inline"><button type="submit" class="small" title="fetch and score this site again now">Rescan</button></form>
-      </td>
-      
-    </tr>
-    
-    <tr class="wrow" style="--sc:#3a4658" data-host="www.shopnova-events.com">
-      <td><a href="/ui/candidates/f3152067-3c0d-453a-a788-8852c2c8e2b2"><span class="mono">www.shopnova-events.com</span></a></td>
-      <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/">ShopNova · Israel</a></td><td class="small">subdomain</td>
-      <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:48:36.876363">2026-10-14 09:48</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:52:23.863727">2026-10-14 09:52</td>
-      <td class="mono small" >—</td>
-      <td class="right mono">1</td>
-      
-      <td style="white-space:nowrap">
-        
-        <form method="post" action="/ui/candidates/f3152067-3c0d-453a-a788-8852c2c8e2b2/rescan" style="display:inline"><button type="submit" class="small" title="fetch and score this site again now">Rescan</button></form>
-      </td>
-      
-    </tr>
-    
-    <tr class="wrow" style="--sc:#3a4658" data-host="www.shopnova-login.com">
-      <td><a href="/ui/candidates/52bcf79d-109c-493e-a0ff-b3b51ebff85a"><span class="mono">www.shopnova-login.com</span></a></td>
-      <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/">ShopNova · Israel</a></td><td class="small">subdomain</td>
-      <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:48:36.892728">2026-10-14 09:48</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:52:23.863727">2026-10-14 09:52</td>
-      <td class="mono small" >—</td>
-      <td class="right mono">1</td>
-      
-      <td style="white-space:nowrap">
-        
-        <form method="post" action="/ui/candidates/52bcf79d-109c-493e-a0ff-b3b51ebff85a/rescan" style="display:inline"><button type="submit" class="small" title="fetch and score this site again now">Rescan</button></form>
-      </td>
-      
-    </tr>
-    
-    <tr class="wrow" style="--sc:#3a4658" data-host="www.shopnova-community.org">
-      <td><a href="/ui/candidates/9207d0e0-52df-433a-8a01-1cf28152e8be"><span class="mono">www.shopnova-community.org</span></a></td>
-      <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/">ShopNova · Israel</a></td><td class="small">subdomain</td>
-      <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:48:36.860113">2026-10-14 09:48</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:52:23.857255">2026-10-14 09:52</td>
-      <td class="mono small" >—</td>
-      <td class="right mono">1</td>
-      
-      <td style="white-space:nowrap">
-        
-        <form method="post" action="/ui/candidates/9207d0e0-52df-433a-8a01-1cf28152e8be/rescan" style="display:inline"><button type="submit" class="small" title="fetch and score this site again now">Rescan</button></form>
-      </td>
-      
-    </tr>
-    
-    <tr class="wrow" style="--sc:#3a4658" data-host="www.shopnova-careers.com">
-      <td><a href="/ui/candidates/4340e674-a1eb-48e6-8e48-06f103179f46"><span class="mono">www.shopnova-careers.com</span></a></td>
-      <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/">ShopNova · Israel</a></td><td class="small">subdomain</td>
-      <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:48:36.825132">2026-10-14 09:48</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:52:23.847041">2026-10-14 09:52</td>
-      <td class="mono small" >—</td>
-      <td class="right mono">1</td>
-      
-      <td style="white-space:nowrap">
-        
-        <form method="post" action="/ui/candidates/4340e674-a1eb-48e6-8e48-06f103179f46/rescan" style="display:inline"><button type="submit" class="small" title="fetch and score this site again now">Rescan</button></form>
-      </td>
-      
-    </tr>
-    
-    <tr class="wrow" style="--sc:#3a4658" data-host="www.shopnova-deals.com">
-      <td><a href="/ui/candidates/3f0a012a-0e70-4892-a060-abb317d9925c"><span class="mono">www.shopnova-deals.com</span></a></td>
-      <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/">ShopNova · Israel</a></td><td class="small">subdomain</td>
-      <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:48:36.825132">2026-10-14 09:48</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:52:23.847041">2026-10-14 09:52</td>
-      <td class="mono small" >—</td>
-      <td class="right mono">1</td>
-      
-      <td style="white-space:nowrap">
-        
-        <form method="post" action="/ui/candidates/3f0a012a-0e70-4892-a060-abb317d9925c/rescan" style="display:inline"><button type="submit" class="small" title="fetch and score this site again now">Rescan</button></form>
-      </td>
-      
-    </tr>
-    
-    <tr class="wrow" style="--sc:#3a4658" data-host="www.shopnova-status.com">
-      <td><a href="/ui/candidates/b1b7a14f-d96b-4a23-abe0-a432a2689aad"><span class="mono">www.shopnova-status.com</span></a></td>
-      <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/">ShopNova · Israel</a></td><td class="small">subdomain</td>
-      <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:48:36.847863">2026-10-14 09:48</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:52:23.847041">2026-10-14 09:52</td>
-      <td class="mono small" >—</td>
-      <td class="right mono">1</td>
-      
-      <td style="white-space:nowrap">
-        
-        <form method="post" action="/ui/candidates/b1b7a14f-d96b-4a23-abe0-a432a2689aad/rescan" style="display:inline"><button type="submit" class="small" title="fetch and score this site again now">Rescan</button></form>
-      </td>
-      
-    </tr>
-    
-    <tr class="wrow" style="--sc:#3a4658" data-host="www.shopnova-reviews.com">
-      <td><a href="/ui/candidates/c58c09a2-167b-458a-9919-b014b38ad5d2"><span class="mono">www.shopnova-reviews.com</span></a></td>
-      <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/">ShopNova · Israel</a></td><td class="small">subdomain</td>
-      <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:48:36.818122">2026-10-14 09:48</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:52:23.841130">2026-10-14 09:52</td>
-      <td class="mono small" >—</td>
-      <td class="right mono">1</td>
-      
-      <td style="white-space:nowrap">
-        
-        <form method="post" action="/ui/candidates/c58c09a2-167b-458a-9919-b014b38ad5d2/rescan" style="display:inline"><button type="submit" class="small" title="fetch and score this site again now">Rescan</button></form>
-      </td>
-      
-    </tr>
-    
-    <tr class="wrow" style="--sc:#3a4658" data-host="www.shopnovafans.com">
-      <td><a href="/ui/candidates/9c573f00-f7d8-4ad0-a52b-86b4d8f70a09"><span class="mono">www.shopnovafans.com</span></a></td>
-      <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/">ShopNova · Israel</a></td><td class="small">subdomain</td>
-      <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:48:36.809847">2026-10-14 09:48</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:52:23.836484">2026-10-14 09:52</td>
-      <td class="mono small" >—</td>
-      <td class="right mono">1</td>
-      
-      <td style="white-space:nowrap">
-        
-        <form method="post" action="/ui/candidates/9c573f00-f7d8-4ad0-a52b-86b4d8f70a09/rescan" style="display:inline"><button type="submit" class="small" title="fetch and score this site again now">Rescan</button></form>
-      </td>
-      
-    </tr>
-    
-    <tr class="wrow" style="--sc:#3a4658" data-host="www.shopnova-blog.net">
-      <td><a href="/ui/candidates/9585f2b7-145e-4789-bbd1-b949fea225dc"><span class="mono">www.shopnova-blog.net</span></a></td>
-      <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/">ShopNova · Israel</a></td><td class="small">subdomain</td>
-      <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:48:36.795323">2026-10-14 09:48</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:52:23.825321">2026-10-14 09:52</td>
-      <td class="mono small" >—</td>
-      <td class="right mono">1</td>
-      
-      <td style="white-space:nowrap">
-        
-        <form method="post" action="/ui/candidates/9585f2b7-145e-4789-bbd1-b949fea225dc/rescan" style="display:inline"><button type="submit" class="small" title="fetch and score this site again now">Rescan</button></form>
-      </td>
-      
-    </tr>
-    
-    <tr class="wrow" style="--sc:#3a4658" data-host="shapnova.co.il">
-      <td><a href="/ui/candidates/2e31aa14-7a48-43b8-a945-0fb451a7c5e6"><span class="mono">shapnova.co.il</span></a></td>
-      <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/">ShopNova · Israel</a></td><td class="small">domain name</td>
-      <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:48:37.311991">2026-10-14 09:48</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:48:41.658965">2026-10-14 09:48</td>
-      <td class="mono small" >—</td>
-      <td class="right mono">1</td>
-      
-      <td style="white-space:nowrap">
-        
-        <form method="post" action="/ui/candidates/2e31aa14-7a48-43b8-a945-0fb451a7c5e6/rescan" style="display:inline"><button type="submit" class="small" title="fetch and score this site again now">Rescan</button></form>
-      </td>
-      
-    </tr>
-    
-    <tr class="wrow" style="--sc:#3a4658" data-host="shgpnova.co.il">
-      <td><a href="/ui/candidates/f51a7973-73a4-4e9a-bf0b-828842e7f8b9"><span class="mono">shgpnova.co.il</span></a></td>
-      <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/">ShopNova · Israel</a></td><td class="small">domain name</td>
-      <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:48:37.293072">2026-10-14 09:48</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:48:41.638963">2026-10-14 09:48</td>
-      <td class="mono small" >—</td>
-      <td class="right mono">1</td>
-      
-      <td style="white-space:nowrap">
-        
-        <form method="post" action="/ui/candidates/f51a7973-73a4-4e9a-bf0b-828842e7f8b9/rescan" style="display:inline"><button type="submit" class="small" title="fetch and score this site again now">Rescan</button></form>
-      </td>
-      
-    </tr>
-    
-    <tr class="wrow" style="--sc:#3a4658" data-host="shopnoba.co.il">
-      <td><a href="/ui/candidates/703a892c-4e21-414a-9590-bd77d93bc108"><span class="mono">shopnoba.co.il</span></a></td>
-      <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/">ShopNova · Israel</a></td><td class="small">domain name</td>
-      <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:48:37.293072">2026-10-14 09:48</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:48:41.617126">2026-10-14 09:48</td>
-      <td class="mono small" >—</td>
-      <td class="right mono">1</td>
-      
-      <td style="white-space:nowrap">
-        
-        <form method="post" action="/ui/candidates/703a892c-4e21-414a-9590-bd77d93bc108/rescan" style="display:inline"><button type="submit" class="small" title="fetch and score this site again now">Rescan</button></form>
-      </td>
-      
-    </tr>
-    
-    <tr class="wrow" style="--sc:#3a4658" data-host="sshopnova.co.il">
-      <td><a href="/ui/candidates/bffa2af6-c188-4a4f-98d1-b32f52003085"><span class="mono">sshopnova.co.il</span></a></td>
-      <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/">ShopNova · Israel</a></td><td class="small">domain name</td>
-      <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:48:37.282697">2026-10-14 09:48</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:48:41.594957">2026-10-14 09:48</td>
-      <td class="mono small" >—</td>
-      <td class="right mono">1</td>
-      
-      <td style="white-space:nowrap">
-        
-        <form method="post" action="/ui/candidates/bffa2af6-c188-4a4f-98d1-b32f52003085/rescan" style="display:inline"><button type="submit" class="small" title="fetch and score this site again now">Rescan</button></form>
-      </td>
-      
-    </tr>
-    
-    <tr class="wrow" style="--sc:#3a4658" data-host="shopnoav.co.il">
-      <td><a href="/ui/candidates/10303e41-bdd4-4fc6-85eb-8e74f1b4f68d"><span class="mono">shopnoav.co.il</span></a></td>
-      <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/">ShopNova · Israel</a></td><td class="small">domain name</td>
-      <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:48:37.282697">2026-10-14 09:48</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:48:41.569825">2026-10-14 09:48</td>
-      <td class="mono small" >—</td>
-      <td class="right mono">1</td>
-      
-      <td style="white-space:nowrap">
-        
-        <form method="post" action="/ui/candidates/10303e41-bdd4-4fc6-85eb-8e74f1b4f68d/rescan" style="display:inline"><button type="submit" class="small" title="fetch and score this site again now">Rescan</button></form>
-      </td>
-      
-    </tr>
-    
-    <tr class="wrow" style="--sc:#3a4658" data-host="hopnova.co.il">
-      <td><a href="/ui/candidates/b0f5547c-f38c-432c-a8d0-eb65369666d9"><span class="mono">hopnova.co.il</span></a></td>
-      <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/">ShopNova · Israel</a></td><td class="small">domain name</td>
-      <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:48:37.267811">2026-10-14 09:48</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:48:41.494972">2026-10-14 09:48</td>
-      <td class="mono small" >—</td>
-      <td class="right mono">1</td>
-      
-      <td style="white-space:nowrap">
-        
-        <form method="post" action="/ui/candidates/b0f5547c-f38c-432c-a8d0-eb65369666d9/rescan" style="display:inline"><button type="submit" class="small" title="fetch and score this site again now">Rescan</button></form>
-      </td>
-      
-    </tr>
-    
-    <tr class="wrow" style="--sc:#3a4658" data-host="shopnovah.co.il">
-      <td><a href="/ui/candidates/444d354b-dcfa-4df1-8830-21482d61b1c0"><span class="mono">shopnovah.co.il</span></a></td>
-      <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/">ShopNova · Israel</a></td><td class="small">domain name</td>
-      <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:48:37.261811">2026-10-14 09:48</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:48:41.462370">2026-10-14 09:48</td>
-      <td class="mono small" >—</td>
-      <td class="right mono">1</td>
-      
-      <td style="white-space:nowrap">
-        
-        <form method="post" action="/ui/candidates/444d354b-dcfa-4df1-8830-21482d61b1c0/rescan" style="display:inline"><button type="submit" class="small" title="fetch and score this site again now">Rescan</button></form>
-      </td>
-      
-    </tr>
-    
-    <tr class="wrow" style="--sc:#3a4658" data-host="shopnova.claims">
-      <td><a href="/ui/candidates/ed84b992-3fa3-4fd0-bc86-54e525a61e25"><span class="mono">shopnova.claims</span></a></td>
-      <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/">ShopNova · Israel</a></td><td class="small">domain name</td>
-      <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:48:37.254579">2026-10-14 09:48</td>
-      <td class="mono small muted" data-rel="2026-10-14T09:48:41.445590">2026-10-14 09:48</td>
-      <td class="mono small" >—</td>
-      <td class="right mono">1</td>
-      
-      <td style="white-space:nowrap">
-        
-        <form method="post" action="/ui/candidates/ed84b992-3fa3-4fd0-bc86-54e525a61e25/rescan" style="display:inline"><button type="submit" class="small" title="fetch and score this site again now">Rescan</button></form>
-      </td>
-      
-    </tr>
-    
-  </table>
-</div>
+</details>
 <script>
 (function(){
-  const q = document.getElementById('q');
-  q && q.addEventListener('input', () => { const v = q.value.toLowerCase();
-    document.querySelectorAll('#ctable tr[data-host]').forEach(tr => tr.style.display = tr.dataset.host.includes(v) ? '' : 'none'); });
-  // funnel segments carry data-w and are grown by the shared motion layer in base.html
+  const st = document.getElementById('wstats');
+  if (st) { try { st.open = localStorage.getItem('bw-watch-stats') === '1'; } catch (e) { /* ignore */ }
+    st.addEventListener('toggle', () => { try { localStorage.setItem('bw-watch-stats', st.open ? '1' : '0'); } catch (e) { /* ignore */ } }); }
+  // several domains at once → Known legit
+  const bar = document.getElementById('bulkform'), all = document.getElementById('selall');
+  const sels = () => [...document.querySelectorAll('#ctable .sel')];
+  const count = () => { const n = document.querySelectorAll('.sel:checked').length; if (bar) { bar.hidden = n === 0; document.getElementById('bulkn').textContent = n + ' selected'; } if (all) { const v = sels(); all.checked = v.length > 0 && v.every(c => c.checked); } };
+  sels().forEach(c => c.addEventListener('change', count));
+  if (all) all.addEventListener('change', () => { sels().forEach(c => { c.checked = all.checked; }); count(); });
+  const clear = document.getElementById('bulkclear'); if (clear) clear.addEventListener('click', () => { document.querySelectorAll('.sel:checked').forEach(c => { c.checked = false; }); count(); });
+  count();
+  document.addEventListener('keydown', ev => { if (ev.key === '/' && !/INPUT|SELECT|TEXTAREA/.test(document.activeElement.tagName)) { ev.preventDefault(); const q = document.getElementById('q'); if (q) { q.focus(); q.select(); } } });
 })();
 </script>
 
 </main>
+<script>
+/* A form is sent once: a double click (or Enter twice) queued two identical scans, one of which never ran.
+   Every scan form and every form marked data-busy is guarded; a data-busy form also disables the button that sent it
+   and shows "Working…" (data-busy="text" for other words) until the answer arrives.
+   Only a submit that really went out counts — a confirm dialog cancels the first one and sends it again itself. */
+(function(){
+  const once = f => f.hasAttribute('data-busy') || /\/(scan|scan-urls)$/.test(f.getAttribute('action') || '');
+  document.addEventListener('submit', e => { const f = e.target; if (once(f) && f.__sentAt && Date.now() - f.__sentAt < 4000) { e.preventDefault(); e.stopImmediatePropagation(); } }, true);
+  // read defaultPrevented after every listener ran (the confirm dialog's included), not before them
+  document.addEventListener('submit', e => { const f = e.target, b = e.submitter; if (!once(f)) return;
+    setTimeout(() => { if (e.defaultPrevented) return; f.__sentAt = Date.now();
+      if (f.hasAttribute('data-busy') && b && b.tagName === 'BUTTON') { b.disabled = true; b.dataset.was = b.textContent; b.textContent = f.getAttribute('data-busy') || 'Working…';
+        setTimeout(() => { b.disabled = false; b.textContent = b.dataset.was; }, 30000); } }, 0); });
+  // the sticky header's height, for anything that sticks under it
+  const hdr = document.querySelector('header'); const setH = () => document.documentElement.style.setProperty('--hdr', (hdr ? hdr.offsetHeight : 56) + 'px');
+  setH(); window.addEventListener('resize', setH);
+  // server timestamps are UTC: <time datetime="…" data-local> (the |ts filter) and [data-local="…"] show the viewer's local time
+  const utc = iso => /T\d\d:\d\d/.test(iso) && !/(Z|[+-]\d\d:?\d\d)$/.test(iso) ? iso + 'Z' : iso;
+  const fmt = new Intl.DateTimeFormat(undefined, {year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'});
+  document.querySelectorAll('[data-local]').forEach(el => { const raw = el.getAttribute('datetime') || el.dataset.local; if (!raw) return;
+    const d = new Date(utc(raw)); if (isNaN(d)) return; el.textContent = fmt.format(d); if (!el.title) el.title = raw.replace('T', ' ').slice(0, 19) + ' UTC'; });
+})();
+</script>
 <script>
 /* BrandWatch motion layer: count-ups, staggered entrances, animated bars / rings / histograms,
    and auto-drawn donut + sparkline charts from data-* attributes. */

@@ -73,6 +73,21 @@ button:hover,.btn:hover{border-color:var(--accent);box-shadow:0 0 12px rgba(53,1
 button.danger{border-color:var(--crit);color:var(--crit)}button.ok{border-color:var(--low);color:var(--low)}
 input,select,textarea{background:#0b1220;color:var(--text);border:1px solid var(--border);border-radius:6px;padding:7px 9px;font:inherit;width:100%;transition:border-color .2s,box-shadow .2s}
 input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(53,199,242,.15)}
+/* keyboard users see where they are; mouse clicks do not get the ring */
+:focus-visible{outline:2px solid var(--accent2);outline-offset:2px;border-radius:4px}
+a:focus-visible,button:focus-visible,.btn:focus-visible{box-shadow:0 0 0 3px rgba(53,199,242,.25)}
+.skip{position:absolute;left:8px;top:-60px;z-index:100;padding:8px 14px;background:var(--panel2);border:1px solid var(--accent);border-radius:8px;color:var(--text);font-weight:600}
+.skip:focus{top:8px}
+/* the button variants every page uses */
+.btn.primary{background:rgba(53,199,242,.16);border-color:var(--accent);color:var(--accent2);font-weight:600}
+.btn.ghost,button.ghost{background:transparent}
+button.small,.btn.small{padding:4px 9px;font-size:12px;white-space:nowrap}
+button[disabled],.btn[aria-disabled=true]{opacity:.55;cursor:default;box-shadow:none}
+/* one message after a form (see _flash.html) */
+.flash{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:0 0 14px;padding:10px 14px;border:1px solid rgba(46,204,113,.5);border-radius:10px;background:rgba(46,204,113,.08);font-size:13.5px;animation:fadeUp .4s ease both}
+.flash .ic{width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:800;background:rgba(53,199,242,.15);color:var(--accent2);flex:none}
+.flash .ic.ok{background:rgba(46,204,113,.18);color:var(--low)}.flash .ic.undo{background:rgba(255,159,28,.18);color:var(--high)}
+.flash .t{flex:1;min-width:200px}.flash .undo{margin:0}.flash .x{margin-left:auto;padding:2px 8px;font-size:12px;border-color:transparent;color:var(--muted)}
 label{display:block;font-size:12px;color:var(--muted);margin:8px 0 4px;font-family:var(--mono);text-transform:uppercase;letter-spacing:.06em}
 .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
 .kpi{position:relative;overflow:hidden;background:linear-gradient(180deg,rgba(18,26,43,.95),rgba(14,20,32,.95));border:1px solid var(--border);border-radius:10px;padding:12px 14px;
@@ -173,6 +188,7 @@ header nav{display:flex;align-items:center;min-width:0}
 </style>
 </head>
 <body>
+<a class="skip" href="#main">Skip to content</a>
 <header>
   <a class="logo" href="/ui/dashboard/">BrandWatch</a>
   
@@ -191,7 +207,13 @@ header nav{display:flex;align-items:center;min-width:0}
   <span class="who"><span class="email">admin · </span>admin · <a href="/ui/logout">logout</a></span>
   
 </header>
-<main>
+<main id="main">
+
+
+
+
+
+
 
 
 <style>
@@ -208,6 +230,13 @@ header nav{display:flex;align-items:center;min-width:0}
   .portal b{display:block;font-size:13px}.portal small{color:var(--muted);display:block;margin-top:2px}
   .portal form{margin-left:auto}.portal button{padding:4px 9px;font-size:12px;white-space:nowrap}
   .why{font-size:12px;color:var(--muted);margin:0 0 10px}
+  .copy{padding:2px 8px;font-size:11px;vertical-align:middle}
+  /* the progress stepper (it had no styles: the seven steps rendered as a plain list) */
+  .steps{display:grid;gap:6px}
+  .step{border:1px solid var(--border);border-radius:10px;padding:8px 10px;background:var(--panel2);min-width:0}
+  .step .n{font:600 11px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .step .d{font-size:11.5px;color:var(--muted);margin-top:2px;min-height:14px}
+  @media (max-width:700px){.kpis{grid-template-columns:1fr 1fr}.steps{grid-template-columns:repeat(2,minmax(0,1fr))!important}.grid.three{grid-template-columns:1fr}.cols{grid-template-columns:1fr}}
 </style>
 
 
@@ -218,7 +247,7 @@ header nav{display:flex;align-items:center;min-width:0}
   <div class="kpi"><div class="v" style="font-size:18px">sent</div><div class="l">state</div></div>
   <div class="kpi"><div class="v" style="font-size:14px">abuse@mock-registrar.example</div><div class="l">abuse contact</div></div>
   <div class="kpi"><div class="v" style="font-size:14px">Mock Registrar LLC</div><div class="l">registrar</div></div>
-  <div class="kpi"><div class="v" style="font-size:14px">2026-10-12 06:42</div><div class="l">sent</div></div>
+  <div class="kpi"><div class="v" style="font-size:14px"><time datetime="2026-10-12T06:42:06.002191" data-local title="2026-10-12T06:42:06.002191 UTC">2026-10-12 06:42</time></div><div class="l">sent</div></div>
   <div class="kpi"><div class="v" style="font-size:14px">—</div><div class="l">resolved</div></div>
 </div>
 
@@ -353,9 +382,9 @@ ShopNova brand protection
         
         <button type="submit" name="to" value="acknowledged" class="">→ acknowledged</button>
         
-        <button type="submit" name="to" value="in_progress" class="">→ in_progress</button>
+        <button type="submit" name="to" value="in_progress" class="">→ in progress</button>
         
-        <button type="submit" name="to" value="resolved" class="ok">→ resolved</button>
+        <button type="submit" name="to" value="resolved" class="ok">→ taken down</button>
         
         
       </div>
@@ -363,9 +392,9 @@ ShopNova brand protection
     
     <h2>Timestamps</h2>
     <table class="small">
-      <tr><th>Created</th><td class="mono">2026-10-12 06:42:05</td></tr>
-      <tr><th>Updated</th><td class="mono">2026-10-12 06:42:06</td></tr>
-      <tr><th>Sent</th><td class="mono">2026-10-12 06:42:06</td></tr>
+      <tr><th>Created</th><td class="mono"><time datetime="2026-10-12T06:42:05.952422" data-local title="2026-10-12T06:42:05.952422 UTC">2026-10-12 06:42</time></td></tr>
+      <tr><th>Updated</th><td class="mono"><time datetime="2026-10-12T06:42:06.076516" data-local title="2026-10-12T06:42:06.076516 UTC">2026-10-12 06:42</time></td></tr>
+      <tr><th>Sent</th><td class="mono"><time datetime="2026-10-12T06:42:06.002191" data-local title="2026-10-12T06:42:06.002191 UTC">2026-10-12 06:42</time></td></tr>
       <tr><th>Response</th><td class="mono">—</td></tr>
       <tr><th>Resolved</th><td class="mono">—</td></tr>
     </table>
@@ -376,20 +405,20 @@ ShopNova brand protection
 
 
 <div class="panel" style="margin-top:14px" id="report">
-  <h2>Report the site everywhere <span class="muted">· 3 of 26 done</span></h2>
-  <p class="why">Blocklists and anti-virus vendors flag the site for users world-wide within hours, long before a takedown lands. Every vendor that flags it also shows up on VirusTotal, which search engines and mail filters consult — so the site drops out of Google results too. Open each portal, report <span class="mono">https://shopn0va.com/</span>, then tick it.</p>
+  <h2>Report the site everywhere <span class="muted">· <span class="rep-count">3</span> of 26 done</span></h2>
+  <p class="why">Blocklists and anti-virus vendors flag the site for users world-wide within hours, long before a takedown lands. Every vendor that flags it also shows up on VirusTotal, which search engines and mail filters consult — so the site drops out of Google results too. Open each portal, report <span class="mono" id="site-url">https://shopn0va.com/</span> <button type="button" class="copy" data-copy="https://shopn0va.com/" title="copy the address">copy</button>, then tick it.</p>
   
   <h3 class="muted small" style="margin:12px 0 6px;letter-spacing:.1em;text-transform:uppercase">Browsers &amp; search engines</h3>
   <div class="portals">
     
     <div class="portal done">
-      <div><b><a href="https://safebrowsing.google.com/safebrowsing/report_phish/?url=https%3A%2F%2Fshopn0va.com%2F" target="_blank" rel="noreferrer noopener">Google Safe Browsing ↗</a></b><small>Chrome, Firefox, Safari and Android warn users; Google also demotes the site in search. Opens with the URL filled in · reported 2026-10-12 06:42</small></div>
-      <form method="post" action="/ui/takedowns/71c2d1cb-03bb-40bb-9283-04feaa1f3a15/reported"><input type="hidden" name="portal" value="google_safebrowsing"><button type="submit" title="untick">✓ done</button></form>
+      <div><b><a href="https://safebrowsing.google.com/safebrowsing/report_phish/?url=https%3A%2F%2Fshopn0va.com%2F" target="_blank" rel="noreferrer noopener">Google Safe Browsing ↗</a></b><small>Chrome, Firefox, Safari and Android warn users; Google also demotes the site in search. Opens with the URL filled in<span class="when"> · reported <time datetime="2026-10-12T06:42:06.024320+00:00" data-local title="2026-10-12T06:42:06.024320+00:00 UTC">2026-10-12 06:42</time></span></small></div>
+      <form method="post" action="/ui/takedowns/71c2d1cb-03bb-40bb-9283-04feaa1f3a15/reported" class="portal-form"><input type="hidden" name="portal" value="google_safebrowsing"><button type="submit" title="untick">✓ done</button></form>
     </div>
     
     <div class="portal ">
-      <div><b><a href="https://www.microsoft.com/en-us/wdsi/support/report-unsafe-site-guest" target="_blank" rel="noreferrer noopener">Microsoft SmartScreen ↗</a></b><small>Edge, Windows and Outlook block the site. Guest form, no sign-in</small></div>
-      <form method="post" action="/ui/takedowns/71c2d1cb-03bb-40bb-9283-04feaa1f3a15/reported"><input type="hidden" name="portal" value="microsoft_smartscreen"><button type="submit" title="mark as reported">mark done</button></form>
+      <div><b><a href="https://www.microsoft.com/en-us/wdsi/support/report-unsafe-site-guest" target="_blank" rel="noreferrer noopener">Microsoft SmartScreen ↗</a></b><small>Edge, Windows and Outlook block the site. Guest form, no sign-in<span class="when"></span></small></div>
+      <form method="post" action="/ui/takedowns/71c2d1cb-03bb-40bb-9283-04feaa1f3a15/reported" class="portal-form"><input type="hidden" name="portal" value="microsoft_smartscreen"><button type="submit" title="mark as reported">mark done</button></form>
     </div>
     
   </div>
@@ -398,43 +427,43 @@ ShopNova brand protection
   <div class="portals">
     
     <div class="portal ">
-      <div><b><a href="https://opentip.kaspersky.com/shopn0va.com/" target="_blank" rel="noreferrer noopener">Kaspersky OpenTIP ↗</a></b><small>opens on the domain: check it and report</small></div>
-      <form method="post" action="/ui/takedowns/71c2d1cb-03bb-40bb-9283-04feaa1f3a15/reported"><input type="hidden" name="portal" value="kaspersky"><button type="submit" title="mark as reported">mark done</button></form>
+      <div><b><a href="https://opentip.kaspersky.com/shopn0va.com/" target="_blank" rel="noreferrer noopener">Kaspersky OpenTIP ↗</a></b><small>opens on the domain: check it and report<span class="when"></span></small></div>
+      <form method="post" action="/ui/takedowns/71c2d1cb-03bb-40bb-9283-04feaa1f3a15/reported" class="portal-form"><input type="hidden" name="portal" value="kaspersky"><button type="submit" title="mark as reported">mark done</button></form>
     </div>
     
     <div class="portal ">
-      <div><b><a href="https://phishing.eset.com/report" target="_blank" rel="noreferrer noopener">ESET ↗</a></b><small>phishing report form</small></div>
-      <form method="post" action="/ui/takedowns/71c2d1cb-03bb-40bb-9283-04feaa1f3a15/reported"><input type="hidden" name="portal" value="eset"><button type="submit" title="mark as reported">mark done</button></form>
+      <div><b><a href="https://phishing.eset.com/report" target="_blank" rel="noreferrer noopener">ESET ↗</a></b><small>phishing report form<span class="when"></span></small></div>
+      <form method="post" action="/ui/takedowns/71c2d1cb-03bb-40bb-9283-04feaa1f3a15/reported" class="portal-form"><input type="hidden" name="portal" value="eset"><button type="submit" title="mark as reported">mark done</button></form>
     </div>
     
     <div class="portal ">
-      <div><b><a href="https://www.bitdefender.com/consumer/support/answer/29358/" target="_blank" rel="noreferrer noopener">Bitdefender ↗</a></b><small>Bitdefender&#39;s official route for reporting a malicious site; detection is added within 72 hours</small></div>
-      <form method="post" action="/ui/takedowns/71c2d1cb-03bb-40bb-9283-04feaa1f3a15/reported"><input type="hidden" name="portal" value="bitdefender"><button type="submit" title="mark as reported">mark done</button></form>
+      <div><b><a href="https://www.bitdefender.com/consumer/support/answer/29358/" target="_blank" rel="noreferrer noopener">Bitdefender ↗</a></b><small>Bitdefender&#39;s official route for reporting a malicious site; detection is added within 72 hours<span class="when"></span></small></div>
+      <form method="post" action="/ui/takedowns/71c2d1cb-03bb-40bb-9283-04feaa1f3a15/reported" class="portal-form"><input type="hidden" name="portal" value="bitdefender"><button type="submit" title="mark as reported">mark done</button></form>
     </div>
     
     <div class="portal ">
-      <div><b><a href="https://global.sitesafety.trendmicro.com/" target="_blank" rel="noreferrer noopener">Trend Micro Site Safety ↗</a></b><small>check the URL; an untested site is queued for review automatically</small></div>
-      <form method="post" action="/ui/takedowns/71c2d1cb-03bb-40bb-9283-04feaa1f3a15/reported"><input type="hidden" name="portal" value="trendmicro"><button type="submit" title="mark as reported">mark done</button></form>
+      <div><b><a href="https://global.sitesafety.trendmicro.com/" target="_blank" rel="noreferrer noopener">Trend Micro Site Safety ↗</a></b><small>check the URL; an untested site is queued for review automatically<span class="when"></span></small></div>
+      <form method="post" action="/ui/takedowns/71c2d1cb-03bb-40bb-9283-04feaa1f3a15/reported" class="portal-form"><input type="hidden" name="portal" value="trendmicro"><button type="submit" title="mark as reported">mark done</button></form>
     </div>
     
     <div class="portal ">
-      <div><b><a href="https://www.avast.com/report-false-negative" target="_blank" rel="noreferrer noopener">Avast / AVG ↗</a></b><small>report a malicious site they do not block yet</small></div>
-      <form method="post" action="/ui/takedowns/71c2d1cb-03bb-40bb-9283-04feaa1f3a15/reported"><input type="hidden" name="portal" value="avast"><button type="submit" title="mark as reported">mark done</button></form>
+      <div><b><a href="https://www.avast.com/report-false-negative" target="_blank" rel="noreferrer noopener">Avast / AVG ↗</a></b><small>report a malicious site they do not block yet<span class="when"></span></small></div>
+      <form method="post" action="/ui/takedowns/71c2d1cb-03bb-40bb-9283-04feaa1f3a15/reported" class="portal-form"><input type="hidden" name="portal" value="avast"><button type="submit" title="mark as reported">mark done</button></form>
     </div>
     
     <div class="portal ">
-      <div><b><a href="https://support.sophos.com/support/s/filesubmission" target="_blank" rel="noreferrer noopener">Sophos ↗</a></b><small>URL / sample submission</small></div>
-      <form method="post" action="/ui/takedowns/71c2d1cb-03bb-40bb-9283-04feaa1f3a15/reported"><input type="hidden" name="portal" value="sophos"><button type="submit" title="mark as reported">mark done</button></form>
+      <div><b><a href="https://support.sophos.com/support/s/filesubmission" target="_blank" rel="noreferrer noopener">Sophos ↗</a></b><small>URL / sample submission<span class="when"></span></small></div>
+      <form method="post" action="/ui/takedowns/71c2d1cb-03bb-40bb-9283-04feaa1f3a15/reported" class="portal-form"><input type="hidden" name="portal" value="sophos"><button type="submit" title="mark as reported">mark done</button></form>
     </div>
     
     <div class="portal ">
-      <div><b><a href="https://www.avira.com/en/analysis/submit" target="_blank" rel="noreferrer noopener">Avira ↗</a></b><small>URL / sample submission</small></div>
-      <form method="post" action="/ui/takedowns/71c2d1cb-03bb-40bb-9283-04feaa1f3a15/reported"><input type="hidden" name="portal" value="avira"><button type="submit" title="mark as reported">mark done</button></form>
+      <div><b><a href="https://www.avira.com/en/analysis/submit" target="_blank" rel="noreferrer noopener">Avira ↗</a></b><small>URL / sample submission<span class="when"></span></small></div>
+      <form method="post" action="/ui/takedowns/71c2d1cb-03bb-40bb-9283-04feaa1f3a15/reported" class="portal-form"><input type="hidden" name="portal" value="avira"><button type="submit" title="mark as reported">mark done</button></form>
     </div>
     
     <div class="portal ">
-      <div><b><a href="https://vms.drweb.com/sendvirus/" target="_blank" rel="noreferrer noopener">Dr.Web ↗</a></b><small>URL / sample submission</small></div>
-      <form method="post" action="/ui/takedowns/71c2d1cb-03bb-40bb-9283-04feaa1f3a15/reported"><input type="hidden" name="portal" value="drweb"><button type="submit" title="mark as reported">mark done</button></form>
+      <div><b><a href="https://vms.drweb.com/sendvirus/" target="_blank" rel="noreferrer noopener">Dr.Web ↗</a></b><small>URL / sample submission<span class="when"></span></small></div>
+      <form method="post" action="/ui/takedowns/71c2d1cb-03bb-40bb-9283-04feaa1f3a15/reported" class="portal-form"><input type="hidden" name="portal" value="drweb"><button type="submit" title="mark as reported">mark done</button></form>
     </div>
     
   </div>
@@ -443,38 +472,38 @@ ShopNova brand protection
   <div class="portals">
     
     <div class="portal ">
-      <div><b><a href="https://www.fortiguard.com/webfilter" target="_blank" rel="noreferrer noopener">FortiGuard (Fortinet) ↗</a></b><small>look up the URL and submit it for rating; no account</small></div>
-      <form method="post" action="/ui/takedowns/71c2d1cb-03bb-40bb-9283-04feaa1f3a15/reported"><input type="hidden" name="portal" value="fortiguard"><button type="submit" title="mark as reported">mark done</button></form>
+      <div><b><a href="https://www.fortiguard.com/webfilter" target="_blank" rel="noreferrer noopener">FortiGuard (Fortinet) ↗</a></b><small>look up the URL and submit it for rating; no account<span class="when"></span></small></div>
+      <form method="post" action="/ui/takedowns/71c2d1cb-03bb-40bb-9283-04feaa1f3a15/reported" class="portal-form"><input type="hidden" name="portal" value="fortiguard"><button type="submit" title="mark as reported">mark done</button></form>
     </div>
     
     <div class="portal ">
-      <div><b><a href="https://sitereview.bluecoat.com/" target="_blank" rel="noreferrer noopener">Symantec / Broadcom Site Review ↗</a></b><small>Norton &amp; Blue Coat categorisation</small></div>
-      <form method="post" action="/ui/takedowns/71c2d1cb-03bb-40bb-9283-04feaa1f3a15/reported"><input type="hidden" name="portal" value="symantec"><button type="submit" title="mark as reported">mark done</button></form>
+      <div><b><a href="https://sitereview.bluecoat.com/" target="_blank" rel="noreferrer noopener">Symantec / Broadcom Site Review ↗</a></b><small>Norton &amp; Blue Coat categorisation<span class="when"></span></small></div>
+      <form method="post" action="/ui/takedowns/71c2d1cb-03bb-40bb-9283-04feaa1f3a15/reported" class="portal-form"><input type="hidden" name="portal" value="symantec"><button type="submit" title="mark as reported">mark done</button></form>
     </div>
     
     <div class="portal ">
-      <div><b><a href="https://www.trustedsource.org/" target="_blank" rel="noreferrer noopener">Trellix / McAfee TrustedSource ↗</a></b><small>URL categorisation &amp; dispute</small></div>
-      <form method="post" action="/ui/takedowns/71c2d1cb-03bb-40bb-9283-04feaa1f3a15/reported"><input type="hidden" name="portal" value="trellix"><button type="submit" title="mark as reported">mark done</button></form>
+      <div><b><a href="https://www.trustedsource.org/" target="_blank" rel="noreferrer noopener">Trellix / McAfee TrustedSource ↗</a></b><small>URL categorisation &amp; dispute<span class="when"></span></small></div>
+      <form method="post" action="/ui/takedowns/71c2d1cb-03bb-40bb-9283-04feaa1f3a15/reported" class="portal-form"><input type="hidden" name="portal" value="trellix"><button type="submit" title="mark as reported">mark done</button></form>
     </div>
     
     <div class="portal ">
-      <div><b><a href="https://sitereview.zscaler.com/" target="_blank" rel="noreferrer noopener">Zscaler Site Review ↗</a></b><small>look up the URL and request reclassification; answer by e-mail</small></div>
-      <form method="post" action="/ui/takedowns/71c2d1cb-03bb-40bb-9283-04feaa1f3a15/reported"><input type="hidden" name="portal" value="zscaler"><button type="submit" title="mark as reported">mark done</button></form>
+      <div><b><a href="https://sitereview.zscaler.com/" target="_blank" rel="noreferrer noopener">Zscaler Site Review ↗</a></b><small>look up the URL and request reclassification; answer by e-mail<span class="when"></span></small></div>
+      <form method="post" action="/ui/takedowns/71c2d1cb-03bb-40bb-9283-04feaa1f3a15/reported" class="portal-form"><input type="hidden" name="portal" value="zscaler"><button type="submit" title="mark as reported">mark done</button></form>
     </div>
     
     <div class="portal ">
-      <div><b><a href="https://urlfiltering.paloaltonetworks.com/" target="_blank" rel="noreferrer noopener">Palo Alto Networks Test A Site ↗</a></b><small>look up the URL, then &#39;Request change&#39; under the result (may ask you to sign in)</small></div>
-      <form method="post" action="/ui/takedowns/71c2d1cb-03bb-40bb-9283-04feaa1f3a15/reported"><input type="hidden" name="portal" value="paloalto"><button type="submit" title="mark as reported">mark done</button></form>
+      <div><b><a href="https://urlfiltering.paloaltonetworks.com/" target="_blank" rel="noreferrer noopener">Palo Alto Networks Test A Site ↗</a></b><small>look up the URL, then &#39;Request change&#39; under the result (may ask you to sign in)<span class="when"></span></small></div>
+      <form method="post" action="/ui/takedowns/71c2d1cb-03bb-40bb-9283-04feaa1f3a15/reported" class="portal-form"><input type="hidden" name="portal" value="paloalto"><button type="submit" title="mark as reported">mark done</button></form>
     </div>
     
     <div class="portal ">
-      <div><b><a href="https://support.threatintel.opentext.com/tools/change-request.php" target="_blank" rel="noreferrer noopener">OpenText BrightCloud (Webroot) ↗</a></b><small>change request: rate the URL 1-20; used by many routers and firewalls</small></div>
-      <form method="post" action="/ui/takedowns/71c2d1cb-03bb-40bb-9283-04feaa1f3a15/reported"><input type="hidden" name="portal" value="brightcloud"><button type="submit" title="mark as reported">mark done</button></form>
+      <div><b><a href="https://support.threatintel.opentext.com/tools/change-request.php" target="_blank" rel="noreferrer noopener">OpenText BrightCloud (Webroot) ↗</a></b><small>change request: rate the URL 1-20; used by many routers and firewalls<span class="when"></span></small></div>
+      <form method="post" action="/ui/takedowns/71c2d1cb-03bb-40bb-9283-04feaa1f3a15/reported" class="portal-form"><input type="hidden" name="portal" value="brightcloud"><button type="submit" title="mark as reported">mark done</button></form>
     </div>
     
     <div class="portal ">
-      <div><b><a href="https://talosintelligence.com/reputation_center/support" target="_blank" rel="noreferrer noopener">Cisco Talos ↗</a></b><small>web reputation ticket; free Cisco account</small></div>
-      <form method="post" action="/ui/takedowns/71c2d1cb-03bb-40bb-9283-04feaa1f3a15/reported"><input type="hidden" name="portal" value="cisco_talos"><button type="submit" title="mark as reported">mark done</button></form>
+      <div><b><a href="https://talosintelligence.com/reputation_center/support" target="_blank" rel="noreferrer noopener">Cisco Talos ↗</a></b><small>web reputation ticket; free Cisco account<span class="when"></span></small></div>
+      <form method="post" action="/ui/takedowns/71c2d1cb-03bb-40bb-9283-04feaa1f3a15/reported" class="portal-form"><input type="hidden" name="portal" value="cisco_talos"><button type="submit" title="mark as reported">mark done</button></form>
     </div>
     
   </div>
@@ -483,28 +512,28 @@ ShopNova brand protection
   <div class="portals">
     
     <div class="portal done">
-      <div><b><a href="https://report.netcraft.com/report" target="_blank" rel="noreferrer noopener">Netcraft ↗</a></b><small>runs its own takedown service and feeds browser blocklists · reported 2026-10-12 06:42</small></div>
-      <form method="post" action="/ui/takedowns/71c2d1cb-03bb-40bb-9283-04feaa1f3a15/reported"><input type="hidden" name="portal" value="netcraft"><button type="submit" title="untick">✓ done</button></form>
+      <div><b><a href="https://report.netcraft.com/report" target="_blank" rel="noreferrer noopener">Netcraft ↗</a></b><small>runs its own takedown service and feeds browser blocklists<span class="when"> · reported <time datetime="2026-10-12T06:42:06.053154+00:00" data-local title="2026-10-12T06:42:06.053154+00:00 UTC">2026-10-12 06:42</time></span></small></div>
+      <form method="post" action="/ui/takedowns/71c2d1cb-03bb-40bb-9283-04feaa1f3a15/reported" class="portal-form"><input type="hidden" name="portal" value="netcraft"><button type="submit" title="untick">✓ done</button></form>
     </div>
     
     <div class="portal done">
-      <div><b><a href="mailto:reportphishing@apwg.org?subject=Phishing%20site%20impersonating%20ShopNova%20%E2%80%94%20takedown%20request%20BW-570AE512%3A%20shopn0va.com&amp;body=To%3A%20%3Cabuse%20contact%20%E2%80%94%20resolve%20via%20WHOIS%20%2F%20abuse.net%20%2F%20hosting%20provider%3E%0ASubject%3A%20Phishing%20site%20impersonating%20ShopNova%20%E2%80%94%20request%20for%20takedown%3A%20shopn0va.com%0A%0AHello%20Mock%20Registrar%20LLC%20abuse%20team%2C%0A%0AWe%20are%20reporting%20a%20website%20that%20impersonates%20ShopNova%20and%20appears%20designed%20to%20harvest%20user%20credentials.%0A%0A%20%20Impersonating%20URL%20%3A%20https%3A%2F%2Fshopn0va.com%2F%0A%20%20Hostname%20%20%20%20%20%20%20%20%20%20%3A%20shopn0va.com%0A%20%20First%20observed%20%20%20%20%3A%202026-10-12T06%3A41%3A46.604012%0A%20%20Risk%20assessment%20%20%20%3A%20CRITICAL%20%28score%2085%20%2F%20100%2C%20confidence%20100%20%25%29%0A%0AEvidence%20%28full%20package%20with%20hashes%20and%20screenshots%20attached%20%2F%20available%20on%20request%29%3A%0A%20%20-%20favicon_exact%3A%20favicon%20mmh3%20-2029202433%20equals%20the%20brand%27s%20favicon%20hash%0A%20%20-%20screenshot_similarity_ge_90%3A%20homepage%20screenshot%20is%20100%25%20similar%20to%20the%20brand%27s%20%28pHash%29%0A%20%20-%20cohosted_with_known_phish%3A%20shares%20server%20203.0.113.66%20with%20known%20phishing%20of%20this%20brand%0A%20%20-%20tracking_id_shared%3A%20tracking%20id%20UA-424242-1%20also%20present%20on%20known%20phishing%20pages%0A%20%20-%20credential_form%3A%20page%20contains%20a%20password%20field%0A%20%20-%20cert_shared_with_phish%3A%20TLS%20certificate%20fingerprint%20also%20used%20by%20known%20phishing%0A%20%20-%20login_dom_similarity%3A%20login%20form%20markup%20is%20100%25%20identical%20to%20the%20brand%27s%0A%20%20-%20vt_flagged%3A%20virustotal%20flags%20this%20host%20as%20malicious%0A%20%20-%20domain%20age%3A%20domain%20registered%203%20day%28s%29%20ago%0A%20%20-%20screenshot%20similarity%20to%20the%20official%20site%3A%20100%20%25%0A%20%20-%20every%20observation%20is%20stored%20immutably%20with%20timestamp%2C%20collector%20version%20and%20SHA-256.%0A%0AWe%20respectfully%20request%20that%20you%20suspend%20the%20domain%20%2F%20hosting%20for%20the%20content%20above%20and%20confirm%0Awhen%20done.%20Please%20ref%0A%0A%5B...%20full%20request%20text%20pasted%20by%20the%20analyst%20...%5D" target="_blank" rel="noreferrer noopener">APWG (Anti-Phishing Working Group) ↗</a></b><small>the industry phishing feed used by security vendors world-wide; opens a pre-written e-mail · reported 2026-10-12 06:42</small></div>
-      <form method="post" action="/ui/takedowns/71c2d1cb-03bb-40bb-9283-04feaa1f3a15/reported"><input type="hidden" name="portal" value="apwg"><button type="submit" title="untick">✓ done</button></form>
+      <div><b><a href="mailto:reportphishing@apwg.org?subject=Phishing%20site%20impersonating%20ShopNova%20%E2%80%94%20takedown%20request%20BW-570AE512%3A%20shopn0va.com&amp;body=To%3A%20%3Cabuse%20contact%20%E2%80%94%20resolve%20via%20WHOIS%20%2F%20abuse.net%20%2F%20hosting%20provider%3E%0ASubject%3A%20Phishing%20site%20impersonating%20ShopNova%20%E2%80%94%20request%20for%20takedown%3A%20shopn0va.com%0A%0AHello%20Mock%20Registrar%20LLC%20abuse%20team%2C%0A%0AWe%20are%20reporting%20a%20website%20that%20impersonates%20ShopNova%20and%20appears%20designed%20to%20harvest%20user%20credentials.%0A%0A%20%20Impersonating%20URL%20%3A%20https%3A%2F%2Fshopn0va.com%2F%0A%20%20Hostname%20%20%20%20%20%20%20%20%20%20%3A%20shopn0va.com%0A%20%20First%20observed%20%20%20%20%3A%202026-10-12T06%3A41%3A46.604012%0A%20%20Risk%20assessment%20%20%20%3A%20CRITICAL%20%28score%2085%20%2F%20100%2C%20confidence%20100%20%25%29%0A%0AEvidence%20%28full%20package%20with%20hashes%20and%20screenshots%20attached%20%2F%20available%20on%20request%29%3A%0A%20%20-%20favicon_exact%3A%20favicon%20mmh3%20-2029202433%20equals%20the%20brand%27s%20favicon%20hash%0A%20%20-%20screenshot_similarity_ge_90%3A%20homepage%20screenshot%20is%20100%25%20similar%20to%20the%20brand%27s%20%28pHash%29%0A%20%20-%20cohosted_with_known_phish%3A%20shares%20server%20203.0.113.66%20with%20known%20phishing%20of%20this%20brand%0A%20%20-%20tracking_id_shared%3A%20tracking%20id%20UA-424242-1%20also%20present%20on%20known%20phishing%20pages%0A%20%20-%20credential_form%3A%20page%20contains%20a%20password%20field%0A%20%20-%20cert_shared_with_phish%3A%20TLS%20certificate%20fingerprint%20also%20used%20by%20known%20phishing%0A%20%20-%20login_dom_similarity%3A%20login%20form%20markup%20is%20100%25%20identical%20to%20the%20brand%27s%0A%20%20-%20vt_flagged%3A%20virustotal%20flags%20this%20host%20as%20malicious%0A%20%20-%20domain%20age%3A%20domain%20registered%203%20day%28s%29%20ago%0A%20%20-%20screenshot%20similarity%20to%20the%20official%20site%3A%20100%20%25%0A%20%20-%20every%20observation%20is%20stored%20immutably%20with%20timestamp%2C%20collector%20version%20and%20SHA-256.%0A%0AWe%20respectfully%20request%20that%20you%20suspend%20the%20domain%20%2F%20hosting%20for%20the%20content%20above%20and%20confirm%0Awhen%20done.%20Please%20ref%0A%0A%5B...%20full%20request%20text%20pasted%20by%20the%20analyst%20...%5D" target="_blank" rel="noreferrer noopener">APWG (Anti-Phishing Working Group) ↗</a></b><small>the industry phishing feed used by security vendors world-wide; opens a pre-written e-mail<span class="when"> · reported <time datetime="2026-10-12T06:42:06.076516+00:00" data-local title="2026-10-12T06:42:06.076516+00:00 UTC">2026-10-12 06:42</time></span></small></div>
+      <form method="post" action="/ui/takedowns/71c2d1cb-03bb-40bb-9283-04feaa1f3a15/reported" class="portal-form"><input type="hidden" name="portal" value="apwg"><button type="submit" title="untick">✓ done</button></form>
     </div>
     
     <div class="portal ">
-      <div><b><a href="https://submit.spamhaus.org/" target="_blank" rel="noreferrer noopener">Spamhaus ↗</a></b><small>domain / URL blocklists used by mail servers and DNS resolvers; sign in with GitHub, Google or LinkedIn</small></div>
-      <form method="post" action="/ui/takedowns/71c2d1cb-03bb-40bb-9283-04feaa1f3a15/reported"><input type="hidden" name="portal" value="spamhaus"><button type="submit" title="mark as reported">mark done</button></form>
+      <div><b><a href="https://submit.spamhaus.org/" target="_blank" rel="noreferrer noopener">Spamhaus ↗</a></b><small>domain / URL blocklists used by mail servers and DNS resolvers; sign in with GitHub, Google or LinkedIn<span class="when"></span></small></div>
+      <form method="post" action="/ui/takedowns/71c2d1cb-03bb-40bb-9283-04feaa1f3a15/reported" class="portal-form"><input type="hidden" name="portal" value="spamhaus"><button type="submit" title="mark as reported">mark done</button></form>
     </div>
     
     <div class="portal ">
-      <div><b><a href="https://phishtank.org/add_web_phish.php" target="_blank" rel="noreferrer noopener">PhishTank ↗</a></b><small>community feed run by Cisco Talos; free account needed</small></div>
-      <form method="post" action="/ui/takedowns/71c2d1cb-03bb-40bb-9283-04feaa1f3a15/reported"><input type="hidden" name="portal" value="phishtank"><button type="submit" title="mark as reported">mark done</button></form>
+      <div><b><a href="https://phishtank.org/add_web_phish.php" target="_blank" rel="noreferrer noopener">PhishTank ↗</a></b><small>community feed run by Cisco Talos; free account needed<span class="when"></span></small></div>
+      <form method="post" action="/ui/takedowns/71c2d1cb-03bb-40bb-9283-04feaa1f3a15/reported" class="portal-form"><input type="hidden" name="portal" value="phishtank"><button type="submit" title="mark as reported">mark done</button></form>
     </div>
     
     <div class="portal ">
-      <div><b><a href="https://urlhaus.abuse.ch/api/#submit" target="_blank" rel="noreferrer noopener">URLhaus (abuse.ch) ↗</a></b><small>malware URLs only: use it when the kit also pushes malware (APKs, droppers); free abuse.ch account</small></div>
-      <form method="post" action="/ui/takedowns/71c2d1cb-03bb-40bb-9283-04feaa1f3a15/reported"><input type="hidden" name="portal" value="urlhaus"><button type="submit" title="mark as reported">mark done</button></form>
+      <div><b><a href="https://urlhaus.abuse.ch/api/#submit" target="_blank" rel="noreferrer noopener">URLhaus (abuse.ch) ↗</a></b><small>malware URLs only: use it when the kit also pushes malware (APKs, droppers); free abuse.ch account<span class="when"></span></small></div>
+      <form method="post" action="/ui/takedowns/71c2d1cb-03bb-40bb-9283-04feaa1f3a15/reported" class="portal-form"><input type="hidden" name="portal" value="urlhaus"><button type="submit" title="mark as reported">mark done</button></form>
     </div>
     
   </div>
@@ -513,31 +542,73 @@ ShopNova brand protection
   <div class="portals">
     
     <div class="portal ">
-      <div><b><a href="https://complaint.ic3.gov/" target="_blank" rel="noreferrer noopener">FBI IC3 (US) ↗</a></b><small>complaint form, for US victims or US-hosted sites</small></div>
-      <form method="post" action="/ui/takedowns/71c2d1cb-03bb-40bb-9283-04feaa1f3a15/reported"><input type="hidden" name="portal" value="ic3"><button type="submit" title="mark as reported">mark done</button></form>
+      <div><b><a href="https://complaint.ic3.gov/" target="_blank" rel="noreferrer noopener">FBI IC3 (US) ↗</a></b><small>complaint form, for US victims or US-hosted sites<span class="when"></span></small></div>
+      <form method="post" action="/ui/takedowns/71c2d1cb-03bb-40bb-9283-04feaa1f3a15/reported" class="portal-form"><input type="hidden" name="portal" value="ic3"><button type="submit" title="mark as reported">mark done</button></form>
     </div>
     
     <div class="portal ">
-      <div><b><a href="https://www.ncsc.gov.uk/section/about-this-website/report-scam-website" target="_blank" rel="noreferrer noopener">NCSC Report a suspicious website (UK) ↗</a></b><small>the form is on the page; the NCSC takes sites down</small></div>
-      <form method="post" action="/ui/takedowns/71c2d1cb-03bb-40bb-9283-04feaa1f3a15/reported"><input type="hidden" name="portal" value="ncsc_uk"><button type="submit" title="mark as reported">mark done</button></form>
+      <div><b><a href="https://www.ncsc.gov.uk/section/about-this-website/report-scam-website" target="_blank" rel="noreferrer noopener">NCSC Report a suspicious website (UK) ↗</a></b><small>the form is on the page; the NCSC takes sites down<span class="when"></span></small></div>
+      <form method="post" action="/ui/takedowns/71c2d1cb-03bb-40bb-9283-04feaa1f3a15/reported" class="portal-form"><input type="hidden" name="portal" value="ncsc_uk"><button type="submit" title="mark as reported">mark done</button></form>
     </div>
     
     <div class="portal ">
-      <div><b><a href="https://www.scamwatch.gov.au/report-a-scam" target="_blank" rel="noreferrer noopener">Scamwatch (Australia) ↗</a></b><small>ACCC report form; works with providers to remove scam sites</small></div>
-      <form method="post" action="/ui/takedowns/71c2d1cb-03bb-40bb-9283-04feaa1f3a15/reported"><input type="hidden" name="portal" value="scamwatch_au"><button type="submit" title="mark as reported">mark done</button></form>
+      <div><b><a href="https://www.scamwatch.gov.au/report-a-scam" target="_blank" rel="noreferrer noopener">Scamwatch (Australia) ↗</a></b><small>ACCC report form; works with providers to remove scam sites<span class="when"></span></small></div>
+      <form method="post" action="/ui/takedowns/71c2d1cb-03bb-40bb-9283-04feaa1f3a15/reported" class="portal-form"><input type="hidden" name="portal" value="scamwatch_au"><button type="submit" title="mark as reported">mark done</button></form>
     </div>
     
     <div class="portal ">
-      <div><b><a href="https://reportcyberandfraud.canada.ca/" target="_blank" rel="noreferrer noopener">Canadian Anti-Fraud Centre ↗</a></b><small>the national cybercrime and fraud reporting system</small></div>
-      <form method="post" action="/ui/takedowns/71c2d1cb-03bb-40bb-9283-04feaa1f3a15/reported"><input type="hidden" name="portal" value="cafc_ca"><button type="submit" title="mark as reported">mark done</button></form>
+      <div><b><a href="https://reportcyberandfraud.canada.ca/" target="_blank" rel="noreferrer noopener">Canadian Anti-Fraud Centre ↗</a></b><small>the national cybercrime and fraud reporting system<span class="when"></span></small></div>
+      <form method="post" action="/ui/takedowns/71c2d1cb-03bb-40bb-9283-04feaa1f3a15/reported" class="portal-form"><input type="hidden" name="portal" value="cafc_ca"><button type="submit" title="mark as reported">mark done</button></form>
     </div>
     
   </div>
   
 </div>
 
+<script>
+(function(){
+  // copy the site address
+  document.querySelectorAll('[data-copy]').forEach(b => b.addEventListener('click', async () => {
+    try { await navigator.clipboard.writeText(b.dataset.copy); b.textContent = 'copied ✓'; setTimeout(() => { b.textContent = 'copy'; }, 1500); } catch (e) { b.textContent = 'select it manually'; } }));
+  // tick a portal without leaving the page (the page's scroll position and the open sections stay)
+  document.querySelectorAll('form.portal-form').forEach(f => f.addEventListener('submit', async ev => {
+    if (!window.fetch) return; ev.preventDefault();
+    const btn = f.querySelector('button'), card = f.closest('.portal'); btn.disabled = true;
+    try {
+      const r = await fetch(f.action, {method: 'POST', body: new FormData(f), credentials: 'same-origin', headers: {'X-Requested-With': 'fetch'}});
+      const j = await r.json(); if (!r.ok) throw new Error(j.error || r.status);
+      card.classList.toggle('done', j.done); btn.textContent = j.done ? '✓ done' : 'mark done'; btn.title = j.done ? 'untick' : 'mark as reported';
+      const w = card.querySelector('.when'); if (w) w.textContent = j.done ? ' · reported just now' : '';
+      document.querySelectorAll('.rep-count').forEach(el => { el.textContent = j.count; });
+    } catch (e) { f.submit(); } finally { btn.disabled = false; }
+  }));
+})();
+</script>
 
 </main>
+<script>
+/* A form is sent once: a double click (or Enter twice) queued two identical scans, one of which never ran.
+   Every scan form and every form marked data-busy is guarded; a data-busy form also disables the button that sent it
+   and shows "Working…" (data-busy="text" for other words) until the answer arrives.
+   Only a submit that really went out counts — a confirm dialog cancels the first one and sends it again itself. */
+(function(){
+  const once = f => f.hasAttribute('data-busy') || /\/(scan|scan-urls)$/.test(f.getAttribute('action') || '');
+  document.addEventListener('submit', e => { const f = e.target; if (once(f) && f.__sentAt && Date.now() - f.__sentAt < 4000) { e.preventDefault(); e.stopImmediatePropagation(); } }, true);
+  // read defaultPrevented after every listener ran (the confirm dialog's included), not before them
+  document.addEventListener('submit', e => { const f = e.target, b = e.submitter; if (!once(f)) return;
+    setTimeout(() => { if (e.defaultPrevented) return; f.__sentAt = Date.now();
+      if (f.hasAttribute('data-busy') && b && b.tagName === 'BUTTON') { b.disabled = true; b.dataset.was = b.textContent; b.textContent = f.getAttribute('data-busy') || 'Working…';
+        setTimeout(() => { b.disabled = false; b.textContent = b.dataset.was; }, 30000); } }, 0); });
+  // the sticky header's height, for anything that sticks under it
+  const hdr = document.querySelector('header'); const setH = () => document.documentElement.style.setProperty('--hdr', (hdr ? hdr.offsetHeight : 56) + 'px');
+  setH(); window.addEventListener('resize', setH);
+  // server timestamps are UTC: <time datetime="…" data-local> (the |ts filter) and [data-local="…"] show the viewer's local time
+  const utc = iso => /T\d\d:\d\d/.test(iso) && !/(Z|[+-]\d\d:?\d\d)$/.test(iso) ? iso + 'Z' : iso;
+  const fmt = new Intl.DateTimeFormat(undefined, {year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'});
+  document.querySelectorAll('[data-local]').forEach(el => { const raw = el.getAttribute('datetime') || el.dataset.local; if (!raw) return;
+    const d = new Date(utc(raw)); if (isNaN(d)) return; el.textContent = fmt.format(d); if (!el.title) el.title = raw.replace('T', ' ').slice(0, 19) + ' UTC'; });
+})();
+</script>
 <script>
 /* BrandWatch motion layer: count-ups, staggered entrances, animated bars / rings / histograms,
    and auto-drawn donut + sparkline charts from data-* attributes. */
