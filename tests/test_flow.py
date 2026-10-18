@@ -245,7 +245,7 @@ def test_console_links_to_the_infrastructure_map_and_takedowns_list(engine, tmp_
         assert "Takedown request" in tpage and 'href="/ui/takedowns"' in tpage
         page = ui.get(f"/ui/findings/{f['id']}/intel").text  # redirects to the finding page
         assert "Map attack infrastructure" in page and "Site &amp; network investigation" in page
-        assert 'data-tab="network"' in page and 'id="invbar"' in page
+        assert 'data-tab="investigation"' in page and 'id="tab-network"' in page and 'id="invbar"' in page
 
 
 def test_every_session_dependency_commits_before_the_response(engine, tmp_path):

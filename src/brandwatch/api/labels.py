@@ -12,6 +12,10 @@ from typing import Any
 
 from markupsafe import Markup, escape
 
+from brandwatch.config.brand_config import SIGNAL_GROUPS
+
+N_SIGNALS = len(SIGNAL_GROUPS)  # the real number, never typed by hand
+
 # signal id → (short label shown on pills, one sentence of evidence)
 SIGNAL_LABELS: dict[str, tuple[str, str]] = {
     "brand_exact_in_domain": ("brand name in the domain", "the exact brand name is part of the domain name"),
@@ -220,7 +224,15 @@ SURFACE_LABELS: dict[str, str] = {"name": "domain name", "subdomain": "subdomain
                                   "app": "app listing", "social": "social profile"}  # fmt: skip
 
 JOB_LABELS: dict[str, str] = {"brand_scan": "brand scan", "url_scan": "URL scan",
-                              "investigate": "infrastructure map", "intel": "site intel"}  # fmt: skip
+                              "investigate": "infrastructure map", "intel": "site intel", "map_all": "map all"}  # fmt: skip
+
+# the analyst's reason for dismissing, in words (the enum values are what the API takes)
+VERDICT_LABELS: dict[str, str] = {"legitimate": "a legitimate site", "suspicious": "suspicious, but not phishing",
+                                  "unknown": "cannot tell"}  # fmt: skip
+# the kinds of message a page shows after a form was saved (?saved=<key>)
+SAVED_TEXT: dict[str, str] = {"config": "Detection track and search rules saved.", "allowlist": "Allowlist updated.",
+                              "baseline": "Baseline rebuilt from the official site.", "brand": "Brand updated.",
+                              "map_deleted": "The infrastructure map was deleted.", "notify": "Notification settings saved."}  # fmt: skip
 
 STAGE_LABELS: dict[str, tuple[str, str]] = {
     "baseline": ("Learn the real site", "favicon, screenshot, login form, keywords"),
@@ -228,7 +240,7 @@ STAGE_LABELS: dict[str, tuple[str, str]] = {
     "deduplicate": ("Clean the list", "merge, drop official & known platforms"),
     "enrichment": ("Visit in a sandbox", "DNS, WHOIS, screenshot, HTML"),
     "cloaking": ("Catch cloaking", "fetch as a bot, a victim and a home IP"),
-    "analysis": ("Compare with the brand", "42 signals in 7 groups"),
+    "analysis": ("Compare with the brand", f"{N_SIGNALS} signals in 7 groups"),
     "scoring": ("Score & explain", "risk 0–100 + confidence"),
     "finding": ("Raise a finding", "Medium and above go to an analyst"),
     "summary": ("Report", "what this scan did, step by step"),
@@ -321,7 +333,7 @@ GLOSSARY: list[tuple[str, str, str]] = [
     ("baseline", "Baseline", "The fingerprint of the brand's real site — favicon hash, screenshot hash, colours, login pages, keywords. Every suspect is compared against it."),
     ("candidate", "Candidate / watched domain", "Any domain discovered for a brand. It lives on the Watchlist until it scores high enough to become a finding, expires, or is dismissed."),
     ("finding", "Finding", "A candidate that scored Medium or higher. An analyst confirms it as phishing or dismisses it; nothing happens automatically."),
-    ("signal", "Signal", "One piece of evidence (e.g. 'identical favicon'). 42 signals in 7 groups; each adds points."),
+    ("signal", "Signal", f"One piece of evidence (e.g. 'identical favicon'). {N_SIGNALS} signals in 7 groups; each adds points."),
     ("group-cap", "Group cap", "Each group can add at most its cap, so ten weak visual hints never outweigh one strong behaviour signal."),
     ("risk", "Risk score", "How dangerous the site is, 0–100. Medium ≥ 25, High ≥ 50, Critical ≥ 75. Combination rules can raise the severity."),
     ("confidence", "Confidence", "How complete and consistent the evidence is (breadth, completeness, provider agreement) — separate from risk."),
@@ -347,6 +359,15 @@ def signal_help(sig: str) -> str:
 
 def group_label(g: str) -> str:
     return GROUP_LABELS.get(g, (g.replace("_", " ").title(), ""))[0]
+
+
+def ts(value: Any) -> Markup:
+    """A timestamp as the browser's local time: <time datetime=…> that base.html rewrites, the UTC text as a fallback."""
+    if not value:
+        return Markup("—")
+    raw = value.isoformat() if hasattr(value, "isoformat") else str(value)
+    shown = raw[:16].replace("T", " ")
+    return Markup(f'<time datetime="{escape(raw)}" data-local title="{escape(raw)} UTC">{escape(shown)}</time>')
 
 
 def state_label(s: Any) -> str:
@@ -394,7 +415,7 @@ def register(templates: Any) -> None:
     env.filters.update({
         "signal_label": signal_label, "signal_help": signal_help, "group_label": group_label,
         "state_label": state_label, "stream_label": stream_label, "rule_label": rule_label,
-        "fp_label": fp_label, "job_label": job_label,
+        "fp_label": fp_label, "job_label": job_label, "ts": ts,
     })  # fmt: skip
     from brandwatch.detection.takedown_channels import REPORT_PORTALS
 
@@ -405,4 +426,5 @@ def register(templates: Any) -> None:
         "SIGNAL_LABELS_JSON": {k: v[0] for k, v in SIGNAL_LABELS.items()},
         "STREAM_LABELS": STREAM_LABELS, "SURFACE_LABELS": SURFACE_LABELS,
         "PROVIDER_GROUPS": PROVIDER_GROUPS, "PROVIDER_INFO": PROVIDER_INFO, "KEYLESS_SOURCES": KEYLESS_SOURCES,
+        "VERDICT_LABELS": VERDICT_LABELS, "SAVED_TEXT": SAVED_TEXT, "SIGNAL_COUNT": N_SIGNALS,
     })  # fmt: skip

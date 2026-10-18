@@ -1,0 +1,28 @@
+{# One message after a form: ?flash=<what>:<host>:<finding id> (a verdict, with Undo) or ?saved=<key> (SAVED_TEXT).
+   Included by base.html on every page; a page that shows its own banner for a key just leaves it out of the URL. #}
+{% if request %}
+{% set fl = request.query_params.get('flash') or '' %}
+{% set sv = request.query_params.get('saved') or '' %}
+{% if fl or (sv and SAVED_TEXT.get(sv)) %}
+{% set fp = fl.split(':') %}
+<div class="flash" role="status" aria-live="polite" id="flash">
+  {% if fl and fp|length >= 3 %}
+    {% set what = fp[0] %}{% set host = fp[1] %}{% set fid = fp[2] %}
+    <span class="ic {{ 'ok' if what == 'confirmed' else ('undo' if what == 'reopened' else '') }}">{{ '✓' if what == 'confirmed' else ('↶' if what == 'reopened' else ('◌' if what == 'rescan' else '✕')) }}</span>
+    <span class="t">
+      {% if what == 'confirmed' %}<b class="mono" dir="ltr">{{ host }}</b> confirmed as phishing — it is now in <a href="/ui/campaigns#confirmed">Attack infrastructure</a>; the takedown can be drafted from <a href="/ui/findings/{{ fid }}">the finding</a>.
+      {% elif what == 'dismissed' %}<b class="mono" dir="ltr">{{ host }}</b> dismissed — the verdict is kept and teaches the classifier.
+      {% elif what == 'reopened' %}<b class="mono" dir="ltr">{{ host }}</b> is open again — it waits for a verdict in <a href="/ui/findings">the queue</a>.
+      {% elif what == 'rescan' %}Re-scan of <b class="mono" dir="ltr">{{ host }}</b> queued — <a href="/ui/jobs/{{ fid }}">watch the console</a>; the row updates when it ends.
+      {% else %}{{ what }}{% endif %}
+    </span>
+    {% if what in ('confirmed', 'dismissed') and can_write %}
+    <form method="post" action="/ui/findings/{{ fid }}/reopen" class="undo"><input type="hidden" name="next" value="{{ request.url.path }}{{ '?' ~ request.url.query if request.url.query }}">
+      <button type="submit" class="small" title="the finding waits for a verdict again; the first verdict stays in the audit log">Undo</button></form>
+    {% endif %}
+  {% elif fl %}<span class="ic">i</span><span class="t">{{ fl }}</span>
+  {% else %}<span class="ic ok">✓</span><span class="t">{{ SAVED_TEXT.get(sv) }}</span>{% endif %}
+  <button type="button" class="x" aria-label="dismiss this message" onclick="this.parentElement.remove()">✕</button>
+</div>
+{% endif %}
+{% endif %}

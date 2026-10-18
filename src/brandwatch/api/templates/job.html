@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Scan {{ job.id[:8] }}{% endblock %}
+{% block title %}{{ job.kind|job_label|capitalize }} · {{ job.state|state_label }}{% endblock %}
 {% block content %}
 {% from "_cap.html" import cap %}
 <style>

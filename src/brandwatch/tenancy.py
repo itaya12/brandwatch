@@ -131,6 +131,39 @@ def set_workspace_mobile_proxy(session: Session, workspace_id: uuid.UUID, cfg: d
     return clean
 
 
+SEVERITIES = ("low", "medium", "high", "critical")
+
+
+def workspace_notify(session: Session, workspace_id: uuid.UUID, settings: Settings | None = None) -> dict[str, Any]:
+    """Settings → Notifications: the alert threshold, which of the configured channels to use (None = all), the brands
+    that are muted and whether the daily digest goes out. Stored in ``workspace.settings["notify"]``; the environment
+    (NOTIFY_MIN_SEVERITY, NOTIFY_CHANNELS) is the default."""
+    settings = settings or get_settings()
+    ws = session.get(Workspace, workspace_id)
+    stored = ((ws.settings or {}).get("notify") or {}) if ws else {}
+    min_sev = stored.get("min_severity")
+    channels = stored.get("channels")
+    return {
+        "min_severity": min_sev if min_sev in SEVERITIES else settings.notify_min_severity,
+        "channels": [str(c) for c in channels] if isinstance(channels, list) else None,
+        "brands_off": [str(b) for b in (stored.get("brands_off") or [])],
+        "digest": bool(stored.get("digest", True)),
+    }
+
+
+def set_workspace_notify(session: Session, workspace_id: uuid.UUID, *, min_severity: str | None, channels: list[str] | None,
+                         brands_off: list[str], digest: bool) -> dict[str, Any]:  # fmt: skip
+    ws = session.get(Workspace, workspace_id)
+    clean: dict[str, Any] = {"brands_off": [str(b) for b in brands_off], "digest": bool(digest)}
+    if min_severity in SEVERITIES:
+        clean["min_severity"] = min_severity
+    if channels is not None:
+        clean["channels"] = [str(c) for c in channels]
+    ws.settings = {**(ws.settings or {}), "notify": clean}
+    session.flush()
+    return workspace_notify(session, workspace_id)
+
+
 def workspace_probe_settings(session: Session, workspace_id: uuid.UUID) -> dict[str, str]:
     """Which proxy the Tier-4 probe goes through (residential, mobile or both) and which device it pretends to be (desktop, a phone, or both)."""
     ws = session.get(Workspace, workspace_id)

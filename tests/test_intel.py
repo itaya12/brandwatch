@@ -263,8 +263,10 @@ def test_intel_job_cache_views_and_pages(engine, tmp_path):
         )
         page = ui.get(old.headers["location"])
         assert page.status_code == 200 and "Site &amp; network investigation" in page.text
-        for tab in ("why", "looks", "reputation", "domain", "network", "timeline", "evidence"):
+        for tab in ("evidence", "investigation", "history"):  # four groups of panes (+ AI when there is an opinion)
             assert f'data-tab="{tab}"' in page.text, tab
+        for pane in ("why", "looks", "reputation", "domain", "network", "timeline", "evidence"):
+            assert f'id="tab-{pane}"' in page.text, pane
         assert "Not investigated yet" not in page.text  # the job above filled the cache
         for needle in (
             "flagcdn.com/w40/nl.png",

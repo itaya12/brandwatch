@@ -213,6 +213,9 @@
       </div>
       <div class="opbtns">
         <button type="button" class="small" onclick="pickGroup('{{ g.index }}')">show only this group on the map ↑</button>
+        {% if can_write %}{% set gids = [] %}{% for h in g.sites %}{% set s = (m.sites|selectattr('host', 'equalto', h)|list|first) %}{% if s %}{% set _ = gids.append(s.id) %}{% endif %}{% endfor %}
+        {% if gids %}<form method="post" action="/ui/campaigns/draft-takedowns" style="display:inline" data-confirm="Draft one takedown request for each of these {{ gids|length }} site(s)? A site that already has one keeps it. You review and send each request yourself." data-confirm-title="Draft takedowns" data-confirm-ok="Draft {{ gids|length }} request(s)">
+          {% for i in gids %}<input type="hidden" name="ids" value="{{ i }}">{% endfor %}<button type="submit" class="small" title="one request per confirmed site of this operation (a site that already has one keeps it)">✉ Draft takedowns for {{ gids|length }} site{{ 's' if gids|length != 1 }}</button></form>{% endif %}{% endif %}
         <a class="btn small" style="padding:3px 10px;font-size:11.5px" href="/ui/campaigns/operation-report?group={{ g.index }}{{ '&brand_id=' ~ brand_id if brand_id }}" target="_blank" rel="noopener" title="the whole operation as a readable, printable page with every table">HTML report ↗</a>
         <a class="btn small" style="padding:3px 10px;font-size:11.5px" href="/ui/campaigns/operation-report?group={{ g.index }}&download=1{{ '&brand_id=' ~ brand_id if brand_id }}" title="save it as a file you can send">download .html</a>
         <button type="button" class="small" data-copy-from="rep-{{ g.index }}">copy report (text)</button>

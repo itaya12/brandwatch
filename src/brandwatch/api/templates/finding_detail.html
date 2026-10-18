@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}{{ d.candidate.hostname }}{% endblock %}
+{% block title %}{{ d.candidate.hostname }} · {{ d.brand.name }} · {{ d.finding.severity }}{% endblock %}
 {% set s = d.score %}
 {% set sevcolor = {'critical':'var(--crit)','high':'var(--high)','medium':'var(--med)','low':'var(--low)'}[d.finding.severity] %}
 {% block content %}
@@ -76,17 +76,29 @@
   .invbar .ib-t{flex:1;min-width:min(320px,100%)}
   .invbar .ib-t b{font-size:14px}
   .invbar .progress{flex:0 0 100%;margin-top:0}
-  .jump{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:0 0 12px;color:var(--muted)}
+  .jump{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:10px 0 0;color:var(--muted);font-size:12px}
+  .jump[hidden]{display:none}
   .jump a{padding:3px 10px;border:1px solid var(--border);border-radius:999px;background:var(--panel2);color:var(--text);text-decoration:none}
   .jump a:hover{border-color:var(--accent)}
   .inv-empty{border-style:dashed}
   .why-grid{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:18px}
   .why-grid>*,.fhead>*{min-width:0}
   @media (max-width:900px){.why-grid,.verdict-form,.fhead{grid-template-columns:minmax(0,1fr)}.fhead .ringwrap{text-align:left}}
+  .verdict-form .chk{display:flex;gap:6px;align-items:center;font-size:12.5px;color:var(--muted);grid-column:1 / -1}.verdict-form .chk input{width:auto;margin:0}
+  .qnav{display:flex;gap:8px;align-items:center;margin:0 0 10px;font-size:12.5px;color:var(--muted)}
+  .qnav .btn{padding:4px 10px;font-size:12px}.qnav .off{opacity:.4;pointer-events:none}
 </style>
 {% set crumbs = [("Brands & Scans", "/ui/brands"), (d.brand.name, "/ui/brands/" ~ d.brand.id), ("Findings", "/ui/findings?brand_id=" ~ d.brand.id), (d.candidate.hostname, none)] %}
 {% set crumb_links = [("Domain timeline", "/ui/candidates/" ~ d.candidate.id)] + ([("Attack infrastructure map", "/ui/campaigns/" ~ d.campaign_id)] if d.campaign_id else []) %}
 {% include "_crumbs.html" %}
+{% if nb and (nb.open_count or d.finding.state == 'open') %}
+<nav class="qnav" aria-label="Queue">
+  {% if nb.prev %}<a class="btn" href="/ui/findings/{{ nb.prev }}" rel="prev" accesskey="k">← previous</a>{% else %}<span class="btn off" aria-disabled="true">← previous</span>{% endif %}
+  <span>{{ nb.open_count }} open for <bdi>{{ d.brand.name }}</bdi>{% if d.finding.state != 'open' %} · this one is {{ d.finding.state|state_label }}{% endif %}</span>
+  {% if nb.next %}<a class="btn" href="/ui/findings/{{ nb.next }}" rel="next" accesskey="j">next →</a>{% else %}<span class="btn off" aria-disabled="true">next →</span>{% endif %}
+  <a class="small" href="/ui/findings?brand_id={{ d.brand.id }}">the queue</a>
+</nav>
+{% endif %}
 
 {# ================================================================ header: what this site is #}
 <div class="panel fhead">
@@ -102,7 +114,7 @@
       {% if is_ai and ar %}<span class="badge" style="border:1px solid var(--accent);color:var(--accent2)" title="a contact an AI assistant gives for {{ d.brand.name }} that is not on its website — scored by the AI-answer checks">AI answer · {{ ar.verdict_label }}</span>{% endif %}
       <span class="badge state" title="{{ STATE_HELP.get(d.finding.state, '') }}">{% if is_shop and d.finding.state == 'confirmed' %}confirmed · {{ (sl.short if sl else 'suspicious') }}{% else %}{{ ('confirmed_social' if is_social and d.finding.state == 'confirmed' else d.finding.state)|state_label }}{% endif %}</span>
       {% if s and s.cloaked %}{{ m.cloaked_badge(true) }}{% endif %}
-      {% if d.finding.analyst_verdict and d.finding.state != 'confirmed' %}<span class="pill">verdict: {{ d.finding.analyst_verdict }}</span>{% endif %}
+      {% if d.finding.analyst_verdict and d.finding.state != 'confirmed' %}<span class="pill">verdict: {{ VERDICT_LABELS.get(d.finding.analyst_verdict, d.finding.analyst_verdict) }}</span>{% endif %}
       <span class="muted small">brand <a href="/ui/brands/{{ d.brand.id }}">{{ d.brand.name }}</a></span>
     </div>
     <h1 class="mono" style="margin:8px 0 2px;word-break:break-all">{{ m.host(d.candidate.hostname, d.candidate.host_display, 'xn--' in d.candidate.hostname) }}</h1>
@@ -153,7 +165,7 @@
   {% elif d.finding.state == 'open' and d.confirmed_twin %}
     <div class="done-box">
       <b style="color:var(--low)">This site is already confirmed as phishing</b>
-      <div class="small" style="margin:6px 0 10px">An analyst confirmed it on {{ (d.confirmed_twin.confirmed_at or '')[:16].replace('T',' ') }}. This older open record predates one-finding-per-site and needs no verdict.</div>
+      <div class="small" style="margin:6px 0 10px">An analyst confirmed it on {{ d.confirmed_twin.confirmed_at|ts }}. This older open record predates one-finding-per-site and needs no verdict.</div>
       <a class="btn" href="/ui/findings/{{ d.confirmed_twin.id }}">Open the confirmed finding →</a>
       <form method="post" action="/ui/findings/{{ d.finding.id }}/verdict" style="display:inline;margin-left:8px"><input type="hidden" name="next" value="{{ back or '' }}">
         <input type="hidden" name="action" value="dismiss"><input type="hidden" name="verdict" value="unknown">
@@ -174,9 +186,10 @@
       <div class="proof-box" hidden><label for="proof">The proof</label><select id="proof" name="proof">{% for k, v in shop_proofs.items() %}<option value="{{ k }}">{{ v }}</option>{% endfor %}</select></div>
       <div class="verdict-form" style="margin-top:8px">
         <div><label for="reason">Reason · audit log and training data <span class="muted" id="reason-need"></span></label><input id="reason" name="reason" placeholder="e.g. replica price, number not in the registry"></div>
-        <div><label for="verdict">If dismissing, verdict</label><select id="verdict" name="verdict">{% for v in Verdicts %}<option value="{{ v }}">{{ v }}</option>{% endfor %}</select></div>
+        <div><label for="verdict-kind">If dismissing, it is</label><select id="verdict-kind" name="verdict">{% for v in Verdicts %}<option value="{{ v }}">{{ VERDICT_LABELS.get(v, v) }}</option>{% endfor %}</select></div>
         <button class="ok" name="action" value="confirm" type="submit">Confirm at this conclusion</button>
         <button class="danger" name="action" value="dismiss" type="submit">Dismiss</button>
+        <label class="chk" title="the registrable domain is allowlisted for the brand: no scan flags it, or a subdomain of it, again"><input type="checkbox" name="whitelist"> when dismissing, also allowlist <span class="mono" dir="ltr">{{ d.candidate.canonical_domain }}</span></label>
       </div>
     </form>
     <script>
@@ -201,9 +214,11 @@
   {% elif d.finding.state == 'open' %}
     <form method="post" action="/ui/findings/{{ d.finding.id }}/verdict" class="verdict-form"><input type="hidden" name="next" value="{{ back or '' }}">
       <div><label for="reason">Reason · goes to the audit log and the training data</label><input id="reason" name="reason" placeholder="e.g. cloned login, exfil form"></div>
-      <div><label for="verdict">If dismissing, verdict</label><select id="verdict" name="verdict">{% for v in Verdicts %}<option value="{{ v }}">{{ v }}</option>{% endfor %}</select></div>
+      <div><label for="verdict-kind">If dismissing, it is</label><select id="verdict-kind" name="verdict">{% for v in Verdicts %}<option value="{{ v }}">{{ VERDICT_LABELS.get(v, v) }}</option>{% endfor %}</select></div>
       <button class="ok" name="action" value="confirm" type="submit">{{ 'Confirm scam shop' if is_shop else ('Confirm fake account' if is_social else ('Confirm wrong contact' if is_ai else 'Confirm phishing')) }}</button>
       <button class="danger" name="action" value="dismiss" type="submit">Dismiss</button>
+      {% if not off_site %}<button class="ok" name="action" value="confirm_draft" type="submit" style="grid-column:1 / -1;justify-self:start" title="confirm, then open the takedown request with the evidence attached — the usual next step">✓ Confirm &amp; draft takedown →</button>{% endif %}
+      {% if not off_site %}<label class="chk" title="the registrable domain is allowlisted for the brand: no scan flags it, or a subdomain of it, again"><input type="checkbox" name="whitelist"> when dismissing, also allowlist <span class="mono" dir="ltr">{{ d.candidate.canonical_domain }}</span></label>{% endif %}
     </form>
     {% if s and s.shop %}<form method="post" action="/ui/findings/{{ d.finding.id }}/authorized" class="small" style="margin:8px 0 0"
           data-confirm="Add {{ d.candidate.canonical_domain }} to {{ d.brand.name }}’s authorised retailers and close this finding?" data-confirm-title="Authorised retailer" data-confirm-ok="Add and close">
@@ -231,7 +246,7 @@
     </p>
   {% elif d.finding.state == 'confirmed' %}
     <div class="done-box">
-      <div style="margin-bottom:10px"><b style="color:var(--low)">✓ {{ 'Confirmed fake account' if is_social else ('Confirmed wrong contact' if is_ai else ('Confirmed · ' ~ sl.label if is_shop and sl else 'Confirmed phishing')) }}</b> <span class="muted small">· {{ d.finding.updated_at[:16].replace('T',' ') }}</span>
+      <div style="margin-bottom:10px"><b style="color:var(--low)">✓ {{ 'Confirmed fake account' if is_social else ('Confirmed wrong contact' if is_ai else ('Confirmed · ' ~ sl.label if is_shop and sl else 'Confirmed phishing')) }}</b> <span class="muted small">· {{ d.finding.updated_at|ts }}</span>
         {% if is_shop and sl and sl.conclusion %}<div class="small muted" style="margin-top:4px">by {{ sl.conclusion.by }}{% if sl.proof_label %} · proof: {{ sl.proof_label }}{% endif %}{% if sl.conclusion.note %} · “{{ sl.conclusion.note }}”{% endif %}</div>{% endif %}</div>
       {% if is_shop and sl and can_write %}<details class="small" style="margin:-4px 0 10px"{{ ' open' if request and request.query_params.get('conclusion') }}><summary style="cursor:pointer;color:var(--accent2)">change the conclusion{{ ' — saved ✓' if request and request.query_params.get('conclusion') == 'saved' }}</summary>
         <form method="post" action="/ui/findings/{{ d.finding.id }}/conclusion" id="concl-change" style="margin-top:8px">
@@ -264,7 +279,8 @@
       </div>{% endif %}
     </div>
   {% else %}
-    <p class="muted small" style="margin:0">Closed by an analyst · {{ d.finding.updated_at[:16].replace('T',' ') }}.</p>
+    <p class="muted small" style="margin:0">Closed by an analyst · {{ d.finding.updated_at|ts }}{% if d.finding.analyst_verdict %} · {{ VERDICT_LABELS.get(d.finding.analyst_verdict, d.finding.analyst_verdict) }}{% endif %}.
+      {% if can_write %}<form method="post" action="/ui/findings/{{ d.finding.id }}/reopen" style="display:inline;margin-left:8px" data-confirm="Reopen this finding? It waits for a verdict again; the earlier verdict stays in the audit log." data-confirm-title="Reopen" data-confirm-ok="Reopen"><input type="hidden" name="next" value="/ui/findings/{{ d.finding.id }}"><button type="submit" class="small">↶ Reopen</button></form>{% endif %}</p>
   {% endif %}
   {% if error %}<div class="error" style="margin-top:10px">{{ error }}</div>{% endif %}
 
@@ -291,19 +307,16 @@
   {% if is_social and s and s.social %}<button role="tab" data-tab="social">Social account {% if s.social.why %}<span class="n bad">{{ s.social.why|length }} sign{{ 's' if s.social.why|length != 1 }}</span>{% endif %}</button>{% endif %}
   {% if s and s.ads and not is_shop %}<button role="tab" data-tab="ads">Facebook / Instagram ads <span class="n bad">{{ s.ads|length }}</span></button>{% endif %}
   {% if s and s.shop %}<button role="tab" data-tab="shop">Shop checks {% if s.shop.why %}<span class="n {{ 'bad' if is_shop }}">{{ s.shop.why|length }} warning{{ 's' if s.shop.why|length != 1 }}</span>{% endif %}</button>{% endif %}
-  <button role="tab" data-tab="why">Why flagged {% if s %}<span class="n">{{ s.signals|length }} signals</span>{% endif %}</button>
   {% if not off_site %}
-  <button role="tab" data-tab="looks">Looks like {{ d.brand.name }} {% if d.screenshots.similarity_pct is not none %}<span class="n">{{ d.screenshots.similarity_pct }}%</span>{% endif %}</button>
-  <span class="grp" aria-hidden="true"></span>
-  <button role="tab" data-tab="reputation" title="site & network investigation">Reputation {% if has_intel and dt and dt.available %}<span class="n {{ 'bad' if dt.positives }}">{{ dt.positives }}/{{ dt.total }}</span>{% endif %}</button>
-  <button role="tab" data-tab="domain" title="site & network investigation">Domain &amp; registration {% if has_intel and v.whois_history %}<span class="n">{{ v.whois_history.summary.records }} WHOIS</span>{% endif %}</button>
-  <button role="tab" data-tab="network" title="site & network investigation">Hosting &amp; network {% if has_intel and v.ips %}<span class="n {{ 'bad' if ipbad }}">{{ v.ips|length }} server{{ 's' if v.ips|length != 1 }}</span>{% endif %}</button>
+  <button role="tab" data-tab="evidence" aria-controls="tab-looks" title="the screenshots side by side, and every signal that fired">Evidence {% if s %}<span class="n">{{ s.signals|length }} signals{% if d.screenshots.similarity_pct is not none %} · {{ d.screenshots.similarity_pct }}% alike{% endif %}</span>{% endif %}</button>
+  <button role="tab" data-tab="investigation" aria-controls="tab-reputation" title="reputation · domain & registration · hosting & network">Investigation {% if has_intel %}<span class="n {{ 'bad' if (dt and dt.positives) or ipbad }}">{% if dt and dt.available %}{{ dt.positives }}/{{ dt.total }} detections{% endif %}{% if v.ips %}{{ ' · ' if dt and dt.available }}{{ v.ips|length }} server{{ 's' if v.ips|length != 1 }}{% endif %}</span>{% elif intel_running %}<span class="n">running…</span>{% else %}<span class="n">not run</span>{% endif %}</button>
+  {% else %}
+  <button role="tab" data-tab="evidence" aria-controls="tab-why">Why flagged {% if s %}<span class="n">{{ s.signals|length }} signals</span>{% endif %}</button>
   {% endif %}
-  <span class="grp" aria-hidden="true"></span>
-  <button role="tab" data-tab="timeline">Timeline <span class="n">{{ d.observations|length }}</span></button>
-  <button role="tab" data-tab="evidence">Evidence <span class="n">{{ d.evidence|length }}</span></button>
-  {% if s and (s.ai or s.ml) %}<button role="tab" data-tab="ai">AI opinions</button>{% endif %}
+  <button role="tab" data-tab="history" aria-controls="tab-timeline" title="observation timeline and the evidence chain">History <span class="n">{{ d.observations|length }} visit{{ 's' if d.observations|length != 1 }} · {{ d.evidence|length }} item{{ 's' if d.evidence|length != 1 }}</span></button>
+  {% if s and (s.ai or s.ml) %}<button role="tab" data-tab="ai" aria-controls="tab-ai">AI opinions</button>{% endif %}
 </nav>
+<div class="jump" id="jump" hidden></div>
 
 <div class="panel invbar" id="invbar" hidden>
   <div class="ib-t">
@@ -322,18 +335,18 @@
   </div>
 </div>
 
-{% if s and s.ads and not is_shop %}<section class="tabpane" id="tab-ads">
+{% if s and s.ads and not is_shop %}<section class="tabpane" role="tabpanel" id="tab-ads">
   <div class="panel">
     <h2>Advertised on Facebook / Instagram <span class="muted">· {{ s.ads|length }} ad{{ 's' if s.ads|length != 1 }} that use{{ 's' if s.ads|length == 1 }} {{ d.brand.name }}'s name and send people to this site</span></h2>
     <p class="small muted" style="margin:0 0 6px">Found in Meta's Ad Library. The ad is how victims reach the kit: reporting it stops new visitors even before the site is taken down.</p>
     {% include "_meta_report.html" %}
   </div>
 </section>{% endif %}
-{% if s and s.shop %}<section class="tabpane" id="tab-shop">{% set sh = s.shop %}{% include "_shop_checks.html" %}</section>{% endif %}
-{% if is_ai and ar %}<section class="tabpane" id="tab-aianswer">{% include "_ai_answer.html" %}</section>{% endif %}
-{% if is_social and s and s.social %}<section class="tabpane" id="tab-social">{% set sa = s.social %}{% include "_social_account.html" %}</section>{% endif %}
+{% if s and s.shop %}<section class="tabpane" role="tabpanel" id="tab-shop">{% set sh = s.shop %}{% include "_shop_checks.html" %}</section>{% endif %}
+{% if is_ai and ar %}<section class="tabpane" role="tabpanel" id="tab-aianswer">{% include "_ai_answer.html" %}</section>{% endif %}
+{% if is_social and s and s.social %}<section class="tabpane" role="tabpanel" id="tab-social">{% set sa = s.social %}{% include "_social_account.html" %}</section>{% endif %}
 
-<section class="tabpane" id="tab-why">
+<section class="tabpane" role="tabpanel" id="tab-why">
   {% if s %}
   <div class="why-grid">
     <div class="panel">
@@ -384,7 +397,7 @@
   {% else %}<div class="panel"><p class="muted" style="margin:0">No score recorded.</p></div>{% endif %}
 </section>
 
-<section class="tabpane" id="tab-looks">
+<section class="tabpane" role="tabpanel" id="tab-looks">
   <div class="panel">
     <h2>Suspect vs. official {% if d.screenshots.similarity_pct is not none %}<span class="pill">similarity {{ d.screenshots.similarity_pct }}%</span>{% endif %}</h2>
     {% if s and s.clickfix %}<div class="small" id="clickfix" style="border:1px solid rgba(255,77,77,.6);border-radius:8px;padding:10px 12px;background:rgba(255,77,77,.08);margin-bottom:10px"><b style="color:var(--crit)">This page tries to make the visitor run a command (ClickFix).</b>
@@ -456,7 +469,7 @@
 
 {% include "_finding_investigation.html" %}
 
-<section class="tabpane" id="tab-timeline">
+<section class="tabpane" role="tabpanel" id="tab-timeline">
   <div class="cols">
     <div class="panel">
       <h2>Observation timeline</h2>
@@ -469,7 +482,7 @@
           {% if o.screenshot_url %}· <a href="{{ o.screenshot_url }}" target="_blank">screenshot</a>{% endif %}</li>
         {% endfor %}
       </ul>
-      <p class="small muted">first seen {{ d.candidate.first_seen[:16].replace('T',' ') }} · scans {{ d.candidate.scan_count }} · next {{ d.candidate.next_scan_at[:16].replace('T',' ') if d.candidate.next_scan_at else '—' }} · candidate state {{ d.candidate.state }} · <a href="#history" data-goto="history">WHOIS history →</a></p>
+      <p class="small muted">first seen {{ d.candidate.first_seen[:16].replace('T',' ') }} · scans {{ d.candidate.scan_count }} · next {{ d.candidate.next_scan_at[:16].replace('T',' ') if d.candidate.next_scan_at else '—' }} · candidate state {{ d.candidate.state }} · <a href="#whois" data-goto="whois">WHOIS history →</a></p>
     </div>
     <div class="panel">
       <h2>Score history</h2>
@@ -480,7 +493,7 @@
   </div>
 </section>
 
-<section class="tabpane" id="tab-evidence">
+<section class="tabpane" role="tabpanel" id="tab-evidence">
   <div class="panel">
     <h2>Evidence · chain of custody {{ term('evidence') }} {{ cap('evidence', 'immutable · DB-enforced', 'database triggers reject UPDATE and DELETE on evidence tables; artifacts are content-addressed by SHA-256') }}</h2>
     <p class="small muted" style="margin:0 0 8px">Append-only by the database: UPDATE and DELETE are rejected by triggers, even for an admin. Every artifact is stored under its own SHA-256, so the hash is literally the file name — any tampering is visible.
@@ -509,7 +522,7 @@
 </section>
 
 {% if s and (s.ai or s.ml) %}
-<section class="tabpane" id="tab-ai">
+<section class="tabpane" role="tabpanel" id="tab-ai">
   <div class="panel">
     <h2>Advisory opinions <span class="muted">· shown for context, never part of the score</span> {{ cap('g-advisory', 'AI advisory · JSON schema', 'strict JSON schema, page text framed as untrusted input; the deterministic score never depends on it') }}</h2>
     {% if s.ai %}<p class="small"><span class="pill">AI · {{ s.ai.model }}</span>
@@ -525,17 +538,29 @@
 (function(){
   const $ = id => document.getElementById(id);
   const tabs = [...document.querySelectorAll('#tabs [role=tab]')];
-  const INV = ['reputation', 'domain', 'network'];
-  // old Site & network intel tab names, and the sections inside the investigation tabs
-  const ALIAS = {detections: 'reputation', links: 'reputation', registration: 'domain:sec-registration', history: 'domain:sec-history',
+  // a tab is a group of panes, shown in this order (the screenshots before the signal table)
+  const GROUPS = {evidence: {{ (['why'] if off_site else ['looks', 'why'])|tojson }}, investigation: ['reputation', 'domain', 'network'],
+                  history: ['timeline', 'evidence'], ai: ['ai'], ads: ['ads'], shop: ['shop'], social: ['social'], aianswer: ['aianswer']};
+  const OWNER = {}; for (const g in GROUPS) GROUPS[g].forEach(p => { OWNER[p] = g; });
+  // old tab names (#why, #looks, #network …) and the sections inside the investigation panes
+  const ALIAS = {detections: 'reputation', links: 'reputation', registration: 'domain:sec-registration', whois: 'domain:sec-history', history_: 'domain:sec-history',
                  dns: 'domain:sec-dns', cert: 'domain:sec-cert', ips: 'network:sec-ips', urlscan: 'network:sec-urlscan', relations: 'network:sec-relations'};
+  const jump = $('jump'), bar = $('invbar');
   function select(name, push){
     let section = null, hash = name;
     if (ALIAS[name]) [name, section] = ALIAS[name].split(':');
+    if (OWNER[name] && !GROUPS[name]) { section = section || ('tab-' + name); name = OWNER[name]; }  // a pane name: its group, scrolled to it
     if (!tabs.some(t => t.dataset.tab === name)) { name = tabs[0].dataset.tab; hash = name; section = null; }
     tabs.forEach(t => t.setAttribute('aria-selected', t.dataset.tab === name));
-    document.querySelectorAll('.tabpane').forEach(p => p.classList.toggle('on', p.id === 'tab-' + name));
-    $('invbar').hidden = !INV.includes(name);
+    const panes = (GROUPS[name] || []).map(p => $('tab-' + p)).filter(Boolean);
+    document.querySelectorAll('.tabpane').forEach(p => p.classList.toggle('on', panes.includes(p)));
+    panes.slice().reverse().forEach(p => bar.after(p));  // the group's panes right after the bar, in order
+    bar.hidden = name !== 'investigation';
+    // the sections of the group, as a jump row (only when there is more than one)
+    if (jump) { jump.innerHTML = ''; jump.hidden = panes.length < 2;
+      panes.forEach(p => { const h = p.querySelector('h2'); if (!h) return; const a = document.createElement('a'); a.href = '#' + p.id;
+        a.textContent = (h.childNodes[0] && h.childNodes[0].textContent || h.textContent).trim().replace(/\s*·.*$/, '').slice(0, 40);
+        a.addEventListener('click', e => { e.preventDefault(); p.scrollIntoView({behavior: 'smooth', block: 'start'}); }); jump.appendChild(a); }); }
     if (push) history.replaceState(null, '', '#' + hash);
     const el = section && $(section);
     if (el) setTimeout(() => el.scrollIntoView({behavior: 'smooth', block: 'start'}), 30);
@@ -551,9 +576,10 @@
     e.preventDefault();
     if (!select(a.dataset.goto, true)) $('tabs').scrollIntoView({behavior: 'smooth', block: 'start'});
   }));
-  select((location.hash || '').slice(1) || {{ ("'shop'" if is_shop else ("'social'" if is_social else ("'aianswer'" if is_ai else "'why'")))|safe }}, false);
+  const DEFAULT = {{ ("'shop'" if is_shop else ("'social'" if is_social else ("'aianswer'" if is_ai else "'evidence'")))|safe }};
+  select((location.hash || '').slice(1) || DEFAULT, false);
   // back / forward and typed hashes (#history, #ips …) re-select without a reload
-  window.addEventListener('hashchange', () => select((location.hash || '').slice(1) || {{ ("'shop'" if is_shop else ("'social'" if is_social else ("'aianswer'" if is_ai else "'why'")))|safe }}, false));
+  window.addEventListener('hashchange', () => select((location.hash || '').slice(1) || DEFAULT, false));
 
   // --- the investigation job: start / refresh, stream its narration, reload as results land ---
   const startUrl = {{ ('/api/findings/' ~ d.finding.id ~ '/intel')|tojson }};

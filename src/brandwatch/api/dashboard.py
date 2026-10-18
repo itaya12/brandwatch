@@ -343,7 +343,8 @@ def dashboard(
         )
         .where(
             Finding.brand_id.in_(brand_ids),
-            Finding.severity.in_([Severity.CRITICAL, Severity.HIGH]),
+            Finding.state == FindingState.OPEN,  # what waits for a verdict, not what was already judged
+            Finding.severity == Severity.CRITICAL,
         )
         .order_by(Finding.created_at.desc())
         .limit(8)

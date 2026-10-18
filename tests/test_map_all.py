@@ -231,18 +231,20 @@ def test_a_verdict_goes_back_to_the_page_the_analyst_came_from(engine, tmp_path)
         page = ui.get(f"/ui/findings/{a['id']}", headers={"referer": f"http://testserver{came_from}"}).text
         assert f'name="next" value="{came_from}"' in page.replace("&amp;", "&")
         r = ui.post(f"/ui/findings/{a['id']}/verdict", data={"action": "confirm", "reason": "cloned", "next": came_from}, follow_redirects=False)
-        assert r.status_code == 303 and r.headers["location"] == came_from  # back where the list was
+        # from the queue: straight on to the next open finding of the brand, with a note (and an undo) on it
+        assert r.status_code == 303 and r.headers["location"].startswith("/ui/findings/") and "flash=confirmed:" in r.headers["location"]
+        assert r.headers["location"].split("?")[0] != f"/ui/findings/{a['id']}"
         assert c.get(f"/api/findings/{a['id']}").json()["finding"]["state"] == "confirmed"
-        # a dismissal too; without a page to go back to (or with a foreign / own address) the finding page stays
-        r = ui.post(f"/ui/findings/{b['id']}/verdict", data={"action": "dismiss", "reason": "ok", "verdict": "legitimate", "next": came_from}, follow_redirects=False)
-        assert r.headers["location"] == came_from
+        # from another page (the Attack infrastructure page, a brand page …): back there
+        r = ui.post(f"/ui/findings/{b['id']}/verdict", data={"action": "dismiss", "reason": "ok", "verdict": "legitimate", "next": "/ui/campaigns"}, follow_redirects=False)
+        assert r.headers["location"].startswith("/ui/campaigns?flash=dismissed:")
         # a referer from another site, or the finding's own page, is never offered as "back"
         page = ui.get(f"/ui/findings/{d['id']}", headers={"referer": "http://evil.example/ui/x"}).text
         assert 'name="next" value=""' in page
         page = ui.get(f"/ui/findings/{d['id']}", headers={"referer": f"http://testserver/ui/findings/{d['id']}#why"}).text
         assert 'name="next" value=""' in page
         r = ui.post(f"/ui/findings/{d['id']}/verdict", data={"action": "confirm", "reason": "x", "next": "https://evil.example/"}, follow_redirects=False)
-        assert r.status_code == 303 and r.headers["location"] == f"/ui/findings/{d['id']}"
+        assert r.status_code == 303 and r.headers["location"].startswith(f"/ui/findings/{d['id']}?flash=confirmed:")
 
 
 # ------------------------------------------------------------------------------------------ the pattern, and the search backwards

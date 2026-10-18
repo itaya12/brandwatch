@@ -79,8 +79,9 @@ def test_two_brands_run_by_the_same_group_are_one_operation_on_the_map(engine, t
         assert "2 brands" in page and "brand <b>CoinPilot</b>" in page.replace("&nbsp;", " ") or "CoinPilot" in page
         # the findings page: one click for a brand or for all of them, and every row says which brand it is about
         fp = ui.get("/ui/findings", params={"state": ""}).text
-        assert "All brands" in fp and "CoinPilot" in fp and "VaultPay" in fp and 'onchange="this.form.submit()"' in fp
+        assert "All brands" in fp and "CoinPilot" in fp and "VaultPay" in fp and 'id="filters"' in fp
         one_brand = ui.get("/ui/findings", params={"state": "", "brand_id": ids["VaultPay"]}).text
         assert "vaultpay-login.com" in one_brand and "coinpilott.io" not in one_brand
-        everyone = ui.get("/ui/findings", params={"state": "", "brand_id": ""}).text
-        assert "vaultpay-login.com" in everyone and "coinpilott.io" in everyone
+        # all brands: the list pages (50 a page) and the suite's database holds many findings, so search for each
+        everyone = [ui.get("/ui/findings", params={"state": "", "brand_id": "", "q": q}).text for q in ("vaultpay-login", "coinpilott")]
+        assert "vaultpay-login.com" in everyone[0] and "coinpilott.io" in everyone[1]

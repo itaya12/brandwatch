@@ -6,7 +6,7 @@
 {% include "_crumbs.html" %}
 <div class="panel" style="display:flex;gap:18px;align-items:center;flex-wrap:wrap">
   <div style="flex:1;min-width:min(280px,100%)">
-    <div><span class="badge state">{{ c.state }}</span> <span class="muted small">brand <a href="/ui/brands/{{ c.brand_id }}">{{ c.brand_name }}</a> · surface {{ c.surface }}</span></div>
+    <div><span class="badge state st-{{ c.state }}" title="{{ STATE_HELP.get(c.state, '') }}">{{ c.state|state_label }}</span> <span class="muted small">brand <a href="/ui/brands/{{ c.brand_id }}">{{ c.brand_name }}</a> · surface {{ c.surface }}</span></div>
     <h1 class="mono" style="margin:6px 0 2px">{{ c.hostname }}</h1>
     <div class="muted small mono">{{ c.canonical_url }} · first seen {{ c.first_seen[:16].replace('T',' ') }} · last seen {{ c.last_seen[:16].replace('T',' ') }} · scans {{ c.scan_count }} · next {{ c.next_scan_at[:16].replace('T',' ') if c.next_scan_at else '—' }}</div>
     {% set open_f = d.findings|selectattr('state', 'equalto', 'open')|list %}
@@ -30,7 +30,7 @@
     </form>
     {% endif %}
     {% else %}<p class="muted small">Viewer access.</p>{% endif %}
-    {% for f in d.findings %}<div class="small" style="margin-top:8px"><a href="/ui/findings/{{ f.id }}">finding</a> <span class="badge sev-{{ f.severity }}">{{ f.severity }}</span> <span class="badge state">{{ f.state }}</span></div>{% endfor %}
+    {% for f in d.findings %}<div class="small" style="margin-top:8px"><a href="/ui/findings/{{ f.id }}">finding</a> <span class="badge sev-{{ f.severity }}">{{ f.severity }}</span> <span class="badge state st-{{ f.state }}">{{ f.state|state_label }}</span></div>{% endfor %}
   </div>
 </div>
 

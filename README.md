@@ -8,7 +8,7 @@
 ![Python](https://img.shields.io/badge/python-3.12-3776AB?logo=python&logoColor=white)
 ![FastAPI](https://img.shields.io/badge/FastAPI-009688?logo=fastapi&logoColor=white)
 ![Playwright](https://img.shields.io/badge/Playwright-sandboxed-2EAD33?logo=playwright&logoColor=white)
-![Tests](https://img.shields.io/badge/tests-701%20passing-brightgreen)
+![Tests](https://img.shields.io/badge/tests-714%20passing-brightgreen)
 ![Demo](https://img.shields.io/badge/demo-%240%2C%20no%20API%20keys-35C7F2)
 
 ### [▶ Open the live demo](https://nbse3h.s.gy/M37Izw)

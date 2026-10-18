@@ -46,6 +46,8 @@ def _settings_ctx(request: Request, session: Session, user: User) -> dict[str, A
         "proxy": tenancy.workspace_proxy_settings(session, user.workspace_id),
         "proxy_mobile": tenancy.workspace_mobile_proxy_settings(session, user.workspace_id),
         "probe": tenancy.workspace_probe_settings(session, user.workspace_id),
+        "notify": tenancy.workspace_notify(session, user.workspace_id, request.app.state.settings),
+        "notify_brands": brands_api.list_brands(session, user),
         "facts": _facts(request),
     }
     if user.role is UserRole.ADMIN:
@@ -93,6 +95,47 @@ def settings_page(
         return _login_redirect(request)
     saved = request.query_params.get("saved", "")
     return _settings_page(request, session, user, saved=saved if saved.isidentifier() else "")
+
+
+@router.post("/settings/notify")
+async def settings_notify(
+    request: Request,
+    session: Annotated[Session, Depends(get_session, scope="function")],
+    user: Annotated[User | None, Depends(ui_writer)],
+):
+    """Settings → Notifications: the threshold, the channels, the muted brands and the digest."""
+    if user is None:
+        return _login_redirect(request)
+    _admin_only(user)
+    form = await request.form()
+    configured = [n.name for n in request.app.state.notifier.notifiers]
+    chosen = [c for c in form.getlist("channels") if c in configured]
+    on = {str(b) for b in form.getlist("brand_on")}
+    brands_off = [str(b["id"]) for b in brands_api.list_brands(session, user) if str(b["id"]) not in on]
+    tenancy.set_workspace_notify(
+        session, user.workspace_id, min_severity=str(form.get("min_severity") or ""),
+        channels=chosen if form.get("pick_channels") == "on" else None, brands_off=brands_off, digest=form.get("digest") == "on",
+    )  # fmt: skip
+    audit(
+        session, workspace_id=user.workspace_id, actor_type="analyst", actor_id=user.id,
+        action="workspace.notify_updated", object_type="workspace", object_id=user.workspace_id,
+        new={"min_severity": form.get("min_severity"), "channels": chosen if form.get("pick_channels") == "on" else "all",
+             "brands_off": len(brands_off), "digest": form.get("digest") == "on"},
+    )  # fmt: skip
+    return RedirectResponse("/ui/settings?saved=notify#system", status_code=303)
+
+
+@router.post("/settings/notify/test")
+def settings_notify_test(
+    request: Request,
+    session: Annotated[Session, Depends(get_session, scope="function")],
+    user: Annotated[User | None, Depends(ui_writer)],
+):
+    if user is None:
+        return _login_redirect(request)
+    _admin_only(user)
+    n = request.app.state.notifier.send_test(session, user.workspace_id, by=user.email)
+    return RedirectResponse(f"/ui/settings?saved={'notify_test' if n else 'notify_test_failed'}#system", status_code=303)
 
 
 @router.post("/settings/workspace")

@@ -11,7 +11,10 @@ from __future__ import annotations
 
 from typing import Any
 
+from brandwatch.config.brand_config import SIGNAL_GROUPS
 from brandwatch.detection.takedown_channels import PORTAL_GROUPS, REPORT_PORTALS
+
+N_SIGNALS = len(SIGNAL_GROUPS)
 
 DEEP: dict[int, dict[str, Any]] = {
     1: {
@@ -226,7 +229,7 @@ DEEP: dict[int, dict[str, Any]] = {
             "one trace line per site with every fired signal and its plain-language reason",
         ],
         "limits": [
-            "42 signals in 7 groups (config/brand_config.py)",
+            f"{N_SIGNALS} signals in 7 groups (config/brand_config.py)",
             "favicon near-match ≤ 6 bits · screenshot ≥ 0.90 · palette ≥ 0.67 · login DOM ≥ 0.80",
             "colours count as close at L1 distance ≤ 54 · DOM signature ≤ 400 tokens",
         ],

@@ -287,7 +287,7 @@ def login(
         object_type="user",
         object_id=user.id,
     )
-    user.last_login_at = datetime.now(UTC)
+    user.record_login(datetime.now(UTC))
     token, expires_in = create_access_token(user, settings)
     return TokenResponse(access_token=token, expires_in=expires_in)
 

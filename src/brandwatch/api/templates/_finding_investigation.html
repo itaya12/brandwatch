@@ -54,7 +54,7 @@
 {# ================================================================ domain & registration #}
 <section class="tabpane" id="tab-domain">
   {% if has_intel %}
-  <div class="jump small">Jump to <a href="#registration" data-goto="registration">Registration</a><a href="#history" data-goto="history">WHOIS history</a><a href="#dns" data-goto="dns">DNS records</a><a href="#cert" data-goto="cert">Certificate</a></div>
+  <div class="jump small">Jump to <a href="#registration" data-goto="registration">Registration</a><a href="#whois" data-goto="whois">WHOIS history</a><a href="#dns" data-goto="dns">DNS records</a><a href="#cert" data-goto="cert">Certificate</a></div>
   {% set r = v.rdap %}
   <div id="sec-registration" class="cards">
     <div class="card"><h3>Registration data (RDAP) {% if not r.available %}{{ vt_status(v.status.get('rdap/report') if v.status else none) }}{% endif %}</h3>

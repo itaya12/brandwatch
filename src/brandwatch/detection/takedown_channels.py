@@ -275,14 +275,24 @@ def record_channel(
         if (
             channel == "registrar"
             and email
-            and draft.state in (TakedownState.DRAFT, TakedownState.REVIEW, TakedownState.REOPENED)
-        ):
+            and draft.state not in (TakedownState.RESOLVED, TakedownState.REJECTED)
+        ):  # the registrar's address is the request's main contact (also after it was sent to another channel first)
             draft.abuse_contact = email
     sent_map = dict(ch["sent"])
     if sent:
         to = email or _channel_email(ch["resolved"], channel)
         sent_map[channel] = {"at": datetime.now(UTC).isoformat(), "to": to, "by": actor.email}
         draft.sent_at = draft.sent_at or datetime.now(UTC)  # the list / dashboard show it as sent
+        if draft.state in (TakedownState.DRAFT, TakedownState.REVIEW, TakedownState.APPROVED, TakedownState.REOPENED):
+            # the first channel that was mailed moves the request to "sent" (it used to stay a draft, and the list kept
+            # saying "not sent yet"); the state machine's own transition is audited the same way
+            old = draft.state
+            draft.state = TakedownState.SENT
+            if not draft.abuse_contact and to:
+                draft.abuse_contact = to
+            session.add(AuditEvent(workspace_id=actor.workspace_id, actor_type="analyst", actor_id=actor.id,
+                                   action="takedown.sent", object_type="takedown_draft", object_id=draft.id,
+                                   old_value={"state": old.value}, new_value={"state": "sent", "channel": channel}))  # fmt: skip
     draft.channels = {"overrides": overrides, "sent": sent_map, "reports": dict(ch["reports"])}
     draft.updated_at = datetime.now(UTC)
     session.add(AuditEvent(workspace_id=actor.workspace_id, actor_type="analyst", actor_id=actor.id,

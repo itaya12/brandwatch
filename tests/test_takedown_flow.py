@@ -138,7 +138,7 @@ def test_known_legit_is_one_click(engine, tmp_path):
         page = ui.get(f"/ui/candidates?brand_id={brand['id']}").text
         assert (
             "Known legit ✓" in page
-            and "<details" not in page
+            and 'id="bulkform"' in page  # several at once, too
             and 'name="whitelist" value="on"' in page
         )
         cid = c.get("/api/candidates", params={"brand_id": brand["id"]}).json()[0]["id"]
@@ -216,7 +216,7 @@ def test_takedown_channels_and_report_portals(engine, tmp_path):
         page = ui.get(f"/ui/takedowns/{tid}").text
         assert (
             "✓ 203.0.113.66" in page
-            and "2 of" in page
+            and '<span class="rep-count">2</span> of' in page
             and "mailto:abuse@bulletproof.example" in page
         )
         # untick one

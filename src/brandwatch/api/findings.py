@@ -61,6 +61,8 @@ _SEV_RANK = sa.case(
 class VerdictRequest(BaseModel):
     reason: str = Field(default="", max_length=2000)
     verdict: AnalystVerdict | None = None
+    # dismiss only: also allowlist the registrable domain for the brand, so no scan flags it (or a subdomain) again
+    whitelist: bool = False
     # suspicious shops only: how sure — suspicious_retailer | likely_counterfeit | confirmed_counterfeit
     # (default: BrandWatch's own reading of the evidence); ``proof`` is required for confirmed_counterfeit
     conclusion: str | None = Field(default=None, pattern="^(suspicious_retailer|likely_counterfeit|confirmed_counterfeit)$")
@@ -275,6 +277,55 @@ def _no_picture_note(signals: dict | None) -> str:
         return "a bot check was shown"
     return "no screenshot (the page did not load)"
 
+SORTS: dict[str, str] = {"severity": "severity, then score", "score": "score", "newest": "newest first", "oldest": "oldest first",
+                          "confidence": "confidence"}  # fmt: skip
+SINCE: dict[str, str] = {"24h": "last 24 hours", "7d": "last 7 days", "visit": "since my last visit"}
+
+
+def findings_query(
+    session: Session, user: User, *, brand_id: uuid.UUID | None = None, state: FindingState | None = None,
+    severity: Severity | None = None, kind: str | None = None, q: str = "", since: str = "", sort: str = "severity",
+) -> Any:
+    """The findings of the workspace, filtered and ordered: the queue the analyst works through. ``q`` is a
+    host-name fragment, ``since`` one of SINCE (``visit`` = the user's previous sign-in), ``sort`` one of SORTS."""
+    from datetime import UTC, datetime, timedelta
+
+    stmt = (
+        sa.select(Finding)
+        .join(Brand, Brand.id == Finding.brand_id)
+        .join(Candidate, Candidate.id == Finding.candidate_id)
+        .outerjoin(RiskScore, sa.and_(RiskScore.finding_id == Finding.id, RiskScore.is_current.is_(True)))
+        .where(Brand.workspace_id == user.workspace_id)
+    )  # fmt: skip
+    if brand_id:
+        stmt = stmt.where(Finding.brand_id.in_(regions_mod.with_regions(session, brand_id)))
+    if state:
+        stmt = stmt.where(Finding.state == state)
+    if severity:
+        stmt = stmt.where(Finding.severity == severity)
+    if kind:
+        stmt = stmt.where(Finding.kind == kind)
+    if q:
+        stmt = stmt.where(Candidate.hostname.ilike(f"%{q.strip().lower()}%"))
+    if since == "24h":
+        stmt = stmt.where(Finding.created_at >= datetime.now(UTC) - timedelta(days=1))
+    elif since == "7d":
+        stmt = stmt.where(Finding.created_at >= datetime.now(UTC) - timedelta(days=7))
+    elif since == "visit" and user.previous_login_at is not None:
+        stmt = stmt.where(Finding.created_at >= user.previous_login_at)
+    order = {
+        "score": (RiskScore.score.desc().nulls_last(), _SEV_RANK.desc(), Finding.created_at.desc()),
+        "newest": (Finding.created_at.desc(),),
+        "oldest": (Finding.created_at.asc(),),
+        "confidence": (Finding.confidence.desc().nulls_last(), _SEV_RANK.desc()),
+    }.get(sort, (_SEV_RANK.desc(), RiskScore.score.desc().nulls_last(), Finding.created_at.desc()))
+    return stmt.order_by(*order)
+
+
+def count_findings(session: Session, stmt: Any) -> int:
+    return int(session.scalar(sa.select(sa.func.count()).select_from(stmt.order_by(None).subquery())) or 0)
+
+
 @router.get("/findings")
 def list_findings(
     session: Annotated[Session, Depends(get_session, scope="function")],
@@ -284,27 +335,24 @@ def list_findings(
     severity: Severity | None = None,
     kind: Annotated[str | None, Query(pattern="^(phishing|shop|social|ai_answer)$")] = None,  # None when called directly
     limit: int = Query(default=200, ge=1, le=1000),
+    offset: Annotated[int, Query(ge=0)] = 0,  # plain defaults: the page calls this function directly
+    q: Annotated[str, Query(max_length=120)] = "",
+    since: Annotated[str, Query(pattern="^(|24h|7d|visit)$")] = "",
+    sort: Annotated[str, Query(pattern="^(severity|score|newest|oldest|confidence)$")] = "severity",
 ) -> list[dict[str, Any]]:
-    q = (
-        sa.select(Finding)
-        .join(Brand, Brand.id == Finding.brand_id)
-        .outerjoin(
-            RiskScore, sa.and_(RiskScore.finding_id == Finding.id, RiskScore.is_current.is_(True))
-        )
-        .where(Brand.workspace_id == user.workspace_id)
-    )
-    if brand_id:
-        q = q.where(Finding.brand_id.in_(regions_mod.with_regions(session, brand_id)))
-    if state:
-        q = q.where(Finding.state == state)
-    if severity:
-        q = q.where(Finding.severity == severity)
-    if kind:
-        q = q.where(Finding.kind == kind)
-    q = q.order_by(
-        _SEV_RANK.desc(), RiskScore.score.desc().nulls_last(), Finding.created_at.desc()
-    ).limit(limit)
-    return [finding_row(session, f) for f in session.scalars(q).all()]
+    stmt = findings_query(session, user, brand_id=brand_id, state=state, severity=severity, kind=kind, q=q, since=since, sort=sort)
+    return [finding_row(session, f) for f in session.scalars(stmt.limit(limit).offset(offset)).all()]
+
+
+def neighbours(session: Session, user: User, finding: Finding) -> dict[str, str | None]:
+    """The open finding before and after this one in the queue's default order (severity, score, newest) — for the
+    previous / next links and for "open the next one after a verdict"; same brand family as the finding."""
+    rows = session.scalars(findings_query(session, user, brand_id=finding.brand_id, state=FindingState.OPEN)).all()
+    ids = [f.id for f in rows]
+    if finding.id not in ids:  # the finding is no longer open: the next one is the first open one
+        return {"prev": None, "next": str(ids[0]) if ids else None, "open_count": len(ids)}
+    i = ids.index(finding.id)
+    return {"prev": str(ids[i - 1]) if i > 0 else None, "next": str(ids[i + 1]) if i + 1 < len(ids) else None, "open_count": len(ids)}
 
 
 def _get_finding(session: Session, user: User, finding_id: uuid.UUID) -> Finding:
@@ -929,6 +977,24 @@ class BulkVerdictRequest(BaseModel):
     action: str = Field(pattern="^(confirm|dismiss)$")
     reason: str = Field(default="", max_length=2000)
     verdict: AnalystVerdict | None = None  # dismiss: legitimate by default
+    whitelist: bool = False  # dismiss: also allowlist each finding's registrable domain
+
+
+def allowlist_domain(session: Session, finding: Finding) -> str | None:
+    """Allowlist the finding's registrable domain for its brand (kind ``known_legit``), as the watchlist's
+    "Known legit" does; returns the domain added, or None when it was already there / is official."""
+    from brandwatch.db.models import BrandDomain
+    from brandwatch.detection.normalize import protected_root
+
+    cand = session.get(Candidate, finding.candidate_id)
+    if cand is None:
+        return None
+    reg = protected_root(cand.hostname)
+    existing = session.scalars(sa.select(BrandDomain).where(BrandDomain.brand_id == finding.brand_id, BrandDomain.domain == reg)).first()
+    if existing is not None:
+        return None
+    session.add(BrandDomain(brand_id=finding.brand_id, domain=reg, is_official=False, kind="known_legit"))
+    return reg
 
 
 def bulk_verdict(session: Session, user: User, body: BulkVerdictRequest) -> dict[str, Any]:
@@ -952,12 +1018,30 @@ def bulk_verdict(session: Session, user: User, body: BulkVerdictRequest) -> dict
             else:
                 finding_stage.dismiss(session, f, user, reason=body.reason or "dismissed in bulk from the findings list",
                                       verdict=body.verdict or AnalystVerdict.LEGITIMATE)  # fmt: skip
+                if body.whitelist:
+                    allowlist_domain(session, f)
         except ValueError as exc:
             skipped.append({"id": str(fid), "host": host, "why": str(exc)})
             continue
         done.append(host)
     session.flush()
     return {"action": body.action, "changed": len(done), "hosts": done, "skipped": skipped}
+
+
+@router.post("/findings/{finding_id}/reopen")
+def reopen_finding(
+    finding_id: uuid.UUID,
+    session: Annotated[Session, Depends(get_session, scope="function")],
+    user: Annotated[User, Depends(require_analyst)],
+    body: VerdictRequest | None = None,
+) -> dict[str, Any]:
+    """Undo a verdict: the finding waits for a verdict again (audited; the old verdict stays in the log)."""
+    f = _get_finding(session, user, finding_id)
+    try:
+        finding_stage.reopen(session, f, user, reason=(body.reason if body else ""))
+    except ValueError as exc:
+        raise HTTPException(status.HTTP_409_CONFLICT, str(exc)) from exc
+    return finding_row(session, f)
 
 
 @router.post("/findings/bulk")
@@ -983,7 +1067,22 @@ def dismiss_finding(
         )
     except ValueError as exc:
         raise HTTPException(status.HTTP_409_CONFLICT, str(exc)) from exc
-    return finding_row(session, f)
+    out = finding_row(session, f)
+    out["whitelisted"] = allowlist_domain(session, f) if body.whitelist else None
+    return out
+
+
+def candidates_query(session: Session, user: User, *, brand_id: uuid.UUID | None = None, state: CandidateState | None = None,
+                     q: str = "") -> Any:  # fmt: skip
+    """The watchlist of the workspace, highest priority first; ``q`` is a host-name fragment."""
+    stmt = sa.select(Candidate).join(Brand, Brand.id == Candidate.brand_id).where(Brand.workspace_id == user.workspace_id)
+    if brand_id:
+        stmt = stmt.where(Candidate.brand_id.in_(regions_mod.with_regions(session, brand_id)))
+    if state:
+        stmt = stmt.where(Candidate.state == state)
+    if q.strip():
+        stmt = stmt.where(Candidate.hostname.ilike(f"%{q.strip().lower()}%"))
+    return stmt.order_by(Candidate.priority.desc(), Candidate.last_seen.desc())
 
 
 @router.get("/candidates")
@@ -992,20 +1091,11 @@ def list_candidates(
     user: Annotated[User, Depends(current_user)],
     brand_id: uuid.UUID | None = None,
     state: CandidateState | None = None,
-    limit: int = Query(default=500, ge=1, le=5000),
+    limit: Annotated[int, Query(ge=1, le=5000)] = 500,
+    offset: Annotated[int, Query(ge=0)] = 0,
+    q: Annotated[str, Query(max_length=120)] = "",
 ) -> list[dict[str, Any]]:
-    q = (
-        sa.select(Candidate)
-        .join(Brand, Brand.id == Candidate.brand_id)
-        .where(Brand.workspace_id == user.workspace_id)
-    )
-    if brand_id:
-        q = q.where(Candidate.brand_id.in_(regions_mod.with_regions(session, brand_id)))
-    if state:
-        q = q.where(Candidate.state == state)
-    rows = session.scalars(
-        q.order_by(Candidate.priority.desc(), Candidate.last_seen.desc()).limit(limit)
-    ).all()
+    rows = session.scalars(candidates_query(session, user, brand_id=brand_id, state=state, q=q).limit(limit).offset(offset)).all()
     from brandwatch.detection.protect import is_protected, protected_set
 
     _prot: dict[uuid.UUID, set[str]] = {}
@@ -1051,6 +1141,8 @@ def list_candidates(
             "next_scan_at": _iso(c.next_scan_at),
             "scan_count": c.scan_count,
             "content_hash": c.content_hash,
+            # why it is on the watchlist: the streams that found it and what they matched
+            "sources": [{"stream": src.source.value, "pattern": src.matched_pattern} for src in c.sources],
         }
         for c in rows
     ]

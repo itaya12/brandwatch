@@ -7,12 +7,13 @@ Next.js command-center UX (globe, animations) is layered on later, when the loop
 from __future__ import annotations
 
 import uuid
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Annotated, Any
 
 import sqlalchemy as sa
 from fastapi import APIRouter, Depends, Form, HTTPException, Request
-from fastapi.responses import HTMLResponse, RedirectResponse, Response
+from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse, Response
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
 
@@ -48,7 +49,7 @@ from brandwatch.db.enums import (
     TakedownState,
     UserRole,
 )
-from brandwatch.db.models import Brand, Finding, ScanJob, User
+from brandwatch.db.models import Brand, Candidate, Finding, ScanJob, User
 from brandwatch.detection import regions as regions_mod
 from brandwatch.detection.normalize import APP_STORES
 from brandwatch.ui import markets as markets_ui
@@ -187,6 +188,9 @@ def login_submit(
                        demo_mode=request.app.state.settings.demo_mode)  # fmt: skip
     audit(session, workspace_id=user.workspace_id, actor_type="analyst", actor_id=user.id,
           action="user.login", object_type="user", object_id=user.id)  # fmt: skip
+    from datetime import UTC, datetime
+
+    user.record_login(datetime.now(UTC))
     token, expires_in = create_access_token(user, settings)
     target = next if next.startswith("/ui/") else landing_for(session, user)
     resp = RedirectResponse(target, status_code=303)
@@ -472,6 +476,10 @@ def findings_page(
     state: str | None = None,
     severity: str = "",
     kind: str = "",
+    q: str = "",
+    since: str = "",
+    sort: str = "severity",
+    page: int = 1,
 ):
     if user is None:
         return _login_redirect(request)
@@ -480,15 +488,16 @@ def findings_page(
     state = _enum_or_none(FindingState, "open" if state is None else state)
     brand_id = _uuid_or_none(brand_id)
     severity = _enum_or_none(Severity, severity)
-    rows = findings_api.list_findings(
-        session,
-        user,
-        brand_id=brand_id,
-        state=state,
-        severity=severity,
-        kind=kind or None,
-        limit=500,
-    )
+    q = q.strip()[:120]
+    since = since if since in findings_api.SINCE else ""
+    sort = sort if sort in findings_api.SORTS else "severity"
+    per_page = 50
+    stmt = findings_api.findings_query(session, user, brand_id=brand_id, state=state, severity=severity, kind=kind or None,
+                                       q=q, since=since, sort=sort)  # fmt: skip
+    total = findings_api.count_findings(session, stmt)
+    pages = max(1, -(-total // per_page))
+    page = max(1, min(page, pages))
+    rows = [findings_api.finding_row(session, f) for f in session.scalars(stmt.limit(per_page).offset((page - 1) * per_page)).all()]
     brands = brands_api.list_brands(session, user)
     stats = ui_stats.findings_stats(session, user, brand_id)
     # one chip per brand with how many findings it has under the same state / severity / kind: "all brands" or one brand in a click
@@ -503,10 +512,13 @@ def findings_page(
     counts = {str(b): n for b, n in session.execute(cq).all()}
     brand_chips = [{"id": str(b["id"]), "name": b["name"], "count": sum(counts.get(str(i), 0) for i in regions_mod.with_regions(session, uuid.UUID(str(b["id"]))))}
                    for b in brands]  # fmt: skip
+    filters = {"brand_id": str(brand_id) if brand_id else "", "state": state.value if state else "",
+               "severity": severity.value if severity else "", "kind": kind, "q": q, "since": since, "sort": sort}  # fmt: skip
+    base_qs = "&".join(f"{k}={v}" for k, v in filters.items() if v or k == "state")  # the filters without the page
     return _render(request, "findings.html", user, findings=rows, brands=brands, stats=stats, active="findings",
-                   brand_chips=brand_chips, brand_total=sum(counts.values()),
-                   filters={"brand_id": str(brand_id) if brand_id else "", "state": state.value if state else "",
-                            "severity": severity.value if severity else "", "kind": kind},
+                   brand_chips=brand_chips, brand_total=sum(counts.values()), filters=filters,
+                   total=total, page=page, pages=pages, per_page=per_page, base_qs=base_qs,
+                   SORTS=findings_api.SORTS, SINCE=findings_api.SINCE, last_visit=user.previous_login_at,
                    has_shops=any(r.get("kind") in ("shop", "social", "ai_answer") for r in rows) or bool(kind))  # fmt: skip
 
 
@@ -528,7 +540,10 @@ async def findings_bulk(
     if not ids or action not in ("confirm", "dismiss"):
         return RedirectResponse(nxt, status_code=303)
     take_write_lock(session)
-    out = findings_api.bulk_verdict(session, user, findings_api.BulkVerdictRequest(ids=ids, action=action, reason=str(form.get("reason") or "")[:2000]))
+    verdict = _enum_or_none(AnalystVerdict, str(form.get("verdict") or "")) if action == "dismiss" else None
+    out = findings_api.bulk_verdict(session, user, findings_api.BulkVerdictRequest(
+        ids=ids, action=action, reason=str(form.get("reason") or "")[:2000],
+        verdict=verdict if verdict is not AnalystVerdict.PHISHING else None, whitelist=action == "dismiss" and form.get("whitelist") == "on"))  # fmt: skip
     note = f"{action}:{out['changed']}:{len(out['skipped'])}"
     return RedirectResponse(nxt + ("&" if "?" in nxt else "?") + "bulk=" + quote(note), status_code=303)
 
@@ -563,10 +578,33 @@ def finding_page(
 ):  # fmt: skip
     if user is None:
         return _login_redirect(request)
-    return _render(
-        request, "finding_detail.html", user, back=_back_path(request, f"/ui/findings/{finding_id}"),
-        **finding_context(session, user, finding_id)
-    )
+    ctx = finding_context(session, user, finding_id)
+    if _auto_investigate(request, session, user, ctx):
+        ctx = finding_context(session, user, finding_id)  # the running job's bar
+    return _render(request, "finding_detail.html", user, back=_back_path(request, f"/ui/findings/{finding_id}"), **ctx)
+
+
+def _auto_investigate(request: Request, session: Session, user: User, ctx: dict[str, Any]) -> bool:
+    """An open High / Critical site that was never investigated: start the site & network investigation now, so the
+    tabs are full by the time the analyst reads the evidence (once per finding; demo mode, or when VirusTotal has a key)."""
+    from brandwatch import keys as keystore
+    from brandwatch.api import intel as intel_api
+
+    f = ctx["d"]["finding"]
+    if (user.role is UserRole.VIEWER or f["state"] != "open" or f["severity"] not in ("critical", "high")
+            or f.get("kind") in ("social", "ai_answer") or ctx.get("intel_job") or ctx.get("has_intel")):  # fmt: skip
+        return False
+    settings = request.app.state.settings
+    if not (settings.demo_mode or keystore.provider_ready(session, user.workspace_id, settings, "virustotal")):
+        return False
+    try:
+        take_write_lock(session)  # a GET that writes: wait for a writing job's checkpoint instead of "database is locked"
+        row = session.get(Finding, uuid.UUID(f["id"]))
+        intel_api.start_intel_job(session, request, user, row, light=True, auto=True)
+    except Exception:  # noqa: BLE001 - the page must open even when the queue is full or the lock never came
+        session.rollback()
+        return False
+    return True
 
 
 def _back_path(request: Request, own: str) -> str:
@@ -615,8 +653,10 @@ def finding_context(session: Session, user: User, finding_id: uuid.UUID) -> dict
                                             (d.get("score") or {}).get("summary"), level, lv.get("conclusion"))}  # fmt: skip
     from brandwatch.detection import shop_levels
 
+    frow = session.get(Finding, finding_id)
     return {
         "d": d,
+        "nb": findings_api.neighbours(session, user, frow) if frow else {"prev": None, "next": None, "open_count": 0},
         "meta": meta,
         "shop_levels": shop_levels.LEVELS,
         "shop_proofs": shop_levels.PROOFS,
@@ -635,17 +675,25 @@ def finding_verdict(
     session: Annotated[Session, Depends(get_session, scope="function")], user: Annotated[User | None, Depends(ui_writer)],
     action: Annotated[str, Form()], reason: Annotated[str, Form()] = "",
     verdict: Annotated[str, Form()] = "legitimate", conclusion: Annotated[str, Form()] = "",
-    proof: Annotated[str, Form()] = "", next: Annotated[str, Form()] = "",
+    proof: Annotated[str, Form()] = "", next: Annotated[str, Form()] = "", whitelist: Annotated[str, Form()] = "",
 ):  # fmt: skip
     if user is None:
         return _login_redirect(request)
+    from urllib.parse import quote
+
+    take_write_lock(session)  # a job may be writing (the auto-started investigation): wait for it, no "database is locked"
+    f = session.get(Finding, finding_id)
+    nb = findings_api.neighbours(session, user, f) if f else {"next": None}  # before the verdict moves it out of the queue
+    host = session.get(Candidate, f.candidate_id).hostname if f else ""
+    confirm = action in ("confirm", "confirm_draft")  # confirm_draft: confirm and open the takedown request in one press
     try:
         body = findings_api.VerdictRequest(
             reason=reason, verdict=AnalystVerdict(verdict) if action == "dismiss" else None,
-            conclusion=(conclusion or None) if action == "confirm" else None,
-            proof=(proof or None) if action == "confirm" and conclusion == "confirmed_counterfeit" else None,
+            conclusion=(conclusion or None) if confirm else None,
+            proof=(proof or None) if confirm and conclusion == "confirmed_counterfeit" else None,
+            whitelist=action == "dismiss" and whitelist == "on",
         )  # fmt: skip
-        if action == "confirm":
+        if confirm:
             findings_api.confirm_finding(finding_id, body, request, session, user)
         else:
             findings_api.dismiss_finding(finding_id, body, session, user)
@@ -653,9 +701,44 @@ def finding_verdict(
         msg = exc.detail if isinstance(exc, HTTPException) else str(exc)
         return _render(request, "finding_detail.html", user, error=str(msg),
                        **finding_context(session, user, finding_id))  # fmt: skip
-    # one page back: where the analyst came from (only this application's own pages)
-    back = next if next.startswith("/ui/") and not next.startswith(f"/ui/findings/{finding_id}") else f"/ui/findings/{finding_id}"
-    return RedirectResponse(back, status_code=303)
+    flash = "flash=" + quote(f"{'confirmed' if confirm else 'dismissed'}:{host}:{finding_id}", safe=":")
+    if action == "confirm_draft":
+        try:
+            out = reports_api.create_takedown(finding_id, session, user)
+        except HTTPException as exc:  # a contact, not a site, or no draft possible: the finding page says why
+            return RedirectResponse(f"/ui/findings/{finding_id}?{flash}&error={quote(str(exc.detail))}", status_code=303)
+        return RedirectResponse(f"/ui/takedowns/{out['id']}?{flash}", status_code=303)
+    if next.startswith("/ui/") and not next.startswith("/ui/findings"):  # came from somewhere else: back there
+        return RedirectResponse(next + ("&" if "?" in next else "?") + flash, status_code=303)
+    if next.startswith("/ui/findings"):  # the queue: straight on to the next open finding; the last one returns to the list
+        if nb.get("next"):
+            return RedirectResponse(f"/ui/findings/{nb['next']}?{flash}", status_code=303)
+        lst = next if next.startswith("/ui/findings?") else "/ui/findings"
+        return RedirectResponse(lst + ("&" if "?" in lst else "?") + flash, status_code=303)
+    return RedirectResponse(f"/ui/findings/{finding_id}?{flash}", status_code=303)  # opened directly: stay, with the note
+
+
+@router.post("/findings/{finding_id}/reopen")
+def finding_reopen(
+    finding_id: uuid.UUID, request: Request,
+    session: Annotated[Session, Depends(get_session, scope="function")], user: Annotated[User | None, Depends(ui_writer)],
+    next: Annotated[str, Form()] = "",
+):  # fmt: skip
+    """Undo: the finding waits for a verdict again."""
+    if user is None:
+        return _login_redirect(request)
+    from urllib.parse import quote
+
+    take_write_lock(session)
+    try:
+        findings_api.reopen_finding(finding_id, session, user)
+    except HTTPException as exc:
+        return render_error(request, exc.status_code, str(exc.detail))
+    host = session.get(Candidate, session.get(Finding, finding_id).candidate_id).hostname
+    flash = "flash=" + quote(f"reopened:{host}:{finding_id}", safe=":")
+    to = next if next.startswith("/ui/") else f"/ui/findings/{finding_id}"
+    to = to.split("?flash=")[0].split("&flash=")[0]  # never stack two flashes
+    return RedirectResponse(to + ("&" if "?" in to else "?") + flash, status_code=303)
 
 
 @router.post("/findings/{finding_id}/conclusion")
@@ -756,6 +839,27 @@ def finding_takedown(
         return _render(request, "finding_detail.html", user, error=str(exc.detail),
                        **finding_context(session, user, finding_id))  # fmt: skip
     return RedirectResponse(f"/ui/takedowns/{out['id']}", status_code=303)
+
+
+@router.post("/campaigns/draft-takedowns")
+async def campaigns_draft_takedowns(
+    request: Request,
+    session: Annotated[Session, Depends(get_session, scope="function")], user: Annotated[User | None, Depends(ui_writer)],
+):  # fmt: skip
+    """An operation card → "Draft takedowns for these N sites": one request per confirmed site that has none yet."""
+    if user is None:
+        return _login_redirect(request)
+    form = await request.form()
+    ids = [i for i in (_uuid_or_none(str(x)) for x in form.getlist("ids")) if i][:200]
+    take_write_lock(session)
+    done = skipped = 0
+    for fid in ids:
+        try:
+            reports_api.create_takedown(fid, session, user)
+            done += 1
+        except HTTPException:
+            skipped += 1
+    return RedirectResponse(f"/ui/takedowns?state=unsent&bulk=drafted:{done}:{skipped}", status_code=303)
 
 
 @router.get("/takedowns/{draft_id}", response_class=HTMLResponse)
@@ -887,9 +991,14 @@ def takedown_reported(
     draft = session.get(TakedownDraft, draft_id)
     reports_api.get_takedown(draft_id, session, user)  # workspace check
     try:
-        tc.toggle_report(session, draft, actor=user, portal=portal)
+        ch = tc.toggle_report(session, draft, actor=user, portal=portal)
     except ValueError as exc:
+        if request.headers.get("x-requested-with") == "fetch":
+            return JSONResponse({"error": str(exc)}, status_code=400)
         return RedirectResponse(f"/ui/takedowns/{draft_id}?error={exc}", status_code=303)
+    if request.headers.get("x-requested-with") == "fetch":  # the page swaps the button itself
+        reports = ch.get("reports") or {}
+        return JSONResponse({"portal": portal, "done": portal in reports, "at": (reports.get(portal) or {}).get("at"), "count": len(reports)})
     return RedirectResponse(
         f"/ui/takedowns/{draft_id}#{'meta' if next == 'meta' else 'report'}", status_code=303
     )
@@ -949,13 +1058,21 @@ def candidate_page(
 
 
 @router.post("/candidates/{candidate_id}/rescan")
-def candidate_rescan(
+async def candidate_rescan(
     candidate_id: uuid.UUID, request: Request,
     session: Annotated[Session, Depends(get_session, scope="function")], user: Annotated[User | None, Depends(ui_writer)],
 ):  # fmt: skip
     if user is None:
         return _login_redirect(request)
+    form = await request.form()
     out = candidates_api.rescan_candidate(candidate_id, request, session, user)
+    nxt = str(form.get("next") or "")
+    if nxt.startswith("/ui/") and not nxt.startswith("/ui/jobs"):  # from the list: stay on it, with a note and the console link
+        from urllib.parse import quote
+
+        host = session.get(Candidate, candidate_id).hostname
+        nxt = nxt.split("&flash=")[0].split("?flash=")[0]
+        return RedirectResponse(nxt + ("&" if "?" in nxt else "?") + "flash=" + quote(f"rescan:{host}:{out['job_id']}", safe=":"), status_code=303)
     return RedirectResponse(f"/ui/jobs/{out['job_id']}", status_code=303)
 
 
@@ -1313,15 +1430,22 @@ def candidates_page(
     user: Annotated[User | None, Depends(ui_user)],
     brand_id: str = "",
     state: str = "",
+    q: str = "",
+    page: int = 1,
 ):
     if user is None:
         return _login_redirect(request)
     brand_id = _uuid_or_none(brand_id)
     state = _enum_or_none(CandidateState, state)
-    rows = findings_api.list_candidates(session, user, brand_id=brand_id, state=state, limit=2000)
+    q = q.strip()[:120]
+    per_page = 50
+    stmt = findings_api.candidates_query(session, user, brand_id=brand_id, state=state, q=q)
+    total = findings_api.count_findings(session, stmt)
+    pages = max(1, -(-total // per_page))
+    page = max(1, min(page, pages))
+    rows = findings_api.list_candidates(session, user, brand_id=brand_id, state=state, q=q, limit=per_page, offset=(page - 1) * per_page)
     brands = brands_api.list_brands(session, user)
     stats = ui_stats.watchlist_stats(session, user, brand_id)
-    from brandwatch.db.models import Candidate
 
     # a chip per brand with how many domains it has under the same state: "all brands" or one brand in a click
     cq = (sa.select(Candidate.brand_id, sa.func.count()).join(Brand, Brand.id == Candidate.brand_id)
@@ -1331,9 +1455,38 @@ def candidates_page(
     counts = {str(b): n for b, n in session.execute(cq).all()}
     brand_chips = [{"id": str(b["id"]), "name": b["name"], "count": sum(counts.get(str(i), 0) for i in regions_mod.with_regions(session, uuid.UUID(str(b["id"]))))}
                    for b in brands]  # fmt: skip
+    filters = {"brand_id": str(brand_id) if brand_id else "", "state": state.value if state else "", "q": q}
+    base_qs = "&".join(f"{k}={v}" for k, v in filters.items() if v)
     return _render(request, "candidates.html", user, candidates=rows, brands=brands, stats=stats, active="candidates",
-                   brand_chips=brand_chips, brand_total=sum(counts.values()),
-                   filters={"brand_id": str(brand_id) if brand_id else "", "state": state.value if state else ""})  # fmt: skip
+                   brand_chips=brand_chips, brand_total=sum(counts.values()), filters=filters,
+                   total=total, page=page, pages=pages, per_page=per_page, base_qs=base_qs)  # fmt: skip
+
+
+@router.post("/candidates/bulk-dismiss")
+async def candidates_bulk_dismiss(
+    request: Request,
+    session: Annotated[Session, Depends(get_session, scope="function")], user: Annotated[User | None, Depends(ui_writer)],
+):  # fmt: skip
+    """Watchlist → tick several domains → Known legit: each one off the watchlist and allowlisted for its brand."""
+    if user is None:
+        return _login_redirect(request)
+    form = await request.form()
+    ids = [i for i in (_uuid_or_none(str(x)) for x in form.getlist("ids")) if i][:500]
+    nxt = str(form.get("next") or "/ui/candidates")
+    if not nxt.startswith("/ui/"):
+        nxt = "/ui/candidates"
+    take_write_lock(session)
+    done = skipped = 0
+    for cid in ids:
+        try:
+            candidates_api.dismiss_candidate(
+                cid, candidates_api.DismissRequest(reason=str(form.get("reason") or "known legitimate domain")[:2000],
+                                                   whitelist=form.get("whitelist") != "off"), session, user)  # fmt: skip
+            done += 1
+        except HTTPException:
+            skipped += 1
+    nxt = nxt.split("&bulk=")[0].split("?bulk=")[0]
+    return RedirectResponse(nxt + ("&" if "?" in nxt else "?") + f"bulk=legit:{done}:{skipped}", status_code=303)
 
 
 @router.get("/how-it-works", response_class=HTMLResponse)
@@ -1392,7 +1545,18 @@ def takedowns_page(
             return [x for x in xs if x["takedown_state"] in inflight]
         return [x for x in xs if not state or x["takedown_state"] == state]
 
-    rows = by_state(sites)
+    now = datetime.now(UTC)
+    for x in sites:
+        t = x.get("takedown")
+        sent = t.get("sent_at") if t else None
+        x["waiting_days"] = None
+        if sent and x["takedown_state"] in inflight:
+            x["waiting_days"] = max(0, (now - datetime.fromisoformat(sent).replace(tzinfo=UTC)).days)
+    if state == "stale":  # sent, and nobody answered for a week: time to chase or try another channel
+        rows = [x for x in sites if (x["waiting_days"] or 0) >= 7 and x["takedown_state"] in ("sent", "acknowledged")]
+    else:
+        rows = by_state(sites)
+    counts["stale"] = sum(1 for x in sites if (x["waiting_days"] or 0) >= 7 and x["takedown_state"] in ("sent", "acknowledged"))
     # a chip per brand with how many confirmed sites it has under the same takedown state: "all brands" or one brand in a click
     every = by_state(confirmed_sites(session, user, None, brands) if brand_id else sites)
     per = {}
@@ -1402,7 +1566,7 @@ def takedowns_page(
                    for b in brands]  # fmt: skip
     return _render(request, "takedowns.html", user, sites=rows, counts=counts, brands=brands, total=len(sites),
                    brand_chips=brand_chips, brand_total=len(every),
-                   filters={"brand_id": str(brand_id) if brand_id else "", "state": state if (state in states or state in ("unsent", "inflight")) else ""},
+                   filters={"brand_id": str(brand_id) if brand_id else "", "state": state if (state in states or state in ("unsent", "inflight", "stale")) else ""},
                    active="takedowns")  # fmt: skip
 
 

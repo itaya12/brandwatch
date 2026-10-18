@@ -61,7 +61,7 @@ def test_the_bulk_verdict_and_the_brand_delete_ask_in_the_interfaces_own_dialog(
         findings = ui.get(f"/ui/findings?brand_id={brand['id']}&state=open").text
         brand_page = ui.get(f"/ui/brands/{brand['id']}").text
         watch = ui.get("/ui/candidates").text
-    assert "All brands" in watch and 'onchange="this.form.submit()"' in watch and brand["name"] in watch
+    assert "All brands" in watch and 'id="filters"' in watch and brand["name"] in watch
     with sync.sync_playwright() as pw:
         try:
             b = pw.chromium.launch()

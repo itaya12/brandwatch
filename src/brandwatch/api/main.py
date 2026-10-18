@@ -202,6 +202,19 @@ def create_app(settings: Settings | None = None, engine: Engine | None = None) -
 
     _ = _HTTPException  # FastAPI's HTTPException subclasses Starlette's: one handler covers both
 
+    @app.exception_handler(Exception)
+    async def _unexpected(request, exc):  # noqa: ANN001, ANN202
+        """Anything else: the traceback goes to the log; a /ui page gets a plain error page with the ways back."""
+        import logging
+
+        logging.getLogger("brandwatch").exception("unhandled error on %s", request.url.path)
+        if _is_ui(request):
+            return ui.render_error(request, 500, "Something went wrong on our side. The error was logged; try again, "
+                                                 "and if it keeps happening tell an admin what you were doing.")  # fmt: skip
+        from fastapi.responses import JSONResponse
+
+        return JSONResponse({"detail": "internal error"}, status_code=500)
+
     @app.get("/", include_in_schema=False)
     def root() -> RedirectResponse:
         return RedirectResponse("/ui/dashboard", status_code=303)

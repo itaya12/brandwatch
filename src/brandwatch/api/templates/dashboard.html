@@ -34,8 +34,6 @@
   @keyframes packet{from{left:0}to{left:calc(100% - 60px)}}
   .cta{display:flex;flex-wrap:wrap;gap:10px}
   .btn.big{padding:11px 16px;font-size:14px;border-radius:10px}
-  .btn.primary{background:rgba(53,199,242,.16);border-color:var(--accent);color:var(--accent2);font-weight:600}
-  .btn.ghost{background:transparent}
   /* caught in the act */
   .cases{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(340px,100%),1fr));gap:12px}
   .case{display:flex;flex-direction:column;border:1px solid var(--border);border-radius:12px;overflow:hidden;background:var(--panel2);color:var(--text);text-decoration:none;transition:border-color .2s,transform .2s}
@@ -146,7 +144,7 @@
     <p class="sub">{{ PAGE_INTROS.dashboard }}</p>
     <div class="flow" id="how-strip" aria-label="What BrandWatch has done so far">
       <a class="fstep" href="/ui/candidates{{ bq0 }}"><span class="fn">1 · Find</span><b class="num" data-count="{{ k.candidates_total }}">0</b><span class="fl">look-alike domains found</span><span class="fd">typos · new certificates · new domains · Google · Facebook &amp; Instagram ads</span></a>
-      <a class="fstep" href="/ui/findings{{ bq0 }}"><span class="fn">2 · Prove</span><b class="num" data-count="{{ (k.findings_open or 0) + (k.findings_confirmed or 0) }}">0</b><span class="fl">scored as phishing risk</span><span class="fd">visited in a sandbox · 42 signals · evidence kept</span></a>
+      <a class="fstep" href="/ui/findings{{ bq0 }}"><span class="fn">2 · Prove</span><b class="num" data-count="{{ (k.findings_open or 0) + (k.findings_confirmed or 0) }}">0</b><span class="fl">scored as phishing risk</span><span class="fd">visited in a sandbox · {{ SIGNAL_COUNT }} signals · evidence kept</span></a>
       <a class="fstep" href="/ui/findings?state=confirmed{{ bq }}"><span class="fn">3 · Decide</span><b class="num" data-count="{{ k.findings_confirmed }}">0</b><span class="fl">confirmed phishing</span><span class="fd">an analyst decides, with the evidence</span></a>
       <a class="fstep" href="/ui/campaigns{{ bq0 }}"><span class="fn">4 · Map</span><b class="num" data-count="{{ k.campaigns }}">0</b><span class="fl">attacker network{{ 's' if k.campaigns != 1 }} mapped</span><span class="fd">{{ k.iocs }} indicators to block</span></a>
       <a class="fstep" href="/ui/takedowns{{ bq0 }}"><span class="fn">5 · Take down</span><b class="num" data-count="{{ k.takedowns_sent }}">0</b><span class="fl">takedown{{ 's' if k.takedowns_sent != 1 }} sent</span><span class="fd">registrar · host · CDN + {{ REPORT_PORTAL_COUNT }} blocklists</span></a>
@@ -174,7 +172,7 @@
     {% if d.kpis.findings_open %}<a class="btn" href="/ui/findings?state=open{{ '&brand_id=' ~ selected_brand if selected_brand else '' }}"><b>{{ d.kpis.findings_open }}</b> finding(s) awaiting your verdict →</a>{% endif %}
     {% if d.kpis.confirmed_no_takedown %}<a class="btn" href="/ui/takedowns?state=none{{ '&brand_id=' ~ selected_brand if selected_brand else '' }}" style="border-color:var(--crit);color:var(--crit)"><b>{{ d.kpis.confirmed_no_takedown }}</b> confirmed phishing site(s) with no takedown request →</a>{% endif %}
     {% if d.kpis.takedowns_draft %}<a class="btn" href="/ui/takedowns?state=unsent{{ '&brand_id=' ~ selected_brand if selected_brand else '' }}"><b>{{ d.kpis.takedowns_draft }}</b> takedown draft(s) not sent yet →</a>{% endif %}
-    {% if d.kpis.confirmed_unmapped %}<a class="btn" href="/ui/campaigns?x=1{{ '&brand_id=' ~ selected_brand if selected_brand else '' }}"><b>{{ d.kpis.confirmed_unmapped }}</b> confirmed site(s) whose infrastructure is not mapped →</a>{% endif %}
+    {% if d.kpis.confirmed_unmapped %}<a class="btn" href="/ui/campaigns{{ '?brand_id=' ~ selected_brand if selected_brand else '' }}#confirmed"><b>{{ d.kpis.confirmed_unmapped }}</b> confirmed site(s) whose infrastructure is not mapped →</a>{% endif %}
   </div>
 </div>
 {% endif %}
@@ -256,7 +254,7 @@
   <h2 style="margin-top:0">What the system does <span class="muted">· each stage in the order it runs, with its run statistics</span></h2>
   <div class="steps">
     {% set names = {'baseline':'Brand baseline','discovery':'Discovery','normalize_dedup_prefilter':'Normalize · dedup · pre-filter','enrichment_analysis_scoring':'Evidence · signals · scoring','investigation':'Infrastructure pivoting','noop':'Health check'} %}
-    {% set descs = {'baseline':'fingerprint the official site: favicon, screenshot, login form, keywords','discovery':'dnstwist permutations, certificate transparency, NRD feed, search, urlscan','normalize_dedup_prefilter':'one candidate per URL, N sources; whitelist drops own domains','enrichment_analysis_scoring':'DNS · HTTP · WHOIS · favicon · screenshot · reputation → 42 signals → risk + confidence','investigation':'reverse IP, certs, favicon hash, tracking ids → campaign graph with triage','noop':'job model self-test'} %}
+    {% set descs = {'baseline':'fingerprint the official site: favicon, screenshot, login form, keywords','discovery':'dnstwist permutations, certificate transparency, NRD feed, search, urlscan','normalize_dedup_prefilter':'one candidate per URL, N sources; whitelist drops own domains','enrichment_analysis_scoring':'DNS · HTTP · WHOIS · favicon · screenshot · reputation → ' ~ SIGNAL_COUNT ~ ' signals → risk + confidence','investigation':'reverse IP, certs, favicon hash, tracking ids → campaign graph with triage','noop':'job model self-test'} %}
     {% for p in d.pipeline %}
     <div class="step"><div class="n">{{ names.get(p.stage, p.stage) }}</div><div class="d" style="color:var(--text);margin:4px 0 6px">{{ descs.get(p.stage, '') }}</div>
       <div class="d mono">{{ p.runs }} runs · {{ p.hits }} hits · {{ p.api_calls }} API calls · avg {{ p.avg_ms }} ms</div></div>

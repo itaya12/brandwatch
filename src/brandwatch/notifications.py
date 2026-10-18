@@ -126,6 +126,16 @@ class NotificationService:
         self.settings = settings
         self.notifiers = notifiers if notifiers is not None else build_notifiers(settings)
         self.min_severity = Severity(settings.notify_min_severity)
+        self.public_url = (settings.public_url or "").rstrip("/")
+
+    def link(self, path: str) -> str:
+        """An absolute link when PUBLIC_URL is set (Slack and mail make it clickable); the path otherwise."""
+        return f"{self.public_url}{path}" if self.public_url else path
+
+    def prefs(self, session: Session, workspace_id: uuid.UUID) -> dict[str, Any]:
+        from brandwatch.tenancy import workspace_notify
+
+        return workspace_notify(session, workspace_id, self.settings)
 
     @property
     def log_outbox(self) -> list[Message]:
@@ -142,9 +152,12 @@ class NotificationService:
         *,
         kind: str,
         object_id=None,
+        channels: list[str] | None = None,
     ) -> int:
         delivered = 0
         for n in self.notifiers:
+            if channels is not None and n.name not in channels and n.name != "log":  # the log channel always keeps a copy
+                continue
             try:
                 n.send(message)
                 delivered += 1
@@ -163,26 +176,39 @@ class NotificationService:
     def notify_finding(
         self, session: Session, finding: Finding, *, score: int, confidence: float, created: bool
     ) -> bool:
-        if _SEV_ORDER.index(finding.severity) < _SEV_ORDER.index(self.min_severity):
+        brand = session.get(Brand, finding.brand_id)
+        prefs = self.prefs(session, brand.workspace_id)
+        if _SEV_ORDER.index(finding.severity) < _SEV_ORDER.index(Severity(prefs["min_severity"])):
+            return False
+        if str(brand.id) in prefs["brands_off"]:
             return False
         cand = session.get(Candidate, finding.candidate_id)
-        brand = session.get(Brand, finding.brand_id)
         subject = f"[BrandWatch] {finding.severity.value.upper()} {'new finding' if created else 'rescored'}: {cand.hostname} impersonates {brand.name}"
         body = (
             f"Host: {cand.hostname}\nURL: {cand.canonical_url}\nBrand: {brand.name}\n"
             f"Risk: {score}/100 ({finding.severity.value}) · confidence {confidence:.0f}%\n"
-            f"Finding: /ui/findings/{finding.id}\n"
+            f"Finding: {self.link(f'/ui/findings/{finding.id}')}\n"
             "Action: review the evidence, confirm or dismiss. Nothing is sent automatically."
         )
         self._deliver(session, brand.workspace_id, Message(subject, body, finding.severity, {"finding_id": str(finding.id)}),
-                      kind="finding", object_id=finding.id)  # fmt: skip
+                      kind="finding", object_id=finding.id, channels=prefs["channels"])  # fmt: skip
         return True
+
+    def send_test(self, session: Session, workspace_id: uuid.UUID, *, by: str) -> int:
+        """Settings → Notifications → "Send a test": one message through the chosen channels, audited like the rest."""
+        prefs = self.prefs(session, workspace_id)
+        body = (f"A test from BrandWatch, requested by {by}.\nAlerts: {prefs['min_severity']} and above"
+                f"{' · digest on' if prefs['digest'] else ' · digest off'}.\nQueue: {self.link('/ui/findings?state=open')}")  # fmt: skip
+        return self._deliver(session, workspace_id, Message("[BrandWatch] test notification", body), kind="test", channels=prefs["channels"])
 
     def daily_digest(
         self, session: Session, workspace_id: uuid.UUID, now: datetime | None = None
     ) -> bool:
         now = now or datetime.now(UTC)
         since = now - timedelta(days=1)
+        prefs = self.prefs(session, workspace_id)
+        if not prefs["digest"]:
+            return False
         new = session.execute(
             sa.select(Finding.severity, sa.func.count())
             .join(Brand, Brand.id == Finding.brand_id)
@@ -200,10 +226,20 @@ class NotificationService:
         counts = {sev.value: 0 for sev in Severity}
         for sev, n in new:
             counts[sev.value] = n
+        # the new High / Critical ones by name, each with its link: the digest is readable without opening the app
+        top = session.execute(
+            sa.select(Finding.id, Finding.severity, Candidate.hostname, Brand.name)
+            .join(Brand, Brand.id == Finding.brand_id).join(Candidate, Candidate.id == Finding.candidate_id)
+            .where(Brand.workspace_id == workspace_id, Finding.created_at >= since,
+                   Finding.severity.in_([Severity.CRITICAL, Severity.HIGH]), Finding.state == FindingState.OPEN)
+            .order_by(Finding.severity.desc(), Finding.created_at.desc()).limit(20)
+        ).all()  # fmt: skip
+        lines = [f"  {sev.value.upper():8} {host} ({brand}) {self.link(f'/ui/findings/{fid}')}" for fid, sev, host, brand in top]
         subject = f"[BrandWatch] daily digest {now.date().isoformat()}: {sum(counts.values())} new finding(s), {open_count} open"
         body = (
             f"New findings (24h): critical {counts['critical']}, high {counts['high']}, medium {counts['medium']}, low {counts['low']}\n"
             f"Open findings awaiting a verdict: {open_count}\nScan jobs run (24h): {jobs}\n"
-            "Review queue: /ui/findings?state=open"
+            + (("Waiting for a verdict:\n" + "\n".join(lines) + "\n") if lines else "")
+            + f"Review queue: {self.link('/ui/findings?state=open')}"
         )
-        return self._deliver(session, workspace_id, Message(subject, body), kind="digest") > 0
+        return self._deliver(session, workspace_id, Message(subject, body), kind="digest", channels=prefs["channels"]) > 0

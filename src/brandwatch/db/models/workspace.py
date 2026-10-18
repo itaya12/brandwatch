@@ -37,8 +37,20 @@ class User(Base):
     is_active: Mapped[bool] = mapped_column(sa.Boolean, nullable=False, default=True)
     created_at: Mapped[datetime] = created_at()
     last_login_at: Mapped[datetime | None] = mapped_column(TZDateTime, nullable=True)
+    # the sign-in before this one: "new since my last visit" in the findings queue
+    previous_login_at: Mapped[datetime | None] = mapped_column(TZDateTime, nullable=True)
 
     workspace: Mapped[Workspace] = relationship(back_populates="users")
+
+    def record_login(self, now: datetime) -> None:
+        """A sign-in: the last one becomes the previous one (the same sign-in twice within a few
+        minutes — a second tab, a token refresh — does not move it)."""
+        last = self.last_login_at
+        if last is not None and last.tzinfo is None:
+            last = last.replace(tzinfo=now.tzinfo)  # SQLite hands back naive datetimes
+        if last is None or (now - last).total_seconds() > 600:
+            self.previous_login_at = last
+        self.last_login_at = now
 
 
 class AccessToken(Base):

@@ -49,7 +49,7 @@
   <p class="small muted">Use it as <span class="mono">Authorization: Bearer {{ new_token[:10] }}…</span> against the API (<a href="/docs" target="_blank">/docs</a>).</p>
 </div>
 {% endif %}
-{% set saved_labels = {'budget': 'Budget saved', 'proxy': 'Proxy saved', 'lookups': 'Lookup methods saved', 'team': 'Team updated', 'keys': 'API key updated', 'tenants': 'Workspace created', 'tokens': 'Token revoked', 'quality': 'Classifier retrained'} %}
+{% set saved_labels = {'budget': 'Budget saved', 'proxy': 'Proxy saved', 'lookups': 'Lookup methods saved', 'team': 'Team updated', 'keys': 'API key updated', 'tenants': 'Workspace created', 'tokens': 'Token revoked', 'quality': 'Classifier retrained', 'notify': 'Notification settings saved', 'notify_test': 'Test notification sent — see Activity for each channel', 'notify_test_failed': 'The test could not be delivered on any channel — see Activity'} %}
 {% if saved and saved in saved_labels %}<div class="saved" id="saved">✓ {{ saved_labels[saved] }} · recorded in Activity</div>{% endif %}
 
 {# ------------------------------------------------------------------ status at a glance #}
@@ -76,7 +76,7 @@
     <a href="#tokens">API tokens <small>{{ tokens|rejectattr('revoked')|list|length }}</small></a>
     {% if workspaces is not none %}<a href="#tenants">Tenants</a>{% endif %}
     <div class="grp">System</div>
-    <a href="#system">Notifications &amp; system</a>
+    <a href="#system">Notifications</a>
     <a href="#quality">Detection quality</a>
     <a href="#limits">Security limits</a>
   </nav>
@@ -284,12 +284,38 @@ curl -N -H "Authorization: Bearer $TOKEN" {{ request.base_url }}api/jobs/&lt;job
 
   {# ================================================================== SYSTEM #}
   <section class="panel sec" id="system">
-    <h2>Notifications &amp; system</h2>
-    <p class="lead">Set through the environment (<span class="mono">NOTIFY_CHANNELS</span>, Slack webhook, Telegram bot, SMTP). Nothing is ever sent to third parties automatically — takedowns stay drafts until an analyst sends them.</p>
+    <h2>Notifications {% if not is_admin %}<span class="muted">(read-only)</span>{% endif %}</h2>
+    <p class="lead">Who hears about a new finding, and how. The channels themselves (Slack webhook, Telegram bot, SMTP) are set in the environment (<span class="mono">NOTIFY_CHANNELS</span>, <span class="mono">PUBLIC_URL</span> for clickable links); what goes through them is set here. Nothing is ever sent to third parties automatically — takedowns stay drafts until an analyst sends them.</p>
+    <style>#notify-form .chkrow{display:flex;gap:6px;align-items:center;text-transform:none;letter-spacing:0;font-size:13px;color:var(--text);margin-top:4px}#notify-form .chkrow input{width:auto;margin:0}</style>
+    <form method="post" action="/ui/settings/notify" id="notify-form" class="small">
+      <div class="grid two" style="gap:10px 18px">
+        <div>
+          <label for="n-sev">Alert on a new finding of</label>
+          <select id="n-sev" name="min_severity" {{ 'disabled' if not is_admin }}>{% for sv in ['low', 'medium', 'high', 'critical'] %}<option value="{{ sv }}" {{ 'selected' if notify.min_severity == sv }}>{{ sv }} and above</option>{% endfor %}</select>
+          <div class="muted" style="margin-top:4px">Critical only = the fewest messages; Medium and above = everything that waits for a verdict.</div>
+          <label class="chkrow" style="margin-top:10px"><input type="checkbox" name="digest" {{ 'checked' if notify.digest }} {{ 'disabled' if not is_admin }}> daily digest <span class="muted">— counts and the new High / Critical sites with their links, once a day</span></label>
+        </div>
+        <div>
+          <label>Channels configured on this server</label>
+          <div class="mono" style="margin-bottom:6px">{{ channels|join(' · ') }}</div>
+          <label class="chkrow"><input type="checkbox" name="pick_channels" id="n-pick" {{ 'checked' if notify.channels is not none }} {{ 'disabled' if not is_admin }}> use only some of them</label>
+          <div id="n-channels" style="margin:4px 0 0 22px" {{ '' if notify.channels is not none else 'hidden' }}>
+            {% for ch in channels %}<label class="chkrow"><input type="checkbox" name="channels" value="{{ ch }}" {{ 'checked' if notify.channels is none or ch in notify.channels }} {{ 'disabled' if not is_admin }}> {{ ch }}{% if ch == 'log' %} <span class="muted">(the server log; always keeps a copy)</span>{% endif %}</label>{% endfor %}
+          </div>
+          <div class="muted" style="margin-top:6px">Without <span class="mono">PUBLIC_URL</span> the links in a message are paths (<span class="mono">/ui/findings/…</span>); {% if settings.public_url %}it is set: <span class="mono">{{ settings.public_url }}</span>{% else %}set it so Slack and mail make them clickable{% endif %}.</div>
+        </div>
+      </div>
+      {% if notify_brands|length > 1 %}<label style="margin-top:10px">Brands that alert</label>
+      <div style="display:flex;flex-wrap:wrap;gap:6px 16px">{% for b in notify_brands %}<label class="chkrow"><input type="checkbox" name="brand_on" value="{{ b.id }}" {{ 'checked' if b.id|string not in notify.brands_off }} {{ 'disabled' if not is_admin }}> <bdi>{{ b.name }}</bdi></label>{% endfor %}</div>
+      {% else %}{% for b in notify_brands %}<input type="hidden" name="brand_on" value="{{ b.id }}">{% endfor %}{% endif %}
+      {% if is_admin %}<div class="actions" style="margin-top:12px"><button type="submit" class="primary">Save notification settings</button>
+        <button type="submit" form="notify-test" class="small" title="one message through the chosen channels, so you can see it arrives">Send a test</button></div>{% endif %}
+    </form>
+    {% if is_admin %}<form method="post" action="/ui/settings/notify/test" id="notify-test" data-busy="Sending…"></form>{% endif %}
+    <script>(function(){const p=document.getElementById('n-pick'),c=document.getElementById('n-channels');if(p&&c)p.addEventListener('change',()=>{c.hidden=!p.checked;});})();</script>
+    <h2 style="margin-top:18px">System</h2>
     <table class="small kv">
       <tr><th>Mode</th><td>{{ 'DEMO (recorded scenarios, $0)' if settings.demo_mode else 'LIVE' }}</td></tr>
-      <tr><th>Channels</th><td class="mono">{{ channels|join(', ') }}</td></tr>
-      <tr><th>Alert threshold</th><td class="mono">{{ settings.notify_min_severity }} and above · daily digest</td></tr>
       <tr><th>Scheduler</th><td class="mono">{{ 'enabled' if settings.scheduler_enabled else 'disabled' }} (every {{ settings.scheduler_interval_seconds }}s)</td></tr>
       <tr><th>Queue</th><td class="mono">{{ settings.queue_backend }}</td></tr>
     </table>

@@ -15,8 +15,24 @@
   .count{font-family:var(--display);font-size:18px;color:var(--accent2)}
   .wrow td:first-child{box-shadow:inset 3px 0 0 var(--sc)}
   .prio{display:inline-block;height:6px;border-radius:3px;background:var(--accent);vertical-align:middle;width:0;transition:width 1.2s}
-  button.small{padding:4px 9px;font-size:12px;white-space:nowrap}
   td form{margin:0 4px 0 0}
+  .filters{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px 10px;align-items:end;margin-bottom:8px}
+  .filters label{display:block;font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:3px}
+  .filters .wide{grid-column:span 2}.filters .go{display:flex;gap:6px}
+  .bchips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+  .bchips a{padding:4px 12px;font-size:12.5px}.bchips a.on{border-color:var(--accent);color:var(--accent2)}
+  .selcol{width:28px}.selcol input{width:16px;height:16px;margin:0;cursor:pointer}
+  .bulkbar{position:sticky;top:calc(var(--hdr,56px) + 8px);z-index:19;display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:8px 12px;margin-bottom:8px;border:1px solid var(--accent);border-radius:10px;background:#0a121e;box-shadow:0 8px 24px rgba(0,0,0,.45)}
+  .bulkbar[hidden]{display:none}
+  .bulkbar input[name=reason]{flex:1;min-width:180px;margin:0}
+  .why{font-size:12px;color:var(--muted);max-width:280px}
+  .why b{color:var(--text);font-weight:500}
+  .pager{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:10px}.pager .off{opacity:.4;pointer-events:none}
+  .wstats summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:8px;margin:18px 0 8px}
+  .wstats summary::-webkit-details-marker{display:none}.wstats summary h2{margin:0}.wstats summary .tog{font-size:12px;color:var(--accent)}
+  .wstats[open] summary .tog.o{display:none}.wstats:not([open]) summary .tog.c{display:none}
+  @media (max-width:700px){.filters{grid-template-columns:1fr 1fr}.kpis{grid-template-columns:1fr 1fr}
+    #ctable th:nth-child(4),#ctable td:nth-child(4),#ctable th:nth-child(8),#ctable td:nth-child(8),#ctable th:nth-child(9),#ctable td:nth-child(9),#ctable th:nth-child(11),#ctable td:nth-child(11){display:none}}
 </style>
 <h1>WATCHLIST <span class="muted">· every domain the system is observing over time · {{ w.total }} total</span></h1>
 <p class="intro">{{ PAGE_INTROS.candidates }}</p>
@@ -31,8 +47,72 @@
 </div>
 
 <div class="panel" style="margin-top:14px">
+  {% set keep = '&state=' ~ filters.state ~ '&q=' ~ filters.q %}
+  {% if brand_chips|length > 1 %}<div class="bchips">
+    <a class="btn {{ 'on' if not filters.brand_id }}" href="/ui/candidates?brand_id={{ keep }}">All brands <b>{{ brand_total }}</b></a>
+    {% for b in brand_chips %}<a class="btn {{ 'on' if filters.brand_id == b.id }}" href="/ui/candidates?brand_id={{ b.id }}{{ keep }}"><bdi>{{ b.name }}</bdi> <b>{{ b.count }}</b></a>{% endfor %}
+  </div>{% endif %}
+  <form method="get" action="/ui/candidates" class="filters" id="filters">
+    <input type="hidden" name="brand_id" value="{{ filters.brand_id }}">
+    <div class="wide"><label for="q">Search host</label><input id="q" name="q" value="{{ filters.q }}" placeholder="part of a host name" autocomplete="off" maxlength="120"></div>
+    <div><label for="c-state">State</label><select id="c-state" name="state"><option value="">all</option>{% for st in CandidateStates if st != 'analyzing' %}<option value="{{ st }}" {{ 'selected' if filters.state==st }}>{{ st|state_label }}</option>{% endfor %}</select></div>
+    <div class="go"><button type="submit" class="primary">Apply</button>{% if filters.q or filters.state %}<a class="btn" href="/ui/candidates{{ '?brand_id=' ~ filters.brand_id if filters.brand_id }}">Reset</a>{% endif %}</div>
+    <div class="muted small" style="align-self:center">{{ total }} domain{{ 's' if total != 1 }}{% if pages > 1 %} · page {{ page }} of {{ pages }}{% endif %}</div>
+  </form>
+  {% set here = request.url.path ~ ('?' ~ request.url.query if request.url.query) %}
+  {% set bulk = request.query_params.get('bulk') or '' %}
+  {% if bulk.startswith('legit:') %}{% set bp = bulk.split(':') %}<div class="panel small" style="border-color:rgba(46,204,113,.5);margin-bottom:8px"><b>{{ bp[1] }} domain{{ '' if bp[1] == '1' else 's' }} marked as known legitimate</b> — off the watchlist and allowlisted for the brand{{ '; ' ~ bp[2] ~ ' skipped' if bp|length > 2 and bp[2] != '0' }}. Undo on the brand page → whitelist.</div>{% endif %}
+  {% if not candidates %}<p class="muted">{% if filters.q or filters.state %}No domains match these filters. <a href="/ui/candidates{{ '?brand_id=' ~ filters.brand_id if filters.brand_id }}">Clear them</a>.{% else %}Nothing on the watchlist yet — run a scan from <a href="/ui/brands">Brands &amp; Scans</a>; every look-alike domain a scan finds lands here and is re-checked on a schedule.{% endif %}</p>{% endif %}
+  {% if can_write and candidates %}<form id="bulkform" method="post" action="/ui/candidates/bulk-dismiss" class="bulkbar" hidden>
+    <input type="hidden" name="next" value="{{ here }}"><input type="hidden" name="whitelist" value="on">
+    <b id="bulkn">0 selected</b>
+    <input name="reason" placeholder="reason (optional, kept in the audit log)" maxlength="2000" aria-label="reason">
+    <button type="submit" class="primary" data-confirm="Known legit: remove {n} domain(s) from the watchlist and allowlist each one for its brand? They (and their subdomains) are never flagged again. Undo on the brand page → whitelist." data-confirm-count=".sel:checked" data-confirm-title="Known legitimate" data-confirm-ok="Allowlist them">Known legit ✓</button>
+    <button type="button" id="bulkclear" class="small">clear</button>
+  </form>{% endif %}
+  {% if candidates %}
+  <table id="ctable">
+    <thead><tr>{% if can_write %}<th class="selcol"><input type="checkbox" id="selall" aria-label="select every domain on this page"></th>{% endif %}<th>Domain</th><th>Brand</th><th>Why it is here</th><th>State</th><th>Finding</th><th>Priority</th><th>First seen</th><th>Last seen</th><th>Next scan</th><th class="right">Scans</th>{% if can_write %}<th>Actions</th>{% endif %}</tr></thead>
+    <tbody>
+    {% for c in candidates %}
+    <tr class="wrow" style="--sc:{{ w.state_colors.get(c.state, '#1E2A3D') }}" data-host="{{ c.hostname }}">
+      {% if can_write %}<td class="selcol">{% if c.state != 'dismissed' %}<input type="checkbox" class="sel" name="ids" value="{{ c.id }}" form="bulkform" aria-label="select {{ c.hostname }}">{% endif %}</td>{% endif %}
+      <td><a href="/ui/candidates/{{ c.id }}">{{ m.host(c.hostname, c.host_display, c.is_idn) }}</a><div class="small muted">{{ SURFACE_LABELS.get(c.surface, c.surface) }}</div></td>
+      <td class="small"><a href="/ui/brands/{{ c.brand_id }}"><bdi>{{ c.brand_name or '—' }}</bdi></a></td>
+      <td class="why">{% for src in c.sources %}<b>{{ src.stream|stream_label }}</b>{% if src.pattern %} <span class="mono" dir="ltr">{{ src.pattern|truncate(40) }}</span>{% endif %}{{ ' · ' if not loop.last }}{% else %}<span class="muted">—</span>{% endfor %}</td>
+      <td><span class="badge state st-{{ c.state }}" title="{{ STATE_HELP.get(c.state, '') }}">{{ c.state|state_label }}</span></td>
+      <td>{% if c.finding %}<a href="/ui/findings/{{ c.finding.id }}" class="badge sev-{{ c.finding.severity }}" title="open the finding">{{ c.finding.severity }} · {{ c.finding.state|state_label }}</a>{% else %}<span class="muted small">—</span>{% endif %}</td>
+      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="{{ [c.priority * 3, 100]|min }}" style="max-width:60px"></span> {{ c.priority }}</td>
+      <td class="mono small muted">{{ c.first_seen|ts }}</td>
+      <td class="mono small muted">{{ c.last_seen|ts }}</td>
+      <td class="mono small" {% if c.next_scan_at %}data-rel="{{ c.next_scan_at }}" data-due="1" style="color:var(--accent2)"{% endif %}>{{ '—' if not c.next_scan_at else c.next_scan_at[:16].replace('T',' ') }}</td>
+      <td class="right mono">{{ c.scan_count }}</td>
+      {% if can_write %}
+      <td style="white-space:nowrap">
+        {% if c.state != 'dismissed' %}
+        <form method="post" action="/ui/candidates/{{ c.id }}/dismiss" style="display:inline"
+              data-confirm="Known legit: remove {{ c.hostname }} from the watchlist and allowlist its domain for {{ c.brand_name or 'this brand' }}?&#10;&#10;It (and its subdomains) will never be flagged again. You can undo this on the brand page → whitelist."
+              data-confirm-title="Known legitimate" data-confirm-ok="Allowlist it">
+          <input type="hidden" name="next" value="{{ here }}"><input type="hidden" name="whitelist" value="on"><input type="hidden" name="reason" value="known legitimate domain">
+          <button type="submit" class="small" title="I know this domain — it is legitimate. One click: off the watchlist and allowlisted for this brand">Known legit ✓</button>
+        </form>
+        {% endif %}
+        <form method="post" action="/ui/candidates/{{ c.id }}/rescan" style="display:inline" data-busy="Queued…"><input type="hidden" name="next" value="{{ here }}"><button type="submit" class="small" title="fetch and score this site again now; you stay on the list">Rescan</button></form>
+      </td>
+      {% endif %}
+    </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  {% include "_pager.html" %}
+  {% endif %}
+</div>
+
+<details class="wstats" id="wstats">
+  <summary><h2 style="margin:0">Statistics <span class="muted">· lifecycle, re-scans, streams, priority</span></h2><span class="tog o">show ▾</span><span class="tog c">hide ▴</span></summary>
+<div class="panel" style="margin-top:4px">
   <h2>Lifecycle funnel <span class="muted">· new → watching → flagged / long watch / dismissed</span></h2>
-  <p class="small muted" style="margin:0 0 8px"><b>new</b> just discovered · <b>watching</b> visited, below the finding threshold, re-checked on a schedule · <b>flagged</b> scored Medium+, there is a finding · <b>long watch</b> quiet for the whole watch window, checked less often · <b>dismissed</b> dead, legitimate or whitelisted.</p>
+  <p class="small muted" style="margin:0 0 8px"><b>new</b> just discovered · <b>watching</b> visited, below the finding threshold, re-checked on a schedule · <b>flagged</b> scored Medium+, there is a finding · <b>long watch</b> quiet for the whole watch window, checked less often · <b>dismissed</b> dead, legitimate or allowlisted.</p>
   <div class="funnel">
     {% for st, pct in w.state_pct.items() if w.states[st] and st != 'analyzing' %}
     <a href="/ui/candidates?state={{ st }}{% if filters.brand_id %}&brand_id={{ filters.brand_id }}{% endif %}" data-w="{{ pct }}" style="background:{{ w.state_colors[st] }};{{ 'color:#cfd8e3' if st == 'dismissed' else '' }}" title="{{ st }}: {{ w.states[st] }} ({{ pct }}%)"><span class="lbl">{{ st.replace('_',' ') }} </span>{{ w.states[st] }}</a>
@@ -73,57 +153,21 @@
       <div class="legend">{% for seg in w.surface_segments %}<div><i style="background:{{ seg.color }}"></i>{{ seg.label }}<b>{{ seg.value }}</b></div>{% endfor %}</div></div>
   </div>
 </div>
-
-<div class="panel" style="margin-top:14px">
-  {% if brand_chips|length > 1 %}<div class="bchips" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px">
-    <a class="btn" style="padding:4px 12px;font-size:12.5px;{{ 'border-color:var(--accent);color:var(--accent2)' if not filters.brand_id }}" href="/ui/candidates?state={{ filters.state }}">All brands <b>{{ brand_total }}</b></a>
-    {% for b in brand_chips %}<a class="btn" style="padding:4px 12px;font-size:12.5px;{{ 'border-color:var(--accent);color:var(--accent2)' if filters.brand_id == b.id }}" href="/ui/candidates?state={{ filters.state }}&brand_id={{ b.id }}">{{ b.name }} <b>{{ b.count }}</b></a>{% endfor %}
-  </div>{% endif %}
-  <form method="get" action="/ui/candidates" class="actions" style="margin-bottom:8px">
-    <div><label>Brand</label><select name="brand_id" onchange="this.form.submit()"><option value="">all</option>{% for b in brands %}<option value="{{ b.id }}" {{ 'selected' if filters.brand_id==b.id }}>{{ b.name }}</option>{% endfor %}</select></div>
-    <div><label>State</label><select name="state" onchange="this.form.submit()"><option value="">all</option>{% for st in CandidateStates %}<option value="{{ st }}" {{ 'selected' if filters.state==st }}>{{ st }}</option>{% endfor %}</select></div>
-    <div><label>Search host</label><input id="q" placeholder="type to filter…" autocomplete="off"></div>
-    <div><button type="submit">Apply</button></div>
-    <div class="muted small" style="margin-left:auto">{{ candidates|length }} domain(s)</div>
-  </form>
-  {% set here = '/ui/candidates' ~ ('?state=' ~ filters.state if filters.state else '') ~ (('&' if filters.state else '?') ~ 'brand_id=' ~ filters.brand_id if filters.brand_id else '') %}
-  {% if not candidates %}<p class="muted">No domains match. {% if filters.state or filters.brand_id %}<a href="/ui/candidates">Clear the filters</a> or {% endif %}run a scan from <a href="/ui/brands">Brands &amp; Scans</a>.</p>{% endif %}
-  <table id="ctable">
-    <tr><th>Domain</th><th>Brand</th><th>Surface</th><th>State</th><th>Finding</th><th>Priority</th><th>First seen</th><th>Last seen</th><th>Next scan</th><th class="right">Scans</th>{% if can_write %}<th>Actions</th>{% endif %}</tr>
-    {% for c in candidates %}
-    <tr class="wrow" style="--sc:{{ w.state_colors.get(c.state, '#1E2A3D') }}" data-host="{{ c.hostname }}">
-      <td><a href="/ui/candidates/{{ c.id }}">{{ m.host(c.hostname, c.host_display, c.is_idn) }}</a></td>
-      <td class="small"><a href="/ui/brands/{{ c.brand_id }}">{{ c.brand_name or '—' }}</a></td><td class="small">{{ SURFACE_LABELS.get(c.surface, c.surface) }}</td>
-      <td><span class="badge state st-{{ c.state }}" title="{{ STATE_HELP.get(c.state, '') }}">{{ c.state|state_label }}</span></td>
-      <td>{% if c.finding %}<a href="/ui/findings/{{ c.finding.id }}" class="badge sev-{{ c.finding.severity }}" title="open the finding">{{ c.finding.severity }} · {{ c.finding.state }}</a>{% else %}<span class="muted small">—</span>{% endif %}</td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="{{ [c.priority * 3, 100]|min }}" style="max-width:60px"></span> {{ c.priority }}</td>
-      <td class="mono small muted" data-rel="{{ c.first_seen }}">{{ c.first_seen[:16].replace('T',' ') }}</td>
-      <td class="mono small muted" data-rel="{{ c.last_seen }}">{{ c.last_seen[:16].replace('T',' ') }}</td>
-      <td class="mono small" {% if c.next_scan_at %}data-rel="{{ c.next_scan_at }}" data-due="1" style="color:var(--accent2)"{% endif %}>{{ '—' if not c.next_scan_at else c.next_scan_at[:16].replace('T',' ') }}</td>
-      <td class="right mono">{{ c.scan_count }}</td>
-      {% if can_write %}
-      <td style="white-space:nowrap">
-        {% if c.state != 'dismissed' %}
-        <form method="post" action="/ui/candidates/{{ c.id }}/dismiss" style="display:inline"
-              data-confirm="Known legit: remove {{ c.hostname }} from the watchlist and whitelist its domain for {{ c.brand_name or 'this brand' }}?&#10;&#10;It (and its subdomains) will never be flagged again. You can undo this on the brand page → whitelist."
-              data-confirm-title="Known legitimate" data-confirm-ok="Whitelist it">
-          <input type="hidden" name="next" value="{{ here }}"><input type="hidden" name="whitelist" value="on"><input type="hidden" name="reason" value="known legitimate domain">
-          <button type="submit" class="small" title="I know this domain — it is legitimate. One click: off the watchlist and whitelisted for this brand">Known legit ✓</button>
-        </form>
-        {% endif %}
-        <form method="post" action="/ui/candidates/{{ c.id }}/rescan" style="display:inline"><button type="submit" class="small" title="fetch and score this site again now">Rescan</button></form>
-      </td>
-      {% endif %}
-    </tr>
-    {% endfor %}
-  </table>
-</div>
+</details>
 <script>
 (function(){
-  const q = document.getElementById('q');
-  q && q.addEventListener('input', () => { const v = q.value.toLowerCase();
-    document.querySelectorAll('#ctable tr[data-host]').forEach(tr => tr.style.display = tr.dataset.host.includes(v) ? '' : 'none'); });
-  // funnel segments carry data-w and are grown by the shared motion layer in base.html
+  const st = document.getElementById('wstats');
+  if (st) { try { st.open = localStorage.getItem('bw-watch-stats') === '1'; } catch (e) { /* ignore */ }
+    st.addEventListener('toggle', () => { try { localStorage.setItem('bw-watch-stats', st.open ? '1' : '0'); } catch (e) { /* ignore */ } }); }
+  // several domains at once → Known legit
+  const bar = document.getElementById('bulkform'), all = document.getElementById('selall');
+  const sels = () => [...document.querySelectorAll('#ctable .sel')];
+  const count = () => { const n = document.querySelectorAll('.sel:checked').length; if (bar) { bar.hidden = n === 0; document.getElementById('bulkn').textContent = n + ' selected'; } if (all) { const v = sels(); all.checked = v.length > 0 && v.every(c => c.checked); } };
+  sels().forEach(c => c.addEventListener('change', count));
+  if (all) all.addEventListener('change', () => { sels().forEach(c => { c.checked = all.checked; }); count(); });
+  const clear = document.getElementById('bulkclear'); if (clear) clear.addEventListener('click', () => { document.querySelectorAll('.sel:checked').forEach(c => { c.checked = false; }); count(); });
+  count();
+  document.addEventListener('keydown', ev => { if (ev.key === '/' && !/INPUT|SELECT|TEXTAREA/.test(document.activeElement.tagName)) { ev.preventDefault(); const q = document.getElementById('q'); if (q) { q.focus(); q.select(); } } });
 })();
 </script>
 {% endblock %}

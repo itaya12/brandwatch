@@ -105,6 +105,8 @@ class Settings(BaseSettings):
         default_factory=lambda: ["log"]
     )  # log | slack | telegram | email
     notify_min_severity: str = "high"
+    # where this BrandWatch is reached (https://brandwatch.example.com): notifications carry absolute links
+    public_url: str | None = None
     slack_webhook_url: SecretStr | None = None
     telegram_bot_token: SecretStr | None = None
     telegram_chat_id: str | None = None

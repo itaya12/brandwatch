@@ -6,25 +6,153 @@
 <style>
   .hbar{display:grid;grid-template-columns:96px 1fr 34px;gap:8px;align-items:center;margin:7px 0;font-size:12px}
   .hbar .bar{height:6px}.hbar b{font-family:var(--mono);font-weight:400;color:var(--muted);text-align:right}
+  .fhead{display:flex;align-items:flex-end;gap:14px;flex-wrap:wrap;margin-bottom:8px}
+  .fhead h1{margin:0}
+  .fhead .keys{margin-left:auto}
+  .qtiles{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 12px}
+  .qtiles a{display:flex;flex-direction:column;gap:2px;min-width:96px;padding:8px 12px;border:1px solid var(--border);border-radius:10px;background:var(--panel2);color:var(--text);text-decoration:none}
+  .qtiles a:hover{border-color:var(--accent)}.qtiles a.on{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+  .qtiles .v{font-family:var(--display);font-size:22px;font-weight:700;line-height:1}
+  .qtiles .l{font-size:11.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;font-family:var(--mono)}
+  .qtiles .crit .v{color:var(--crit)}.qtiles .hi .v{color:var(--high)}.qtiles .med .v{color:var(--med)}.qtiles .ok .v{color:var(--low)}.qtiles .cy .v{color:var(--accent2)}
+  .filters{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px 10px;align-items:end;margin-bottom:8px}
+  .filters label{display:block;font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:3px}
+  .filters .wide{grid-column:span 2}
+  .filters .go{display:flex;gap:6px}
+  .bchips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+  .bchips a{padding:4px 12px;font-size:12.5px}.bchips a.on{border-color:var(--accent);color:var(--accent2)}
+  .shotsw{display:flex;gap:6px;align-items:center;text-transform:none;letter-spacing:0;font-size:13px;color:var(--text);cursor:pointer;margin-top:6px}
+  .shotsw input{width:auto;margin:0}
+  #ftable:not(.shots) .shotcol{display:none}
+  #ftable tr.cur td{background:rgba(53,199,242,.09);box-shadow:inset 3px 0 0 var(--accent)}
+  .bigshot{width:220px;height:138px;object-fit:cover;object-position:top;border:1px solid var(--border);border-radius:6px;background:#000;cursor:zoom-in;display:block}
+  .noshot{width:220px;height:138px;border:1px dashed var(--border);border-radius:6px;display:flex;align-items:center;justify-content:center;text-align:center;padding:10px;font-size:11.5px;color:var(--muted)}
+  .selcol{width:28px}
+  .selcol input{width:16px;height:16px;margin:0;cursor:pointer}
+  /* the bulk bar sits under the sticky header (z-index 20 in main{z-index:1} slid under it before) */
+  .bulkbar{position:sticky;top:calc(var(--hdr,56px) + 8px);z-index:19;display:grid;grid-template-columns:auto 1fr;gap:6px 10px;align-items:center;padding:8px 12px;margin-bottom:8px;border:1px solid var(--accent);border-radius:10px;background:#0a121e;box-shadow:0 8px 24px rgba(0,0,0,.45)}
+  .bulkbar[hidden]{display:none}
+  .bulkbar .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  .bulkbar input[name=reason]{flex:1;min-width:180px;margin:0}
+  .bulkbar select{width:auto}
+  .bulkbar .chk{display:flex;gap:6px;align-items:center;font-size:12.5px;white-space:nowrap}.bulkbar .chk input{width:auto;margin:0}
+  .fstats summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:8px;margin:18px 0 8px}
+  .fstats summary::-webkit-details-marker{display:none}
+  .fstats summary h2{margin:0}
+  .fstats summary .tog{font-size:12px;color:var(--accent)}
+  .fstats[open] summary .tog.o{display:none}.fstats:not([open]) summary .tog.c{display:none}
+  .keys{display:inline-flex;gap:6px;align-items:center;font-size:12px;color:var(--muted)}
+  kbd{font-family:var(--mono);font-size:11px;border:1px solid var(--border);border-bottom-width:2px;border-radius:4px;padding:0 5px;background:var(--panel2);color:var(--text)}
+  #keysheet{position:fixed;inset:0;z-index:70;background:rgba(3,6,10,.8);display:flex;align-items:center;justify-content:center;padding:16px}
+  #keysheet[hidden]{display:none}
+  #keysheet .inner{background:linear-gradient(180deg,#121c2b,#0c131e);border:1px solid var(--border);border-radius:14px;padding:18px 22px;width:min(440px,100%)}
+  #keysheet table td{padding:5px 8px;border:0}#keysheet td:first-child{white-space:nowrap}
+  #shotbox{position:fixed;inset:0;z-index:60;background:rgba(3,6,10,.85);display:flex;align-items:center;justify-content:center;padding:20px}
+  #shotbox[hidden]{display:none}
+  #shotbox .inner{max-width:min(1200px,96vw);max-height:92vh;display:flex;flex-direction:column;gap:8px}
+  #shotbox img{max-width:100%;max-height:82vh;object-fit:contain;border:1px solid var(--border);border-radius:8px;background:#000}
+  #shotbox .cap{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+  #shotbox .cap button{margin-left:auto}
+  .pager{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:10px}
+  .pager .off{opacity:.4;pointer-events:none}
+  @media (max-width:700px){
+    .fhead .keys{display:none}  /* no keyboard on a phone */
+    .filters{grid-template-columns:1fr 1fr}.filters .wide{grid-column:span 2}
+    .qtiles a{min-width:calc(33% - 6px)}
+    .bulkbar{top:calc(var(--hdr,56px) + 4px);grid-template-columns:1fr}
+    #ftable th:nth-child(6),#ftable td:nth-child(6),#ftable th:nth-child(7),#ftable td:nth-child(7){display:none}
+  }
 </style>
-<div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:12px">
-  <h1 style="margin:0">FINDINGS <span class="muted">· ranked by severity, then score · {{ findings|length }} shown</span></h1>
+<div class="fhead">
+  <h1>FINDINGS <span class="muted">· {{ total }} {{ 'match' if filters.q or filters.since or filters.severity or filters.kind else ('open' if filters.state == 'open' else (filters.state|state_label if filters.state else 'in total')) }}{{ ' · sorted by ' ~ SORTS[filters.sort] if filters.sort != 'severity' }}</span></h1>
+  <span class="keys" title="keyboard shortcuts"><kbd>j</kbd><kbd>k</kbd> move · <kbd>x</kbd> select · <kbd>c</kbd> confirm · <kbd>d</kbd> dismiss · <kbd>/</kbd> search · <button type="button" id="keysbtn" class="small" aria-label="keyboard shortcuts">?</button></span>
 </div>
 <p class="intro">{{ PAGE_INTROS.findings }}</p>
 
-<div class="kpis">
-  <a class="kpi crit {{ 'on' if filters.severity=='critical' }}" href="?state=open&severity=critical{{ '&brand_id=' ~ filters.brand_id if filters.brand_id }}"><div class="v" data-count="{{ s.open_sev.critical }}">0</div><div class="l"><span class="pulse"></span> critical open</div></a>
-  <a class="kpi hi {{ 'on' if filters.severity=='high' }}" href="?state=open&severity=high{{ '&brand_id=' ~ filters.brand_id if filters.brand_id }}"><div class="v" data-count="{{ s.open_sev.high }}">0</div><div class="l">high open</div></a>
-  <a class="kpi med {{ 'on' if filters.severity=='medium' }}" href="?state=open&severity=medium{{ '&brand_id=' ~ filters.brand_id if filters.brand_id }}"><div class="v" data-count="{{ s.open_sev.medium }}">0</div><div class="l">medium open</div></a>
-  <a class="kpi cy {{ 'on' if filters.state=='open' and not filters.severity }}" href="?state=open{{ '&brand_id=' ~ filters.brand_id if filters.brand_id }}"><div class="v" data-count="{{ s.open_total }}">0</div><div class="l">awaiting verdict</div></a>
-  <a class="kpi ok {{ 'on' if filters.state=='confirmed' }}" href="?state=confirmed{{ '&brand_id=' ~ filters.brand_id if filters.brand_id }}"><div class="v" data-count="{{ s.by_state.get('confirmed', 0) }}">0</div><div class="l">confirmed phishing</div></a>
-  <a class="kpi {{ 'on' if filters.state=='dismissed' }}" href="?state=dismissed{{ '&brand_id=' ~ filters.brand_id if filters.brand_id }}"><div class="v" data-count="{{ s.by_state.get('dismissed', 0) }}">0</div><div class="l">dismissed</div></a>
-  <div class="kpi vi"><div class="v" data-count="{{ s.avg_confidence }}" data-suffix="%">0</div><div class="l">avg confidence</div></div>
-  <div class="kpi mg"><div class="v" data-count="{{ s.new_24h }}">0</div><div class="l">new in 24h</div></div>
+{% set bq = ('&brand_id=' ~ filters.brand_id) if filters.brand_id else '' %}
+<div class="qtiles" aria-label="Queue">
+  <a class="cy {{ 'on' if filters.state=='open' and not filters.severity }}" href="?state=open{{ bq }}"><span class="v" data-count="{{ s.open_total }}">0</span><span class="l">awaiting verdict</span></a>
+  <a class="crit {{ 'on' if filters.severity=='critical' }}" href="?state=open&severity=critical{{ bq }}"><span class="v" data-count="{{ s.open_sev.critical }}">0</span><span class="l">critical</span></a>
+  <a class="hi {{ 'on' if filters.severity=='high' }}" href="?state=open&severity=high{{ bq }}"><span class="v" data-count="{{ s.open_sev.high }}">0</span><span class="l">high</span></a>
+  <a class="med {{ 'on' if filters.severity=='medium' }}" href="?state=open&severity=medium{{ bq }}"><span class="v" data-count="{{ s.open_sev.medium }}">0</span><span class="l">medium</span></a>
+  <a class="{{ 'on' if filters.since=='24h' }}" href="?state=open&since=24h{{ bq }}"><span class="v" data-count="{{ s.new_24h }}">0</span><span class="l">new in 24h</span></a>
+  <a class="ok {{ 'on' if filters.state=='confirmed' }}" href="?state=confirmed{{ bq }}"><span class="v" data-count="{{ s.by_state.get('confirmed', 0) }}">0</span><span class="l">confirmed</span></a>
+  <a class="{{ 'on' if filters.state=='dismissed' }}" href="?state=dismissed{{ bq }}"><span class="v" data-count="{{ s.by_state.get('dismissed', 0) }}">0</span><span class="l">dismissed</span></a>
 </div>
 
-<h2 style="margin:18px 0 8px">Statistics <span class="muted">· across open findings{{ " of the chosen brand" if filters.brand_id }}</span></h2>
-<div class="grid fstats" style="grid-template-columns:repeat(auto-fit,minmax(260px,1fr))">
+<div class="ftable-wrap">
+  <div class="panel" style="padding-top:10px;overflow-x:auto">
+    {% set bname = {} %}{% for b in brands %}{% set _ = bname.update({b.id|string: b.name}) %}{% endfor %}
+    {% set keep = '&state=' ~ filters.state ~ '&severity=' ~ filters.severity ~ '&kind=' ~ filters.kind ~ '&q=' ~ filters.q ~ '&since=' ~ filters.since ~ '&sort=' ~ filters.sort %}
+    {% if brand_chips|length > 1 %}<div class="bchips">
+      <a class="btn {{ 'on' if not filters.brand_id }}" href="/ui/findings?brand_id={{ keep }}">All brands <b>{{ brand_total }}</b></a>
+      {% for b in brand_chips %}<a class="btn {{ 'on' if filters.brand_id == b.id }}" href="/ui/findings?brand_id={{ b.id }}{{ keep }}"><bdi>{{ b.name }}</bdi> <b>{{ b.count }}</b></a>{% endfor %}
+    </div>{% endif %}
+    <form method="get" action="/ui/findings" class="filters" id="filters">
+      <input type="hidden" name="brand_id" value="{{ filters.brand_id }}">
+      <div class="wide"><label for="q">Search host</label><input id="q" name="q" value="{{ filters.q }}" placeholder="part of a host name, e.g. login" autocomplete="off" maxlength="120"></div>
+      <div><label for="f-state">State</label><select id="f-state" name="state"><option value="">all</option>{% for st in FindingStates %}<option value="{{ st }}" {{ 'selected' if filters.state==st }}>{{ st|state_label }}</option>{% endfor %}</select></div>
+      <div><label for="f-sev">Severity</label><select id="f-sev" name="severity"><option value="">all</option>{% for sv in Severity %}<option value="{{ sv }}" {{ 'selected' if filters.severity==sv }}>{{ sv }}</option>{% endfor %}</select></div>
+      <div><label for="f-kind">Kind</label><select id="f-kind" name="kind"><option value="">all</option><option value="phishing" {{ 'selected' if filters.kind=='phishing' }}>phishing</option><option value="shop" {{ 'selected' if filters.kind=='shop' }}>suspicious shop</option><option value="social" {{ 'selected' if filters.kind=='social' }}>fake social account</option><option value="ai_answer" {{ 'selected' if filters.kind=='ai_answer' }}>AI answer</option></select></div>
+      <div><label for="f-since">Found</label><select id="f-since" name="since"><option value="">any time</option>{% for k, v in SINCE.items() %}<option value="{{ k }}" {{ 'selected' if filters.since==k }}>{{ v }}</option>{% endfor %}</select></div>
+      <div><label for="f-sort">Sort by</label><select id="f-sort" name="sort">{% for k, v in SORTS.items() %}<option value="{{ k }}" {{ 'selected' if filters.sort==k }}>{{ v }}</option>{% endfor %}</select></div>
+      <div class="go"><button type="submit" class="primary">Apply</button>{% if filters.q or filters.since or filters.severity or filters.kind or filters.sort != 'severity' or filters.state != 'open' %}<a class="btn" href="/ui/findings{{ '?brand_id=' ~ filters.brand_id if filters.brand_id }}" title="back to the open queue">Reset</a>{% endif %}</div>
+      <div><label class="shotsw" title="a screenshot next to every site (off by default: the list stays short)"><input type="checkbox" id="t-shots"> show screenshots</label></div>
+    </form>
+    {% if filters.since == 'visit' %}<div class="small muted" style="margin:-2px 0 8px">{% if last_visit %}Since your previous sign-in, {{ last_visit|ts }}.{% else %}This is your first sign-in: every finding counts as new.{% endif %}</div>{% endif %}
+    {% set bulk = request.query_params.get('bulk') or '' %}
+    {% if bulk %}{% set bp = bulk.split(':') %}<div class="panel small" style="border-color:rgba(46,204,113,.5);margin-bottom:8px"><b>{{ bp[1] }} finding{{ '' if bp[1] == '1' else 's' }} {{ 'confirmed as phishing' if bp[0] == 'confirm' else 'dismissed as not phishing' }}.</b>
+      {% if bp|length > 2 and bp[2] != '0' %}{{ bp[2] }} skipped (not open any more).{% endif %}
+      {% if bp[0] == 'confirm' %}Map and investigate them together from <a href="/ui/campaigns#confirmed">Attack infrastructure</a> (MAP ALL · INVESTIGATE ALL).{% endif %}</div>{% endif %}
+    {% if can_write and findings %}<form id="bulkform" method="post" action="/ui/findings/bulk" class="bulkbar" hidden>
+      <input type="hidden" name="next" value="{{ request.url.path }}{{ '?' ~ request.url.query if request.url.query }}">
+      <b id="bulkn">0 selected</b>
+      <div class="row">
+        <input name="reason" list="reasons" placeholder="reason (optional, kept in the audit log)" maxlength="2000" aria-label="reason">
+        <datalist id="reasons"><option value="cloned login page"><option value="legitimate site, not a look-alike"><option value="parked domain"><option value="domain expired, no site"><option value="not about the brand"><option value="duplicate of another finding"></datalist>
+        <button type="submit" name="action" value="confirm" class="primary" data-confirm="Confirm {n} finding(s) as phishing? They move to Attack infrastructure; map and investigate them there with MAP ALL and INVESTIGATE ALL." data-confirm-count=".sel:checked" data-confirm-title="Confirm phishing" data-confirm-ok="✓ Confirm phishing">✓ Confirm phishing</button>
+        <label class="chk" title="why it is not phishing — kept with the verdict and used to train the classifier">as <select name="verdict" aria-label="verdict when dismissing">{% for v in Verdicts %}<option value="{{ v }}">{{ VERDICT_LABELS.get(v, v) }}</option>{% endfor %}</select></label>
+        <label class="chk" title="the registrable domain of each dismissed finding is allowlisted for its brand: no scan flags it, or a subdomain of it, again"><input type="checkbox" name="whitelist"> also allowlist the domain</label>
+        <button type="submit" name="action" value="dismiss" data-confirm="Dismiss {n} finding(s) as not phishing? They leave the open list; the verdict is kept and teaches the classifier." data-confirm-count=".sel:checked" data-confirm-title="Not phishing" data-confirm-ok="✕ Dismiss them" data-confirm-danger>✕ Not phishing</button>
+        <button type="button" id="bulkclear" class="small">clear</button>
+      </div>
+    </form>{% endif %}
+    {% if findings %}
+    <table id="ftable">
+      <thead><tr>{% if can_write %}<th class="selcol"><input type="checkbox" id="selall" aria-label="select every finding on this page" title="select every finding on this page"></th>{% endif %}<th class="shotcol">Screenshot</th><th>Severity</th><th>Host</th><th>Score</th><th>Conf.</th><th>Signals</th><th>State</th><th>Found</th></tr></thead>
+      <tbody>
+      {% for f in findings %}
+      <tr class="sevrow {{ f.severity }}" data-host="{{ f.hostname }}" data-id="{{ f.id }}">
+        {% if can_write %}<td class="selcol">{% if f.state == 'open' %}<input type="checkbox" class="sel" name="ids" value="{{ f.id }}" form="bulkform" aria-label="select {{ f.hostname }}" title="select for a verdict on many at once">{% endif %}</td>{% endif %}
+        <td class="shotcol">{% if f.thumbnail_url %}<img class="bigshot" data-src="{{ f.thumbnail_url }}" alt="screenshot of {{ f.hostname }}" title="click to enlarge" data-host="{{ f.hostname }}" data-href="/ui/findings/{{ f.id }}">{% else %}<div class="noshot">{{ f.preview_note or 'no screenshot' }}</div>{% endif %}</td>
+        <td><span class="badge sev-{{ f.severity }}">{{ f.severity }}</span>{% if f.kind == 'shop' %}<div style="margin-top:4px"><span class="badge" style="border:1px solid {{ 'var(--crit)' if f.shop_level and f.shop_level.level != 'suspicious_retailer' else 'var(--high)' }};color:{{ 'var(--crit)' if f.shop_level and f.shop_level.level != 'suspicious_retailer' else 'var(--high)' }}" title="{{ f.shop_level.label if f.shop_level else 'Suspicious shop' }} — {{ f.shop_level.help if f.shop_level else '' }}">shop · {{ f.shop_level.short if f.shop_level else 'suspicious' }}</span></div>{% elif f.kind == 'social' %}<div style="margin-top:4px"><span class="badge" style="border:1px solid var(--accent);color:var(--accent2)" title="a Facebook page or Instagram profile that poses as the brand">social</span></div>{% elif f.kind == 'ai_answer' %}<div style="margin-top:4px"><span class="badge" style="border:1px solid var(--accent);color:var(--accent2)" title="a contact an AI assistant gives for the brand that is not on its website">AI answer</span></div>{% endif %}{% if f.cloaked %}<div style="margin-top:4px">{{ m.cloaked_badge(true) }}</div>{% endif %}</td>
+        <td><a href="/ui/findings/{{ f.id }}" class="flink">{{ m.host(f.hostname, f.host_display, f.is_idn) }}</a>{% if not filters.brand_id and brand_chips|length > 1 and bname.get(f.brand_id) %} <span class="pill" style="font-size:10.5px;padding:0 7px" title="the brand this finding is about"><bdi>{{ bname.get(f.brand_id) }}</bdi></span>{% endif %}<div class="small muted">{{ SURFACE_LABELS.get(f.surface, f.surface) }} · found by {{ f.sources|map('stream_label')|unique|join(', ') }}{% if f.kind == 'social' %} · <a href="/ui/findings/{{ f.id }}#social" title="the account, its content and Report to Meta">account</a> · {% elif f.kind == 'ai_answer' %} · <a href="/ui/findings/{{ f.id }}#aianswer" title="what the assistants said and what the pages say">answers</a> · {% else %} · <a href="/ui/findings/{{ f.id }}#network" title="site & network investigation: servers, WHOIS history, urlscan">network</a> · {% endif %}<a href="/ui/candidates/{{ f.candidate_id }}" title="domain timeline on the watchlist">timeline</a></div></td>
+        <td class="mono" style="white-space:nowrap">{{ f.score if f.score is not none else '—' }}{% if f.score is not none %}<span class="scorebar"><i data-w="{{ f.score }}"></i></span>{% endif %}
+          {% if f.kind not in ('social', 'ai_answer') %}<span style="margin-left:6px">{{ m.vt(f.vt) }}</span>{% endif %}</td>
+        <td>{% if f.confidence is not none %}<div class="ring sm" data-p="{{ f.confidence|round|int }}" style="--c:{{ 'var(--accent)' if f.confidence >= 85 else 'var(--muted)' }}" title="confidence in the evidence: {{ f.confidence|round|int }}%"><div>{{ f.confidence|round|int }}</div></div>{% else %}—{% endif %}</td>
+        <td class="small" style="max-width:360px">{{ m.pills(f.signal_items, 4, '/ui/findings/' ~ f.id) }}</td>
+        <td><span class="badge state st-{{ f.state }}" title="{{ STATE_HELP.get(f.state, '') }}">{{ f.state|state_label }}</span></td>
+        <td class="mono small muted">{{ f.created_at|ts }}</td>
+      </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    {% include "_pager.html" %}
+    {% else %}
+    {% if filters.q or filters.since or filters.severity or filters.kind or filters.state != 'open' %}
+    <p class="muted">Nothing matches these filters. <a href="/ui/findings{{ '?brand_id=' ~ filters.brand_id if filters.brand_id }}">Back to the open queue</a>{% if s.open_total %} — {{ s.open_total }} finding{{ 's' if s.open_total != 1 }} wait{{ '' if s.open_total != 1 else 's' }} for a verdict{% endif %}.</p>
+    {% elif s.by_state.get('confirmed', 0) or s.by_state.get('dismissed', 0) %}
+    <p class="muted">The queue is empty — every finding has a verdict. See the <a href="?state=confirmed{{ bq }}">confirmed</a> and <a href="?state=dismissed{{ bq }}">dismissed</a> ones, or run a scan from <a href="/ui/brands">Brands &amp; Scans</a>.</p>
+    {% else %}
+    <p class="muted">No findings yet. A finding is a look-alike that scored Medium or higher; run a scan from <a href="/ui/brands">Brands &amp; Scans</a> and the ones above the threshold appear here.</p>
+    {% endif %}
+    {% endif %}
+  </div>
+</div>
+
+<details class="fstats" id="fstats">
+  <summary><h2 style="margin:0">Statistics <span class="muted">· across open findings{{ " of the chosen brand" if filters.brand_id }}</span></h2><span class="tog o">show ▾</span><span class="tog c">hide ▴</span></summary>
+<div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(260px,1fr))">
   <div class="panel">
     <h2>Open by severity <span class="muted">· Medium ≥ 25 · High ≥ 50 · Critical ≥ 75</span></h2>
     <div class="donut-wrap">
@@ -68,77 +196,23 @@
     <p class="small muted" style="margin-top:14px">Every signal belongs to one of 7 groups, and each group has a points cap so correlated evidence is not counted twice. Hover a signal for its evidence and points. <a href="/ui/how-it-works#g-signal">How scoring works →</a></p>
   </div>
 </div>
-<div class="ftable-wrap" style="margin-top:14px">
-  <div class="panel" style="padding-top:10px;overflow-x:auto">
-    {% set bname = {} %}{% for b in brands %}{% set _ = bname.update({b.id|string: b.name}) %}{% endfor %}
-    {% set keep = '&state=' ~ filters.state ~ '&severity=' ~ filters.severity ~ '&kind=' ~ filters.kind %}
-    {% if brand_chips|length > 1 %}<div class="bchips" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px">
-      <a class="btn {{ 'primary' if not filters.brand_id }}" style="padding:4px 12px;font-size:12.5px;{{ 'border-color:var(--accent);color:var(--accent2)' if not filters.brand_id }}" href="/ui/findings?brand_id={{ keep }}">All brands <b>{{ brand_total }}</b></a>
-      {% for b in brand_chips %}<a class="btn" style="padding:4px 12px;font-size:12.5px;{{ 'border-color:var(--accent);color:var(--accent2)' if filters.brand_id == b.id }}" href="/ui/findings?brand_id={{ b.id }}{{ keep }}">{{ b.name }} <b>{{ b.count }}</b></a>{% endfor %}
-    </div>{% endif %}
-    <form method="get" action="/ui/findings" class="actions" style="margin-bottom:8px">
-      <div><label>Brand</label><select name="brand_id" onchange="this.form.submit()"><option value="">all</option>{% for b in brands %}<option value="{{ b.id }}" {{ 'selected' if filters.brand_id==b.id }}>{{ b.name }}</option>{% endfor %}</select></div>
-      <div><label>State</label><select name="state" onchange="this.form.submit()"><option value="">all</option>{% for st in FindingStates %}<option value="{{ st }}" {{ 'selected' if filters.state==st }}>{{ st }}</option>{% endfor %}</select></div>
-      <div><label>Severity</label><select name="severity" onchange="this.form.submit()"><option value="">all</option>{% for sv in Severity %}<option value="{{ sv }}" {{ 'selected' if filters.severity==sv }}>{{ sv }}</option>{% endfor %}</select></div>
-      <div><label>Kind</label><select name="kind" onchange="this.form.submit()"><option value="">all</option><option value="phishing" {{ 'selected' if filters.kind=='phishing' }}>phishing</option><option value="shop" {{ 'selected' if filters.kind=='shop' }}>suspicious shop</option><option value="social" {{ 'selected' if filters.kind=='social' }}>fake social account</option><option value="ai_answer" {{ 'selected' if filters.kind=='ai_answer' }}>AI answer</option></select></div>
-      <div><label>Search host</label><input id="q" placeholder="type to filter…" autocomplete="off"></div>
-      <div><label>View</label><label class="shotsw" title="a screenshot next to every site (off by default: the list stays short)"><input type="checkbox" id="t-shots"> show screenshots</label></div>
-      <div><button type="submit">Apply</button></div>
-    </form>
-    {% set bulk = request.query_params.get('bulk') or '' %}
-    {% if bulk %}{% set bp = bulk.split(':') %}<div class="panel small" style="border-color:rgba(46,204,113,.5);margin-bottom:8px"><b>{{ bp[1] }} finding{{ '' if bp[1] == '1' else 's' }} {{ 'confirmed as phishing' if bp[0] == 'confirm' else 'dismissed as not phishing' }}.</b>
-      {% if bp|length > 2 and bp[2] != '0' %}{{ bp[2] }} skipped (not open any more).{% endif %}
-      {% if bp[0] == 'confirm' %}Map and investigate them together from <a href="/ui/campaigns#confirmed">Attack infrastructure</a> (MAP ALL · INVESTIGATE ALL).{% endif %}</div>{% endif %}
-    {% if can_write and findings %}<form id="bulkform" method="post" action="/ui/findings/bulk" class="bulkbar" hidden>
-      <input type="hidden" name="next" value="{{ request.url.path }}{{ '?' ~ request.url.query if request.url.query }}">
-      <b id="bulkn">0 selected</b>
-      <input name="reason" placeholder="reason (optional, kept in the audit log)" maxlength="2000">
-      <button type="submit" name="action" value="confirm" class="primary" data-confirm="Confirm {n} finding(s) as phishing? They move to Attack infrastructure; map and investigate them there with MAP ALL and INVESTIGATE ALL." data-confirm-count=".sel:checked" data-confirm-title="Confirm phishing" data-confirm-ok="✓ Confirm phishing">✓ Confirm phishing</button>
-      <button type="submit" name="action" value="dismiss" data-confirm="Dismiss {n} finding(s) as not phishing? They leave the open list; the verdict is kept and teaches the classifier." data-confirm-count=".sel:checked" data-confirm-title="Not phishing" data-confirm-ok="✕ Dismiss them" data-confirm-danger>✕ Not phishing</button>
-      <button type="button" id="bulkclear" class="small">clear</button>
-    </form>{% endif %}
-    {% if findings %}
-    <table id="ftable">
-      <tr>{% if can_write %}<th class="selcol"><input type="checkbox" id="selall" title="select every finding shown"></th>{% endif %}<th class="shotcol">Screenshot</th><th>Severity</th><th>Host</th><th>Score</th><th>Conf.</th><th>Signals</th><th>State</th><th>Found</th></tr>
-      {% for f in findings %}
-      <tr class="sevrow {{ f.severity }}" data-host="{{ f.hostname }}">
-        {% if can_write %}<td class="selcol">{% if f.state == 'open' %}<input type="checkbox" class="sel" name="ids" value="{{ f.id }}" form="bulkform" title="select for a verdict on many at once">{% endif %}</td>{% endif %}
-        <td class="shotcol">{% if f.thumbnail_url %}<img class="bigshot" data-src="{{ f.thumbnail_url }}" alt="screenshot of {{ f.hostname }}" title="click to enlarge" data-host="{{ f.hostname }}" data-href="/ui/findings/{{ f.id }}">{% else %}<div class="noshot">{{ f.preview_note or 'no screenshot' }}</div>{% endif %}</td>
-        <td><span class="badge sev-{{ f.severity }}">{{ f.severity }}</span>{% if f.kind == 'shop' %}<div style="margin-top:4px"><span class="badge" style="border:1px solid {{ 'var(--crit)' if f.shop_level and f.shop_level.level != 'suspicious_retailer' else 'var(--high)' }};color:{{ 'var(--crit)' if f.shop_level and f.shop_level.level != 'suspicious_retailer' else 'var(--high)' }}" title="{{ f.shop_level.label if f.shop_level else 'Suspicious shop' }} — {{ f.shop_level.help if f.shop_level else '' }}">shop · {{ f.shop_level.short if f.shop_level else 'suspicious' }}</span></div>{% elif f.kind == 'social' %}<div style="margin-top:4px"><span class="badge" style="border:1px solid var(--accent);color:var(--accent2)" title="a Facebook page or Instagram profile that poses as the brand">social</span></div>{% elif f.kind == 'ai_answer' %}<div style="margin-top:4px"><span class="badge" style="border:1px solid var(--accent);color:var(--accent2)" title="a contact an AI assistant gives for the brand that is not on its website">AI answer</span></div>{% endif %}{% if f.cloaked %}<div style="margin-top:4px">{{ m.cloaked_badge(true) }}</div>{% endif %}</td>
-        <td><a href="/ui/findings/{{ f.id }}">{{ m.host(f.hostname, f.host_display, f.is_idn) }}</a>{% if not filters.brand_id and brand_chips|length > 1 and bname.get(f.brand_id) %} <span class="pill" style="font-size:10.5px;padding:0 7px" title="the brand this finding is about">{{ bname.get(f.brand_id) }}</span>{% endif %}<div class="small muted">{{ SURFACE_LABELS.get(f.surface, f.surface) }} · found by {{ f.sources|map('stream_label')|unique|join(', ') }}{% if f.kind == 'social' %} · <a href="/ui/findings/{{ f.id }}#social" title="the account, its content and Report to Meta">account</a> · {% elif f.kind == 'ai_answer' %} · <a href="/ui/findings/{{ f.id }}#aianswer" title="what the assistants said and what the pages say">answers</a> · {% else %} · <a href="/ui/findings/{{ f.id }}#network" title="site & network investigation: servers, WHOIS history, urlscan">network</a> · {% endif %}<a href="/ui/candidates/{{ f.candidate_id }}" title="domain timeline on the watchlist">timeline</a></div></td>
-        <td class="mono" style="white-space:nowrap">{{ f.score if f.score is not none else '—' }}{% if f.score is not none %}<span class="scorebar"><i data-w="{{ f.score }}"></i></span>{% endif %}
-          {% if f.kind not in ('social', 'ai_answer') %}<span style="margin-left:6px">{{ m.vt(f.vt) }}</span>{% endif %}</td>
-        <td>{% if f.confidence is not none %}<div class="ring sm" data-p="{{ f.confidence|round|int }}" style="--c:{{ 'var(--accent)' if f.confidence >= 85 else 'var(--muted)' }}" title="confidence in the evidence: {{ f.confidence|round|int }}%"><div>{{ f.confidence|round|int }}</div></div>{% else %}—{% endif %}</td>
-        <td class="small" style="max-width:360px">{{ m.pills(f.signal_items, 4, '/ui/findings/' ~ f.id) }}</td>
-        <td><span class="badge state st-{{ f.state }}" title="{{ STATE_HELP.get(f.state, '') }}">{{ f.state|state_label }}</span></td>
-        <td class="mono small muted" data-rel="{{ f.created_at }}">{{ f.created_at[:16].replace('T',' ') }}</td>
-      </tr>
-      {% endfor %}
-    </table>
-    {% else %}
-    <p class="muted">No findings match. Run a scan from <a href="/ui/brands">Brands &amp; Scans</a>.</p>
-    {% endif %}
-  </div>
-</div>
+</details>
+
 <div id="shotbox" hidden><div class="inner"><img alt=""><div class="cap"><b class="mono"></b> <a>open the finding →</a> <button type="button" class="small">close ✕</button></div></div></div>
-<style>
-  .shotsw{display:flex;gap:6px;align-items:center;text-transform:none;letter-spacing:0;font-size:13px;color:var(--text);cursor:pointer;margin-top:6px}
-  .shotsw input{width:auto;margin:0}
-  #ftable:not(.shots) .shotcol{display:none}
-  .bigshot{width:220px;height:138px;object-fit:cover;object-position:top;border:1px solid var(--border);border-radius:6px;background:#000;cursor:zoom-in;display:block}
-  .noshot{width:220px;height:138px;border:1px dashed var(--border);border-radius:6px;display:flex;align-items:center;justify-content:center;text-align:center;padding:10px;font-size:11.5px;color:var(--muted)}
-  .selcol{width:28px}
-  .selcol input{width:16px;height:16px;margin:0;cursor:pointer}
-  .bulkbar{position:sticky;top:8px;z-index:20;display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:8px 12px;margin-bottom:8px;border:1px solid var(--accent);border-radius:10px;background:rgba(10,18,30,.97);box-shadow:0 8px 24px rgba(0,0,0,.45)}
-  .bulkbar[hidden]{display:none}
-  .bulkbar input[name=reason]{flex:1;min-width:200px;margin:0}
-  #shotbox{position:fixed;inset:0;z-index:60;background:rgba(3,6,10,.85);display:flex;align-items:center;justify-content:center;padding:20px}
-  #shotbox[hidden]{display:none}
-  #shotbox .inner{max-width:min(1200px,96vw);max-height:92vh;display:flex;flex-direction:column;gap:8px}
-  #shotbox img{max-width:100%;max-height:82vh;object-fit:contain;border:1px solid var(--border);border-radius:8px;background:#000}
-  #shotbox .cap{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
-  #shotbox .cap button{margin-left:auto}
-</style>
+<div id="keysheet" hidden role="dialog" aria-modal="true" aria-labelledby="keysheet-t"><div class="inner">
+  <h3 id="keysheet-t" style="margin:0 0 8px">Keyboard shortcuts</h3>
+  <table>
+    <tr><td><kbd>j</kbd> / <kbd>k</kbd></td><td>next / previous finding</td></tr>
+    <tr><td><kbd>Enter</kbd></td><td>open the highlighted finding</td></tr>
+    <tr><td><kbd>x</kbd></td><td>select / unselect it</td></tr>
+    <tr><td><kbd>c</kbd></td><td>confirm the selected (or highlighted) findings as phishing</td></tr>
+    <tr><td><kbd>d</kbd></td><td>dismiss them — the bar asks for the reason</td></tr>
+    <tr><td><kbd>/</kbd></td><td>search by host</td></tr>
+    <tr><td><kbd>s</kbd></td><td>show / hide the statistics</td></tr>
+    <tr><td><kbd>?</kbd></td><td>this sheet · <kbd>Esc</kbd> closes it</td></tr>
+  </table>
+  <div style="text-align:right;margin-top:10px"><button type="button" class="small" id="keysclose">close</button></div>
+</div></div>
 <script>
 (function(){
   // screenshots next to every site: a view the analyst switches on (remembered in this browser), off by default
@@ -151,21 +225,50 @@
   if (table && box) {
     table.addEventListener('click', ev => { const im = ev.target.closest('img.bigshot'); if (!im) return; box.querySelector('img').src = im.src; box.querySelector('b').textContent = im.dataset.host; box.querySelector('a').href = im.dataset.href; box.hidden = false; });
     box.addEventListener('click', ev => { if (ev.target === box || ev.target.closest('button')) box.hidden = true; });
-    document.addEventListener('keydown', ev => { if (ev.key === 'Escape') box.hidden = true; });
   }
+  // the statistics fold away; the choice is remembered in this browser
+  const st = document.getElementById('fstats');
+  if (st) { try { st.open = localStorage.getItem('bw-findings-stats') === '1'; } catch (e) { /* ignore */ }
+    st.addEventListener('toggle', () => { try { localStorage.setItem('bw-findings-stats', st.open ? '1' : '0'); } catch (e) { /* ignore */ } }); }
   // one verdict for many: tick the rows, then Confirm phishing or Not phishing
   const bar = document.getElementById('bulkform'), all = document.getElementById('selall');
-  const visible = () => [...document.querySelectorAll('#ftable tr[data-host]')].filter(tr => tr.style.display !== 'none').map(tr => tr.querySelector('.sel')).filter(Boolean);
-  const count = () => { const n = document.querySelectorAll('.sel:checked').length; if (bar) { bar.hidden = n === 0; document.getElementById('bulkn').textContent = n + ' selected'; } if (all) { const v = visible(); all.checked = v.length > 0 && v.every(c => c.checked); } };
-  document.querySelectorAll('.sel').forEach(c => c.addEventListener('change', count));
-  if (all) all.addEventListener('change', () => { visible().forEach(c => { c.checked = all.checked; }); count(); });
+  const sels = () => [...document.querySelectorAll('#ftable .sel')];
+  const count = () => { const n = document.querySelectorAll('.sel:checked').length; if (bar) { bar.hidden = n === 0; document.getElementById('bulkn').textContent = n + ' selected'; } if (all) { const v = sels(); all.checked = v.length > 0 && v.every(c => c.checked); } };
+  sels().forEach(c => c.addEventListener('change', count));
+  if (all) all.addEventListener('change', () => { sels().forEach(c => { c.checked = all.checked; }); count(); });
   const clear = document.getElementById('bulkclear'); if (clear) clear.addEventListener('click', () => { document.querySelectorAll('.sel:checked').forEach(c => { c.checked = false; }); count(); });
   count();
-})();
-(function(){
-  const q = document.getElementById('q'); if (!q) return;
-  q.addEventListener('input', () => { const v = q.value.toLowerCase();
-    document.querySelectorAll('#ftable tr[data-host]').forEach(tr => tr.style.display = tr.dataset.host.includes(v) ? '' : 'none'); });
+  // keyboard: j/k move a highlight, x selects, c / d give the verdict through the bulk bar, / searches, ? explains
+  const rows = () => [...document.querySelectorAll('#ftable tbody tr[data-id]')];
+  let cur = -1;
+  const setCur = i => { const r = rows(); if (!r.length) return; cur = Math.max(0, Math.min(r.length - 1, i)); r.forEach((tr, k) => tr.classList.toggle('cur', k === cur)); r[cur].scrollIntoView({block: 'nearest'}); };
+  const sheet = document.getElementById('keysheet'), kb = document.getElementById('keysbtn'), kc = document.getElementById('keysclose');
+  const toggleSheet = v => { if (sheet) sheet.hidden = v === undefined ? !sheet.hidden : !v; };
+  if (kb) kb.addEventListener('click', () => toggleSheet()); if (kc) kc.addEventListener('click', () => toggleSheet(false));
+  if (sheet) sheet.addEventListener('click', ev => { if (ev.target === sheet) toggleSheet(false); });
+  const typing = () => { const a = document.activeElement; return a && (a.tagName === 'INPUT' || a.tagName === 'SELECT' || a.tagName === 'TEXTAREA' || a.isContentEditable); };
+  const verdict = action => { if (!bar) return; const r = rows();
+    if (!document.querySelector('.sel:checked') && cur >= 0) { const c = r[cur].querySelector('.sel'); if (c) { c.checked = true; count(); } }
+    if (!document.querySelector('.sel:checked')) return;
+    if (action === 'dismiss') { bar.querySelector('input[name=reason]').focus(); return; }  // the reason first; Enter sends it
+    bar.querySelector('button[value=confirm]').click(); };
+  document.addEventListener('keydown', ev => {
+    if (ev.key === 'Escape') { if (box) box.hidden = true; toggleSheet(false); return; }
+    if (ev.ctrlKey || ev.metaKey || ev.altKey) return;
+    if (typing()) { if (ev.key === 'Enter' && ev.target === bar?.querySelector('input[name=reason]')) { ev.preventDefault(); bar.querySelector('button[value=dismiss]').click(); } return; }
+    if (sheet && !sheet.hidden && ev.key !== '?') return;
+    switch (ev.key) {
+      case 'j': case 'ArrowDown': if (table) { ev.preventDefault(); setCur(cur + 1); } break;
+      case 'k': case 'ArrowUp': if (table) { ev.preventDefault(); setCur(cur - 1); } break;
+      case 'x': if (cur >= 0) { const c = rows()[cur].querySelector('.sel'); if (c) { c.checked = !c.checked; count(); } } break;
+      case 'Enter': if (cur >= 0) { const a = rows()[cur].querySelector('a.flink'); if (a) location.href = a.href; } break;
+      case 'c': verdict('confirm'); break;
+      case 'd': verdict('dismiss'); break;
+      case '/': { const q = document.getElementById('q'); if (q) { ev.preventDefault(); q.focus(); q.select(); } break; }
+      case 's': if (st) st.open = !st.open; break;
+      case '?': ev.preventDefault(); toggleSheet(); break;
+    }
+  });
 })();
 </script>
 {% endblock %}

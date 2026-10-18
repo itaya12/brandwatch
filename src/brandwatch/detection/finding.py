@@ -316,6 +316,29 @@ def set_conclusion(
     return finding
 
 
+def reopen(session: Session, finding: Finding, analyst: User, reason: str = "") -> Finding:
+    """Undo a verdict: the finding is open again and waits for a verdict; the domain goes back on the
+    watchlist as flagged. The old verdict stays in the audit log and in the training labels (the new
+    verdict, when it comes, is a later label)."""
+    if finding.state is FindingState.OPEN:
+        raise ValueError("the finding is already open")
+    old = finding.state
+    finding.state = FindingState.OPEN
+    finding.analyst_verdict = None
+    finding.updated_at = utcnow()
+    cand = session.get(Candidate, finding.candidate_id)
+    if cand is not None and cand.state is CandidateState.DISMISSED:
+        cand.state = CandidateState.FLAGGED
+    _audit(
+        session, analyst.workspace_id,
+        actor_type="analyst", actor_id=analyst.id,
+        action="finding.reopened", object_type="finding", object_id=finding.id,
+        old_value={"state": old.value}, new_value={"state": "open"}, reason=reason or "verdict undone",
+    )  # fmt: skip
+    session.flush()
+    return finding
+
+
 def dismiss(
     session: Session,
     finding: Finding,

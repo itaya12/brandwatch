@@ -1,0 +1,9 @@
+{# Server-side paging: needs page, pages, total, per_page and base_qs (the filters without the page). #}
+{% if pages > 1 %}
+<nav class="pager" aria-label="Pages">
+  <span class="muted small">{{ (page - 1) * per_page + 1 }}–{{ [page * per_page, total]|min }} of {{ total }}</span>
+  {% if page > 1 %}<a class="btn small" href="?{{ base_qs }}&page={{ page - 1 }}" rel="prev">← previous</a>{% else %}<span class="btn small off" aria-disabled="true">← previous</span>{% endif %}
+  <span class="small">page {{ page }} / {{ pages }}</span>
+  {% if page < pages %}<a class="btn small" href="?{{ base_qs }}&page={{ page + 1 }}" rel="next">next →</a>{% else %}<span class="btn small off" aria-disabled="true">next →</span>{% endif %}
+</nav>
+{% elif total %}<div class="muted small" style="margin-top:8px">{{ total }} in total</div>{% endif %}

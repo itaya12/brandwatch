@@ -286,7 +286,7 @@
       <tr><th>Screenshot pHash</th><td class="mono">{{ brand.baseline.screenshot_phash or '—' }}</td></tr>
       <tr><th>Keywords</th><td>{% for k in brand.baseline.keywords %}<span class="pill">{{ k }}</span> {% endfor %}</td></tr>
       <tr><th>Google queries <span class="muted small">(AI proposal)</span></th><td>{% for q in brand.baseline.search_queries %}<span class="pill" style="color:var(--accent2)">{{ q }}</span> {% endfor %}
-        <div class="small muted" style="margin-top:4px">What the AI thinks people and impostors search for, given the type of business. Only a proposal: Google is searched with the list approved in <a href="#queries">Google search queries ↑</a>.</div></td></tr>
+        <div class="small muted" style="margin-top:4px">What the AI thinks people and impostors search for, given the type of business. Only a proposal: Google is searched with the list approved in <a href="#queries">Google search queries</a> (Scan setup tab).</div></td></tr>
       <tr><th>Login / sign-up pages</th><td>
         {% for a in brand.baseline.auth_pages %}<span class="pill" style="{{ 'color:var(--low)' if a.has_password else ('color:var(--muted)' if not a.ok else '') }}" title="{{ a.url }}">{{ a.kind }} · /{{ a.url.split('/', 3)[3] if a.url.count('/') >= 3 else '' }}{{ ' · password form' if a.has_password }}{{ ' · bot protection (Cloudflare-style gate)' if a.bot_challenge }}{{ ' · unreachable' if not a.ok }}</span> {% endfor %}
         {% if not brand.baseline.auth_pages %}<span class="muted">none linked from the homepage</span>{% endif %}
@@ -374,7 +374,7 @@
           {% set wcap = cfg.economic_limits.max_candidate_count or 0 %}{% if wcap %}<div class="small" style="margin:2px 0 6px;text-transform:none;color:{{ 'var(--high)' if cfg.detection.max_candidates > wcap else 'var(--muted)' }}">{% if cfg.detection.max_candidates > wcap %}Only <b>{{ wcap }}</b> will be visited: the workspace limit caps it. {% else %}Never more than the workspace limit, <b>{{ wcap }}</b>. {% endif %}<a href="/ui/settings#budget">Settings → Workspace &amp; budget</a> (an admin changes it).</div>{% endif %}
           <label title="dnstwist look-alike names checked in DNS - keyword combinations, other TLDs and typos first">Max look-alike names to check</label><input name="max_names_checked" value="{{ cfg.detection.max_names_checked }}" {{ 'disabled' if not can_write }}>
           <label>Google search queries</label>
-          <div class="small" style="margin:2px 0 6px;text-transform:none">Edited and approved in <a href="#queries">Google search queries ↑</a> — {{ brand.search_queries.queries|length }} {{ 'approved' if brand.search_queries.approved else 'waiting for approval' }}.</div>
+          <div class="small" style="margin:2px 0 6px;text-transform:none">Edited and approved in <a href="#queries">Google search queries ↓</a> — {{ brand.search_queries.queries|length }} {{ 'approved' if brand.search_queries.approved else 'waiting for approval' }}.</div>
           <label>Max queries per scan</label><input name="search_queries_max" value="{{ cfg.detection.search_queries_max }}" {{ 'disabled' if not can_write }}>
           <label>Search countries · languages <span style="text-transform:none">(each country, in one or more languages)</span></label>
           {% set mk_list = search_markets(cfg.detection) %}{% set mk_disabled = not can_write %}{% include "_markets_picker.html" %}
@@ -383,7 +383,7 @@
           <h3>Cadence</h3>
           <label>Watch window (days) · re-check cadence (hours)</label>
           <div class="actions"><input name="watch_window_days" value="{{ cfg.detection.watch_window_days }}" style="flex:1" {{ 'disabled' if not can_write }}><input name="watch_cadence_hours" value="{{ cfg.detection.watch_cadence_hours }}" style="flex:1" {{ 'disabled' if not can_write }}></div>
-          <div class="small" style="margin-top:8px;text-transform:none">Full automatic scans — how often, when and what — are set in <a href="#schedule">Automatic scans ↑</a>.</div>
+          <div class="small" style="margin-top:8px;text-transform:none">Full automatic scans — how often, when and what — are set in <a href="#schedule">Automatic scans ↓</a>.</div>
           <label>Residential probe (Tier 4)</label><select name="residential_probe" {{ 'disabled' if not can_write }}>{% for t in ['gated','off','always'] %}<option {{ 'selected' if cfg.detection.residential_probe==t }}>{{ t }}</option>{% endfor %}</select>
           <label>Residential country <span style="text-transform:none">(ISO code, e.g. us; empty = auto from search country / language)</span></label>
           <input name="residential_country" value="{{ cfg.detection.residential_country }}" placeholder="auto" {{ 'disabled' if not can_write }}>
@@ -451,7 +451,7 @@
     <div style="grid-column:1/-1"><label>Official domains <span style="text-transform:none">· one per line</span></label>{% set rows = brand.domains + (brand.profile.official_apps or []) %}{% include "_domain_rows.html" %}</div>
     <div style="grid-column:1/-1"><button type="submit">Save brand</button></div>
   </form>
-  <p class="small muted" style="margin-top:8px">Changing the official domains does not touch the whitelist or past findings; rebuild the baseline afterwards. Search rules and the detection track are edited just below.</p>
+  <p class="small muted" style="margin-top:8px">Changing the official domains does not touch the whitelist or past findings; rebuild the baseline afterwards. Search rules and the detection track are in the <a href="#config">Scan setup tab</a>.</p>
   {% else %}<p class="muted small">Viewer access: {{ brand.domains|join(', ') }}</p>{% endif %}
 </div>
 

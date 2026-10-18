@@ -2,6 +2,7 @@
 {% block title %}Takedowns{% endblock %}
 {% block content %}
 <style>
+  @media (max-width:700px){.kpis{grid-template-columns:1fr 1fr}}
   .cta{display:inline-flex;align-items:center;gap:8px;padding:7px 12px;border-radius:9px;border:1px solid var(--crit);color:var(--crit);background:rgba(255,77,77,.08);font-weight:600;font-size:12px;cursor:pointer}
   .cta:hover{background:rgba(255,77,77,.18)}
 </style>
@@ -14,6 +15,7 @@
   ('none', 'no takedown yet', 'confirmed phishing with no request — start here', ['none'], 'var(--crit)'),
   ('unsent', 'request being prepared', 'draft, in review, approved or reopened — not sent yet', ['draft', 'review', 'approved', 'reopened'], 'var(--text)'),
   ('inflight', 'sent, waiting for the host', 'sent, acknowledged or in progress', ['sent', 'acknowledged', 'in_progress'], 'var(--accent2)'),
+  ('stale', 'no answer for 7+ days', 'sent or acknowledged more than a week ago and still not resolved — chase it, or try another channel', ['stale'], 'var(--high)'),
   ('resolved', 'taken down', 'the site is gone', ['resolved'], 'var(--low)'),
 ] %}
 <div class="kpis">
@@ -30,20 +32,22 @@
     {% for b in brand_chips %}<a class="btn" style="padding:4px 12px;font-size:12.5px;{{ 'border-color:var(--accent);color:var(--accent2)' if filters.brand_id == b.id }}" href="/ui/takedowns?state={{ filters.state }}&brand_id={{ b.id }}">{{ b.name }} <b>{{ b.count }}</b></a>{% endfor %}
   </div>{% endif %}
   <form method="get" action="/ui/takedowns" class="actions" style="margin-bottom:8px">
-    <div><label>Brand</label><select name="brand_id" onchange="this.form.submit()"><option value="">all</option>{% for b in brands %}<option value="{{ b.id }}" {{ 'selected' if filters.brand_id==b.id }}>{{ b.name }}</option>{% endfor %}</select></div>
-    <div><label>Takedown state</label><select name="state" onchange="this.form.submit()"><option value="">all</option>{% for st in ['none'] + TakedownStates %}<option value="{{ st }}" {{ 'selected' if filters.state==st }}>{{ st|state_label }}</option>{% endfor %}</select></div>
+    <div><label for="t-brand">Brand</label><select id="t-brand" name="brand_id" onchange="this.form.submit()"><option value="">all</option>{% for b in brands %}<option value="{{ b.id }}" {{ 'selected' if filters.brand_id==b.id }}>{{ b.name }}</option>{% endfor %}</select></div>
+    <div><label for="t-state">Takedown state</label><select id="t-state" name="state" onchange="this.form.submit()"><option value="">all</option>{% for st in ['none'] + TakedownStates %}<option value="{{ st }}" {{ 'selected' if filters.state==st }}>{{ st|state_label }}</option>{% endfor %}<option value="stale" {{ 'selected' if filters.state=='stale' }}>no answer for 7+ days</option></select></div>
     <div><button type="submit">Apply</button></div>
     {% if filters.state or filters.brand_id %}<div><a class="btn" href="/ui/takedowns">clear</a></div>{% endif %}
   </form>
+  {% set bulk = request.query_params.get('bulk') or '' %}
+  {% if bulk.startswith('drafted:') %}{% set bp = bulk.split(':') %}<div class="panel small" style="border-color:rgba(46,204,113,.5);margin-bottom:8px"><b>{{ bp[1] }} takedown request{{ '' if bp[1] == '1' else 's' }} drafted.</b> {% if bp|length > 2 and bp[2] != '0' %}{{ bp[2] }} skipped (not confirmed, or a contact rather than a site).{% endif %} Open each one, send it from your own mailbox and press ✓ sent.</div>{% endif %}
   {% if sites %}
   <table>
-    <tr><th>Phishing site</th><th>Brand</th><th>Severity</th><th>Confirmed</th><th>Takedown</th><th>Reference</th><th>Abuse contact</th><th>Sent</th><th>Reported</th><th>Infrastructure</th></tr>
+    <thead><tr><th>Phishing site</th><th>Brand</th><th>Severity</th><th>Confirmed</th><th>Takedown</th><th>Reference</th><th>Abuse contact</th><th>Sent</th><th>Waiting</th><th>Reported</th><th>Infrastructure</th></tr></thead>
     {% for x in sites %}
     <tr>
       <td><a class="mono" href="/ui/findings/{{ x.id }}">{{ x.hostname }}</a></td>
-      <td class="small"><a href="/ui/brands/{{ x.brand_id }}">{{ x.brand_name or '—' }}</a></td>
+      <td class="small"><a href="/ui/brands/{{ x.brand_id }}"><bdi>{{ x.brand_name or '—' }}</bdi></a></td>
       <td><span class="badge sev-{{ x.severity }}">{{ x.severity }}</span></td>
-      <td class="mono small muted" data-rel="{{ x.confirmed_at }}">{{ (x.confirmed_at or '')[:16].replace('T',' ') }}</td>
+      <td class="mono small muted">{{ x.confirmed_at|ts }}</td>
       <td>
         {% if x.takedown %}<a href="/ui/takedowns/{{ x.takedown.id }}" class="badge state" style="border-color:{{ colors.get(x.takedown_state, '#8A97A8') }};color:{{ colors.get(x.takedown_state, '#8A97A8') }}">{{ x.takedown_state|state_label }} → open</a>
         {% elif can_write %}<form method="post" action="/ui/findings/{{ x.id }}/takedown" style="display:inline"><button class="cta" type="submit">Draft takedown request →</button></form>
@@ -51,7 +55,8 @@
       </td>
       <td class="mono small">{{ x.takedown.reference if x.takedown else '—' }}</td>
       <td class="mono small">{{ (x.takedown.abuse_contact if x.takedown else none) or '—' }}</td>
-      <td class="mono small muted">{{ ((x.takedown.sent_at if x.takedown else none) or '—')[:16].replace('T',' ') }}</td>
+      <td class="mono small muted">{{ x.takedown.sent_at|ts if x.takedown and x.takedown.sent_at else '—' }}</td>
+      <td class="mono small" style="white-space:nowrap">{% if x.waiting_days is not none %}<span style="{{ 'color:var(--high);font-weight:600' if x.waiting_days >= 7 }}" title="since it was sent, with no resolution">{{ x.waiting_days }} day{{ 's' if x.waiting_days != 1 }}</span>{% else %}—{% endif %}</td>
       <td class="small">{% if x.takedown %}<a href="/ui/takedowns/{{ x.takedown.id }}#report" title="report the site to blocklists, security vendors and national services">{{ x.takedown.reported_count }} of {{ REPORT_PORTAL_COUNT }} portal(s)</a>{% if x.takedown.channels_sent %} · {{ x.takedown.channels_sent|length }} channel(s){% endif %}{% else %}—{% endif %}</td>
       <td class="small">{% if x.map_status == 'mapped' %}<a href="/ui/campaigns/{{ x.campaign_id }}">mapped → open</a>{% elif x.map_status == 'mapping' %}<span class="radar"></span> <a href="/ui/jobs/{{ x.map_job.id }}">mapping…</a>{% else %}<span class="muted">not mapped</span>{% endif %}</td>
     </tr>
