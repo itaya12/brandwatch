@@ -101,3 +101,70 @@ def test_default_tasks_and_cost_follow_the_switch():
     retail = schedule_mod.cost_estimate(s, approved_queries=0, search_max=0, geos=1, retail=True, ad_queries=6)
     assert service["lines"] == [{"task": "Facebook / Instagram ads", "usd": 0.024}]  # the ad pages only: no shop checks
     assert retail["per_run"] > service["per_run"]
+
+
+def test_how_far_to_look_is_chosen_when_the_brand_is_created(engine, tmp_path):
+    # the add-brand form asks how many social accounts to check and how many ad pages to read, whatever the track
+    app = _app(engine, tmp_path)
+    with TestClient(app):
+        c, ui = _api(app), _ui(app)
+        form = ui.get("/ui/brands").text
+        assert 'id="nb-reach"' in form and 'name="social_accounts_max"' in form and 'name="ads_per_search"' in form
+        r = ui.post("/ui/brands", data={"name": f"Reach {uuid.uuid4().hex[:4]}", "entry": "reachbank.example", "preset": "standard",
+                                        "kind": "service", "mode": "preset", "reach_form": "1", "social_accounts_max": "15",
+                                        "ads_per_search": "60", "ad_searches_max": "4", "phishing_ads": "on"}, follow_redirects=False)
+        assert r.status_code == 303, r.text[:300]
+        bid = r.headers["location"].split("/ui/brands/")[1].split("/")[0].split("?")[0]
+        b = c.get(f"/api/brands/{bid}").json()
+        det = b["config"]["detection"]
+        assert det["social_accounts_max"] == 15 and det["phishing_ads"] is True
+        assert b["config"]["preset"] == "standard"  # the track stays the track: these are the brand's own switches
+        assert b["profile"]["ads_per_search"] == 60 and b["profile"]["ad_searches_max"] == 4
+        sched = schedule_mod.cost_estimate(schedule_mod.Schedule(tasks=["social"]), approved_queries=0, search_max=0, geos=1,
+                                           retail=False, ad_queries=0, social_accounts=15)
+        assert sched["lines"][0]["usd"] == round((2 + 15 * 2) * 0.004 + 0.02, 3)
+
+
+def test_the_brand_page_reach_panel_saves_how_far_to_look(engine, tmp_path):
+    app = _app(engine, tmp_path)
+    with TestClient(app):
+        c, ui = _api(app), _ui(app)
+        b = _vaultpay(c)
+        page = ui.get(f"/ui/brands/{b['id']}").text
+        assert 'id="reach"' in page and 'id="btabs"' in page and 'data-pane="overview"' in page  # the tabbed brand page
+        r = ui.post(f"/ui/brands/{b['id']}/reach", data={"social_accounts_max": "12", "phishing_ads_form": "1", "phishing_ads": "on",
+                                                         "ads_per_search": "100", "ad_searches_max": "3"}, follow_redirects=False)
+        assert r.status_code == 303 and "reach=saved" in r.headers["location"]
+        got = c.get(f"/api/brands/{b['id']}").json()
+        assert got["config"]["detection"]["social_accounts_max"] == 12 and got["config"]["detection"]["phishing_ads"] is True
+        assert got["profile"]["ads_per_search"] == 100 and got["profile"]["ad_searches_max"] == 3
+        assert "up to 12 a scan" in ui.get(f"/ui/brands/{b['id']}").text  # the social tile says it
+
+
+def test_a_searchapi_key_saved_in_settings_is_a_key(engine, tmp_path):
+    # live mode: the brand page said "no key" (it asked the app-wide registry, which only knows the environment) although the
+    # key was saved in Settings → API keys and the scan used it
+    from tests.test_demo_story import ADMIN
+
+    from brandwatch import keys as keystore
+    from brandwatch.api.main import create_app
+    from brandwatch.config.settings import Settings
+    from brandwatch.db.base import make_session_factory
+
+    settings = Settings(_env_file=None, demo_mode=False, evidence_dir=str(tmp_path / "ev"), bootstrap_admin_email=ADMIN["email"],
+                        bootstrap_admin_password=ADMIN["password"], secret_key="unit-test-secret-0123456789abcdef", searchapi_api_key=None)  # fmt: skip
+    app = create_app(settings=settings, engine=engine)
+    with TestClient(app):
+        c, ui = _api(app), _ui(app)
+        b = c.post("/api/brands", json={"name": f"KeyBank {uuid.uuid4().hex[:4]}", "domains": ["keybank.example"]}).json()
+        ws = uuid.UUID(c.get("/api/auth/me").json()["workspace_id"])
+        with make_session_factory(engine)() as s:
+            assert keystore.provider_ready(s, ws, settings, "searchapi") is False
+        page = ui.get(f"/ui/brands/{b['id']}").text
+        assert "needs a SearchApi key" in page  # no key anywhere: said so
+        with make_session_factory(engine)() as s:
+            keystore.store_key(s, ws, "searchapi", "sk-test-searchapi-0001", settings)
+            s.commit()
+            assert keystore.provider_ready(s, ws, settings, "searchapi") is True
+        page = ui.get(f"/ui/brands/{b['id']}").text
+        assert "skipped: needs a SearchApi key" not in page and "Social media · needs a SearchApi key" not in page

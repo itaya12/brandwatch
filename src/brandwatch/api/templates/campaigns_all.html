@@ -99,6 +99,11 @@
 {% include "_crumbs.html" %}
 <div id="analysing"><div><span class="radar"></span> <b>Analysing again…</b><small>leaving that link out and working out which sites are still connected</small></div></div>
 <h1>ALL CONFIRMED SITES <span class="muted">· one map: are they connected, and by what?</span></h1>
+{% if brand_chips|length > 1 or brand_id %}<div class="bchips" id="brand-filter" style="display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 4px;align-items:center">
+  <span class="small muted" style="margin-right:4px">Brand:</span>
+  <a class="btn" style="padding:4px 12px;font-size:12.5px;{{ 'border-color:var(--accent);color:var(--accent2)' if not brand_id }}" href="/ui/campaigns/all" title="every brand on one map: groups that attack several brands show up">All brands <b>{{ brand_total }}</b></a>
+  {% for b in brand_chips %}<a class="btn" style="padding:4px 12px;font-size:12.5px;{{ 'border-color:var(--accent);color:var(--accent2)' if brand_id == b.id }}" href="/ui/campaigns/all?brand_id={{ b.id }}">{{ b.name }} <b>{{ b.count }}</b></a>{% endfor %}
+</div>{% endif %}
 {% set note = request.query_params.get('re') or '' %}
 {% if note %}{% set p = note.split(':') %}<div class="panel small" style="border-color:rgba(46,204,113,.5)"><b>Analysed again.</b>
   {% if p[0] == 'out' %}Without “{{ p[5] if p|length > 5 else 'that link' }}”: <b>{{ p[1] }} → {{ p[2] }}</b> connected group(s), <b>{{ p[3] }} → {{ p[4] }}</b> site(s) in a group.{% else %}With “{{ p[5] if p|length > 5 else 'that link' }}” counted again: <b>{{ p[1] }} → {{ p[2] }}</b> group(s), <b>{{ p[3] }} → {{ p[4] }}</b> site(s) in a group.{% endif %}</div>{% endif %}

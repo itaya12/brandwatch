@@ -777,6 +777,43 @@ async def brand_ads_switch(
     return RedirectResponse(f"/ui/brands/{brand_id}?ads={'on' if on else 'off'}#scan", status_code=303)
 
 
+@router.post("/brands/{brand_id}/reach")
+async def brand_reach_save(
+    brand_id: uuid.UUID,
+    request: Request,
+    session: Annotated[Session, Depends(get_session, scope="function")],
+    user: Annotated[User | None, Depends(ui_writer)],
+):
+    """How far to look on social media and in the ads: accounts checked per scan, the phishing-ads switch (a brand nobody
+    else sells) and the ad numbers (detection/ad_settings.py, kept in the brand profile)."""
+    if user is None:
+        return _login_redirect(request)
+    from brandwatch.db.models import Brand
+    from brandwatch.detection import ad_settings
+
+    form = await request.form()
+    det: dict[str, Any] = {}
+    if str(form.get("social_accounts_max") or "").strip().isdigit():
+        det["social_accounts_max"] = max(1, min(50, int(str(form.get("social_accounts_max")))))
+    if "phishing_ads_form" in form:
+        det["phishing_ads"] = form.get("phishing_ads") == "on"
+    try:
+        if det:
+            brands_api.patch_config(brand_id, brands_api.ConfigPatch(detection=det), session, user)
+        nums = {k: int(str(form.get(k))) for k in ("ads_per_search", "ad_searches_max", "shops_checked_max") if str(form.get(k) or "").strip().isdigit()}
+        if nums:
+            row = session.get(Brand, brand_id)
+            if row is None or row.workspace_id != user.workspace_id:
+                raise HTTPException(404, "brand not found")
+            clamped = ad_settings.settings({**(row.profile or {}), **nums})
+            row.profile = {**(row.profile or {}), **{k: clamped[k] for k in nums}}
+            session.commit()
+    except (ValueError, HTTPException) as exc:
+        session.rollback()
+        return _brand_error(request, session, user, brand_id, exc)
+    return RedirectResponse(f"/ui/brands/{brand_id}?reach=saved#reach", status_code=303)
+
+
 @router.post("/brands/{brand_id}/schedule")
 async def brand_schedule_save(
     brand_id: uuid.UUID,

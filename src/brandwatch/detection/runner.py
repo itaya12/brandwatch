@@ -968,6 +968,7 @@ async def _social_step(
             official_domains=official_domains, countries=countries, logo_phash=baseline.favicon_phash,
             thresholds={"medium": th.medium, "high": th.high, "critical": th.critical},
             demo=ctx.settings.demo_mode, search_geo=geos[0] if geos else "us", on_event=narrate,
+            max_accounts=ctx.config.detection.social_accounts_max,
         )  # fmt: skip
     except Exception as exc:  # noqa: BLE001 - social media never kills a scan
         em.emit("discovery", "social", "skipped", f"Social media check skipped: {type(exc).__name__}: {exc}", level="warn")
@@ -1010,7 +1011,7 @@ async def _social_step(
     own = sum(1 for e in run.seen if e.get("official"))
     other = sum(1 for e in run.seen if not e.get("visit") and not e.get("official"))
     detail = (f"{fakes} fake account(s) · {watched} on the watchlist · {unrelated + other} not about the brand · {own} the brand's own"
-              + (f" · {run.skipped} not looked at (limit {social.SOCIAL_MAX} per scan)" if run.skipped else "")
+              + (f" · {run.skipped} not looked at (limit {ctx.config.detection.social_accounts_max} per scan — the brand's “social accounts to check”)" if run.skipped else "")
               + (f" · {len(run.links)} link(s) from fake accounts sent to the website checks" if run.links else ""))  # fmt: skip
     summary.step(f"Checked social media: {len(run.seen)} Facebook page(s) / Instagram profile(s) under the brand's name",
                  detail + (f" — {run.note}" if run.note else ""), run.seen)  # fmt: skip

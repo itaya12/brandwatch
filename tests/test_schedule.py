@@ -136,7 +136,7 @@ def test_schedule_api_and_panel(engine, tmp_path):
         assert c.put(f"/api/brands/{b['id']}/schedule", json={"enabled": True, "tasks": []}).status_code == 422
         ui = _ui(app)
         page = ui.get(f"/ui/brands/{b['id']}").text
-        assert 'id="schedule"' in page and "Scan automatically" in page and "automatic: every 2 days at 03:00" in page
+        assert 'id="schedule"' in page and "Scan automatically" in page and "every 2 days at 03:00" in page and "Automatic scans" in page
         r = ui.post(f"/ui/brands/{b['id']}/schedule", data={"every_hours": "168", "hour": "any", "tz_offset": "0",
                                                             "tasks": ["ct"]}, follow_redirects=False)  # fmt: skip
         assert r.status_code == 303 and "schedule=saved" in r.headers["location"]

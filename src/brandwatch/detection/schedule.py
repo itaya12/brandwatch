@@ -118,7 +118,7 @@ def next_due(s: Schedule, last_auto: datetime | None, now: datetime) -> datetime
 
 
 def cost_estimate(s: Schedule, *, approved_queries: int, search_max: int, geos: int, retail: bool,
-                  ad_queries: int, shops_checked: int = 15, ai_requests: int = 0) -> dict[str, Any]:  # fmt: skip
+                  ad_queries: int, shops_checked: int = 15, ai_requests: int = 0, social_accounts: int = 8) -> dict[str, Any]:  # fmt: skip
     """An upper bound per run in USD, from the per-call prices of the paid APIs (SerpApi ~$0.01,
     SearchApi ~$0.004); DNS, certificate logs, new domains and urlscan are free."""
     lines: list[tuple[str, float]] = []
@@ -128,7 +128,8 @@ def cost_estimate(s: Schedule, *, approved_queries: int, search_max: int, geos: 
         # ad_queries = page requests; a resold brand's shops are also checked in full (registry, two searches, the AI)
         lines.append(("Facebook / Instagram ads", ad_queries * 0.004 + (shops_checked * 0.021 if retail else 0)))
     if "social" in s.tasks:
-        lines.append(("Fake social accounts", (2 + 8 * 2) * 0.004 + 2 * 0.01))
+        # two page searches + two Google searches, then two requests per account looked at
+        lines.append(("Fake social accounts", (2 + social_accounts * 2) * 0.004 + 2 * 0.01))
     if "ai_answers" in s.tasks and ai_requests:
         # every approved question to every assistant, + up to two follow-ups and one Google search per wrong contact
         lines.append(("AI answers", ai_requests * 0.004 + min(ai_requests, 10) * (2 * 0.004 + 0.01)))

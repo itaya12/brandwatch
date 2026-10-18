@@ -1948,11 +1948,25 @@ the whole product as one picture; every chapter is a headline, two lines, short 
 - **KPIs:** critical open, open, confirmed, examined, on the watchlist, infrastructure maps, whitelisted, baseline version and track.
 - **Banners** for "domains changed → rebuild baseline" and "brand updated".
 
-**Panels, in order**
+**Layout (2026-10-18).** The header (name, two domains + "+N more", KPIs), the **Scan this brand** card, then four
+**tabs** — *Overview* (latest findings and recent scans first — six, the rest folded — then the fingerprint and the
+charts), *Scan setup* (`#config`, `#queries`, `#schedule`), *Social, ads & AI* (`#reach`, `#ai-answers`) and *Brand &
+site* (`#edit`, `#profile`, `#sitelinks`, `#regions`, `#whitelist`, Start over). Every section keeps its id: a link to
+it (`#queries`, a `?…#profile` redirect) opens its tab and scrolls to it; the last tab is remembered per browser
+session. The panels below are described in their old order.
+
+**Social media & ads · how far to look** (`#reach`, `POST /ui/brands/{id}/reach`): accounts checked per scan
+(`detection.social_accounts_max`, 1–50, default 8, a brand switch), the phishing-ads switch and, for a brand nobody else
+sells, ads per search and searches per scan (`brands.profile`, `ad_settings`); a retail brand keeps its ad numbers and
+shops checked in full in the brand profile. The add-brand form has the same card (`#nb-reach`), saved whatever the track.
+
+**Panels**
 
 1. **Scan this brand**
-   - **Pills:** track, "custom parameters" when customised, streams, TLDs, max sites, cloaking, AI, re-check cadence, social media on/off, "automatic: {label | off}", and Google queries approved or waiting.
-   - **Warning** when search is on but the queries are not approved.
+   - **What a scan does:** one tile per part — look-alike sites, Google search, social media, phishing ads (or "ads ·
+     scam shops" for a retail brand), AI answers, automatic scans — each with its state (on / off / waiting / no key),
+     one line of detail and its switch; then one line for cloaking, the AI second opinion, the re-check cadence and
+     the fingerprint version.
    - **"Scan specific URLs instead"**: a textarea that queues a `url_scan`.
    - **Start scan button** with these fields: max sites to visit; max look-alike names to check; "include fingerprinting of the official site" (pre-ticked when there is no baseline). It also shows the workspace limit.
    - While a scan runs, the panel shows "SCAN RUNNING · open console" instead.

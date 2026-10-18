@@ -1,0 +1,57 @@
+{# Social media & ads · how far to look (brand page). Accounts checked per scan, the phishing-ads switch for a brand nobody
+   else sells, and — for that brand — how many ads are read (a retail brand sets its ad numbers in the brand profile, next
+   to the shops checked in full). Context: brand, cfg, can_write, social_ready. #}
+{% set retail = brand.kind == 'retail' %}{% set pf = brand.profile or {} %}
+<div class="panel" style="margin-top:14px" id="reach">
+  <h2>Social media &amp; ads · how far to look <span class="muted">· every page read is a paid SearchApi request</span></h2>
+  {% if request and request.query_params.get('reach') == 'saved' %}<div class="small" style="color:var(--low);margin-bottom:8px">✓ Saved — the next scan looks this far.</div>{% endif %}
+  {% if not social_ready %}<div class="small" style="margin-bottom:8px;color:var(--high)">Social media and ads are read through SearchApi, and no key is set: they are skipped — <a href="/ui/settings#keys">Settings → API keys</a>.</div>{% endif %}
+  <form method="post" action="/ui/brands/{{ brand.id }}/reach">
+    <div class="reachgrid">
+      <div class="rcard">
+        <h3>Facebook pages · Instagram profiles</h3>
+        <label for="rp-soc">Accounts to check per scan <span class="muted">(1–50)</span></label>
+        <input id="rp-soc" name="social_accounts_max" type="number" min="1" max="50" value="{{ cfg.detection.social_accounts_max }}" {{ 'disabled' if not can_write }}>
+        <p class="small muted">Accounts under {{ brand.name }}'s name that get the full look — page history, profile, logo, AI. About 3 requests each; the rest are listed, not judged. Social media is <b style="color:{{ 'var(--low)' if cfg.detection.social_accounts else 'var(--muted)' }}">{{ 'on' if cfg.detection.social_accounts else 'off' }}</b> for this brand.</p>
+      </div>
+      <div class="rcard">
+        <h3>Facebook / Instagram ads</h3>
+        {% if retail %}
+        <p class="small" style="margin:0 0 6px">{{ brand.name }} is sold by other shops: its ads are always read, for <b>scam shops</b>. The ad numbers and the shops checked in full are in the <a href="#profile">brand profile</a>.</p>
+        {% else %}
+        <input type="hidden" name="phishing_ads_form" value="1">
+        <label class="sw2"><input type="checkbox" name="phishing_ads" {{ 'checked' if cfg.detection.phishing_ads }} {{ 'disabled' if not can_write }}> <span><b>Phishing ads</b> — read the ads that use {{ brand.name }}'s name and check the sites they send people to</span></label>
+        <div class="two2">
+          <div><label for="rp-ads">Ads per search</label>
+            <select id="rp-ads" name="ads_per_search" {{ 'disabled' if not can_write }}>{% for n in [30, 60, 100, 200] %}<option value="{{ n }}" {{ 'selected' if (pf.ads_per_search or 30) == n }}>{{ n }} ads · {{ ((n + 29) // 30) }} page{{ 's' if n > 30 }}</option>{% endfor %}</select></div>
+          <div><label for="rp-srch">Searches per scan <span class="muted">(1–20)</span></label>
+            <input id="rp-srch" name="ad_searches_max" type="number" min="1" max="20" value="{{ pf.ad_searches_max or 6 }}" {{ 'disabled' if not can_write }}></div>
+        </div>
+        <p class="small muted">One search = one ad keyword in one country — <a href="#profile">keywords and countries in the brand profile</a>{% if not pf.ad_keywords %} (none yet: the brand's name is used){% endif %}. Write the name the way people write it, in each language.</p>
+        {% endif %}
+      </div>
+    </div>
+    <p class="small" style="margin:8px 0 0;color:#c3cdd9" id="rp-cost"></p>
+    {% if can_write %}<div class="actions" style="margin-top:8px"><button type="submit" class="primary">Save</button></div>{% endif %}
+  </form>
+</div>
+<script>
+(function(){
+  const box = document.getElementById('reach'); if (!box) return;
+  const f = box.querySelector('form'), out = document.getElementById('rp-cost');
+  const kw = {{ ((pf.ad_keywords or []) | length) or 1 }}, cc = {{ ((pf.countries or []) | length) or ((cfg.detection.search_geo or 'us').split(',') | length) }};
+  function calc(){
+    const soc = Math.max(1, Math.min(50, parseInt(f.social_accounts_max.value, 10) || 8));
+    const socUsd = {{ 'true' if cfg.detection.social_accounts else 'false' }} ? (2 + soc * 2) * 0.004 + 0.02 : 0;
+    let line = `Social media: up to <b>${soc}</b> account${soc > 1 ? 's' : ''} looked at ≈ $${socUsd.toFixed(2)}`, total = socUsd;
+    if (f.ads_per_search) {
+      const on = f.phishing_ads && f.phishing_ads.checked, per = parseInt(f.ads_per_search.value, 10) || 30;
+      const srch = Math.min(kw * cc, Math.max(1, Math.min(20, parseInt(f.ad_searches_max.value, 10) || 6)));
+      const usd = on ? srch * Math.ceil(per / 30) * 0.004 : 0; total += usd;
+      line += on ? ` · ads: <b>${srch}</b> search${srch > 1 ? 'es' : ''} × ${per} = up to <b>${srch * per}</b> ads ≈ $${usd.toFixed(3)}` : ' · phishing ads: off';
+    }
+    out.innerHTML = line + ` · <b>≈ $${total.toFixed(2)} a scan at most</b>`;
+  }
+  f.addEventListener('input', calc); f.addEventListener('change', calc); calc();
+})();
+</script>

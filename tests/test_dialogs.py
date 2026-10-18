@@ -88,6 +88,7 @@ def test_the_bulk_verdict_and_the_brand_delete_ask_in_the_interfaces_own_dialog(
         # the brand delete: the name must be typed in the dialog
         page.set_content(brand_page, wait_until="domcontentloaded")
         page.evaluate("window.__sent = []; HTMLFormElement.prototype.requestSubmit = function(btn){ window.__sent.push('delete'); }; null;")
+        page.click('#btabs [data-pane="brand"]')  # "Start over" lives in the "Brand & site" tab
         page.click("form[action$='/delete'] button.danger")
         assert page.evaluate("document.getElementById('bw-modal').hidden") is False and page.is_visible(".bw-dlg-in")
         page.fill(".bw-dlg-in", "wrong name")

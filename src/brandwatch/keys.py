@@ -93,6 +93,15 @@ def decrypt_key(row: ApiKey, settings: Settings) -> str:
     )
 
 
+def provider_ready(session: Session, workspace_id: uuid.UUID, settings: Settings, provider: str) -> bool:
+    """Can a scan of this workspace call ``provider``? Demo mode (recorded answers), a key in the environment, or a key
+    saved in Settings → API keys (stored per workspace, encrypted). The app-wide registry knows only the environment, so
+    pages must ask here — a key saved in the UI used to read as "no key" on the brand page while the scan used it."""
+    if settings.demo_mode or settings.provider_key(provider):
+        return True
+    return session.scalar(sa.select(ApiKey.id).where(ApiKey.workspace_id == workspace_id, ApiKey.provider == provider).limit(1)) is not None
+
+
 def load_keys(session: Session, workspace_id: uuid.UUID, settings: Settings) -> dict[str, str]:
     """{provider: plaintext} for this workspace — in memory only, for one scan."""
     out: dict[str, str] = {}

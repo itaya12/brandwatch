@@ -383,7 +383,7 @@ async def _avatar(url: str | None, demo: bool) -> bytes | None:
 async def scan(
     providers: Any, *, brand_name: str, brand_key: str, terms: relevance.BrandTerms, officials: set[str],
     official_domains: set[str], countries: list[str], logo_phash: str | None, thresholds: dict[str, int],
-    demo: bool = False, search_geo: str = "us", on_event: Any = None,
+    demo: bool = False, search_geo: str = "us", on_event: Any = None, max_accounts: int = SOCIAL_MAX,
 ) -> SocialRun:  # fmt: skip
     """Find the accounts that carry the brand's name, look at each one and judge it."""
     from brandwatch.detection import ai as ai_mod
@@ -443,9 +443,9 @@ async def scan(
         run.seen.append(entry)
     # most suspicious first: unverified, claims words, small audience
     todo.sort(key=lambda a: (a.verified(), not _words(a.name + " " + a.handle, CLAIM_WORDS), a.audience() or 0))
-    run.skipped = max(0, len(todo) - SOCIAL_MAX)
+    run.skipped = max(0, len(todo) - max_accounts)
     linked_ig = {str((a.page or {}).get("ig_username") or "").lower() for a in todo if (a.page or {}).get("ig_username")}
-    todo = [a for a in todo if not (a.platform == "instagram" and a.handle in linked_ig and a.page is None)][:SOCIAL_MAX]
+    todo = [a for a in todo if not (a.platform == "instagram" and a.handle in linked_ig and a.page is None)][:max_accounts]
 
     # 4 · look at each one and judge it
     for acc in todo:

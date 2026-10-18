@@ -15,9 +15,28 @@
   #add .chkrow label{display:inline-flex;align-items:center;gap:6px;text-transform:none;margin:0;color:var(--text);font-family:var(--sans);font-size:13px;letter-spacing:0}
   #add .chkrow input{width:auto}
   #add .three{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+  #add .reach3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+  @media (max-width:900px){ #add .reach3{grid-template-columns:minmax(0,1fr)} }
   @media (max-width:900px){ #add .three{grid-template-columns:minmax(0,1fr)} }
 </style>
 {% set d0 = PRESETS['standard'].detection %}
+<div style="grid-column:1/-1" class="cfgcard" id="nb-reach">
+  <h3>Social media &amp; ads · how far to look <span style="text-transform:none;letter-spacing:0;color:var(--muted);font-family:var(--sans)">· every page is a paid SearchApi request — set it now or later on the brand page</span></h3>
+  <input type="hidden" name="reach_form" value="1">
+  <div class="reach3">
+    <div><label for="nb-soc">Social accounts to check per scan <span style="text-transform:none">(1–50)</span></label>
+      <input id="nb-soc" name="social_accounts_max" type="number" min="1" max="50" value="{{ d0.social_accounts_max or 8 }}">
+      <div class="small muted">Facebook pages and Instagram profiles under the brand's name that get the full look (page history, profile, logo, AI) · ~3 requests each</div></div>
+    <div><label for="nb-ads">Facebook / Instagram ads per search</label>
+      <select id="nb-ads" name="ads_per_search">{% for n in [30, 60, 100, 200] %}<option value="{{ n }}" {{ 'selected' if n == 30 }}>{{ n }} ads · {{ ((n + 29) // 30) }} page{{ 's' if n > 30 }}{{ ' (default)' if n == 30 }}</option>{% endfor %}</select>
+      <div class="small muted">Meta's Ad Library answers ~30 ads a page; each page is one request</div></div>
+    <div><label for="nb-srch">Ad searches per scan <span style="text-transform:none">(1–20)</span></label>
+      <input id="nb-srch" name="ad_searches_max" type="number" min="1" max="20" value="6">
+      <div class="small muted">one search = one ad keyword in one country</div></div>
+  </div>
+  <div class="chkrow" id="nb-pa" style="margin-top:6px"><label><input type="checkbox" name="phishing_ads"> Phishing ads — read the ads that use the brand's name and check the sites they send people to <span class="muted">(a brand nobody else sells: a bank, an app; a brand other shops sell always has its ads read, for scam shops)</span></label></div>
+  <p class="small" style="margin:6px 0 0;color:#c3cdd9" id="nb-reach-cost"></p>
+</div>
 <div style="grid-column:1/-1" class="cfgcard" id="nb-ai">
   <h3>AI answers <span style="text-transform:none;letter-spacing:0;color:var(--muted);font-family:var(--sans)">· optional, set now or later on the brand page</span></h3>
   <input type="hidden" name="ai_answers_form" value="1">
@@ -76,6 +95,20 @@
 <script>
 (function(){
   const form = document.querySelector('#add form'); if (!form) return;
+  // the reach card: its cost, and the phishing-ads box only for a brand nobody else sells
+  const reachCost = document.getElementById('nb-reach-cost'), pa = document.getElementById('nb-pa');
+  function reach(){
+    const soc = Math.max(1, Math.min(50, parseInt(form.social_accounts_max.value, 10) || 8));
+    const per = parseInt(form.ads_per_search.value, 10) || 30, srch = Math.max(1, Math.min(20, parseInt(form.ad_searches_max.value, 10) || 6));
+    const retail = form.kind && form.kind.value === 'retail', adsOn = retail || (form.phishing_ads && form.phishing_ads.checked);
+    pa.style.display = retail ? 'none' : '';  // .chkrow is display:flex, which beats [hidden]
+    const socUsd = form.social_accounts && !form.social_accounts.checked && document.getElementById('nb-mode').value === 'custom' ? 0 : (2 + soc * 2) * 0.004 + 0.02;
+    const adsUsd = adsOn ? srch * Math.ceil(per / 30) * 0.004 : 0;
+    reachCost.innerHTML = `Up to <b>${soc}</b> social accounts looked at ≈ $${socUsd.toFixed(2)}` +
+      (adsOn ? ` · up to <b>${srch * per}</b> ads read (${srch} search${srch > 1 ? 'es' : ''} × ${per}) ≈ $${adsUsd.toFixed(2)}` : ' · ads: off') +
+      ` · <b>≈ $${(socUsd + adsUsd).toFixed(2)} a scan at most</b>`;
+  }
+  form.addEventListener('input', reach); form.addEventListener('change', reach); reach();
   const PRESETS = {{ PRESETS|tojson }}, SOURCES = {{ (copy_sources or [])|tojson }};
   const mode = document.getElementById('nb-mode'), box = document.getElementById('nb-custom'), btn = document.getElementById('nb-btn');
   const note = document.getElementById('nb-note'), copy = document.getElementById('nb-copy'), preset = form.elements['preset'];
@@ -88,7 +121,8 @@
     if (pk && pk.setMarkets) pk.setMarkets((d.search_markets && d.search_markets.length) ? d.search_markets
       : String(d.search_geo || 'us').split(',').map(c => c.trim()).filter(Boolean).map(c => ({country: c, langs: [d.search_lang || 'en']})));
     set('residential_country', d.residential_country || '');
-    ['cloaking_probes','social_accounts','ai_second_opinion','auto_map_on_confirm','auto_investigate_on_confirm'].forEach(k => chk(k, d[k]));
+    ['cloaking_probes','social_accounts','ai_second_opinion','auto_map_on_confirm','auto_investigate_on_confirm', 'phishing_ads'].forEach(k => chk(k, d[k]));
+    if (d.social_accounts_max) set('social_accounts_max', d.social_accounts_max);
     if (thresholds) ['medium','high','critical'].forEach(k => set('t_' + k, thresholds[k]));
   }
   function open(on){

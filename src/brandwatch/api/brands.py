@@ -373,6 +373,10 @@ def config_patch_from_form(form: Any, default_mode: str = "custom") -> tuple[str
     streams = [str(s) for s in form.getlist("streams")]
     if streams:
         detection["streams"] = streams
+    if "reach_form" in form:  # "how far to look" on social media and in the ads: brand switches, kept whatever the track
+        if str(form.get("social_accounts_max") or "").strip().isdigit():
+            detection["social_accounts_max"] = max(1, min(50, int(str(form.get("social_accounts_max")))))
+        detection["phishing_ads"] = form.get("phishing_ads") == "on"
     if "ai_answers_form" in form:  # the AI-answers block: a brand switch, kept whatever the track
         detection["ai_answers"] = form.get("ai_answers") == "on"
         engines = [e for e in form.getlist("ai_engines") if e in ("chatgpt", "gemini", "google_ai_mode")]
@@ -1282,7 +1286,7 @@ def schedule_view(session: Session, brand: Brand, cfg: Any, queries: dict[str, A
     out["cost"] = schedule_mod.cost_estimate(
         sc, approved_queries=len(queries["queries"]) if queries.get("approved") else 0,
         search_max=cfg.detection.search_queries_max, geos=len(geos), retail=retail, ad_queries=ad_queries,
-        shops_checked=reach["shops_checked_max"],
+        shops_checked=reach["shops_checked_max"], social_accounts=cfg.detection.social_accounts_max,
         ai_requests=min(len(ai_st.prompts), cfg.detection.ai_prompts_max) * len(cfg.detection.ai_engines) if ai_st.approved else 0,
     )  # fmt: skip
     out["retail"] = retail
@@ -1568,14 +1572,17 @@ def start_scan(
             qs = search_queries_mod.query_state(brand, cfg.detection, load_baseline(session, brand))
             if not qs.approved:
                 raise HTTPException(status.HTTP_409_CONFLICT, "Google search runs only with approved queries — approve them first (brand page → Google queries)")
-        if body.only == "social" and not request.app.state.settings.demo_mode and request.app.state.providers.uses_mock("searchapi"):
-            raise HTTPException(status.HTTP_409_CONFLICT, "Social media needs a SearchApi key — add it in Settings → API keys")
+        from brandwatch import keys as keystore_mod
+
+        searchapi_ok = keystore_mod.provider_ready(session, user.workspace_id, request.app.state.settings, "searchapi")
+        if body.only in ("social", "ads") and not searchapi_ok:
+            raise HTTPException(status.HTTP_409_CONFLICT, ("Social media" if body.only == "social" else "Facebook / Instagram ads") + " need a SearchApi key — add it in Settings → API keys")
         if body.only == "ai":
             from brandwatch.detection import ai_prompts
 
             if not ai_prompts.prompt_state(brand, cfg.detection).approved:
                 raise HTTPException(status.HTTP_409_CONFLICT, "AI answers run only with approved questions — approve them first (brand page → AI answers)")
-            if not request.app.state.settings.demo_mode and request.app.state.providers.uses_mock("searchapi"):
+            if not searchapi_ok:
                 raise HTTPException(status.HTTP_409_CONFLICT, "AI answers need a SearchApi key — add it in Settings → API keys")
     session.commit()  # release our write lock before the job thread starts writing
     payload: dict[str, Any] = {

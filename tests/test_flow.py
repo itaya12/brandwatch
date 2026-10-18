@@ -107,12 +107,9 @@ def test_brand_edit_name_domains_and_error_path(engine, tmp_path):
         ui = _ui(app)
         page = ui.get(f"/ui/brands/{b['id']}").text
         assert 'id="edit"' in page and "Save brand" in page and 'id="whitelist"' in page
-        assert (
-            page.index('id="edit"')
-            < page.index('id="config"')
-            < page.index('id="whitelist"')
-            < page.index("Start over")
-        )
+        # tabs: Overview · Scan setup (the track) · Social, ads & AI · Brand & site (edit, whitelist, start over)
+        assert page.index('data-pane="setup"') < page.index('id="config"') < page.index('data-pane="brand" role="tabpanel"')
+        assert page.index('data-pane="brand" role="tabpanel"') < page.index('id="edit"') < page.index('id="whitelist"') < page.index("Start over")
         assert "Detection track &amp; search rules" in page and "edit search rules" in page
         r = ui.post(f"/ui/brands/{b['id']}/edit", data={"name": "Edited Brand", "domains": "shopnova.com, shopnova.io, shopnova.net", "vertical": "crypto"}, follow_redirects=False)  # fmt: skip
         assert r.status_code == 303 and "edited=domains" in r.headers["location"]

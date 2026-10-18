@@ -392,6 +392,9 @@ class DetectionConfig(BaseModel):
     # name and send people to a site that is not the brand's. Off until switched on per brand (paid: SearchApi); a
     # retail brand's ads are always searched, for scam shops
     phishing_ads: bool = False
+    # how many accounts under the brand's name get the full look per scan (page info, Instagram profile, logo, AI) —
+    # each one ~3 SearchApi requests; the rest are listed, not judged
+    social_accounts_max: int = Field(default=8, ge=1, le=50)
     # what ChatGPT / Gemini / Google AI Mode tell users about the brand's contacts (detection/ai_answers.py): off
     # until switched on per brand; runs with approved prompts and the SearchApi key (recorded answers in demo mode)
     ai_answers: bool = False
@@ -482,7 +485,7 @@ def detection_for_preset(preset: str) -> DetectionConfig:
 
 
 # switches of the brand itself, not of its track: changing them is not "custom", changing the track keeps them
-BRAND_SWITCHES = ("social_accounts", "phishing_ads", "ai_answers", "ai_engines", "ai_prompts_max", "contacts_pages_max")
+BRAND_SWITCHES = ("social_accounts", "social_accounts_max", "phishing_ads", "ai_answers", "ai_engines", "ai_prompts_max", "contacts_pages_max")
 
 
 def is_custom_detection(preset: str, detection: DetectionConfig) -> bool:

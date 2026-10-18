@@ -32,7 +32,12 @@ from brandwatch.api.auth import (
     verify_password,
 )
 from brandwatch.api.deps import get_session, get_settings_dep
-from brandwatch.config.brand_config import PRESET_INFO, PRESET_PROFILES, SIGNAL_GROUPS
+from brandwatch.config.brand_config import (
+    BRAND_SWITCHES,
+    PRESET_INFO,
+    PRESET_PROFILES,
+    SIGNAL_GROUPS,
+)
 from brandwatch.config.settings import Settings
 from brandwatch.db.base import take_write_lock
 from brandwatch.db.enums import (
@@ -260,8 +265,8 @@ async def brands_create(
             domains=domain_list,
             preset=preset or "basic",
             kind="retail" if form.get("kind") == "retail" else "service",
-            # the track's profile, plus the brand's own switches (AI answers) whatever the track
-            detection=detection if custom else ({k: detection[k] for k in ("ai_answers", "ai_engines") if k in detection} or None),
+            # the track's profile, plus the brand's own switches (social / ads reach, AI answers) whatever the track
+            detection=detection if custom else ({k: detection[k] for k in BRAND_SWITCHES if k in detection} or None),
             scoring=scoring if (custom and scoring) else None,
         )  # type: ignore[arg-type]
         out = brands_api.create_brand(body, session, user)
@@ -284,6 +289,14 @@ async def brands_create(
     # and official prices — approved once, so the scan never stops to ask
     from brandwatch.api.ui_settings import needs_setup
 
+    reach = {k: int(str(form.get(k))) for k in ("ads_per_search", "ad_searches_max") if str(form.get(k) or "").strip().isdigit()}
+    if reach:  # how far the ad hunt goes lives in the brand profile (detection/ad_settings.py)
+        from brandwatch.detection import ad_settings
+
+        row = session.get(Brand, uuid.UUID(out["id"]))
+        clamped = ad_settings.settings({**(row.profile or {}), **reach})
+        row.profile = {**(row.profile or {}), **{k: clamped[k] for k in reach}}
+        session.commit()
     brand = brands_api.get_brand(uuid.UUID(out["id"]), session, user)
     to = f"/ui/brands/{out['id']}/setup" if needs_setup(brand) else f"/ui/brands/{out['id']}"
     return RedirectResponse(to, status_code=303)
@@ -304,6 +317,7 @@ def brand_context(
     request: Request, session: Session, user: User, brand_id: uuid.UUID
 ) -> dict[str, Any]:
     """Everything brand_detail.html needs — shared by the page and by every error re-render."""
+    from brandwatch import keys as keystore_mod
     brand = brands_api.get_brand(brand_id, session, user)
     return {
         "brand": brand,
@@ -314,7 +328,7 @@ def brand_context(
         "scheduler_on": bool(getattr(request.app.state.settings, "scheduler_enabled", False)),
         "setup_needed": _needs_setup(brand),
         # social media is searched through SearchApi: in live mode it needs that key
-        "social_ready": bool(request.app.state.settings.demo_mode or not request.app.state.providers.uses_mock("searchapi")),
+        "social_ready": keystore_mod.provider_ready(session, user.workspace_id, request.app.state.settings, "searchapi"),
         "active": "brands",
     }
 
@@ -1123,8 +1137,15 @@ def campaigns_all_page(
         return _login_redirect(request)
     bid = _uuid_or_none(brand_id)
     data = campaigns_api.all_map(session, user, bid)
-    return _render(request, "campaigns_all.html", user, m=data, brands=brands_api.list_brands(session, user), active="campaigns",
-                   brand_id=str(bid) if bid else "")  # fmt: skip
+    brands = brands_api.list_brands(session, user)
+    # one chip per brand: its confirmed sites (with its country campaigns), the map shows only them when chosen
+    per: dict[str, int] = {}
+    for f in campaigns_api._confirmed(session, user, None):
+        per[str(f.brand_id)] = per.get(str(f.brand_id), 0) + 1
+    brand_chips = [{"id": str(b["id"]), "name": b["name"], "count": sum(per.get(str(i), 0) for i in regions_mod.with_regions(session, uuid.UUID(str(b["id"]))))}
+                   for b in brands if not b.get("parent_id")]  # fmt: skip
+    return _render(request, "campaigns_all.html", user, m=data, brands=brands, active="campaigns",
+                   brand_id=str(bid) if bid else "", brand_chips=[c for c in brand_chips if c["count"]], brand_total=sum(per.values()))  # fmt: skip
 
 
 @router.get("/campaigns", response_class=HTMLResponse)

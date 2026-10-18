@@ -129,6 +129,7 @@ def test_the_brand_page_and_the_add_brand_form_have_a_searchable_country_and_lan
         pg.on("pageerror", lambda e: errors.append(str(e)))
         pg.set_content(page, wait_until="domcontentloaded")
         pg.wait_for_timeout(300)
+        pg.click('#btabs [data-pane="setup"]')  # the search rules live in the "Scan setup" tab
         value = lambda n: pg.evaluate(f"document.querySelector('.mkt [name={n}]').value")  # noqa: E731
         assert value("search_geo") == "us,il" and "Israel" in pg.inner_text(".mkt") and "Hebrew" in pg.inner_text(".mkt")
         pg.fill(".mkt-q", "ital")  # search a country by name

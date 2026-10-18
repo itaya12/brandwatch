@@ -90,6 +90,7 @@ def test_the_confirm_messages_of_the_brand_page_are_valid_javascript(engine, tmp
             page.click(".bw-cancel")
             return text
 
+        page.click('#btabs [data-pane="setup"]')  # the track lives in the "Scan setup" tab
         page.click("#customBtn")  # custom is on for this brand: switching it off must ask first
         first = asked()
         assert "Switch off custom parameters?" in first and "track's own profile" in first
