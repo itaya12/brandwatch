@@ -41,6 +41,7 @@
   .sx-flow-h a:hover .ring{stroke-width:3.5;filter:url(#fx-glow)}
   .sx-flow-v a:hover .ring{stroke-width:3.5;filter:url(#fv-glow)}
   .sx-flow .core-ring{animation:corePulse 3.2s ease-in-out infinite;transform-origin:{{ cx }}px {{ cy }}px}
+  .sx-flow.off .core-ring{animation-play-state:paused}
   .sx-flow-v .core-ring{transform-origin:210px 430px}
   @keyframes corePulse{50%{opacity:.55;transform:scale(1.06)}}
   .sx-flow .dash{stroke-dasharray:4 6}
@@ -266,5 +267,13 @@
   if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) {
     document.querySelectorAll('.sx-flow animateMotion').forEach(a => a.parentNode.remove());
   }
+  // off screen, the picture stops animating: a phone scrolling past it paints nothing it cannot see
+  if (!('IntersectionObserver' in window)) return;
+  const io = new IntersectionObserver(entries => entries.forEach(en => {
+    const svg = en.target.querySelector('svg');
+    en.target.classList.toggle('off', !en.isIntersecting);
+    if (svg && svg.pauseAnimations) { if (en.isIntersecting) svg.unpauseAnimations(); else svg.pauseAnimations(); }
+  }));
+  document.querySelectorAll('.sx-flow').forEach(el => io.observe(el));
 })();
 </script>
