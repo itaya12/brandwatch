@@ -215,11 +215,11 @@ header nav{display:flex;align-items:center;min-width:0}
 <p class="intro">The append-only audit trail: who did what, when, old → new, and why. The database itself refuses to edit or delete it.</p>
 
 <div class="kpis">
-  <div class="kpi"><div class="v" data-count="245">0</div><div class="l">events (latest)</div></div>
-  <div class="kpi"><div class="v" data-count="53">0</div><div class="l">analyst actions</div></div>
-  <div class="kpi"><div class="v" data-count="192">0</div><div class="l">system actions</div></div>
+  <div class="kpi"><div class="v" data-count="236">0</div><div class="l">events (latest)</div></div>
+  <div class="kpi"><div class="v" data-count="56">0</div><div class="l">analyst actions</div></div>
+  <div class="kpi"><div class="v" data-count="180">0</div><div class="l">system actions</div></div>
   <div class="kpi"><div class="v" data-count="25">0</div><div class="l">verdicts recorded</div></div>
-  <div class="kpi"><div class="v" data-count="6">0</div><div class="l">logins (24h)</div></div>
+  <div class="kpi"><div class="v" data-count="7">0</div><div class="l">logins (24h)</div></div>
 </div>
 
 <div class="grid" style="grid-template-columns:2.2fr 1fr;margin-top:14px">
@@ -236,16 +236,92 @@ header nav{display:flex;align-items:center;min-width:0}
       <div class="ev " data-cat="user" data-notable="0" style="--r:0;display:none">
         <div class="av " title="admin">AD</div>
         <div>
-          <div class="what"><span class="muted">admin</span> <b>user</b> · login <span class="pill" title="35 consecutive events, first 2026-10-18 07:32">×35</span>
+          <div class="what"><span class="muted">admin</span> <b>user</b> · login <span class="pill" title="9 consecutive events, first 2026-10-18 17:10">×9</span>
             
             <span class="muted small">user bc089017</span></div>
           
         </div>
-        <div class="when" data-rel="2026-10-18T10:04:10.532545+00:00" title="2026-10-18T10:04:10.532545+00:00">2026-10-18 10:04:10</div>
+        <div class="when" data-rel="2026-10-18T18:12:59.927544+00:00" title="2026-10-18T18:12:59.927544+00:00">2026-10-18 18:12:59</div>
       </div>
       
       
       <div class="ev " data-cat="notification" data-notable="1" style="--r:1">
+        <div class="av sys" title="system">SYS</div>
+        <div>
+          <div class="what"><span class="muted">system</span> <b>notification</b> · sent
+            
+            <span class="muted small">notification account-review-center.com</span></div>
+          
+          
+          <div class="diff"><span class="new">channel: log · subject: [BrandWatch] CRITICAL new finding: account-review-center.com impersonates VaultPay · kind: finding</span>
+            </div>
+          
+        </div>
+        <div class="when" data-rel="2026-10-18T17:10:05.104755+00:00" title="2026-10-18T17:10:05.104755+00:00">2026-10-18 17:10:05</div>
+      </div>
+      
+      
+      <div class="ev " data-cat="finding" data-notable="1" style="--r:2">
+        <div class="av sys" title="system">SYS</div>
+        <div>
+          <div class="what"><span class="muted">system</span> <b>finding</b> · created
+            
+            <span class="muted small">finding <a href="/ui/findings/b8ee9a9b-16e7-4c1f-be0b-6756491abd64/" class="mono">account-review-center.com ↗</a></span></div>
+          
+          
+          <div class="diff"><span class="new">severity: critical · score: 75 · confidence: 100.0 · scoring version: v7-f1ba3ebf</span>
+            <div style="color:var(--text);opacity:.8;margin-top:2px">“14 signals fired; rules: [&#39;pixel_clone_login&#39;, &#39;fresh_lookalike_login&#39;, &#39;brand_title_login&#39;, &#39;campaign_linked_login&#39;, &#39;looks_like_brand_verdict&#39;]”</div></div>
+          
+        </div>
+        <div class="when" data-rel="2026-10-18T17:10:05.093176+00:00" title="2026-10-18T17:10:05.093176+00:00">2026-10-18 17:10:05</div>
+      </div>
+      
+      
+      <div class="ev " data-cat="scan" data-notable="1" style="--r:3">
+        <div class="av " title="admin">AD</div>
+        <div>
+          <div class="what"><span class="muted">admin</span> <b>scan</b> · started
+            
+            <span class="muted small">scan job <a href="/ui/jobs/6f8a6616-c8a8-435c-b854-1fffe103d08c/" class="mono">brand scan 6f8a6616 ↗</a></span></div>
+          
+          
+          <div class="diff"><span class="new">kind: brand_scan · brand: VaultPay</span>
+            </div>
+          
+        </div>
+        <div class="when" data-rel="2026-10-18T17:10:04.708334+00:00" title="2026-10-18T17:10:04.708334+00:00">2026-10-18 17:10:04</div>
+      </div>
+      
+      
+      <div class="ev " data-cat="brand" data-notable="1" style="--r:4">
+        <div class="av " title="admin">AD</div>
+        <div>
+          <div class="what"><span class="muted">admin</span> <b>brand</b> · config updated
+            
+            <span class="muted small">brand <a href="/ui/brands/a7b5cb5c-e4a0-495d-b6c9-3ac5209ac3b2/" class="mono">VaultPay ↗</a></span></div>
+          
+          
+          <div class="diff"><span class="old">preset: standard · scoring version: v7-f1ba3ebf</span> → <span class="new">preset: standard · scoring version: v7-f1ba3ebf · rescored: 0 · changed: detection</span>
+            </div>
+          
+        </div>
+        <div class="when" data-rel="2026-10-18T17:10:04.648262+00:00" title="2026-10-18T17:10:04.648262+00:00">2026-10-18 17:10:04</div>
+      </div>
+      
+      
+      <div class="ev " data-cat="user" data-notable="0" style="--r:5;display:none">
+        <div class="av " title="admin">AD</div>
+        <div>
+          <div class="what"><span class="muted">admin</span> <b>user</b> · login <span class="pill" title="36 consecutive events, first 2026-10-18 07:32">×36</span>
+            
+            <span class="muted small">user bc089017</span></div>
+          
+        </div>
+        <div class="when" data-rel="2026-10-18T17:10:04.575456+00:00" title="2026-10-18T17:10:04.575456+00:00">2026-10-18 17:10:04</div>
+      </div>
+      
+      
+      <div class="ev " data-cat="notification" data-notable="1" style="--r:6">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>notification</b> · sent
@@ -261,7 +337,7 @@ header nav{display:flex;align-items:center;min-width:0}
       </div>
       
       
-      <div class="ev " data-cat="finding" data-notable="1" style="--r:2">
+      <div class="ev " data-cat="finding" data-notable="1" style="--r:7">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>finding</b> · rescored
@@ -277,7 +353,7 @@ header nav{display:flex;align-items:center;min-width:0}
       </div>
       
       
-      <div class="ev " data-cat="notification" data-notable="1" style="--r:3">
+      <div class="ev " data-cat="notification" data-notable="1" style="--r:8">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>notification</b> · sent
@@ -293,7 +369,7 @@ header nav{display:flex;align-items:center;min-width:0}
       </div>
       
       
-      <div class="ev " data-cat="finding" data-notable="1" style="--r:4">
+      <div class="ev " data-cat="finding" data-notable="1" style="--r:9">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>finding</b> · rescored
@@ -309,7 +385,7 @@ header nav{display:flex;align-items:center;min-width:0}
       </div>
       
       
-      <div class="ev " data-cat="notification" data-notable="1" style="--r:5">
+      <div class="ev " data-cat="notification" data-notable="1" style="--r:10">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>notification</b> · sent
@@ -325,7 +401,7 @@ header nav{display:flex;align-items:center;min-width:0}
       </div>
       
       
-      <div class="ev " data-cat="finding" data-notable="1" style="--r:6">
+      <div class="ev " data-cat="finding" data-notable="1" style="--r:11">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>finding</b> · rescored
@@ -341,7 +417,7 @@ header nav{display:flex;align-items:center;min-width:0}
       </div>
       
       
-      <div class="ev " data-cat="notification" data-notable="1" style="--r:7">
+      <div class="ev " data-cat="notification" data-notable="1" style="--r:12">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>notification</b> · sent
@@ -357,7 +433,7 @@ header nav{display:flex;align-items:center;min-width:0}
       </div>
       
       
-      <div class="ev " data-cat="finding" data-notable="1" style="--r:8">
+      <div class="ev " data-cat="finding" data-notable="1" style="--r:13">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>finding</b> · rescored
@@ -373,7 +449,7 @@ header nav{display:flex;align-items:center;min-width:0}
       </div>
       
       
-      <div class="ev " data-cat="notification" data-notable="1" style="--r:9">
+      <div class="ev " data-cat="notification" data-notable="1" style="--r:14">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>notification</b> · sent
@@ -389,7 +465,7 @@ header nav{display:flex;align-items:center;min-width:0}
       </div>
       
       
-      <div class="ev " data-cat="finding" data-notable="1" style="--r:10">
+      <div class="ev " data-cat="finding" data-notable="1" style="--r:15">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>finding</b> · rescored
@@ -405,7 +481,7 @@ header nav{display:flex;align-items:center;min-width:0}
       </div>
       
       
-      <div class="ev " data-cat="scan" data-notable="1" style="--r:11">
+      <div class="ev " data-cat="scan" data-notable="1" style="--r:16">
         <div class="av " title="admin">AD</div>
         <div>
           <div class="what"><span class="muted">admin</span> <b>scan</b> · started
@@ -421,7 +497,7 @@ header nav{display:flex;align-items:center;min-width:0}
       </div>
       
       
-      <div class="ev " data-cat="brand" data-notable="1" style="--r:12">
+      <div class="ev " data-cat="brand" data-notable="1" style="--r:17">
         <div class="av " title="admin">AD</div>
         <div>
           <div class="what"><span class="muted">admin</span> <b>brand</b> · ai prompts approved
@@ -437,7 +513,7 @@ header nav{display:flex;align-items:center;min-width:0}
       </div>
       
       
-      <div class="ev " data-cat="scan" data-notable="1" style="--r:13">
+      <div class="ev " data-cat="scan" data-notable="1" style="--r:18">
         <div class="av " title="admin">AD</div>
         <div>
           <div class="what"><span class="muted">admin</span> <b>scan</b> · started
@@ -453,7 +529,7 @@ header nav{display:flex;align-items:center;min-width:0}
       </div>
       
       
-      <div class="ev " data-cat="user" data-notable="0" style="--r:14;display:none">
+      <div class="ev " data-cat="user" data-notable="0" style="--r:19;display:none">
         <div class="av " title="admin">AD</div>
         <div>
           <div class="what"><span class="muted">admin</span> <b>user</b> · login <span class="pill" title="2 consecutive events, first 2026-10-18 07:29">×2</span>
@@ -465,7 +541,7 @@ header nav{display:flex;align-items:center;min-width:0}
       </div>
       
       
-      <div class="ev " data-cat="notification" data-notable="1" style="--r:15">
+      <div class="ev " data-cat="notification" data-notable="1" style="--r:20">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>notification</b> · sent
@@ -481,7 +557,7 @@ header nav{display:flex;align-items:center;min-width:0}
       </div>
       
       
-      <div class="ev " data-cat="finding" data-notable="1" style="--r:16">
+      <div class="ev " data-cat="finding" data-notable="1" style="--r:21">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>finding</b> · rescored
@@ -497,7 +573,7 @@ header nav{display:flex;align-items:center;min-width:0}
       </div>
       
       
-      <div class="ev " data-cat="notification" data-notable="1" style="--r:17">
+      <div class="ev " data-cat="notification" data-notable="1" style="--r:22">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>notification</b> · sent
@@ -513,7 +589,7 @@ header nav{display:flex;align-items:center;min-width:0}
       </div>
       
       
-      <div class="ev " data-cat="finding" data-notable="1" style="--r:18">
+      <div class="ev " data-cat="finding" data-notable="1" style="--r:23">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>finding</b> · rescored
@@ -529,7 +605,7 @@ header nav{display:flex;align-items:center;min-width:0}
       </div>
       
       
-      <div class="ev " data-cat="notification" data-notable="1" style="--r:19">
+      <div class="ev " data-cat="notification" data-notable="1" style="--r:24">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>notification</b> · sent
@@ -545,7 +621,7 @@ header nav{display:flex;align-items:center;min-width:0}
       </div>
       
       
-      <div class="ev " data-cat="finding" data-notable="1" style="--r:20">
+      <div class="ev " data-cat="finding" data-notable="1" style="--r:25">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>finding</b> · created
@@ -561,7 +637,7 @@ header nav{display:flex;align-items:center;min-width:0}
       </div>
       
       
-      <div class="ev " data-cat="notification" data-notable="1" style="--r:21">
+      <div class="ev " data-cat="notification" data-notable="1" style="--r:26">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>notification</b> · sent
@@ -577,7 +653,7 @@ header nav{display:flex;align-items:center;min-width:0}
       </div>
       
       
-      <div class="ev " data-cat="finding" data-notable="1" style="--r:22">
+      <div class="ev " data-cat="finding" data-notable="1" style="--r:27">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>finding</b> · created
@@ -593,7 +669,7 @@ header nav{display:flex;align-items:center;min-width:0}
       </div>
       
       
-      <div class="ev " data-cat="notification" data-notable="1" style="--r:23">
+      <div class="ev " data-cat="notification" data-notable="1" style="--r:28">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>notification</b> · sent
@@ -609,7 +685,7 @@ header nav{display:flex;align-items:center;min-width:0}
       </div>
       
       
-      <div class="ev " data-cat="finding" data-notable="1" style="--r:24">
+      <div class="ev " data-cat="finding" data-notable="1" style="--r:29">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>finding</b> · created
@@ -625,7 +701,7 @@ header nav{display:flex;align-items:center;min-width:0}
       </div>
       
       
-      <div class="ev " data-cat="scan" data-notable="1" style="--r:25">
+      <div class="ev " data-cat="scan" data-notable="1" style="--r:30">
         <div class="av " title="admin">AD</div>
         <div>
           <div class="what"><span class="muted">admin</span> <b>scan</b> · started
@@ -641,7 +717,7 @@ header nav{display:flex;align-items:center;min-width:0}
       </div>
       
       
-      <div class="ev " data-cat="brand" data-notable="1" style="--r:26">
+      <div class="ev " data-cat="brand" data-notable="1" style="--r:30">
         <div class="av " title="admin">AD</div>
         <div>
           <div class="what"><span class="muted">admin</span> <b>brand</b> · ai prompts approved
@@ -657,7 +733,7 @@ header nav{display:flex;align-items:center;min-width:0}
       </div>
       
       
-      <div class="ev " data-cat="scan" data-notable="1" style="--r:27">
+      <div class="ev " data-cat="scan" data-notable="1" style="--r:30">
         <div class="av " title="admin">AD</div>
         <div>
           <div class="what"><span class="muted">admin</span> <b>scan</b> · started
@@ -673,7 +749,7 @@ header nav{display:flex;align-items:center;min-width:0}
       </div>
       
       
-      <div class="ev " data-cat="brand" data-notable="1" style="--r:28">
+      <div class="ev " data-cat="brand" data-notable="1" style="--r:30">
         <div class="av " title="admin">AD</div>
         <div>
           <div class="what"><span class="muted">admin</span> <b>brand</b> · config updated
@@ -689,7 +765,7 @@ header nav{display:flex;align-items:center;min-width:0}
       </div>
       
       
-      <div class="ev " data-cat="user" data-notable="0" style="--r:29;display:none">
+      <div class="ev " data-cat="user" data-notable="0" style="--r:30;display:none">
         <div class="av " title="admin">AD</div>
         <div>
           <div class="what"><span class="muted">admin</span> <b>user</b> · login
@@ -3897,230 +3973,6 @@ header nav{display:flex;align-items:center;min-width:0}
       </div>
       
       
-      <div class="ev " data-cat="intel" data-notable="1" style="--r:30">
-        <div class="av sys" title="system">SYS</div>
-        <div>
-          <div class="what"><span class="muted">system</span> <b>intel</b> · started
-            
-            <span class="muted small">finding <a href="/ui/findings/63381bcd-78de-4d7a-b9e2-cd7b4a59a00d/" class="mono">coinpilot-bot.io ↗</a></span></div>
-          
-          
-          <div class="diff"><span class="new">force: no · light: yes · package: yes · auto: yes</span>
-            </div>
-          
-        </div>
-        <div class="when" data-rel="2026-10-14T09:46:35.509992+00:00" title="2026-10-14T09:46:35.509992+00:00">2026-10-14 09:46:35</div>
-      </div>
-      
-      
-      <div class="ev " data-cat="intel" data-notable="1" style="--r:30">
-        <div class="av sys" title="system">SYS</div>
-        <div>
-          <div class="what"><span class="muted">system</span> <b>intel</b> · started
-            
-            <span class="muted small">finding <a href="/ui/findings/2fdd823a-9baa-49d3-82b8-e1ce0bda2c44/" class="mono">coin-pilot.io ↗</a></span></div>
-          
-          
-          <div class="diff"><span class="new">force: no · light: yes · package: yes · auto: yes</span>
-            </div>
-          
-        </div>
-        <div class="when" data-rel="2026-10-14T09:46:35.509992+00:00" title="2026-10-14T09:46:35.509992+00:00">2026-10-14 09:46:35</div>
-      </div>
-      
-      
-      <div class="ev " data-cat="intel" data-notable="1" style="--r:30">
-        <div class="av sys" title="system">SYS</div>
-        <div>
-          <div class="what"><span class="muted">system</span> <b>intel</b> · started
-            
-            <span class="muted small">finding <a href="/ui/findings/6a5a2896-2bbf-4f37-b51a-6df99b0d48fe/" class="mono">cooinpilot.io ↗</a></span></div>
-          
-          
-          <div class="diff"><span class="new">force: no · light: yes · package: yes · auto: yes</span>
-            </div>
-          
-        </div>
-        <div class="when" data-rel="2026-10-14T09:46:35.509992+00:00" title="2026-10-14T09:46:35.509992+00:00">2026-10-14 09:46:35</div>
-      </div>
-      
-      
-      <div class="ev " data-cat="intel" data-notable="1" style="--r:30">
-        <div class="av sys" title="system">SYS</div>
-        <div>
-          <div class="what"><span class="muted">system</span> <b>intel</b> · started
-            
-            <span class="muted small">finding <a href="/ui/findings/4aa4555a-8a52-4bab-a6da-8427753c97d3/" class="mono">koinpilot.io ↗</a></span></div>
-          
-          
-          <div class="diff"><span class="new">force: no · light: yes · package: yes · auto: yes</span>
-            </div>
-          
-        </div>
-        <div class="when" data-rel="2026-10-14T09:46:35.507521+00:00" title="2026-10-14T09:46:35.507521+00:00">2026-10-14 09:46:35</div>
-      </div>
-      
-      
-      <div class="ev " data-cat="intel" data-notable="1" style="--r:30">
-        <div class="av sys" title="system">SYS</div>
-        <div>
-          <div class="what"><span class="muted">system</span> <b>intel</b> · started
-            
-            <span class="muted small">finding <a href="/ui/findings/fd5a72c5-532f-4614-a113-c4d848d99888/" class="mono">coinplot.io ↗</a></span></div>
-          
-          
-          <div class="diff"><span class="new">force: no · light: yes · package: yes · auto: yes</span>
-            </div>
-          
-        </div>
-        <div class="when" data-rel="2026-10-14T09:46:35.504521+00:00" title="2026-10-14T09:46:35.504521+00:00">2026-10-14 09:46:35</div>
-      </div>
-      
-      
-      <div class="ev " data-cat="intel" data-notable="1" style="--r:30">
-        <div class="av sys" title="system">SYS</div>
-        <div>
-          <div class="what"><span class="muted">system</span> <b>intel</b> · started
-            
-            <span class="muted small">finding <a href="/ui/findings/198e2d54-3884-47d5-a887-1d328cce77c2/" class="mono">coinpllot.io ↗</a></span></div>
-          
-          
-          <div class="diff"><span class="new">force: no · light: yes · package: yes · auto: yes</span>
-            </div>
-          
-        </div>
-        <div class="when" data-rel="2026-10-14T09:46:35.501521+00:00" title="2026-10-14T09:46:35.501521+00:00">2026-10-14 09:46:35</div>
-      </div>
-      
-      
-      <div class="ev " data-cat="intel" data-notable="1" style="--r:30">
-        <div class="av sys" title="system">SYS</div>
-        <div>
-          <div class="what"><span class="muted">system</span> <b>intel</b> · started
-            
-            <span class="muted small">finding <a href="/ui/findings/5da0ffd7-d892-4cfd-9f55-c87b543dfac7/" class="mono">coinpilott.io ↗</a></span></div>
-          
-          
-          <div class="diff"><span class="new">force: no · light: yes · package: yes · auto: yes</span>
-            </div>
-          
-        </div>
-        <div class="when" data-rel="2026-10-14T09:46:35.497522+00:00" title="2026-10-14T09:46:35.497522+00:00">2026-10-14 09:46:35</div>
-      </div>
-      
-      
-      <div class="ev " data-cat="campaign" data-notable="1" style="--r:30">
-        <div class="av sys" title="system">SYS</div>
-        <div>
-          <div class="what"><span class="muted">system</span> <b>campaign</b> · investigated
-            
-            <span class="muted small">campaign <a href="/ui/campaigns/efbd390f-8961-48f3-8889-4b26c49941da/" class="mono">CoinPilot campaign 5DA0FFD7 ↗</a></span></div>
-          
-          
-          <div class="diff"><span class="new">{"api_calls": 4, "budget_exhausted": null, "edges": 24, "included": 17, "iocs": 7, "nodes": 17}</span>
-            </div>
-          
-        </div>
-        <div class="when" data-rel="2026-10-14T09:46:35.324834+00:00" title="2026-10-14T09:46:35.324834+00:00">2026-10-14 09:46:35</div>
-      </div>
-      
-      
-      <div class="ev " data-cat="campaign" data-notable="1" style="--r:30">
-        <div class="av sys" title="system">SYS</div>
-        <div>
-          <div class="what"><span class="muted">system</span> <b>campaign</b> · investigated
-            
-            <span class="muted small">campaign <a href="/ui/campaigns/efbd390f-8961-48f3-8889-4b26c49941da/" class="mono">CoinPilot campaign 5DA0FFD7 ↗</a></span></div>
-          
-          
-          <div class="diff"><span class="new">{"api_calls": 17, "budget_exhausted": null, "edges": 32, "included": 17, "iocs": 7, "nodes": 18}</span>
-            </div>
-          
-        </div>
-        <div class="when" data-rel="2026-10-14T09:46:35.205878+00:00" title="2026-10-14T09:46:35.205878+00:00">2026-10-14 09:46:35</div>
-      </div>
-      
-      
-      <div class="ev " data-cat="campaign" data-notable="1" style="--r:30">
-        <div class="av sys" title="system">SYS</div>
-        <div>
-          <div class="what"><span class="muted">system</span> <b>campaign</b> · investigated
-            
-            <span class="muted small">campaign <a href="/ui/campaigns/efbd390f-8961-48f3-8889-4b26c49941da/" class="mono">CoinPilot campaign 5DA0FFD7 ↗</a></span></div>
-          
-          
-          <div class="diff"><span class="new">{"api_calls": 4, "budget_exhausted": null, "edges": 24, "included": 17, "iocs": 7, "nodes": 17}</span>
-            </div>
-          
-        </div>
-        <div class="when" data-rel="2026-10-14T09:46:31.994629+00:00" title="2026-10-14T09:46:31.994629+00:00">2026-10-14 09:46:31</div>
-      </div>
-      
-      
-      <div class="ev " data-cat="campaign" data-notable="1" style="--r:30">
-        <div class="av sys" title="system">SYS</div>
-        <div>
-          <div class="what"><span class="muted">system</span> <b>campaign</b> · investigated
-            
-            <span class="muted small">campaign <a href="/ui/campaigns/efbd390f-8961-48f3-8889-4b26c49941da/" class="mono">CoinPilot campaign 5DA0FFD7 ↗</a></span></div>
-          
-          
-          <div class="diff"><span class="new">{"api_calls": 4, "budget_exhausted": null, "edges": 24, "included": 17, "iocs": 7, "nodes": 17}</span>
-            </div>
-          
-        </div>
-        <div class="when" data-rel="2026-10-14T09:46:31.879989+00:00" title="2026-10-14T09:46:31.879989+00:00">2026-10-14 09:46:31</div>
-      </div>
-      
-      
-      <div class="ev " data-cat="campaign" data-notable="1" style="--r:30">
-        <div class="av sys" title="system">SYS</div>
-        <div>
-          <div class="what"><span class="muted">system</span> <b>campaign</b> · investigated
-            
-            <span class="muted small">campaign <a href="/ui/campaigns/efbd390f-8961-48f3-8889-4b26c49941da/" class="mono">CoinPilot campaign 5DA0FFD7 ↗</a></span></div>
-          
-          
-          <div class="diff"><span class="new">{"api_calls": 4, "budget_exhausted": null, "edges": 24, "included": 17, "iocs": 7, "nodes": 17}</span>
-            </div>
-          
-        </div>
-        <div class="when" data-rel="2026-10-14T09:46:31.775112+00:00" title="2026-10-14T09:46:31.775112+00:00">2026-10-14 09:46:31</div>
-      </div>
-      
-      
-      <div class="ev " data-cat="campaign" data-notable="1" style="--r:30">
-        <div class="av sys" title="system">SYS</div>
-        <div>
-          <div class="what"><span class="muted">system</span> <b>campaign</b> · investigated
-            
-            <span class="muted small">campaign <a href="/ui/campaigns/efbd390f-8961-48f3-8889-4b26c49941da/" class="mono">CoinPilot campaign 5DA0FFD7 ↗</a></span></div>
-          
-          
-          <div class="diff"><span class="new">{"api_calls": 17, "budget_exhausted": null, "edges": 32, "included": 17, "iocs": 7, "nodes": 18}</span>
-            </div>
-          
-        </div>
-        <div class="when" data-rel="2026-10-14T09:46:31.690650+00:00" title="2026-10-14T09:46:31.690650+00:00">2026-10-14 09:46:31</div>
-      </div>
-      
-      
-      <div class="ev " data-cat="campaign" data-notable="1" style="--r:30">
-        <div class="av sys" title="system">SYS</div>
-        <div>
-          <div class="what"><span class="muted">system</span> <b>campaign</b> · investigated
-            
-            <span class="muted small">campaign <a href="/ui/campaigns/efbd390f-8961-48f3-8889-4b26c49941da/" class="mono">CoinPilot campaign 5DA0FFD7 ↗</a></span></div>
-          
-          
-          <div class="diff"><span class="new">{"api_calls": 17, "budget_exhausted": null, "edges": 32, "included": 17, "iocs": 7, "nodes": 18}</span>
-            </div>
-          
-        </div>
-        <div class="when" data-rel="2026-10-14T09:46:28.542900+00:00" title="2026-10-14T09:46:28.542900+00:00">2026-10-14 09:46:28</div>
-      </div>
-      
-      
     </div>
     <div class="more"><button type="button" id="more" style="display:none">Show older events</button></div>
   </div>
@@ -4129,38 +3981,38 @@ header nav{display:flex;align-items:center;min-width:0}
       <h2>By category</h2>
       
       
-      <div class="hbar"><span>user</span><div class="bar"><i data-w="100"></i></div><b>63</b></div>
+      <div class="hbar"><span>user</span><div class="bar"><i data-w="100"></i></div><b>73</b></div>
       
-      <div class="hbar"><span>finding</span><div class="bar"><i data-w="87"></i></div><b>55</b></div>
+      <div class="hbar"><span>finding</span><div class="bar"><i data-w="77"></i></div><b>56</b></div>
       
-      <div class="hbar"><span>report</span><div class="bar"><i data-w="57"></i></div><b>36</b></div>
+      <div class="hbar"><span>report</span><div class="bar"><i data-w="49"></i></div><b>36</b></div>
       
-      <div class="hbar"><span>intel</span><div class="bar"><i data-w="57"></i></div><b>36</b></div>
+      <div class="hbar"><span>notification</span><div class="bar"><i data-w="42"></i></div><b>31</b></div>
       
-      <div class="hbar"><span>campaign</span><div class="bar"><i data-w="56"></i></div><b>35</b></div>
+      <div class="hbar"><span>intel</span><div class="bar"><i data-w="40"></i></div><b>29</b></div>
       
-      <div class="hbar"><span>notification</span><div class="bar"><i data-w="48"></i></div><b>30</b></div>
+      <div class="hbar"><span>campaign</span><div class="bar"><i data-w="38"></i></div><b>28</b></div>
       
-      <div class="hbar"><span>investigation</span><div class="bar"><i data-w="41"></i></div><b>26</b></div>
+      <div class="hbar"><span>investigation</span><div class="bar"><i data-w="36"></i></div><b>26</b></div>
       
-      <div class="hbar"><span>Brand use</span><div class="bar"><i data-w="16"></i></div><b>10</b></div>
+      <div class="hbar"><span>Brand use</span><div class="bar"><i data-w="15"></i></div><b>11</b></div>
       
     </div>
     <div class="panel" style="margin-top:14px">
       <h2>Activity · 14 days</h2>
-      <svg class="spark" data-spark='{"series": [{"color": "#35C7F2", "values": [0, 0, 0, 0, 0, 0, 0, 0, 0, 198, 0, 0, 0, 47]}]}'></svg>
+      <svg class="spark" data-spark='{"series": [{"color": "#35C7F2", "values": [0, 0, 0, 0, 0, 0, 0, 0, 0, 184, 0, 0, 0, 52]}]}'></svg>
     </div>
     <div class="panel" style="margin-top:14px">
       <h2>Most active</h2>
       
       <div style="display:grid;grid-template-columns:1fr 40px;gap:8px;align-items:center;margin:8px 0">
         <div><div class="small mono">system</div><div class="bar" style="height:6px;margin-top:3px"><i data-w="100"></i></div></div>
-        <div class="mono small right">167</div>
+        <div class="mono small right">155</div>
       </div>
       
       <div style="display:grid;grid-template-columns:1fr 40px;gap:8px;align-items:center;margin:8px 0">
-        <div><div class="small mono">admin</div><div class="bar" style="height:6px;margin-top:3px"><i data-w="80"></i></div></div>
-        <div class="mono small right">133</div>
+        <div><div class="small mono">admin</div><div class="bar" style="height:6px;margin-top:3px"><i data-w="94"></i></div></div>
+        <div class="mono small right">145</div>
       </div>
       
     </div>
