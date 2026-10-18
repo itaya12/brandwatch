@@ -35,11 +35,17 @@ header{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:24px
 header .logo{font-family:var(--mono);font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);display:flex;align-items:center;gap:8px}
 header .logo::before{content:"";width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 10px var(--accent);animation:beat 2.2s ease-in-out infinite}
 @keyframes beat{0%,100%{opacity:.45;transform:scale(.85)}50%{opacity:1;transform:scale(1.1)}}
-header nav a{position:relative;font-family:var(--mono);font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-right:16px;padding:4px 0}
+header nav a{position:relative;font-family:var(--mono);font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-right:14px;padding:4px 0;white-space:nowrap}
+@media (min-width:901px) and (max-width:1500px){header{gap:14px}header nav a{font-size:11px;letter-spacing:.04em;margin-right:11px}header .hsearch input{width:130px}header .who .email{display:none}}
 header nav a::after{content:"";position:absolute;left:0;right:0;bottom:-2px;height:2px;background:var(--accent);transform:scaleX(0);transform-origin:left;transition:transform .3s}
 header nav a.active,header nav a:hover{color:var(--text)}header nav a.active::after,header nav a:hover::after{transform:scaleX(1)}
 header nav a.active::after{box-shadow:0 0 8px var(--accent)}
-header .who{margin-left:auto;color:var(--muted);font-size:12px}
+header .who{color:var(--muted);font-size:12px;white-space:nowrap}
+header .hsearch{margin-left:auto}header .hsearch input{width:170px;padding:5px 10px;font-size:12.5px;border-radius:999px;background:#0b1220}
+header .hsearch input:focus{width:240px}
+header nav .nc{display:inline-block;min-width:18px;padding:0 5px;margin-left:4px;border-radius:999px;background:rgba(53,199,242,.18);color:var(--accent2);font-size:10.5px;text-align:center;letter-spacing:0}
+header nav .nc.warn{background:rgba(255,77,77,.16);color:var(--crit)}
+@media (max-width:900px){header .hsearch{display:none}}
 main{position:relative;z-index:1;padding:20px;max-width:1440px;margin:0 auto}
 h1{font-family:var(--display);font-size:26px;letter-spacing:.04em;margin:0 0 14px;font-weight:700;
   background:linear-gradient(90deg,#E6EDF5 0%,#E6EDF5 55%,var(--accent2) 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
@@ -66,7 +72,7 @@ tr:hover td{background:rgba(53,199,242,.05)}
 .sev-low{background:rgba(46,204,113,.15);color:var(--low);border:1px solid var(--low)}
 .state{background:var(--panel2);color:var(--muted);border:1px solid var(--border)}
 .st-open,.st-new{color:var(--text)}.st-confirmed,.st-flagged{color:var(--crit);border-color:rgba(255,77,77,.5)}
-.st-dismissed{color:#5a6678}.st-watching{color:var(--accent);border-color:rgba(53,199,242,.4)}.st-long_watch{color:var(--muted)}
+.st-dismissed{color:var(--muted)}.st-watching{color:var(--accent);border-color:rgba(53,199,242,.4)}.st-long_watch{color:var(--muted)}
 .pill{background:var(--panel2);border:1px solid var(--border);border-radius:6px;padding:1px 6px;font-family:var(--mono);font-size:11px;color:var(--text);white-space:nowrap}
 /* signal pills: one neutral style for every group (the group is in the tooltip and the Explain table) */
 .pill[class*="g-"]{border-color:var(--border);color:#c9d3df}
@@ -75,6 +81,18 @@ button:hover,.btn:hover{border-color:var(--accent);box-shadow:0 0 12px rgba(53,1
 button.danger{border-color:var(--crit);color:var(--crit)}button.ok{border-color:var(--low);color:var(--low)}
 input,select,textarea{background:#0b1220;color:var(--text);border:1px solid var(--border);border-radius:6px;padding:7px 9px;font:inherit;width:100%;transition:border-color .2s,box-shadow .2s}
 input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(53,199,242,.15)}
+/* a paragraph that may be Hebrew or Arabic (a brand name, an ad, a reason) takes its direction from its own first letter */
+.lead,.summary,.story,.say,.reason,.ev .diff{unicode-bidi:plaintext}
+button.chip{font:inherit;font-family:var(--mono);font-size:11px;box-shadow:none}
+/* on a phone a wide table (class "rwd") becomes one card per row; each cell says what it is (from the header) */
+@media (max-width:700px){
+  table.rwd thead{display:none}
+  table.rwd,table.rwd tbody,table.rwd tr,table.rwd td{display:block;width:100%}
+  table.rwd tr{border:1px solid var(--border);border-radius:10px;margin:0 0 10px;padding:6px 10px;background:var(--panel2)}
+  table.rwd td{border:0;padding:4px 0;min-height:0}
+  table.rwd td[data-label]:not([data-label=""])::before{content:attr(data-label);display:block;font:600 10px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:2px}
+  table.rwd td:empty{display:none}
+}
 /* keyboard users see where they are; mouse clicks do not get the ring */
 :focus-visible{outline:2px solid var(--accent2);outline-offset:2px;border-radius:4px}
 a:focus-visible,button:focus-visible,.btn:focus-visible{box-shadow:0 0 0 3px rgba(53,199,242,.25)}
@@ -146,7 +164,7 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
 .grid>*,.cols>*{min-width:0}
 .tw{overflow-x:auto;-webkit-overflow-scrolling:touch;max-width:100%;overscroll-behavior-x:contain}
 .tw>table{min-width:100%}
-header nav{display:flex;align-items:center;min-width:0}
+header nav{display:flex;align-items:center;min-width:0;overflow-x:auto;scrollbar-width:none}  /* a narrow desktop scrolls the bar, never overlaps the search */
 @media (max-width:1100px){.grid.four{grid-template-columns:1fr 1fr}}
 @media (max-width:900px){
   .grid,.grid.two,.grid.three,.grid.four,.cols{grid-template-columns:1fr!important}
@@ -194,19 +212,19 @@ header nav{display:flex;align-items:center;min-width:0}
 <header>
   <a class="logo" href="/ui/dashboard/">BrandWatch</a>
   
-  <nav>
+  <nav aria-label="Main">
     <a href="/ui/dashboard/" class="">Dashboard</a>
-    <a href="/ui/how-it-works/" class="active">How it works</a>
-    <a href="/ui/brands/" class="">Brands &amp; Scans</a>
-    <a href="/ui/findings/" class="">Findings</a>
+    <a href="/ui/findings/" class="">Findings <span class="nc" title="9 awaiting a verdict">9</span></a>
     <a href="/ui/candidates/" class="">Watchlist</a>
     <a href="/ui/campaigns/" class="">Attack infrastructure</a>
-    <a href="/ui/takedowns/" class="">Takedowns</a>
+    <a href="/ui/takedowns/" class="">Takedowns <span class="nc warn" title="38 confirmed site(s) whose takedown was not sent">38</span></a>
+    <a href="/ui/brands/" class="">Brands &amp; Scans</a>
     <a href="/ui/activity/" class="">Activity</a>
     <a href="/ui/settings/" class="">Settings</a>
-    <a href="/docs" target="_blank">API</a>
+    <a href="/ui/how-it-works/" class="active">How it works</a>
   </nav>
-  <span class="who"><span class="email">admin · </span>admin · <a href="/ui/logout">logout</a></span>
+  <form method="get" action="/ui/search" class="hsearch" role="search"><input name="q" id="hsearch" placeholder="Search · /" aria-label="Search a domain, an IP, a takedown reference" autocomplete="off" maxlength="120"></form>
+  <span class="who"><span class="email">admin · </span>admin · <a href="/docs" target="_blank" title="the REST API reference">API</a> · <a href="/ui/logout">logout</a></span>
   
 </header>
 <main id="main">
@@ -1051,7 +1069,7 @@ header nav{display:flex;align-items:center;min-width:0}
 <div class="sx-proof" aria-label="Numbers read from the code">
   <a href="#about"><b>50</b> signals in 7 groups</a>
   <a href="#about"><b>26</b> data providers</a>
-  <a href="#about"><b>622</b> automated tests</a>
+  <a href="#about"><b>647</b> automated tests</a>
   <a href="#ch-takedown"><b>26</b> report portals</a>
   <a href="#about"><b>$0</b> demo · no API keys</a>
 </div>
@@ -1329,9 +1347,9 @@ First observed    : 2026-10-12T06:41:46.604012</div>
     <div class="kpi vi rv" style="--t:160"><div class="v" data-to="26">0</div><div class="l">providers in 15 fallback chains</div></div>
     <div class="kpi ok rv" style="--t:240"><div class="v" data-to="65">0</div><div class="l">recorded golden scenarios</div></div>
     <div class="kpi rv" style="--t:320"><div class="v" data-to="10">0</div><div class="l">DB-enforced immutable tables</div></div>
-    <div class="kpi mg rv" style="--t:400"><div class="v" data-to="622">0</div><div class="l">automated tests in 67 files</div></div>
-    <div class="kpi rv" style="--t:480"><div class="v" data-to="95">0</div><div class="l">REST API operations (<a href="/docs" target="_blank">OpenAPI</a>)</div></div>
-    <div class="kpi rv" style="--t:560"><div class="v" data-to="15">0</div><div class="l">Alembic migrations · SQLite &amp; PostgreSQL</div></div>
+    <div class="kpi mg rv" style="--t:400"><div class="v" data-to="647">0</div><div class="l">automated tests in 71 files</div></div>
+    <div class="kpi rv" style="--t:480"><div class="v" data-to="97">0</div><div class="l">REST API operations (<a href="/docs" target="_blank">OpenAPI</a>)</div></div>
+    <div class="kpi rv" style="--t:560"><div class="v" data-to="16">0</div><div class="l">Alembic migrations · SQLite &amp; PostgreSQL</div></div>
   </div>
   <p class="small muted" style="margin-top:8px">Stack: FastAPI · SQLAlchemy 2 · Alembic · Jinja2 · Playwright (Chromium) · httpx · dnspython · cryptography. Scoring version <span class="mono">v7-f1ba3ebf</span>. CI: lint · test-sqlite · test-postgres.</p>
 </div>
@@ -1755,7 +1773,7 @@ First observed    : 2026-10-12T06:41:46.604012</div>
           <p>Every query is workspace-scoped; RBAC (admin / analyst / viewer) is identical in the UI and the API.</p>
           <div class="mod">keys.py · config/secrets.py · tenancy.py · api/auth.py</div></div>
         <div class="card" id="tests"><h3>Tests &amp; CI</h3>
-          <p>622 test functions in 67 files: schema and trigger enforcement, SSRF cases, provider resilience, every UI page, the golden gate. CI runs lint, test-sqlite, test-postgres, including migrations up and down on PostgreSQL 16.</p>
+          <p>647 test functions in 71 files: schema and trigger enforcement, SSRF cases, provider resilience, every UI page, the golden gate. CI runs lint, test-sqlite, test-postgres, including migrations up and down on PostgreSQL 16.</p>
           <div class="mod">tests/ · .github/workflows/ci.yml</div></div>
       </div>
       <h2>Trust &amp; safety</h2>
@@ -1772,7 +1790,7 @@ First observed    : 2026-10-12T06:41:46.604012</div>
     <summary><b>Glossary</b><span>· every “?” on the site links here</span></summary>
     <div class="in">
       <dl class="gl">
-        <dt id="g-baseline">Baseline</dt><dd>The fingerprint of the brand&#39;s real site — favicon hash, screenshot hash, colours, login pages, keywords. Every suspect is compared against it.</dd><dt id="g-candidate">Candidate / watched domain</dt><dd>Any domain discovered for a brand. It lives on the Watchlist until it scores high enough to become a finding, expires, or is dismissed.</dd><dt id="g-finding">Finding</dt><dd>A candidate that scored Medium or higher. An analyst confirms it as phishing or dismisses it; nothing happens automatically.</dd><dt id="g-signal">Signal</dt><dd>One piece of evidence (e.g. &#39;identical favicon&#39;). 50 signals in 7 groups; each adds points.</dd><dt id="g-group-cap">Group cap</dt><dd>Each group can add at most its cap, so ten weak visual hints never outweigh one strong behaviour signal.</dd><dt id="g-risk">Risk score</dt><dd>How dangerous the site is, 0–100. Medium ≥ 25, High ≥ 50, Critical ≥ 75. Combination rules can raise the severity.</dd><dt id="g-confidence">Confidence</dt><dd>How complete and consistent the evidence is (breadth, completeness, provider agreement) — separate from risk.</dd><dt id="g-cloaking">Cloaking</dt><dd>A kit that shows a harmless decoy to scanners and the phishing page to victims. BrandWatch fetches as a bot, as a victim link, from a search referer and from a home IP.</dd><dt id="g-tracks">Detection track</dt><dd>Light, Standard or Deep: which discovery streams run, how many sites are visited, how often the watchlist is re-checked.</dd><dt id="g-attack-infrastructure">Attack infrastructure</dt><dd>The map built from one confirmed site: every server, certificate and sister domain it shares, triaged so reverse-IP noise is excluded. The pivot is budgeted (at most 2 hops, 100 nodes, a fixed number of API calls) and those limits are frozen in code.</dd><dt id="g-advisory">Advisory opinions</dt><dd>An AI model and a trained classifier each give a second opinion on Medium+ findings. The page text is passed as untrusted input and the answer must match a strict JSON schema. Shown for context only: the deterministic score never depends on them.</dd><dt id="g-ioc">IOC</dt><dd>Indicator of compromise: a domain, IP, certificate hash or tracking ID a firewall / SIEM can block. Exported as CSV, JSON or STIX 2.1.</dd><dt id="g-takedown">Takedown</dt><dd>The request to remove a site. Draft → review → approved → sent → taken down; sent to the registrar, the hosting provider and the CDN, and reported to blocklists.</dd><dt id="g-evidence">Evidence</dt><dd>Every screenshot, HTML page, DNS / WHOIS answer and reputation lookup, stored append-only with its SHA-256 — the database rejects edits and deletes.</dd><dt id="g-demo">Demo mode</dt><dd>Recorded scenarios replace every external service: the full pipeline runs deterministically, offline, at $0.</dd>
+        <dt id="g-baseline">Baseline</dt><dd>The fingerprint of the brand&#39;s real site — favicon hash, screenshot hash, colours, login pages, keywords. Every suspect is compared against it.</dd><dt id="g-candidate">Candidate / watched domain</dt><dd>Any domain discovered for a brand. It lives on the Watchlist until it scores high enough to become a finding, expires, or is dismissed.</dd><dt id="g-finding">Finding</dt><dd>A candidate that scored Medium or higher. An analyst confirms it as phishing or dismisses it; nothing happens automatically.</dd><dt id="g-signal">Signal</dt><dd>One piece of evidence (e.g. &#39;identical favicon&#39;). 50 signals in 7 groups; each adds points.</dd><dt id="g-group-cap">Group cap</dt><dd>Each group can add at most its cap, so ten weak visual hints never outweigh one strong behaviour signal.</dd><dt id="g-risk">Risk score</dt><dd>How dangerous the site is, 0–100. Medium ≥ 25, High ≥ 50, Critical ≥ 75. Combination rules can raise the severity.</dd><dt id="g-confidence">Confidence</dt><dd>How complete and consistent the evidence is (breadth, completeness, provider agreement) — separate from risk.</dd><dt id="g-cloaking">Cloaking</dt><dd>A kit that shows a harmless decoy to scanners and the phishing page to victims. BrandWatch fetches as a bot, as a victim link, from a search referer and from a home IP.</dd><dt id="g-tracks">Detection track</dt><dd>Light, Standard or Deep: which discovery streams run, how many sites are visited, how often the watchlist is re-checked.</dd><dt id="g-attack-infrastructure">Attack infrastructure</dt><dd>The map built from one confirmed site: every server, certificate and sister domain it shares, triaged so reverse-IP noise is excluded. The pivot is budgeted (at most 2 hops, 100 nodes, a fixed number of API calls) and those limits are frozen in code.</dd><dt id="g-advisory">Advisory opinions</dt><dd>An AI model and a trained classifier each give a second opinion on Medium+ findings. The page text is passed as untrusted input and the answer must match a strict JSON schema. Shown for context only: the deterministic score never depends on them.</dd><dt id="g-ioc">IOC</dt><dd>Indicator of compromise: a domain, IP, certificate hash or tracking ID a firewall / SIEM can block. Exported as CSV, JSON or STIX 2.1.</dd><dt id="g-takedown">Takedown</dt><dd>The request to remove a site. Draft → review → approved → sent → taken down; sent to the registrar, the hosting provider and the CDN, and reported to blocklists.</dd><dt id="g-evidence">Evidence</dt><dd>Every screenshot, HTML page, DNS / WHOIS answer and reputation lookup, stored append-only with its SHA-256 — the database rejects edits and deletes.</dd><dt id="g-stream">Discovery stream</dt><dd>One way of finding look-alikes: look-alike names (dnstwist), new certificates (CT), newly registered domains (NRD), Google search, the urlscan.io archive, social media, ads. A track decides which streams run.</dd><dt id="g-dnstwist">dnstwist</dt><dd>Generates the names a phisher would register — typos, swapped letters, other TLDs, look-alike Unicode — and checks in DNS which of them exist.</dd><dt id="g-ct">Certificate transparency (CT)</dt><dd>Every HTTPS certificate is published in public logs within minutes; a new certificate carrying the brand&#39;s name is often the first sign of a kit.</dd><dt id="g-nrd">Newly registered domains (NRD)</dt><dd>Yesterday&#39;s list of every newly registered domain (about 70,000 a day), searched for the brand&#39;s name.</dd><dt id="g-urlscan">urlscan.io</dt><dd>A public archive of scanned web pages: past scans that mention the brand, and a screenshot of a site that blocks BrandWatch.</dd><dt id="g-residential">Home / mobile IP probe</dt><dd>A visit through a home (residential) or 4G/5G address, for kits that show the real page only to people, never to a datacentre. Needs a proxy and a GB budget.</dd><dt id="g-stix">STIX 2.1</dt><dd>The standard file format security tools exchange threat indicators in; the infrastructure map&#39;s indicators can be exported as STIX for a SIEM or a firewall.</dd><dt id="g-golden">Golden dataset</dt><dd>Recorded, hand-labelled scenarios (phishing, cloaked kits, scam shops, legitimate sites) the real pipeline is run on in every build; precision and recall are measured on them.</dd><dt id="g-tld-set">TLD set</dt><dd>Which top-level domains dnstwist tries: common (.com .net …), popular (about 100) or all (about 1,280).</dd><dt id="g-vertical">Vertical</dt><dd>The kind of business (&#34;footwear and apparel&#34;, &#34;crypto exchange&#34;) — read by the AI from the official site, used to pick the right Google queries.</dd><dt id="g-kind">Who sells it</dt><dd>Only the brand (a service, an app, a bank) or other shops too: then scam shops advertising its products are hunted as well.</dd><dt id="g-demo">Demo mode</dt><dd>Recorded scenarios replace every external service: the full pipeline runs deterministically, offline, at $0.</dd>
       </dl>
     </div>
   </details>
@@ -1958,6 +1976,16 @@ First observed    : 2026-10-12T06:41:46.604012</div>
     setTimeout(() => { if (e.defaultPrevented) return; f.__sentAt = Date.now();
       if (f.hasAttribute('data-busy') && b && b.tagName === 'BUTTON') { b.disabled = true; b.dataset.was = b.textContent; b.textContent = f.getAttribute('data-busy') || 'Working…';
         setTimeout(() => { b.disabled = false; b.textContent = b.dataset.was; }, 30000); } }, 0); });
+  // "/" opens the search from any page (a page with its own search box — findings, watchlist — takes it first)
+  document.addEventListener('keydown', e => {
+    if (e.key !== '/' || e.defaultPrevented || e.ctrlKey || e.metaKey || e.altKey) return;
+    const a = document.activeElement; if (a && (/INPUT|SELECT|TEXTAREA/.test(a.tagName) || a.isContentEditable)) return;
+    const box = document.getElementById('hsearch'); if (!box || !box.offsetParent) { location.href = '/ui/search'; return; }
+    e.preventDefault(); box.focus();
+  });
+  // phones: a "rwd" table shows one card per row, each cell labelled with its column (see the CSS)
+  document.querySelectorAll('table.rwd').forEach(t => { const heads = [...t.querySelectorAll('thead th')].map(th => th.textContent.trim());
+    t.querySelectorAll('tbody tr').forEach(tr => [...tr.children].forEach((td, i) => { if (!td.hasAttribute('data-label')) td.dataset.label = heads[i] || ''; })); });
   // the sticky header's height, for anything that sticks under it
   const hdr = document.querySelector('header'); const setH = () => document.documentElement.style.setProperty('--hdr', (hdr ? hdr.offsetHeight : 56) + 'px');
   setH(); window.addEventListener('resize', setH);
@@ -1977,7 +2005,9 @@ First observed    : 2026-10-12T06:41:46.604012</div>
   document.querySelectorAll('main table').forEach(t => { if (t.parentElement.classList.contains('tw')) return;
     const w = document.createElement('div'); w.className = 'tw'; t.parentNode.insertBefore(w, t); w.appendChild(t); });
   // keep the active tab visible in the scrollable mobile nav
-  const act = document.querySelector('header nav a.active'); if (act && act.scrollIntoView) act.scrollIntoView({block: 'nearest', inline: 'center'});
+  // (by scrolling the bar itself: scrollIntoView would also move where the first Tab press starts, past the skip links)
+  const act = document.querySelector('header nav a.active'), bar = act && act.parentElement;
+  if (act && bar.scrollWidth > bar.clientWidth) bar.scrollLeft = act.offsetLeft - (bar.clientWidth - act.offsetWidth) / 2;
   // stagger entrances
   document.querySelectorAll('.kpis').forEach(g => [...g.children].forEach((el, i) => el.style.setProperty('--i', i)));
   document.querySelectorAll('main .panel').forEach((el, i) => el.style.setProperty('--i', Math.min(i, 12)));
@@ -2133,6 +2163,9 @@ First observed    : 2026-10-12T06:41:46.604012</div>
   document.addEventListener('keydown', ev => {
     if (modal.hidden) return;
     if (ev.key === 'Escape') { ev.preventDefault(); close(false); }
+    else if (ev.key === 'Tab') {  // the focus stays in the dialog
+      const f = [inp, cancel, ok].filter(x => !x.hidden); const i = f.indexOf(document.activeElement);
+      ev.preventDefault(); f[(i + (ev.shiftKey ? -1 : 1) + f.length) % f.length].focus(); }
     else if (ev.key === 'Enter' && document.activeElement !== cancel) { ev.preventDefault(); ok.click(); }
   });
   // forms and buttons that ask first

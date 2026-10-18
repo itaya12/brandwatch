@@ -33,11 +33,17 @@ header{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:24px
 header .logo{font-family:var(--mono);font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);display:flex;align-items:center;gap:8px}
 header .logo::before{content:"";width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 10px var(--accent);animation:beat 2.2s ease-in-out infinite}
 @keyframes beat{0%,100%{opacity:.45;transform:scale(.85)}50%{opacity:1;transform:scale(1.1)}}
-header nav a{position:relative;font-family:var(--mono);font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-right:16px;padding:4px 0}
+header nav a{position:relative;font-family:var(--mono);font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-right:14px;padding:4px 0;white-space:nowrap}
+@media (min-width:901px) and (max-width:1500px){header{gap:14px}header nav a{font-size:11px;letter-spacing:.04em;margin-right:11px}header .hsearch input{width:130px}header .who .email{display:none}}
 header nav a::after{content:"";position:absolute;left:0;right:0;bottom:-2px;height:2px;background:var(--accent);transform:scaleX(0);transform-origin:left;transition:transform .3s}
 header nav a.active,header nav a:hover{color:var(--text)}header nav a.active::after,header nav a:hover::after{transform:scaleX(1)}
 header nav a.active::after{box-shadow:0 0 8px var(--accent)}
-header .who{margin-left:auto;color:var(--muted);font-size:12px}
+header .who{color:var(--muted);font-size:12px;white-space:nowrap}
+header .hsearch{margin-left:auto}header .hsearch input{width:170px;padding:5px 10px;font-size:12.5px;border-radius:999px;background:#0b1220}
+header .hsearch input:focus{width:240px}
+header nav .nc{display:inline-block;min-width:18px;padding:0 5px;margin-left:4px;border-radius:999px;background:rgba(53,199,242,.18);color:var(--accent2);font-size:10.5px;text-align:center;letter-spacing:0}
+header nav .nc.warn{background:rgba(255,77,77,.16);color:var(--crit)}
+@media (max-width:900px){header .hsearch{display:none}}
 main{position:relative;z-index:1;padding:20px;max-width:1440px;margin:0 auto}
 h1{font-family:var(--display);font-size:26px;letter-spacing:.04em;margin:0 0 14px;font-weight:700;
   background:linear-gradient(90deg,#E6EDF5 0%,#E6EDF5 55%,var(--accent2) 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
@@ -64,7 +70,7 @@ tr:hover td{background:rgba(53,199,242,.05)}
 .sev-low{background:rgba(46,204,113,.15);color:var(--low);border:1px solid var(--low)}
 .state{background:var(--panel2);color:var(--muted);border:1px solid var(--border)}
 .st-open,.st-new{color:var(--text)}.st-confirmed,.st-flagged{color:var(--crit);border-color:rgba(255,77,77,.5)}
-.st-dismissed{color:#5a6678}.st-watching{color:var(--accent);border-color:rgba(53,199,242,.4)}.st-long_watch{color:var(--muted)}
+.st-dismissed{color:var(--muted)}.st-watching{color:var(--accent);border-color:rgba(53,199,242,.4)}.st-long_watch{color:var(--muted)}
 .pill{background:var(--panel2);border:1px solid var(--border);border-radius:6px;padding:1px 6px;font-family:var(--mono);font-size:11px;color:var(--text);white-space:nowrap}
 /* signal pills: one neutral style for every group (the group is in the tooltip and the Explain table) */
 .pill[class*="g-"]{border-color:var(--border);color:#c9d3df}
@@ -73,6 +79,18 @@ button:hover,.btn:hover{border-color:var(--accent);box-shadow:0 0 12px rgba(53,1
 button.danger{border-color:var(--crit);color:var(--crit)}button.ok{border-color:var(--low);color:var(--low)}
 input,select,textarea{background:#0b1220;color:var(--text);border:1px solid var(--border);border-radius:6px;padding:7px 9px;font:inherit;width:100%;transition:border-color .2s,box-shadow .2s}
 input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(53,199,242,.15)}
+/* a paragraph that may be Hebrew or Arabic (a brand name, an ad, a reason) takes its direction from its own first letter */
+.lead,.summary,.story,.say,.reason,.ev .diff{unicode-bidi:plaintext}
+button.chip{font:inherit;font-family:var(--mono);font-size:11px;box-shadow:none}
+/* on a phone a wide table (class "rwd") becomes one card per row; each cell says what it is (from the header) */
+@media (max-width:700px){
+  table.rwd thead{display:none}
+  table.rwd,table.rwd tbody,table.rwd tr,table.rwd td{display:block;width:100%}
+  table.rwd tr{border:1px solid var(--border);border-radius:10px;margin:0 0 10px;padding:6px 10px;background:var(--panel2)}
+  table.rwd td{border:0;padding:4px 0;min-height:0}
+  table.rwd td[data-label]:not([data-label=""])::before{content:attr(data-label);display:block;font:600 10px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:2px}
+  table.rwd td:empty{display:none}
+}
 /* keyboard users see where they are; mouse clicks do not get the ring */
 :focus-visible{outline:2px solid var(--accent2);outline-offset:2px;border-radius:4px}
 a:focus-visible,button:focus-visible,.btn:focus-visible{box-shadow:0 0 0 3px rgba(53,199,242,.25)}
@@ -144,7 +162,7 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
 .grid>*,.cols>*{min-width:0}
 .tw{overflow-x:auto;-webkit-overflow-scrolling:touch;max-width:100%;overscroll-behavior-x:contain}
 .tw>table{min-width:100%}
-header nav{display:flex;align-items:center;min-width:0}
+header nav{display:flex;align-items:center;min-width:0;overflow-x:auto;scrollbar-width:none}  /* a narrow desktop scrolls the bar, never overlaps the search */
 @media (max-width:1100px){.grid.four{grid-template-columns:1fr 1fr}}
 @media (max-width:900px){
   .grid,.grid.two,.grid.three,.grid.four,.cols{grid-template-columns:1fr!important}
@@ -192,19 +210,19 @@ header nav{display:flex;align-items:center;min-width:0}
 <header>
   <a class="logo" href="/ui/dashboard/">BrandWatch</a>
   
-  <nav>
+  <nav aria-label="Main">
     <a href="/ui/dashboard/" class="">Dashboard</a>
-    <a href="/ui/how-it-works/" class="">How it works</a>
-    <a href="/ui/brands/" class="">Brands &amp; Scans</a>
-    <a href="/ui/findings/" class="active">Findings</a>
+    <a href="/ui/findings/" class="active">Findings <span class="nc" title="9 awaiting a verdict">9</span></a>
     <a href="/ui/candidates/" class="">Watchlist</a>
     <a href="/ui/campaigns/" class="">Attack infrastructure</a>
-    <a href="/ui/takedowns/" class="">Takedowns</a>
+    <a href="/ui/takedowns/" class="">Takedowns <span class="nc warn" title="38 confirmed site(s) whose takedown was not sent">38</span></a>
+    <a href="/ui/brands/" class="">Brands &amp; Scans</a>
     <a href="/ui/activity/" class="">Activity</a>
     <a href="/ui/settings/" class="">Settings</a>
-    <a href="/docs" target="_blank">API</a>
+    <a href="/ui/how-it-works/" class="">How it works</a>
   </nav>
-  <span class="who"><span class="email">admin · </span>admin · <a href="/ui/logout">logout</a></span>
+  <form method="get" action="/ui/search" class="hsearch" role="search"><input name="q" id="hsearch" placeholder="Search · /" aria-label="Search a domain, an IP, a takedown reference" autocomplete="off" maxlength="120"></form>
+  <span class="who"><span class="email">admin · </span>admin · <a href="/docs" target="_blank" title="the REST API reference">API</a> · <a href="/ui/logout">logout</a></span>
   
 </header>
 <main id="main">
@@ -291,6 +309,7 @@ header nav{display:flex;align-items:center;min-width:0}
   <a class="" href="?state=open&since=24h&amp;brand_id=eb019060-41b6-4160-871c-14094ad558a4"><span class="v" data-count="4">0</span><span class="l">new in 24h</span></a>
   <a class="ok on" href="?state=confirmed&amp;brand_id=eb019060-41b6-4160-871c-14094ad558a4"><span class="v" data-count="28">0</span><span class="l">confirmed</span></a>
   <a class="" href="?state=dismissed&amp;brand_id=eb019060-41b6-4160-871c-14094ad558a4"><span class="v" data-count="2">0</span><span class="l">dismissed</span></a>
+  
 </div>
 
 <div class="ftable-wrap">
@@ -304,7 +323,8 @@ header nav{display:flex;align-items:center;min-width:0}
     <form method="get" action="/ui/findings/" class="filters" id="filters">
       <input type="hidden" name="brand_id" value="eb019060-41b6-4160-871c-14094ad558a4">
       <div class="wide"><label for="q">Search host</label><input id="q" name="q" value="" placeholder="part of a host name, e.g. login" autocomplete="off" maxlength="120"></div>
-      <div><label for="f-state">State</label><select id="f-state" name="state"><option value="">all</option><option value="open" >awaiting verdict</option><option value="confirmed" selected>confirmed phishing</option><option value="dismissed" >dismissed</option></select></div>
+      <div><label for="f-state">State</label><select id="f-state" name="state"><option value="">all</option><option value="open" >awaiting verdict</option><option value="confirmed" selected>confirmed phishing</option><option value="dismissed" >dismissed</option><option value="snoozed" >snoozed</option></select></div>
+      
       <div><label for="f-sev">Severity</label><select id="f-sev" name="severity"><option value="">all</option><option value="low" >low</option><option value="medium" >medium</option><option value="high" >high</option><option value="critical" >critical</option></select></div>
       <div><label for="f-kind">Kind</label><select id="f-kind" name="kind"><option value="">all</option><option value="phishing" >phishing</option><option value="shop" >suspicious shop</option><option value="social" >fake social account</option><option value="ai_answer" >AI answer</option></select></div>
       <div><label for="f-since">Found</label><select id="f-since" name="since"><option value="">any time</option><option value="24h" >last 24 hours</option><option value="7d" >last 7 days</option><option value="visit" >since my last visit</option></select></div>
@@ -312,6 +332,7 @@ header nav{display:flex;align-items:center;min-width:0}
       <div class="go"><button type="submit" class="primary">Apply</button><a class="btn" href="/ui/findings/_9e35fa5890/" title="back to the open queue">Reset</a></div>
       <div><label class="shotsw" title="a screenshot next to every site (off by default: the list stays short)"><input type="checkbox" id="t-shots"> show screenshots</label></div>
     </form>
+    
     
     
     
@@ -329,7 +350,7 @@ header nav{display:flex;align-items:center;min-width:0}
       </div>
     </form>
     
-    <table id="ftable">
+    <table id="ftable" class="rwd">
       <thead><tr><th class="selcol"><input type="checkbox" id="selall" aria-label="select every finding on this page" title="select every finding on this page"></th><th class="shotcol">Screenshot</th><th>Severity</th><th>Host</th><th>Score</th><th>Conf.</th><th>Signals</th><th>State</th><th>Found</th></tr></thead>
       <tbody>
       
@@ -337,7 +358,7 @@ header nav{display:flex;align-items:center;min-width:0}
         <td class="selcol"></td>
         <td class="shotcol"><img class="bigshot" data-src="/_r/f4819005328dc1.png" alt="screenshot of shopnova-verification.com" title="click to enlarge" data-host="shopnova-verification.com" data-href="/ui/findings/d3cddf21-a088-4189-9f17-2cf8dba61ab0/"></td>
         <td><span class="badge sev-critical">critical</span><div style="margin-top:4px"><span class="badge" style="border:1px solid rgba(230,237,245,.35);color:var(--text);background:rgba(230,237,245,.05)" title="the kit hides from scanners: BrandWatch revealed the real page with its cloaking probes">CLOAKED KIT</span></div></td>
-        <td><a href="/ui/findings/d3cddf21-a088-4189-9f17-2cf8dba61ab0/" class="flink"><span class="mono">shopnova-verification.com</span></a><div class="small muted">domain name · found by Certificate logs, Analyst URL scan · <a href="/ui/findings/d3cddf21-a088-4189-9f17-2cf8dba61ab0/#network" title="site & network investigation: servers, WHOIS history, urlscan">network</a> · <a href="/ui/candidates/9d90b080-6126-43ae-ac25-9c52627d83f3" title="domain timeline on the watchlist">timeline</a></div></td>
+        <td><a href="/ui/findings/d3cddf21-a088-4189-9f17-2cf8dba61ab0/" class="flink"><span class="mono" dir="ltr">shopnova-verification.com</span></a><div class="small muted">domain name · found by Certificate logs, Analyst URL scan · <a href="/ui/findings/d3cddf21-a088-4189-9f17-2cf8dba61ab0/#network" title="site & network investigation: servers, WHOIS history, urlscan">network</a> · <a href="/ui/candidates/9d90b080-6126-43ae-ac25-9c52627d83f3" title="domain timeline on the watchlist">timeline</a></div></td>
         <td class="mono" style="white-space:nowrap">92<span class="scorebar"><i data-w="92"></i></span>
           <span style="margin-left:6px"><a class="pill" href="https://www.virustotal.com/gui/domain/shopnova-verification.com" target="_blank" rel="noreferrer noopener" title="not in VirusTotal yet — unknown is never treated as clean" style="font-size:10px;color:var(--muted)">VT —</a></span></td>
         <td><div class="ring sm" data-p="100" style="--c:var(--accent)" title="confidence in the evidence: 100%"><div>100</div></div></td>
@@ -350,7 +371,7 @@ header nav{display:flex;align-items:center;min-width:0}
         <td class="selcol"></td>
         <td class="shotcol"><img class="bigshot" data-src="/_r/dacff850f9017d.png" alt="screenshot of shopnova-giftcard.com" title="click to enlarge" data-host="shopnova-giftcard.com" data-href="/ui/findings/1bcfbce5-b1c6-44d8-b534-f678beefe1d5/"></td>
         <td><span class="badge sev-critical">critical</span><div style="margin-top:4px"><span class="badge" style="border:1px solid rgba(230,237,245,.35);color:var(--text);background:rgba(230,237,245,.05)" title="the kit hides from scanners: BrandWatch revealed the real page with its cloaking probes">CLOAKED KIT</span></div></td>
-        <td><a href="/ui/findings/1bcfbce5-b1c6-44d8-b534-f678beefe1d5/" class="flink"><span class="mono">shopnova-giftcard.com</span></a><div class="small muted">domain name · found by Certificate logs, Analyst URL scan · <a href="/ui/findings/1bcfbce5-b1c6-44d8-b534-f678beefe1d5/#network" title="site & network investigation: servers, WHOIS history, urlscan">network</a> · <a href="/ui/candidates/1d1d7ed6-291b-4016-8ed4-f533c3b69582/" title="domain timeline on the watchlist">timeline</a></div></td>
+        <td><a href="/ui/findings/1bcfbce5-b1c6-44d8-b534-f678beefe1d5/" class="flink"><span class="mono" dir="ltr">shopnova-giftcard.com</span></a><div class="small muted">domain name · found by Certificate logs, Analyst URL scan · <a href="/ui/findings/1bcfbce5-b1c6-44d8-b534-f678beefe1d5/#network" title="site & network investigation: servers, WHOIS history, urlscan">network</a> · <a href="/ui/candidates/1d1d7ed6-291b-4016-8ed4-f533c3b69582/" title="domain timeline on the watchlist">timeline</a></div></td>
         <td class="mono" style="white-space:nowrap">87<span class="scorebar"><i data-w="87"></i></span>
           <span style="margin-left:6px"><a class="pill" href="https://www.virustotal.com/gui/domain/shopnova-giftcard.com" target="_blank" rel="noreferrer noopener" title="not in VirusTotal yet — unknown is never treated as clean" style="font-size:10px;color:var(--muted)">VT —</a></span></td>
         <td><div class="ring sm" data-p="100" style="--c:var(--accent)" title="confidence in the evidence: 100%"><div>100</div></div></td>
@@ -363,7 +384,7 @@ header nav{display:flex;align-items:center;min-width:0}
         <td class="selcol"></td>
         <td class="shotcol"><div class="noshot">no screenshot (the page did not load)</div></td>
         <td><span class="badge sev-critical">critical</span><div style="margin-top:4px"><span class="badge" style="border:1px solid var(--accent);color:var(--accent2)" title="a Facebook page or Instagram profile that poses as the brand">social</span></div></td>
-        <td><a href="/ui/findings/3ef032cc-e0af-4d14-a4b1-f1bde6e033e9/" class="flink"><span class="mono">instagram.com/shopnova.israel.official</span></a><div class="small muted">content · found by Facebook pages / Instagram profiles · <a href="/ui/findings/3ef032cc-e0af-4d14-a4b1-f1bde6e033e9/#social" title="the account, its content and Report to Meta">account</a> · <a href="/ui/candidates/9cf1a671-170b-425c-8ef3-03eafe820a75" title="domain timeline on the watchlist">timeline</a></div></td>
+        <td><a href="/ui/findings/3ef032cc-e0af-4d14-a4b1-f1bde6e033e9/" class="flink"><span class="mono" dir="ltr">instagram.com/shopnova.israel.official</span></a><div class="small muted">content · found by Facebook pages / Instagram profiles · <a href="/ui/findings/3ef032cc-e0af-4d14-a4b1-f1bde6e033e9/#social" title="the account, its content and Report to Meta">account</a> · <a href="/ui/candidates/9cf1a671-170b-425c-8ef3-03eafe820a75" title="domain timeline on the watchlist">timeline</a></div></td>
         <td class="mono" style="white-space:nowrap">86<span class="scorebar"><i data-w="86"></i></span>
           </td>
         <td><div class="ring sm" data-p="80" style="--c:var(--muted)" title="confidence in the evidence: 80%"><div>80</div></div></td>
@@ -376,7 +397,7 @@ header nav{display:flex;align-items:center;min-width:0}
         <td class="selcol"></td>
         <td class="shotcol"><img class="bigshot" data-src="/_r/f56dba8ba195a2.png" alt="screenshot of shopn0va.com" title="click to enlarge" data-host="shopn0va.com" data-href="/ui/findings/570ae512-6ffc-4714-8115-deadd322f8ee/"></td>
         <td><span class="badge sev-critical">critical</span></td>
-        <td><a href="/ui/findings/570ae512-6ffc-4714-8115-deadd322f8ee/" class="flink"><span class="mono">shopn0va.com</span></a><div class="small muted">domain name · found by Analyst URL scan, Google search · <a href="/ui/findings/570ae512-6ffc-4714-8115-deadd322f8ee/#network" title="site & network investigation: servers, WHOIS history, urlscan">network</a> · <a href="/ui/candidates/ccbbe3f4-027a-4349-9b17-53ed63a84f2c" title="domain timeline on the watchlist">timeline</a></div></td>
+        <td><a href="/ui/findings/570ae512-6ffc-4714-8115-deadd322f8ee/" class="flink"><span class="mono" dir="ltr">shopn0va.com</span></a><div class="small muted">domain name · found by Analyst URL scan, Google search · <a href="/ui/findings/570ae512-6ffc-4714-8115-deadd322f8ee/#network" title="site & network investigation: servers, WHOIS history, urlscan">network</a> · <a href="/ui/candidates/ccbbe3f4-027a-4349-9b17-53ed63a84f2c" title="domain timeline on the watchlist">timeline</a></div></td>
         <td class="mono" style="white-space:nowrap">85<span class="scorebar"><i data-w="85"></i></span>
           <span style="margin-left:6px"><a class="pill" href="https://www.virustotal.com/gui/domain/shopn0va.com" target="_blank" rel="noreferrer noopener" title="VirusTotal: 7 engine(s) flag it" style="font-size:10px;border-color:var(--crit);color:var(--crit)">VT 7</a></span></td>
         <td><div class="ring sm" data-p="100" style="--c:var(--accent)" title="confidence in the evidence: 100%"><div>100</div></div></td>
@@ -389,7 +410,7 @@ header nav{display:flex;align-items:center;min-width:0}
         <td class="selcol"></td>
         <td class="shotcol"><img class="bigshot" data-src="/_r/24a9333ba4b1c2.png" alt="screenshot of runnerhub-sale.com" title="click to enlarge" data-host="runnerhub-sale.com" data-href="/ui/findings/b50eb843-fe14-4db8-92ed-7cb9a6a6ddb6/"></td>
         <td><span class="badge sev-critical">critical</span><div style="margin-top:4px"><span class="badge" style="border:1px solid var(--crit);color:var(--crit)" title="Likely counterfeit seller — independent evidence about the goods and about the seller point to counterfeits">shop · likely fake</span></div></td>
-        <td><a href="/ui/findings/b50eb843-fe14-4db8-92ed-7cb9a6a6ddb6/" class="flink"><span class="mono">runnerhub-sale.com</span></a><div class="small muted">domain name · found by Facebook / Instagram ads · <a href="/ui/findings/b50eb843-fe14-4db8-92ed-7cb9a6a6ddb6/#network" title="site & network investigation: servers, WHOIS history, urlscan">network</a> · <a href="/ui/candidates/028fbeb7-edf0-4acf-9126-f78bf35a1e4c" title="domain timeline on the watchlist">timeline</a></div></td>
+        <td><a href="/ui/findings/b50eb843-fe14-4db8-92ed-7cb9a6a6ddb6/" class="flink"><span class="mono" dir="ltr">runnerhub-sale.com</span></a><div class="small muted">domain name · found by Facebook / Instagram ads · <a href="/ui/findings/b50eb843-fe14-4db8-92ed-7cb9a6a6ddb6/#network" title="site & network investigation: servers, WHOIS history, urlscan">network</a> · <a href="/ui/candidates/028fbeb7-edf0-4acf-9126-f78bf35a1e4c" title="domain timeline on the watchlist">timeline</a></div></td>
         <td class="mono" style="white-space:nowrap">85<span class="scorebar"><i data-w="85"></i></span>
           <span style="margin-left:6px"><a class="pill" href="https://www.virustotal.com/gui/domain/runnerhub-sale.com" target="_blank" rel="noreferrer noopener" title="not in VirusTotal yet — unknown is never treated as clean" style="font-size:10px;color:var(--muted)">VT —</a></span></td>
         <td><div class="ring sm" data-p="90" style="--c:var(--accent)" title="confidence in the evidence: 90%"><div>90</div></div></td>
@@ -402,7 +423,7 @@ header nav{display:flex;align-items:center;min-width:0}
         <td class="selcol"></td>
         <td class="shotcol"><img class="bigshot" data-src="/_r/18890a003af575.png" alt="screenshot of onestyle-shopping.com" title="click to enlarge" data-host="onestyle-shopping.com" data-href="/ui/findings/3f10d506-29e2-4c08-bfce-bfb343c7d5f1/"></td>
         <td><span class="badge sev-critical">critical</span><div style="margin-top:4px"><span class="badge" style="border:1px solid var(--crit);color:var(--crit)" title="Likely counterfeit seller — independent evidence about the goods and about the seller point to counterfeits">shop · likely fake</span></div></td>
-        <td><a href="/ui/findings/3f10d506-29e2-4c08-bfce-bfb343c7d5f1/" class="flink"><span class="mono">onestyle-shopping.com</span></a><div class="small muted">domain name · found by Facebook / Instagram ads, Facebook pages / Instagram profiles · <a href="/ui/findings/3f10d506-29e2-4c08-bfce-bfb343c7d5f1/#network" title="site & network investigation: servers, WHOIS history, urlscan">network</a> · <a href="/ui/candidates/656ccb9e-7a12-451c-91aa-32bad6cd7d10/" title="domain timeline on the watchlist">timeline</a></div></td>
+        <td><a href="/ui/findings/3f10d506-29e2-4c08-bfce-bfb343c7d5f1/" class="flink"><span class="mono" dir="ltr">onestyle-shopping.com</span></a><div class="small muted">domain name · found by Facebook / Instagram ads, Facebook pages / Instagram profiles · <a href="/ui/findings/3f10d506-29e2-4c08-bfce-bfb343c7d5f1/#network" title="site & network investigation: servers, WHOIS history, urlscan">network</a> · <a href="/ui/candidates/656ccb9e-7a12-451c-91aa-32bad6cd7d10/" title="domain timeline on the watchlist">timeline</a></div></td>
         <td class="mono" style="white-space:nowrap">85<span class="scorebar"><i data-w="85"></i></span>
           <span style="margin-left:6px"><a class="pill" href="https://www.virustotal.com/gui/domain/onestyle-shopping.com" target="_blank" rel="noreferrer noopener" title="not in VirusTotal yet — unknown is never treated as clean" style="font-size:10px;color:var(--muted)">VT —</a></span></td>
         <td><div class="ring sm" data-p="90" style="--c:var(--accent)" title="confidence in the evidence: 90%"><div>90</div></div></td>
@@ -415,7 +436,7 @@ header nav{display:flex;align-items:center;min-width:0}
         <td class="selcol"></td>
         <td class="shotcol"><img class="bigshot" data-src="/_r/e3447605719cd0.png" alt="screenshot of secure-shopnova.com" title="click to enlarge" data-host="secure-shopnova.com" data-href="/ui/findings/ffe7670f-a966-4921-b136-231284e94c4a/"></td>
         <td><span class="badge sev-critical">critical</span></td>
-        <td><a href="/ui/findings/ffe7670f-a966-4921-b136-231284e94c4a/" class="flink"><span class="mono">secure-shopnova.com</span></a><div class="small muted">URL path · found by Analyst URL scan · <a href="/ui/findings/ffe7670f-a966-4921-b136-231284e94c4a/#network" title="site & network investigation: servers, WHOIS history, urlscan">network</a> · <a href="/ui/candidates/cf1ac0d6-f308-4c2e-86f5-591aedcdf981" title="domain timeline on the watchlist">timeline</a></div></td>
+        <td><a href="/ui/findings/ffe7670f-a966-4921-b136-231284e94c4a/" class="flink"><span class="mono" dir="ltr">secure-shopnova.com</span></a><div class="small muted">URL path · found by Analyst URL scan · <a href="/ui/findings/ffe7670f-a966-4921-b136-231284e94c4a/#network" title="site & network investigation: servers, WHOIS history, urlscan">network</a> · <a href="/ui/candidates/cf1ac0d6-f308-4c2e-86f5-591aedcdf981" title="domain timeline on the watchlist">timeline</a></div></td>
         <td class="mono" style="white-space:nowrap">83<span class="scorebar"><i data-w="83"></i></span>
           <span style="margin-left:6px"><a class="pill" href="https://www.virustotal.com/gui/domain/secure-shopnova.com" target="_blank" rel="noreferrer noopener" title="not in VirusTotal yet — unknown is never treated as clean" style="font-size:10px;color:var(--muted)">VT —</a></span></td>
         <td><div class="ring sm" data-p="100" style="--c:var(--accent)" title="confidence in the evidence: 100%"><div>100</div></div></td>
@@ -428,7 +449,7 @@ header nav{display:flex;align-items:center;min-width:0}
         <td class="selcol"></td>
         <td class="shotcol"><img class="bigshot" data-src="/_r/ac0982200df571.png" alt="screenshot of secure-shopnova.com" title="click to enlarge" data-host="secure-shopnova.com" data-href="/ui/findings/2abe1b4c-5c19-475a-9809-bcfa3ca3146b/"></td>
         <td><span class="badge sev-critical">critical</span></td>
-        <td><a href="/ui/findings/2abe1b4c-5c19-475a-9809-bcfa3ca3146b/" class="flink"><span class="mono">secure-shopnova.com</span></a><div class="small muted">domain name · found by Certificate logs · <a href="/ui/findings/2abe1b4c-5c19-475a-9809-bcfa3ca3146b/#network" title="site & network investigation: servers, WHOIS history, urlscan">network</a> · <a href="/ui/candidates/dbe15546-1003-405a-8854-f974a81e9f4f" title="domain timeline on the watchlist">timeline</a></div></td>
+        <td><a href="/ui/findings/2abe1b4c-5c19-475a-9809-bcfa3ca3146b/" class="flink"><span class="mono" dir="ltr">secure-shopnova.com</span></a><div class="small muted">domain name · found by Certificate logs · <a href="/ui/findings/2abe1b4c-5c19-475a-9809-bcfa3ca3146b/#network" title="site & network investigation: servers, WHOIS history, urlscan">network</a> · <a href="/ui/candidates/dbe15546-1003-405a-8854-f974a81e9f4f" title="domain timeline on the watchlist">timeline</a></div></td>
         <td class="mono" style="white-space:nowrap">83<span class="scorebar"><i data-w="83"></i></span>
           <span style="margin-left:6px"><a class="pill" href="https://www.virustotal.com/gui/domain/secure-shopnova.com" target="_blank" rel="noreferrer noopener" title="not in VirusTotal yet — unknown is never treated as clean" style="font-size:10px;color:var(--muted)">VT —</a></span></td>
         <td><div class="ring sm" data-p="100" style="--c:var(--accent)" title="confidence in the evidence: 100%"><div>100</div></div></td>
@@ -441,7 +462,7 @@ header nav{display:flex;align-items:center;min-width:0}
         <td class="selcol"></td>
         <td class="shotcol"><img class="bigshot" data-src="/_r/a77237c5f065db.png" alt="screenshot of stepcloud-store.com" title="click to enlarge" data-host="stepcloud-store.com" data-href="/ui/findings/873e1acc-f60d-495a-9bd3-ac614fdb9cb4/"></td>
         <td><span class="badge sev-critical">critical</span><div style="margin-top:4px"><span class="badge" style="border:1px solid var(--crit);color:var(--crit)" title="Likely counterfeit seller — independent evidence about the goods and about the seller point to counterfeits">shop · likely fake</span></div></td>
-        <td><a href="/ui/findings/873e1acc-f60d-495a-9bd3-ac614fdb9cb4/" class="flink"><span class="mono">stepcloud-store.com</span></a><div class="small muted">domain name · found by Facebook / Instagram ads · <a href="/ui/findings/873e1acc-f60d-495a-9bd3-ac614fdb9cb4/#network" title="site & network investigation: servers, WHOIS history, urlscan">network</a> · <a href="/ui/candidates/6c1b79f0-a091-4b11-bbe4-cbcec7e3f2fd/" title="domain timeline on the watchlist">timeline</a></div></td>
+        <td><a href="/ui/findings/873e1acc-f60d-495a-9bd3-ac614fdb9cb4/" class="flink"><span class="mono" dir="ltr">stepcloud-store.com</span></a><div class="small muted">domain name · found by Facebook / Instagram ads · <a href="/ui/findings/873e1acc-f60d-495a-9bd3-ac614fdb9cb4/#network" title="site & network investigation: servers, WHOIS history, urlscan">network</a> · <a href="/ui/candidates/6c1b79f0-a091-4b11-bbe4-cbcec7e3f2fd/" title="domain timeline on the watchlist">timeline</a></div></td>
         <td class="mono" style="white-space:nowrap">82<span class="scorebar"><i data-w="82"></i></span>
           <span style="margin-left:6px"><a class="pill" href="https://www.virustotal.com/gui/domain/stepcloud-store.com" target="_blank" rel="noreferrer noopener" title="not in VirusTotal yet — unknown is never treated as clean" style="font-size:10px;color:var(--muted)">VT —</a></span></td>
         <td><div class="ring sm" data-p="90" style="--c:var(--accent)" title="confidence in the evidence: 90%"><div>90</div></div></td>
@@ -454,7 +475,7 @@ header nav{display:flex;align-items:center;min-width:0}
         <td class="selcol"></td>
         <td class="shotcol"><img class="bigshot" data-src="/_r/e549aaeda670ca.png" alt="screenshot of shopnova.co" title="click to enlarge" data-host="shopnova.co" data-href="/ui/findings/f091cd7c-448b-4aee-a165-217d48127136/"></td>
         <td><span class="badge sev-critical">critical</span></td>
-        <td><a href="/ui/findings/f091cd7c-448b-4aee-a165-217d48127136/" class="flink"><span class="mono">shopnova.co</span></a><div class="small muted">domain name · found by Certificate logs, Analyst URL scan · <a href="/ui/findings/f091cd7c-448b-4aee-a165-217d48127136/#network" title="site & network investigation: servers, WHOIS history, urlscan">network</a> · <a href="/ui/candidates/5ccc88f9-3d57-4417-9afe-da6d20996904" title="domain timeline on the watchlist">timeline</a></div></td>
+        <td><a href="/ui/findings/f091cd7c-448b-4aee-a165-217d48127136/" class="flink"><span class="mono" dir="ltr">shopnova.co</span></a><div class="small muted">domain name · found by Certificate logs, Analyst URL scan · <a href="/ui/findings/f091cd7c-448b-4aee-a165-217d48127136/#network" title="site & network investigation: servers, WHOIS history, urlscan">network</a> · <a href="/ui/candidates/5ccc88f9-3d57-4417-9afe-da6d20996904" title="domain timeline on the watchlist">timeline</a></div></td>
         <td class="mono" style="white-space:nowrap">81<span class="scorebar"><i data-w="81"></i></span>
           <span style="margin-left:6px"><a class="pill" href="https://www.virustotal.com/gui/domain/shopnova.co" target="_blank" rel="noreferrer noopener" title="not in VirusTotal yet — unknown is never treated as clean" style="font-size:10px;color:var(--muted)">VT —</a></span></td>
         <td><div class="ring sm" data-p="100" style="--c:var(--accent)" title="confidence in the evidence: 100%"><div>100</div></div></td>
@@ -467,7 +488,7 @@ header nav{display:flex;align-items:center;min-width:0}
         <td class="selcol"></td>
         <td class="shotcol"><img class="bigshot" data-src="/_r/6bb6bcc1573e5f.png" alt="screenshot of shopnova-support-center.com" title="click to enlarge" data-host="shopnova-support-center.com" data-href="/ui/findings/226b88f3-c048-4394-987b-32bc526c461c/"></td>
         <td><span class="badge sev-critical">critical</span></td>
-        <td><a href="/ui/findings/226b88f3-c048-4394-987b-32bc526c461c/" class="flink"><span class="mono">shopnova-support-center.com</span></a><div class="small muted">domain name · found by AI answer (ChatGPT / Gemini / Google AI Mode), Certificate logs, Analyst URL scan · <a href="/ui/findings/226b88f3-c048-4394-987b-32bc526c461c/#network" title="site & network investigation: servers, WHOIS history, urlscan">network</a> · <a href="/ui/candidates/fa7e6540-34b8-44c4-8ea7-22c057ebc4bc/" title="domain timeline on the watchlist">timeline</a></div></td>
+        <td><a href="/ui/findings/226b88f3-c048-4394-987b-32bc526c461c/" class="flink"><span class="mono" dir="ltr">shopnova-support-center.com</span></a><div class="small muted">domain name · found by AI answer (ChatGPT / Gemini / Google AI Mode), Certificate logs, Analyst URL scan · <a href="/ui/findings/226b88f3-c048-4394-987b-32bc526c461c/#network" title="site & network investigation: servers, WHOIS history, urlscan">network</a> · <a href="/ui/candidates/fa7e6540-34b8-44c4-8ea7-22c057ebc4bc/" title="domain timeline on the watchlist">timeline</a></div></td>
         <td class="mono" style="white-space:nowrap">81<span class="scorebar"><i data-w="81"></i></span>
           <span style="margin-left:6px"><a class="pill" href="https://www.virustotal.com/gui/domain/shopnova-support-center.com" target="_blank" rel="noreferrer noopener" title="not in VirusTotal yet — unknown is never treated as clean" style="font-size:10px;color:var(--muted)">VT —</a></span></td>
         <td><div class="ring sm" data-p="100" style="--c:var(--accent)" title="confidence in the evidence: 100%"><div>100</div></div></td>
@@ -480,7 +501,7 @@ header nav{display:flex;align-items:center;min-width:0}
         <td class="selcol"></td>
         <td class="shotcol"><img class="bigshot" data-src="/_r/3cd42cbbab2333.png" alt="screenshot of shopnova-login.com" title="click to enlarge" data-host="shopnova-login.com" data-href="/ui/findings/5d2ee722-749b-41e5-8f7d-d89bccda56f9/"></td>
         <td><span class="badge sev-critical">critical</span></td>
-        <td><a href="/ui/findings/5d2ee722-749b-41e5-8f7d-d89bccda56f9/" class="flink"><span class="mono">shopnova-login.com</span></a><div class="small muted">domain name · found by AI answer (ChatGPT / Gemini / Google AI Mode), Certificate logs, Analyst URL scan · <a href="/ui/findings/5d2ee722-749b-41e5-8f7d-d89bccda56f9/#network" title="site & network investigation: servers, WHOIS history, urlscan">network</a> · <a href="/ui/candidates/0e4c2f54-46e9-4eb8-88e8-5e8ec1e97ba9/" title="domain timeline on the watchlist">timeline</a></div></td>
+        <td><a href="/ui/findings/5d2ee722-749b-41e5-8f7d-d89bccda56f9/" class="flink"><span class="mono" dir="ltr">shopnova-login.com</span></a><div class="small muted">domain name · found by AI answer (ChatGPT / Gemini / Google AI Mode), Certificate logs, Analyst URL scan · <a href="/ui/findings/5d2ee722-749b-41e5-8f7d-d89bccda56f9/#network" title="site & network investigation: servers, WHOIS history, urlscan">network</a> · <a href="/ui/candidates/0e4c2f54-46e9-4eb8-88e8-5e8ec1e97ba9/" title="domain timeline on the watchlist">timeline</a></div></td>
         <td class="mono" style="white-space:nowrap">81<span class="scorebar"><i data-w="81"></i></span>
           <span style="margin-left:6px"><a class="pill" href="https://www.virustotal.com/gui/domain/shopnova-login.com" target="_blank" rel="noreferrer noopener" title="not in VirusTotal yet — unknown is never treated as clean" style="font-size:10px;color:var(--muted)">VT —</a></span></td>
         <td><div class="ring sm" data-p="100" style="--c:var(--accent)" title="confidence in the evidence: 100%"><div>100</div></div></td>
@@ -493,7 +514,7 @@ header nav{display:flex;align-items:center;min-width:0}
         <td class="selcol"></td>
         <td class="shotcol"><img class="bigshot" data-src="/_r/eb6e5d056316ad.png" alt="screenshot of xn--shopnov-8fg.com" title="click to enlarge" data-host="xn--shopnov-8fg.com" data-href="/ui/findings/94fbf93e-858a-46b1-8b45-d9c5f482ba10/"></td>
         <td><span class="badge sev-critical">critical</span></td>
-        <td><a href="/ui/findings/94fbf93e-858a-46b1-8b45-d9c5f482ba10/" class="flink"><span class="mono">shopnovа.com</span> <span class="pill" style="font-size:10px" title="written with look-alike Unicode characters; the real (punycode) name is xn--shopnov-8fg.com">homoglyph</span></a><div class="small muted">domain name · found by Analyst URL scan · <a href="/ui/findings/94fbf93e-858a-46b1-8b45-d9c5f482ba10/#network" title="site & network investigation: servers, WHOIS history, urlscan">network</a> · <a href="/ui/candidates/ac239311-810b-42fb-a21b-2e4aede7a27e" title="domain timeline on the watchlist">timeline</a></div></td>
+        <td><a href="/ui/findings/94fbf93e-858a-46b1-8b45-d9c5f482ba10/" class="flink"><span class="mono" dir="ltr">shopnovа.com</span> <span class="pill" style="font-size:10px" title="written with look-alike Unicode characters; the real (punycode) name is xn--shopnov-8fg.com">homoglyph</span></a><div class="small muted">domain name · found by Analyst URL scan · <a href="/ui/findings/94fbf93e-858a-46b1-8b45-d9c5f482ba10/#network" title="site & network investigation: servers, WHOIS history, urlscan">network</a> · <a href="/ui/candidates/ac239311-810b-42fb-a21b-2e4aede7a27e" title="domain timeline on the watchlist">timeline</a></div></td>
         <td class="mono" style="white-space:nowrap">75<span class="scorebar"><i data-w="75"></i></span>
           <span style="margin-left:6px"><a class="pill" href="https://www.virustotal.com/gui/domain/xn--shopnov-8fg.com" target="_blank" rel="noreferrer noopener" title="not in VirusTotal yet — unknown is never treated as clean" style="font-size:10px;color:var(--muted)">VT —</a></span></td>
         <td><div class="ring sm" data-p="90" style="--c:var(--accent)" title="confidence in the evidence: 90%"><div>90</div></div></td>
@@ -506,7 +527,7 @@ header nav{display:flex;align-items:center;min-width:0}
         <td class="selcol"></td>
         <td class="shotcol"><img class="bigshot" data-src="/_r/40cc9a211e0fd4.png" alt="screenshot of shoqnova.com" title="click to enlarge" data-host="shoqnova.com" data-href="/ui/findings/0ffa1b59-424d-4892-a04e-bee9c93b7eb6/"></td>
         <td><span class="badge sev-critical">critical</span></td>
-        <td><a href="/ui/findings/0ffa1b59-424d-4892-a04e-bee9c93b7eb6/" class="flink"><span class="mono">shoqnova.com</span></a><div class="small muted">URL path · found by Analyst URL scan, Google search · <a href="/ui/findings/0ffa1b59-424d-4892-a04e-bee9c93b7eb6/#network" title="site & network investigation: servers, WHOIS history, urlscan">network</a> · <a href="/ui/candidates/a49c19b9-732d-464b-a10a-798f5609791b" title="domain timeline on the watchlist">timeline</a></div></td>
+        <td><a href="/ui/findings/0ffa1b59-424d-4892-a04e-bee9c93b7eb6/" class="flink"><span class="mono" dir="ltr">shoqnova.com</span></a><div class="small muted">URL path · found by Analyst URL scan, Google search · <a href="/ui/findings/0ffa1b59-424d-4892-a04e-bee9c93b7eb6/#network" title="site & network investigation: servers, WHOIS history, urlscan">network</a> · <a href="/ui/candidates/a49c19b9-732d-464b-a10a-798f5609791b" title="domain timeline on the watchlist">timeline</a></div></td>
         <td class="mono" style="white-space:nowrap">75<span class="scorebar"><i data-w="75"></i></span>
           <span style="margin-left:6px"><a class="pill" href="https://www.virustotal.com/gui/domain/shoqnova.com" target="_blank" rel="noreferrer noopener" title="not in VirusTotal yet — unknown is never treated as clean" style="font-size:10px;color:var(--muted)">VT —</a></span></td>
         <td><div class="ring sm" data-p="100" style="--c:var(--accent)" title="confidence in the evidence: 100%"><div>100</div></div></td>
@@ -519,7 +540,7 @@ header nav{display:flex;align-items:center;min-width:0}
         <td class="selcol"></td>
         <td class="shotcol"><img class="bigshot" data-src="/_r/5c424f8ad54bc4.png" alt="screenshot of shopnowa.com" title="click to enlarge" data-host="shopnowa.com" data-href="/ui/findings/f08c0261-6754-4724-baf4-94c5e6354112/"></td>
         <td><span class="badge sev-critical">critical</span></td>
-        <td><a href="/ui/findings/f08c0261-6754-4724-baf4-94c5e6354112/" class="flink"><span class="mono">shopnowa.com</span></a><div class="small muted">domain name · found by Analyst URL scan, Google search · <a href="/ui/findings/f08c0261-6754-4724-baf4-94c5e6354112/#network" title="site & network investigation: servers, WHOIS history, urlscan">network</a> · <a href="/ui/candidates/c71c47ed-f12c-4547-8675-4bec5c13074c" title="domain timeline on the watchlist">timeline</a></div></td>
+        <td><a href="/ui/findings/f08c0261-6754-4724-baf4-94c5e6354112/" class="flink"><span class="mono" dir="ltr">shopnowa.com</span></a><div class="small muted">domain name · found by Analyst URL scan, Google search · <a href="/ui/findings/f08c0261-6754-4724-baf4-94c5e6354112/#network" title="site & network investigation: servers, WHOIS history, urlscan">network</a> · <a href="/ui/candidates/c71c47ed-f12c-4547-8675-4bec5c13074c" title="domain timeline on the watchlist">timeline</a></div></td>
         <td class="mono" style="white-space:nowrap">75<span class="scorebar"><i data-w="75"></i></span>
           <span style="margin-left:6px"><a class="pill" href="https://www.virustotal.com/gui/domain/shopnowa.com" target="_blank" rel="noreferrer noopener" title="not in VirusTotal yet — unknown is never treated as clean" style="font-size:10px;color:var(--muted)">VT —</a></span></td>
         <td><div class="ring sm" data-p="100" style="--c:var(--accent)" title="confidence in the evidence: 100%"><div>100</div></div></td>
@@ -532,7 +553,7 @@ header nav{display:flex;align-items:center;min-width:0}
         <td class="selcol"></td>
         <td class="shotcol"><img class="bigshot" data-src="/_r/1e445b92f20d23.png" alt="screenshot of shopnova-refund.net" title="click to enlarge" data-host="shopnova-refund.net" data-href="/ui/findings/2cb73388-b4b7-4b89-bb02-e10192947e09/"></td>
         <td><span class="badge sev-critical">critical</span><div style="margin-top:4px"><span class="badge" style="border:1px solid rgba(230,237,245,.35);color:var(--text);background:rgba(230,237,245,.05)" title="the kit hides from scanners: BrandWatch revealed the real page with its cloaking probes">CLOAKED KIT</span></div></td>
-        <td><a href="/ui/findings/2cb73388-b4b7-4b89-bb02-e10192947e09/" class="flink"><span class="mono">shopnova-refund.net</span></a><div class="small muted">domain name · found by Certificate logs, Analyst URL scan · <a href="/ui/findings/2cb73388-b4b7-4b89-bb02-e10192947e09/#network" title="site & network investigation: servers, WHOIS history, urlscan">network</a> · <a href="/ui/candidates/1709923f-5c2a-4a93-86bc-f421bbf7c479/" title="domain timeline on the watchlist">timeline</a></div></td>
+        <td><a href="/ui/findings/2cb73388-b4b7-4b89-bb02-e10192947e09/" class="flink"><span class="mono" dir="ltr">shopnova-refund.net</span></a><div class="small muted">domain name · found by Certificate logs, Analyst URL scan · <a href="/ui/findings/2cb73388-b4b7-4b89-bb02-e10192947e09/#network" title="site & network investigation: servers, WHOIS history, urlscan">network</a> · <a href="/ui/candidates/1709923f-5c2a-4a93-86bc-f421bbf7c479/" title="domain timeline on the watchlist">timeline</a></div></td>
         <td class="mono" style="white-space:nowrap">75<span class="scorebar"><i data-w="75"></i></span>
           <span style="margin-left:6px"><a class="pill" href="https://www.virustotal.com/gui/domain/shopnova-refund.net" target="_blank" rel="noreferrer noopener" title="not in VirusTotal yet — unknown is never treated as clean" style="font-size:10px;color:var(--muted)">VT —</a></span></td>
         <td><div class="ring sm" data-p="100" style="--c:var(--accent)" title="confidence in the evidence: 100%"><div>100</div></div></td>
@@ -545,7 +566,7 @@ header nav{display:flex;align-items:center;min-width:0}
         <td class="selcol"></td>
         <td class="shotcol"><img class="bigshot" data-src="/_r/de56f404f5a6b8.png" alt="screenshot of footstyle-il.com" title="click to enlarge" data-host="footstyle-il.com" data-href="/ui/findings/754f17b6-3a8f-42d4-be90-10719b12b052/"></td>
         <td><span class="badge sev-high">high</span><div style="margin-top:4px"><span class="badge" style="border:1px solid var(--crit);color:var(--crit)" title="Likely counterfeit seller — independent evidence about the goods and about the seller point to counterfeits">shop · likely fake</span></div></td>
-        <td><a href="/ui/findings/754f17b6-3a8f-42d4-be90-10719b12b052/" class="flink"><span class="mono">footstyle-il.com</span></a><div class="small muted">domain name · found by Facebook / Instagram ads · <a href="/ui/findings/754f17b6-3a8f-42d4-be90-10719b12b052/#network" title="site & network investigation: servers, WHOIS history, urlscan">network</a> · <a href="/ui/candidates/f83bd601-7f6e-45f6-a5f8-cac27bb98b11/" title="domain timeline on the watchlist">timeline</a></div></td>
+        <td><a href="/ui/findings/754f17b6-3a8f-42d4-be90-10719b12b052/" class="flink"><span class="mono" dir="ltr">footstyle-il.com</span></a><div class="small muted">domain name · found by Facebook / Instagram ads · <a href="/ui/findings/754f17b6-3a8f-42d4-be90-10719b12b052/#network" title="site & network investigation: servers, WHOIS history, urlscan">network</a> · <a href="/ui/candidates/f83bd601-7f6e-45f6-a5f8-cac27bb98b11/" title="domain timeline on the watchlist">timeline</a></div></td>
         <td class="mono" style="white-space:nowrap">70<span class="scorebar"><i data-w="70"></i></span>
           <span style="margin-left:6px"><a class="pill" href="https://www.virustotal.com/gui/domain/footstyle-il.com" target="_blank" rel="noreferrer noopener" title="not in VirusTotal yet — unknown is never treated as clean" style="font-size:10px;color:var(--muted)">VT —</a></span></td>
         <td><div class="ring sm" data-p="90" style="--c:var(--accent)" title="confidence in the evidence: 90%"><div>90</div></div></td>
@@ -558,7 +579,7 @@ header nav{display:flex;align-items:center;min-width:0}
         <td class="selcol"></td>
         <td class="shotcol"><img class="bigshot" data-src="/_r/cd8a62257446aa.png" alt="screenshot of shopnova-account.net" title="click to enlarge" data-host="shopnova-account.net" data-href="/ui/findings/4432be9e-24d0-4136-87ff-af50eb57fe11/"></td>
         <td><span class="badge sev-high">high</span></td>
-        <td><a href="/ui/findings/4432be9e-24d0-4136-87ff-af50eb57fe11/" class="flink"><span class="mono">shopnova-account.net</span></a><div class="small muted">domain name · found by Certificate logs, Analyst URL scan · <a href="/ui/findings/4432be9e-24d0-4136-87ff-af50eb57fe11/#network" title="site & network investigation: servers, WHOIS history, urlscan">network</a> · <a href="/ui/candidates/6a71535e-be45-41b5-8ba9-aaafc36ac6e5" title="domain timeline on the watchlist">timeline</a></div></td>
+        <td><a href="/ui/findings/4432be9e-24d0-4136-87ff-af50eb57fe11/" class="flink"><span class="mono" dir="ltr">shopnova-account.net</span></a><div class="small muted">domain name · found by Certificate logs, Analyst URL scan · <a href="/ui/findings/4432be9e-24d0-4136-87ff-af50eb57fe11/#network" title="site & network investigation: servers, WHOIS history, urlscan">network</a> · <a href="/ui/candidates/6a71535e-be45-41b5-8ba9-aaafc36ac6e5" title="domain timeline on the watchlist">timeline</a></div></td>
         <td class="mono" style="white-space:nowrap">68<span class="scorebar"><i data-w="68"></i></span>
           <span style="margin-left:6px"><a class="pill" href="https://www.virustotal.com/gui/domain/shopnova-account.net" target="_blank" rel="noreferrer noopener" title="VirusTotal: 7 engine(s) flag it" style="font-size:10px;border-color:var(--crit);color:var(--crit)">VT 7</a></span></td>
         <td><div class="ring sm" data-p="100" style="--c:var(--accent)" title="confidence in the evidence: 100%"><div>100</div></div></td>
@@ -571,7 +592,7 @@ header nav{display:flex;align-items:center;min-width:0}
         <td class="selcol"></td>
         <td class="shotcol"><img class="bigshot" data-src="/_r/d51a53334ef5c2.png" alt="screenshot of shopnova-verify.com" title="click to enlarge" data-host="shopnova-verify.com" data-href="/ui/findings/8d975e6b-5ed0-45d8-97c0-71ab0b64823d/"></td>
         <td><span class="badge sev-high">high</span></td>
-        <td><a href="/ui/findings/8d975e6b-5ed0-45d8-97c0-71ab0b64823d/" class="flink"><span class="mono">shopnova-verify.com</span></a><div class="small muted">domain name · found by Certificate logs, Analyst URL scan · <a href="/ui/findings/8d975e6b-5ed0-45d8-97c0-71ab0b64823d/#network" title="site & network investigation: servers, WHOIS history, urlscan">network</a> · <a href="/ui/candidates/c4d29767-6e4e-42ac-819f-d861da7ab5b2" title="domain timeline on the watchlist">timeline</a></div></td>
+        <td><a href="/ui/findings/8d975e6b-5ed0-45d8-97c0-71ab0b64823d/" class="flink"><span class="mono" dir="ltr">shopnova-verify.com</span></a><div class="small muted">domain name · found by Certificate logs, Analyst URL scan · <a href="/ui/findings/8d975e6b-5ed0-45d8-97c0-71ab0b64823d/#network" title="site & network investigation: servers, WHOIS history, urlscan">network</a> · <a href="/ui/candidates/c4d29767-6e4e-42ac-819f-d861da7ab5b2" title="domain timeline on the watchlist">timeline</a></div></td>
         <td class="mono" style="white-space:nowrap">68<span class="scorebar"><i data-w="68"></i></span>
           <span style="margin-left:6px"><a class="pill" href="https://www.virustotal.com/gui/domain/shopnova-verify.com" target="_blank" rel="noreferrer noopener" title="not in VirusTotal yet — unknown is never treated as clean" style="font-size:10px;color:var(--muted)">VT —</a></span></td>
         <td><div class="ring sm" data-p="100" style="--c:var(--accent)" title="confidence in the evidence: 100%"><div>100</div></div></td>
@@ -584,7 +605,7 @@ header nav{display:flex;align-items:center;min-width:0}
         <td class="selcol"></td>
         <td class="shotcol"><img class="bigshot" data-src="/_r/9ef8fb5bbec362.png" alt="screenshot of stylehub-israel.com" title="click to enlarge" data-host="stylehub-israel.com" data-href="/ui/findings/b6632f16-c5cf-49dd-a2b0-bc049197479e/"></td>
         <td><span class="badge sev-high">high</span><div style="margin-top:4px"><span class="badge" style="border:1px solid var(--crit);color:var(--crit)" title="Likely counterfeit seller — independent evidence about the goods and about the seller point to counterfeits">shop · likely fake</span></div></td>
-        <td><a href="/ui/findings/b6632f16-c5cf-49dd-a2b0-bc049197479e/" class="flink"><span class="mono">stylehub-israel.com</span></a><div class="small muted">URL path · found by Facebook / Instagram ads · <a href="/ui/findings/b6632f16-c5cf-49dd-a2b0-bc049197479e/#network" title="site & network investigation: servers, WHOIS history, urlscan">network</a> · <a href="/ui/candidates/b5907bf1-2eb7-49fc-b302-c81a611162fe/" title="domain timeline on the watchlist">timeline</a></div></td>
+        <td><a href="/ui/findings/b6632f16-c5cf-49dd-a2b0-bc049197479e/" class="flink"><span class="mono" dir="ltr">stylehub-israel.com</span></a><div class="small muted">URL path · found by Facebook / Instagram ads · <a href="/ui/findings/b6632f16-c5cf-49dd-a2b0-bc049197479e/#network" title="site & network investigation: servers, WHOIS history, urlscan">network</a> · <a href="/ui/candidates/b5907bf1-2eb7-49fc-b302-c81a611162fe/" title="domain timeline on the watchlist">timeline</a></div></td>
         <td class="mono" style="white-space:nowrap">57<span class="scorebar"><i data-w="57"></i></span>
           <span style="margin-left:6px"><a class="pill" href="https://www.virustotal.com/gui/domain/stylehub-israel.com" target="_blank" rel="noreferrer noopener" title="not in VirusTotal yet — unknown is never treated as clean" style="font-size:10px;color:var(--muted)">VT —</a></span></td>
         <td><div class="ring sm" data-p="90" style="--c:var(--accent)" title="confidence in the evidence: 90%"><div>90</div></div></td>
@@ -597,7 +618,7 @@ header nav{display:flex;align-items:center;min-width:0}
         <td class="selcol"></td>
         <td class="shotcol"><img class="bigshot" data-src="/_r/21c828a8c00f1f.png" alt="screenshot of kicksmart-il.co.il" title="click to enlarge" data-host="kicksmart-il.co.il" data-href="/ui/findings/1c0497e3-ba68-4aa2-b6b1-e6d38565496f/"></td>
         <td><span class="badge sev-high">high</span><div style="margin-top:4px"><span class="badge" style="border:1px solid var(--crit);color:var(--crit)" title="Likely counterfeit seller — independent evidence about the goods and about the seller point to counterfeits">shop · likely fake</span></div></td>
-        <td><a href="/ui/findings/1c0497e3-ba68-4aa2-b6b1-e6d38565496f/" class="flink"><span class="mono">kicksmart-il.co.il</span></a><div class="small muted">domain name · found by Facebook / Instagram ads · <a href="/ui/findings/1c0497e3-ba68-4aa2-b6b1-e6d38565496f/#network" title="site & network investigation: servers, WHOIS history, urlscan">network</a> · <a href="/ui/candidates/08cbfaaa-8046-4f32-ac1f-be015404c62a/" title="domain timeline on the watchlist">timeline</a></div></td>
+        <td><a href="/ui/findings/1c0497e3-ba68-4aa2-b6b1-e6d38565496f/" class="flink"><span class="mono" dir="ltr">kicksmart-il.co.il</span></a><div class="small muted">domain name · found by Facebook / Instagram ads · <a href="/ui/findings/1c0497e3-ba68-4aa2-b6b1-e6d38565496f/#network" title="site & network investigation: servers, WHOIS history, urlscan">network</a> · <a href="/ui/candidates/08cbfaaa-8046-4f32-ac1f-be015404c62a/" title="domain timeline on the watchlist">timeline</a></div></td>
         <td class="mono" style="white-space:nowrap">53<span class="scorebar"><i data-w="53"></i></span>
           <span style="margin-left:6px"><a class="pill" href="https://www.virustotal.com/gui/domain/kicksmart-il.co.il" target="_blank" rel="noreferrer noopener" title="not in VirusTotal yet — unknown is never treated as clean" style="font-size:10px;color:var(--muted)">VT —</a></span></td>
         <td><div class="ring sm" data-p="80" style="--c:var(--muted)" title="confidence in the evidence: 80%"><div>80</div></div></td>
@@ -610,7 +631,7 @@ header nav{display:flex;align-items:center;min-width:0}
         <td class="selcol"></td>
         <td class="shotcol"><div class="noshot">Kaspersky shows its phishing warning instead of the site</div></td>
         <td><span class="badge sev-high">high</span></td>
-        <td><a href="/ui/findings/60292b11-724b-4b3f-bf1f-262976b5659f/" class="flink"><span class="mono">shopnova-id-check.com</span></a><div class="small muted">domain name · found by Certificate logs · <a href="/ui/findings/60292b11-724b-4b3f-bf1f-262976b5659f/#network" title="site & network investigation: servers, WHOIS history, urlscan">network</a> · <a href="/ui/candidates/0c006a3c-1616-4784-a476-ac3f45637acd" title="domain timeline on the watchlist">timeline</a></div></td>
+        <td><a href="/ui/findings/60292b11-724b-4b3f-bf1f-262976b5659f/" class="flink"><span class="mono" dir="ltr">shopnova-id-check.com</span></a><div class="small muted">domain name · found by Certificate logs · <a href="/ui/findings/60292b11-724b-4b3f-bf1f-262976b5659f/#network" title="site & network investigation: servers, WHOIS history, urlscan">network</a> · <a href="/ui/candidates/0c006a3c-1616-4784-a476-ac3f45637acd" title="domain timeline on the watchlist">timeline</a></div></td>
         <td class="mono" style="white-space:nowrap">50<span class="scorebar"><i data-w="50"></i></span>
           <span style="margin-left:6px"><a class="pill" href="https://www.virustotal.com/gui/domain/shopnova-id-check.com" target="_blank" rel="noreferrer noopener" title="VirusTotal engines do not flag it (yet)" style="font-size:10px;color:var(--muted)">VT clean</a></span></td>
         <td><div class="ring sm" data-p="100" style="--c:var(--accent)" title="confidence in the evidence: 100%"><div>100</div></div></td>
@@ -623,7 +644,7 @@ header nav{display:flex;align-items:center;min-width:0}
         <td class="selcol"></td>
         <td class="shotcol"><img class="bigshot" data-src="/_r/d443497483d204.png" alt="screenshot of shopnova--sneakers.com" title="click to enlarge" data-host="shopnova--sneakers.com" data-href="/ui/findings/c54ccea1-1a4d-4c1e-aabf-876d9c8e5cb4/"></td>
         <td><span class="badge sev-high">high</span></td>
-        <td><a href="/ui/findings/c54ccea1-1a4d-4c1e-aabf-876d9c8e5cb4/" class="flink"><span class="mono">shopnova--sneakers.com</span></a><div class="small muted">domain name · found by Certificate logs · <a href="/ui/findings/c54ccea1-1a4d-4c1e-aabf-876d9c8e5cb4/#network" title="site & network investigation: servers, WHOIS history, urlscan">network</a> · <a href="/ui/candidates/b164ed21-35d4-4b71-9fd3-8ce0dd66cc38" title="domain timeline on the watchlist">timeline</a></div></td>
+        <td><a href="/ui/findings/c54ccea1-1a4d-4c1e-aabf-876d9c8e5cb4/" class="flink"><span class="mono" dir="ltr">shopnova--sneakers.com</span></a><div class="small muted">domain name · found by Certificate logs · <a href="/ui/findings/c54ccea1-1a4d-4c1e-aabf-876d9c8e5cb4/#network" title="site & network investigation: servers, WHOIS history, urlscan">network</a> · <a href="/ui/candidates/b164ed21-35d4-4b71-9fd3-8ce0dd66cc38" title="domain timeline on the watchlist">timeline</a></div></td>
         <td class="mono" style="white-space:nowrap">50<span class="scorebar"><i data-w="50"></i></span>
           <span style="margin-left:6px"><a class="pill" href="https://www.virustotal.com/gui/domain/shopnova--sneakers.com" target="_blank" rel="noreferrer noopener" title="VirusTotal: 7 engine(s) flag it" style="font-size:10px;border-color:var(--crit);color:var(--crit)">VT 7</a></span></td>
         <td><div class="ring sm" data-p="100" style="--c:var(--accent)" title="confidence in the evidence: 100%"><div>100</div></div></td>
@@ -636,7 +657,7 @@ header nav{display:flex;align-items:center;min-width:0}
         <td class="selcol"></td>
         <td class="shotcol"><img class="bigshot" data-src="/_r/0860f7a5636b39.png" alt="screenshot of shopnova-outlet-store.com" title="click to enlarge" data-host="shopnova-outlet-store.com" data-href="/ui/findings/25d9c73d-96d7-4bbb-9868-2d3330e219f6/"></td>
         <td><span class="badge sev-medium">medium</span><div style="margin-top:4px"><span class="badge" style="border:1px solid var(--high);color:var(--high)" title="Suspicious shop — signs that justify a closer look — not proof that the goods are fake">shop · suspicious</span></div></td>
-        <td><a href="/ui/findings/25d9c73d-96d7-4bbb-9868-2d3330e219f6/" class="flink"><span class="mono">shopnova-outlet-store.com</span></a><div class="small muted">domain name · found by Certificate logs, Analyst URL scan · <a href="/ui/findings/25d9c73d-96d7-4bbb-9868-2d3330e219f6/#network" title="site & network investigation: servers, WHOIS history, urlscan">network</a> · <a href="/ui/candidates/6adaa3c9-2754-4ba6-a769-bda842b3917e" title="domain timeline on the watchlist">timeline</a></div></td>
+        <td><a href="/ui/findings/25d9c73d-96d7-4bbb-9868-2d3330e219f6/" class="flink"><span class="mono" dir="ltr">shopnova-outlet-store.com</span></a><div class="small muted">domain name · found by Certificate logs, Analyst URL scan · <a href="/ui/findings/25d9c73d-96d7-4bbb-9868-2d3330e219f6/#network" title="site & network investigation: servers, WHOIS history, urlscan">network</a> · <a href="/ui/candidates/6adaa3c9-2754-4ba6-a769-bda842b3917e" title="domain timeline on the watchlist">timeline</a></div></td>
         <td class="mono" style="white-space:nowrap">32<span class="scorebar"><i data-w="32"></i></span>
           <span style="margin-left:6px"><a class="pill" href="https://www.virustotal.com/gui/domain/shopnova-outlet-store.com" target="_blank" rel="noreferrer noopener" title="not in VirusTotal yet — unknown is never treated as clean" style="font-size:10px;color:var(--muted)">VT —</a></span></td>
         <td><div class="ring sm" data-p="65" style="--c:var(--muted)" title="confidence in the evidence: 65%"><div>65</div></div></td>
@@ -649,7 +670,7 @@ header nav{display:flex;align-items:center;min-width:0}
         <td class="selcol"></td>
         <td class="shotcol"><img class="bigshot" data-src="/_r/db3896bb429f6b.png" alt="screenshot of shopnova-press.com" title="click to enlarge" data-host="shopnova-press.com" data-href="/ui/findings/393fd129-3312-45a5-aa49-769f1043e156/"></td>
         <td><span class="badge sev-medium">medium</span></td>
-        <td><a href="/ui/findings/393fd129-3312-45a5-aa49-769f1043e156/" class="flink"><span class="mono">shopnova-press.com</span></a><div class="small muted">domain name · found by Certificate logs · <a href="/ui/findings/393fd129-3312-45a5-aa49-769f1043e156/#network" title="site & network investigation: servers, WHOIS history, urlscan">network</a> · <a href="/ui/candidates/7b3ab1db-5533-4fd9-8c35-cd59f9a3820c" title="domain timeline on the watchlist">timeline</a></div></td>
+        <td><a href="/ui/findings/393fd129-3312-45a5-aa49-769f1043e156/" class="flink"><span class="mono" dir="ltr">shopnova-press.com</span></a><div class="small muted">domain name · found by Certificate logs · <a href="/ui/findings/393fd129-3312-45a5-aa49-769f1043e156/#network" title="site & network investigation: servers, WHOIS history, urlscan">network</a> · <a href="/ui/candidates/7b3ab1db-5533-4fd9-8c35-cd59f9a3820c" title="domain timeline on the watchlist">timeline</a></div></td>
         <td class="mono" style="white-space:nowrap">29<span class="scorebar"><i data-w="29"></i></span>
           <span style="margin-left:6px"><a class="pill" href="https://www.virustotal.com/gui/domain/shopnova-press.com" target="_blank" rel="noreferrer noopener" title="not in VirusTotal yet — unknown is never treated as clean" style="font-size:10px;color:var(--muted)">VT —</a></span></td>
         <td><div class="ring sm" data-p="80" style="--c:var(--muted)" title="confidence in the evidence: 80%"><div>80</div></div></td>
@@ -662,7 +683,7 @@ header nav{display:flex;align-items:center;min-width:0}
         <td class="selcol"></td>
         <td class="shotcol"><img class="bigshot" data-src="/_r/6054afdf0b0641.png" alt="screenshot of shopnova-status.com" title="click to enlarge" data-host="shopnova-status.com" data-href="/ui/findings/e8f52988-e497-493a-99c5-545b054ae118/"></td>
         <td><span class="badge sev-medium">medium</span></td>
-        <td><a href="/ui/findings/e8f52988-e497-493a-99c5-545b054ae118/" class="flink"><span class="mono">shopnova-status.com</span></a><div class="small muted">domain name · found by Certificate logs, Analyst URL scan · <a href="/ui/findings/e8f52988-e497-493a-99c5-545b054ae118/#network" title="site & network investigation: servers, WHOIS history, urlscan">network</a> · <a href="/ui/candidates/fa9e4485-803f-45d6-b42f-496d6b7fff72" title="domain timeline on the watchlist">timeline</a></div></td>
+        <td><a href="/ui/findings/e8f52988-e497-493a-99c5-545b054ae118/" class="flink"><span class="mono" dir="ltr">shopnova-status.com</span></a><div class="small muted">domain name · found by Certificate logs, Analyst URL scan · <a href="/ui/findings/e8f52988-e497-493a-99c5-545b054ae118/#network" title="site & network investigation: servers, WHOIS history, urlscan">network</a> · <a href="/ui/candidates/fa9e4485-803f-45d6-b42f-496d6b7fff72" title="domain timeline on the watchlist">timeline</a></div></td>
         <td class="mono" style="white-space:nowrap">29<span class="scorebar"><i data-w="29"></i></span>
           <span style="margin-left:6px"><a class="pill" href="https://www.virustotal.com/gui/domain/shopnova-status.com" target="_blank" rel="noreferrer noopener" title="not in VirusTotal yet — unknown is never treated as clean" style="font-size:10px;color:var(--muted)">VT —</a></span></td>
         <td><div class="ring sm" data-p="80" style="--c:var(--muted)" title="confidence in the evidence: 80%"><div>80</div></div></td>
@@ -675,7 +696,7 @@ header nav{display:flex;align-items:center;min-width:0}
         <td class="selcol"></td>
         <td class="shotcol"><img class="bigshot" data-src="/_r/bf96c03e021c3a.png" alt="screenshot of shopnova-careers.com" title="click to enlarge" data-host="shopnova-careers.com" data-href="/ui/findings/58f414f9-050d-45ea-a820-dc1d9ccf6047/"></td>
         <td><span class="badge sev-medium">medium</span></td>
-        <td><a href="/ui/findings/58f414f9-050d-45ea-a820-dc1d9ccf6047/" class="flink"><span class="mono">shopnova-careers.com</span></a><div class="small muted">domain name · found by Certificate logs, Analyst URL scan · <a href="/ui/findings/58f414f9-050d-45ea-a820-dc1d9ccf6047/#network" title="site & network investigation: servers, WHOIS history, urlscan">network</a> · <a href="/ui/candidates/c2515949-1dd5-46f5-987b-f5de5172f535" title="domain timeline on the watchlist">timeline</a></div></td>
+        <td><a href="/ui/findings/58f414f9-050d-45ea-a820-dc1d9ccf6047/" class="flink"><span class="mono" dir="ltr">shopnova-careers.com</span></a><div class="small muted">domain name · found by Certificate logs, Analyst URL scan · <a href="/ui/findings/58f414f9-050d-45ea-a820-dc1d9ccf6047/#network" title="site & network investigation: servers, WHOIS history, urlscan">network</a> · <a href="/ui/candidates/c2515949-1dd5-46f5-987b-f5de5172f535" title="domain timeline on the watchlist">timeline</a></div></td>
         <td class="mono" style="white-space:nowrap">29<span class="scorebar"><i data-w="29"></i></span>
           <span style="margin-left:6px"><a class="pill" href="https://www.virustotal.com/gui/domain/shopnova-careers.com" target="_blank" rel="noreferrer noopener" title="not in VirusTotal yet — unknown is never treated as clean" style="font-size:10px;color:var(--muted)">VT —</a></span></td>
         <td><div class="ring sm" data-p="80" style="--c:var(--muted)" title="confidence in the evidence: 80%"><div>80</div></div></td>
@@ -688,7 +709,7 @@ header nav{display:flex;align-items:center;min-width:0}
         <td class="selcol"></td>
         <td class="shotcol"><img class="bigshot" data-src="/_r/3b6f627f68adc1.png" alt="screenshot of shopnova-coupons.com" title="click to enlarge" data-host="shopnova-coupons.com" data-href="/ui/findings/a93d4aa8-32cd-4819-a9eb-fd7a8ed9b320/"></td>
         <td><span class="badge sev-medium">medium</span></td>
-        <td><a href="/ui/findings/a93d4aa8-32cd-4819-a9eb-fd7a8ed9b320/" class="flink"><span class="mono">shopnova-coupons.com</span></a><div class="small muted">domain name · found by Certificate logs, Analyst URL scan · <a href="/ui/findings/a93d4aa8-32cd-4819-a9eb-fd7a8ed9b320/#network" title="site & network investigation: servers, WHOIS history, urlscan">network</a> · <a href="/ui/candidates/df6c6ce6-a59b-4399-9fdb-008a25abf0ce" title="domain timeline on the watchlist">timeline</a></div></td>
+        <td><a href="/ui/findings/a93d4aa8-32cd-4819-a9eb-fd7a8ed9b320/" class="flink"><span class="mono" dir="ltr">shopnova-coupons.com</span></a><div class="small muted">domain name · found by Certificate logs, Analyst URL scan · <a href="/ui/findings/a93d4aa8-32cd-4819-a9eb-fd7a8ed9b320/#network" title="site & network investigation: servers, WHOIS history, urlscan">network</a> · <a href="/ui/candidates/df6c6ce6-a59b-4399-9fdb-008a25abf0ce" title="domain timeline on the watchlist">timeline</a></div></td>
         <td class="mono" style="white-space:nowrap">28<span class="scorebar"><i data-w="28"></i></span>
           <span style="margin-left:6px"><a class="pill" href="https://www.virustotal.com/gui/domain/shopnova-coupons.com" target="_blank" rel="noreferrer noopener" title="not in VirusTotal yet — unknown is never treated as clean" style="font-size:10px;color:var(--muted)">VT —</a></span></td>
         <td><div class="ring sm" data-p="50" style="--c:var(--muted)" title="confidence in the evidence: 50%"><div>50</div></div></td>
@@ -701,6 +722,7 @@ header nav{display:flex;align-items:center;min-width:0}
     </table>
     
 <div class="muted small" style="margin-top:8px">28 in total</div>
+    <div class="small muted" style="margin-top:8px">Download these 28: <a href="/ui/findings?brand_id=eb019060-41b6-4160-871c-14094ad558a4&amp;state=confirmed&amp;sort=severity&fmt=csv">CSV</a> · <a href="/ui/findings?brand_id=eb019060-41b6-4160-871c-14094ad558a4&amp;state=confirmed&amp;sort=severity&fmt=json">JSON</a> <span>(the same filters, every page)</span></div>
     
   </div>
 </div>
@@ -919,6 +941,16 @@ header nav{display:flex;align-items:center;min-width:0}
     setTimeout(() => { if (e.defaultPrevented) return; f.__sentAt = Date.now();
       if (f.hasAttribute('data-busy') && b && b.tagName === 'BUTTON') { b.disabled = true; b.dataset.was = b.textContent; b.textContent = f.getAttribute('data-busy') || 'Working…';
         setTimeout(() => { b.disabled = false; b.textContent = b.dataset.was; }, 30000); } }, 0); });
+  // "/" opens the search from any page (a page with its own search box — findings, watchlist — takes it first)
+  document.addEventListener('keydown', e => {
+    if (e.key !== '/' || e.defaultPrevented || e.ctrlKey || e.metaKey || e.altKey) return;
+    const a = document.activeElement; if (a && (/INPUT|SELECT|TEXTAREA/.test(a.tagName) || a.isContentEditable)) return;
+    const box = document.getElementById('hsearch'); if (!box || !box.offsetParent) { location.href = '/ui/search'; return; }
+    e.preventDefault(); box.focus();
+  });
+  // phones: a "rwd" table shows one card per row, each cell labelled with its column (see the CSS)
+  document.querySelectorAll('table.rwd').forEach(t => { const heads = [...t.querySelectorAll('thead th')].map(th => th.textContent.trim());
+    t.querySelectorAll('tbody tr').forEach(tr => [...tr.children].forEach((td, i) => { if (!td.hasAttribute('data-label')) td.dataset.label = heads[i] || ''; })); });
   // the sticky header's height, for anything that sticks under it
   const hdr = document.querySelector('header'); const setH = () => document.documentElement.style.setProperty('--hdr', (hdr ? hdr.offsetHeight : 56) + 'px');
   setH(); window.addEventListener('resize', setH);
@@ -938,7 +970,9 @@ header nav{display:flex;align-items:center;min-width:0}
   document.querySelectorAll('main table').forEach(t => { if (t.parentElement.classList.contains('tw')) return;
     const w = document.createElement('div'); w.className = 'tw'; t.parentNode.insertBefore(w, t); w.appendChild(t); });
   // keep the active tab visible in the scrollable mobile nav
-  const act = document.querySelector('header nav a.active'); if (act && act.scrollIntoView) act.scrollIntoView({block: 'nearest', inline: 'center'});
+  // (by scrolling the bar itself: scrollIntoView would also move where the first Tab press starts, past the skip links)
+  const act = document.querySelector('header nav a.active'), bar = act && act.parentElement;
+  if (act && bar.scrollWidth > bar.clientWidth) bar.scrollLeft = act.offsetLeft - (bar.clientWidth - act.offsetWidth) / 2;
   // stagger entrances
   document.querySelectorAll('.kpis').forEach(g => [...g.children].forEach((el, i) => el.style.setProperty('--i', i)));
   document.querySelectorAll('main .panel').forEach((el, i) => el.style.setProperty('--i', Math.min(i, 12)));
@@ -1094,6 +1128,9 @@ header nav{display:flex;align-items:center;min-width:0}
   document.addEventListener('keydown', ev => {
     if (modal.hidden) return;
     if (ev.key === 'Escape') { ev.preventDefault(); close(false); }
+    else if (ev.key === 'Tab') {  // the focus stays in the dialog
+      const f = [inp, cancel, ok].filter(x => !x.hidden); const i = f.indexOf(document.activeElement);
+      ev.preventDefault(); f[(i + (ev.shiftKey ? -1 : 1) + f.length) % f.length].focus(); }
     else if (ev.key === 'Enter' && document.activeElement !== cancel) { ev.preventDefault(); ok.click(); }
   });
   // forms and buttons that ask first

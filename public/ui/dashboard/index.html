@@ -33,11 +33,17 @@ header{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:24px
 header .logo{font-family:var(--mono);font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);display:flex;align-items:center;gap:8px}
 header .logo::before{content:"";width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 10px var(--accent);animation:beat 2.2s ease-in-out infinite}
 @keyframes beat{0%,100%{opacity:.45;transform:scale(.85)}50%{opacity:1;transform:scale(1.1)}}
-header nav a{position:relative;font-family:var(--mono);font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-right:16px;padding:4px 0}
+header nav a{position:relative;font-family:var(--mono);font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-right:14px;padding:4px 0;white-space:nowrap}
+@media (min-width:901px) and (max-width:1500px){header{gap:14px}header nav a{font-size:11px;letter-spacing:.04em;margin-right:11px}header .hsearch input{width:130px}header .who .email{display:none}}
 header nav a::after{content:"";position:absolute;left:0;right:0;bottom:-2px;height:2px;background:var(--accent);transform:scaleX(0);transform-origin:left;transition:transform .3s}
 header nav a.active,header nav a:hover{color:var(--text)}header nav a.active::after,header nav a:hover::after{transform:scaleX(1)}
 header nav a.active::after{box-shadow:0 0 8px var(--accent)}
-header .who{margin-left:auto;color:var(--muted);font-size:12px}
+header .who{color:var(--muted);font-size:12px;white-space:nowrap}
+header .hsearch{margin-left:auto}header .hsearch input{width:170px;padding:5px 10px;font-size:12.5px;border-radius:999px;background:#0b1220}
+header .hsearch input:focus{width:240px}
+header nav .nc{display:inline-block;min-width:18px;padding:0 5px;margin-left:4px;border-radius:999px;background:rgba(53,199,242,.18);color:var(--accent2);font-size:10.5px;text-align:center;letter-spacing:0}
+header nav .nc.warn{background:rgba(255,77,77,.16);color:var(--crit)}
+@media (max-width:900px){header .hsearch{display:none}}
 main{position:relative;z-index:1;padding:20px;max-width:1440px;margin:0 auto}
 h1{font-family:var(--display);font-size:26px;letter-spacing:.04em;margin:0 0 14px;font-weight:700;
   background:linear-gradient(90deg,#E6EDF5 0%,#E6EDF5 55%,var(--accent2) 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
@@ -64,7 +70,7 @@ tr:hover td{background:rgba(53,199,242,.05)}
 .sev-low{background:rgba(46,204,113,.15);color:var(--low);border:1px solid var(--low)}
 .state{background:var(--panel2);color:var(--muted);border:1px solid var(--border)}
 .st-open,.st-new{color:var(--text)}.st-confirmed,.st-flagged{color:var(--crit);border-color:rgba(255,77,77,.5)}
-.st-dismissed{color:#5a6678}.st-watching{color:var(--accent);border-color:rgba(53,199,242,.4)}.st-long_watch{color:var(--muted)}
+.st-dismissed{color:var(--muted)}.st-watching{color:var(--accent);border-color:rgba(53,199,242,.4)}.st-long_watch{color:var(--muted)}
 .pill{background:var(--panel2);border:1px solid var(--border);border-radius:6px;padding:1px 6px;font-family:var(--mono);font-size:11px;color:var(--text);white-space:nowrap}
 /* signal pills: one neutral style for every group (the group is in the tooltip and the Explain table) */
 .pill[class*="g-"]{border-color:var(--border);color:#c9d3df}
@@ -73,6 +79,18 @@ button:hover,.btn:hover{border-color:var(--accent);box-shadow:0 0 12px rgba(53,1
 button.danger{border-color:var(--crit);color:var(--crit)}button.ok{border-color:var(--low);color:var(--low)}
 input,select,textarea{background:#0b1220;color:var(--text);border:1px solid var(--border);border-radius:6px;padding:7px 9px;font:inherit;width:100%;transition:border-color .2s,box-shadow .2s}
 input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(53,199,242,.15)}
+/* a paragraph that may be Hebrew or Arabic (a brand name, an ad, a reason) takes its direction from its own first letter */
+.lead,.summary,.story,.say,.reason,.ev .diff{unicode-bidi:plaintext}
+button.chip{font:inherit;font-family:var(--mono);font-size:11px;box-shadow:none}
+/* on a phone a wide table (class "rwd") becomes one card per row; each cell says what it is (from the header) */
+@media (max-width:700px){
+  table.rwd thead{display:none}
+  table.rwd,table.rwd tbody,table.rwd tr,table.rwd td{display:block;width:100%}
+  table.rwd tr{border:1px solid var(--border);border-radius:10px;margin:0 0 10px;padding:6px 10px;background:var(--panel2)}
+  table.rwd td{border:0;padding:4px 0;min-height:0}
+  table.rwd td[data-label]:not([data-label=""])::before{content:attr(data-label);display:block;font:600 10px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:2px}
+  table.rwd td:empty{display:none}
+}
 /* keyboard users see where they are; mouse clicks do not get the ring */
 :focus-visible{outline:2px solid var(--accent2);outline-offset:2px;border-radius:4px}
 a:focus-visible,button:focus-visible,.btn:focus-visible{box-shadow:0 0 0 3px rgba(53,199,242,.25)}
@@ -144,7 +162,7 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
 .grid>*,.cols>*{min-width:0}
 .tw{overflow-x:auto;-webkit-overflow-scrolling:touch;max-width:100%;overscroll-behavior-x:contain}
 .tw>table{min-width:100%}
-header nav{display:flex;align-items:center;min-width:0}
+header nav{display:flex;align-items:center;min-width:0;overflow-x:auto;scrollbar-width:none}  /* a narrow desktop scrolls the bar, never overlaps the search */
 @media (max-width:1100px){.grid.four{grid-template-columns:1fr 1fr}}
 @media (max-width:900px){
   .grid,.grid.two,.grid.three,.grid.four,.cols{grid-template-columns:1fr!important}
@@ -192,19 +210,19 @@ header nav{display:flex;align-items:center;min-width:0}
 <header>
   <a class="logo" href="/ui/dashboard/">BrandWatch</a>
   
-  <nav>
+  <nav aria-label="Main">
     <a href="/ui/dashboard/" class="active">Dashboard</a>
-    <a href="/ui/how-it-works/" class="">How it works</a>
-    <a href="/ui/brands/" class="">Brands &amp; Scans</a>
-    <a href="/ui/findings/" class="">Findings</a>
+    <a href="/ui/findings/" class="">Findings <span class="nc" title="9 awaiting a verdict">9</span></a>
     <a href="/ui/candidates/" class="">Watchlist</a>
     <a href="/ui/campaigns/" class="">Attack infrastructure</a>
-    <a href="/ui/takedowns/" class="">Takedowns</a>
+    <a href="/ui/takedowns/" class="">Takedowns <span class="nc warn" title="38 confirmed site(s) whose takedown was not sent">38</span></a>
+    <a href="/ui/brands/" class="">Brands &amp; Scans</a>
     <a href="/ui/activity/" class="">Activity</a>
     <a href="/ui/settings/" class="">Settings</a>
-    <a href="/docs" target="_blank">API</a>
+    <a href="/ui/how-it-works/" class="">How it works</a>
   </nav>
-  <span class="who"><span class="email">admin · </span>admin · <a href="/ui/logout">logout</a></span>
+  <form method="get" action="/ui/search" class="hsearch" role="search"><input name="q" id="hsearch" placeholder="Search · /" aria-label="Search a domain, an IP, a takedown reference" autocomplete="off" maxlength="120"></form>
+  <span class="who"><span class="email">admin · </span>admin · <a href="/docs" target="_blank" title="the REST API reference">API</a> · <a href="/ui/logout">logout</a></span>
   
 </header>
 <main id="main">
@@ -339,9 +357,13 @@ header nav{display:flex;align-items:center;min-width:0}
     .kpi .v{font-size:28px}
   }
 </style>
+<style>
+  .maptog{display:flex;justify-content:flex-end;margin:4px 0 -6px}
+  .nomap #globe{display:none}.nomap .hero2{grid-template-columns:minmax(0,1fr)}
+</style>
 <div class="dash">
 <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:12px">
-  <h1 style="margin:0;font-family:Rajdhani;font-size:26px;letter-spacing:.04em">DASHBOARD <span class="muted small" style="font-family:var(--sans)">· BRAND MONITOR · all brands · updated <span id="updated">19:59:56</span> UTC</span></h1>
+  <h1 style="margin:0;font-family:Rajdhani;font-size:26px;letter-spacing:.04em">DASHBOARD <span class="muted small" style="font-family:var(--sans)">· BRAND MONITOR · all brands · updated <span id="updated">21:30:59</span> UTC</span></h1>
   <form method="get" action="/ui/dashboard/" style="margin-left:auto;display:flex;gap:8px;align-items:center">
     <select name="brand_id" onchange="this.form.submit()"><option value="">all brands</option><option value="eb019060-41b6-4160-871c-14094ad558a4" >ShopNova</option><option value="1909c3e0-295d-4d38-bb7e-a2b05c9287d4" >ShopNova · Israel</option><option value="f46bffed-4795-4cdd-ad8f-abd3d26fcc60" >CoinPilot</option><option value="a7b5cb5c-e4a0-495d-b6c9-3ac5209ac3b2" >VaultPay</option></select>
   </form>
@@ -350,6 +372,38 @@ header nav{display:flex;align-items:center;min-width:0}
 
 
 
+
+
+
+<div class="panel" style="margin-bottom:12px;border-color:rgba(255,159,28,.55);box-shadow:0 0 24px rgba(255,159,28,.12)" id="action-required">
+  <h2 style="margin-top:0;color:var(--high)">Action required <span class="muted">· 47 item(s) waiting for an analyst</span></h2>
+  <div class="actions" style="gap:10px">
+    <a class="btn" href="/ui/findings/_02b534e642/"><b data-k="findings_open">9</b> finding(s) awaiting your verdict →</a>
+    <a class="btn" href="/ui/takedowns/_9f63e57bb2/" style="border-color:var(--crit);color:var(--crit)"><b data-k="confirmed_no_takedown">38</b> confirmed phishing site(s) with no takedown request →</a>
+    
+    
+  </div>
+</div>
+
+
+
+<div class="panel" id="new-24h" style="margin-bottom:12px">
+  <h2 style="margin-top:0">New in the last 24 hours <span class="muted">· open Critical and High findings, newest first</span> <a class="small" href="/ui/findings/_d8f30cf339/" style="text-transform:none;letter-spacing:0;font-family:var(--sans)">all of them →</a></h2>
+  <div class="small" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:5px 0;border-bottom:1px solid var(--border)"><span class="badge sev-critical">critical</span><a class="mono" href="/ui/findings/b8ee9a9b-16e7-4c1f-be0b-6756491abd64/" dir="ltr">account-review-center.com</a><span class="muted">75 · <time datetime="2026-10-18T17:10:05.060931" data-local title="2026-10-18T17:10:05.060931 UTC">2026-10-18 17:10</time></span></div><div class="small" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:5px 0;border-bottom:1px solid var(--border)"><span class="badge sev-critical">critical</span><a class="mono" href="/ui/findings/6d7c2f47-cf77-4992-9dce-622f09bbf0bf/" dir="ltr">shopnova-login.com</a><span class="muted">100 · <time datetime="2026-10-18T07:29:25.743100" data-local title="2026-10-18T07:29:25.743100 UTC">2026-10-18 07:29</time></span></div><div class="small" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:5px 0;border-bottom:1px solid var(--border)"><span class="badge sev-high">high</span><a class="mono" href="/ui/findings/de838d76-5b19-4caf-9212-8d9a60589653/" dir="ltr">help@shopnova-care.net</a><span class="muted">70 · <time datetime="2026-10-18T07:29:25.715979" data-local title="2026-10-18T07:29:25.715979 UTC">2026-10-18 07:29</time></span></div><div class="small" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:5px 0;border-bottom:1px solid var(--border)"><span class="badge sev-critical">critical</span><a class="mono" href="/ui/findings/27ceca7f-5129-4f1d-ad51-b194ed5448f9/" dir="ltr">03-9817777</a><span class="muted">100 · <time datetime="2026-10-18T07:29:25.679268" data-local title="2026-10-18T07:29:25.679268 UTC">2026-10-18 07:29</time></span></div><div class="small" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:5px 0;border-bottom:1px solid var(--border)"><span class="badge sev-critical">critical</span><a class="mono" href="/ui/findings/6fc97f7b-606c-4e8f-89dd-19b57358c6ff/" dir="ltr">shopnova-refund.net</a><span class="muted">89 · <time datetime="2026-10-18T06:29:19.925092" data-local title="2026-10-18T06:29:19.925092 UTC">2026-10-18 06:29</time></span></div>
+</div>
+
+
+<div class="kpis" id="kpis" style="margin-top:14px">
+  <a class="kpi lnk crit" href="/ui/findings/_a24fbb1571/"><div class="v num" data-k="critical_open" data-count="8">0</div><div class="l"><span class="pulse"></span> critical open</div></a>
+  <a class="kpi lnk hi" href="/ui/findings/_642aac0605/"><div class="v num" data-k="high_open" data-count="1">0</div><div class="l">high open</div></a>
+  <a class="kpi lnk" href="/ui/findings/_02b534e642/"><div class="v num" data-k="findings_open" data-count="9">0</div><div class="l">awaiting verdict</div></a>
+  <a class="kpi lnk" href="/ui/candidates/_62bddd2d2d/"><div class="v num" data-k="candidates_watching" data-count="40">0</div><div class="l">on the watchlist</div></a>
+  <div class="kpi"><div class="v num" data-k="scans_today" data-count="6">0</div><div class="l">scans today</div></div>
+  <div class="kpi"><div class="v num" data-k="candidates_scanned_today" data-count="11">0</div><div class="l">domains checked today</div></div>
+</div>
+
+<script>try { if (localStorage.getItem('bw-dash-map') === 'off') document.documentElement.classList.add('nomap'); } catch (e) { /* private window */ }</script>
+<div class="maptog"><button type="button" class="small ghost" id="maptog" aria-controls="globe"></button></div>
 
 <section class="hero2" id="hero">
   <div class="hero-text">
@@ -380,19 +434,6 @@ header nav{display:flex;align-items:center;min-width:0}
 
 
 
-<div class="panel" style="margin-bottom:12px;border-color:rgba(255,159,28,.55);box-shadow:0 0 24px rgba(255,159,28,.12)" id="action-required">
-  <h2 style="margin-top:0;color:var(--high)">Action required <span class="muted">· 47 item(s) waiting for an analyst</span></h2>
-  <div class="actions" style="gap:10px">
-    <a class="btn" href="/ui/findings/_02b534e642/"><b>9</b> finding(s) awaiting your verdict →</a>
-    <a class="btn" href="/ui/takedowns/_9f63e57bb2/" style="border-color:var(--crit);color:var(--crit)"><b>38</b> confirmed phishing site(s) with no takedown request →</a>
-    
-    
-  </div>
-</div>
-
-
-
-
 <section class="panel" id="showcase" style="margin-top:14px">
   <h2 style="margin-top:0">Caught in the act <span class="muted">· fakes BrandWatch found, next to the real site they copy</span></h2>
   <div class="cases">
@@ -405,7 +446,7 @@ header nav{display:flex;align-items:center;min-width:0}
       </div>
       <div class="cmeta">
         <div class="badges"><span class="badge sev-critical">critical · 92</span><span class="badge" style="border:1px solid rgba(230,237,245,.35);color:var(--text);background:rgba(230,237,245,.05)" title="the kit hides from scanners: BrandWatch revealed the real page with its cloaking probes">CLOAKED KIT</span><span class="badge state">confirmed phishing</span></div>
-        <div class="host mono"><span class="mono">shopnova-verification.com</span></div>
+        <div class="host mono"><span class="mono" dir="ltr">shopnova-verification.com</span></div>
         <p>Registered 6 days ago. Puts the ShopNova name in its address, copies ShopNova&#39;s favicon, homepage and login form and asks for a password. It hides from security scanners: the real page only appears to a normal visitor (home IP / browser). It shares infrastructure with phishing BrandWatch already mapped.</p>
         <span class="open">Open the evidence →</span>
       </div>
@@ -419,7 +460,7 @@ header nav{display:flex;align-items:center;min-width:0}
       </div>
       <div class="cmeta">
         <div class="badges"><span class="badge sev-critical">critical · 87</span><span class="badge" style="border:1px solid rgba(230,237,245,.35);color:var(--text);background:rgba(230,237,245,.05)" title="the kit hides from scanners: BrandWatch revealed the real page with its cloaking probes">CLOAKED KIT</span><span class="badge state">confirmed phishing</span></div>
-        <div class="host mono"><span class="mono">shopnova-giftcard.com</span></div>
+        <div class="host mono"><span class="mono" dir="ltr">shopnova-giftcard.com</span></div>
         <p>Registered 4 days ago. Puts the ShopNova name in its address, copies ShopNova&#39;s favicon, homepage and login form and asks for a password. It hides from security scanners: the real page only appears to a normal visitor (home IP / browser).</p>
         <span class="open">Open the evidence →</span>
       </div>
@@ -433,7 +474,7 @@ header nav{display:flex;align-items:center;min-width:0}
       </div>
       <div class="cmeta">
         <div class="badges"><span class="badge sev-critical">critical · 75</span><span class="badge" style="border:1px solid rgba(230,237,245,.35);color:var(--text);background:rgba(230,237,245,.05)" title="the kit hides from scanners: BrandWatch revealed the real page with its cloaking probes">CLOAKED KIT</span><span class="badge state">confirmed phishing</span></div>
-        <div class="host mono"><span class="mono">shopnova-refund.net</span></div>
+        <div class="host mono"><span class="mono" dir="ltr">shopnova-refund.net</span></div>
         <p>Registered 9 days ago. Puts the ShopNova name in its address, copies ShopNova&#39;s favicon, homepage and login form and asks for a password. It only opens for visitors arriving from the phishing link, so a plain scanner sees nothing.</p>
         <span class="open">Open the evidence →</span>
       </div>
@@ -442,16 +483,6 @@ header nav{display:flex;align-items:center;min-width:0}
   </div>
 </section>
 
-
-
-<div class="kpis" id="kpis" style="margin-top:14px">
-  <a class="kpi lnk crit" href="/ui/findings/_a24fbb1571/"><div class="v num" data-k="critical_open" data-count="8">0</div><div class="l"><span class="pulse"></span> critical open</div></a>
-  <a class="kpi lnk hi" href="/ui/findings/_642aac0605/"><div class="v num" data-k="high_open" data-count="1">0</div><div class="l">high open</div></a>
-  <a class="kpi lnk" href="/ui/findings/_02b534e642/"><div class="v num" data-k="findings_open" data-count="9">0</div><div class="l">awaiting verdict</div></a>
-  <a class="kpi lnk" href="/ui/candidates/_62bddd2d2d/"><div class="v num" data-k="candidates_watching" data-count="40">0</div><div class="l">on the watchlist</div></a>
-  <div class="kpi"><div class="v num" data-k="scans_today" data-count="6">0</div><div class="l">scans today</div></div>
-  <div class="kpi"><div class="v num" data-k="candidates_scanned_today" data-count="11">0</div><div class="l">domains checked today</div></div>
-</div>
 
 <div class="mid" style="margin-top:14px">
   <div class="panel">
@@ -515,19 +546,19 @@ header nav{display:flex;align-items:center;min-width:0}
     <div class="feed" id="feed"></div>
     <h2>Recent criticals</h2>
     
-    <div class="small" style="padding:6px 0;border-bottom:1px solid var(--border)"><span class="badge sev-critical">critical</span>  <a href="/ui/findings/b8ee9a9b-16e7-4c1f-be0b-6756491abd64/"><span class="mono">account-review-center.com</span></a> <span class="muted">75 · awaiting verdict</span>
+    <div class="small" style="padding:6px 0;border-bottom:1px solid var(--border)"><span class="badge sev-critical">critical</span>  <a href="/ui/findings/b8ee9a9b-16e7-4c1f-be0b-6756491abd64/"><span class="mono" dir="ltr">account-review-center.com</span></a> <span class="muted">75 · awaiting verdict</span>
       <div style="margin-top:3px"><span class="pill g-visual" title="favicon mmh3 1401845590 equals the brand&#39;s favicon hash · +22 pts">identical favicon</span> <span class="pill g-visual" title="homepage screenshot is 100% similar to the brand&#39;s (pHash) · +18 pts">looks like the real site</span> <span class="pill g-infrastructure" title="shares infrastructure with an investigated campaign of this brand · +15 pts">linked to a mapped attacker</span> </div></div>
     
-    <div class="small" style="padding:6px 0;border-bottom:1px solid var(--border)"><span class="badge sev-critical">critical</span>  <a href="/ui/findings/6d7c2f47-cf77-4992-9dce-622f09bbf0bf/"><span class="mono">shopnova-login.com</span></a> <span class="muted">100 · awaiting verdict</span>
+    <div class="small" style="padding:6px 0;border-bottom:1px solid var(--border)"><span class="badge sev-critical">critical</span>  <a href="/ui/findings/6d7c2f47-cf77-4992-9dce-622f09bbf0bf/"><span class="mono" dir="ltr">shopnova-login.com</span></a> <span class="muted">100 · awaiting verdict</span>
       <div style="margin-top:3px"><span class="pill g-" title="shopnova-login.com is a phishing site BrandWatch confirmed · +40 pts">a known phishing site</span> <span class="pill g-" title="Gemini sent users to shopnova-login.com, which is not a site of ShopNova · +40 pts">sends users elsewhere</span> <span class="pill g-" title="shopnova-login.com carries the brand&#39;s name but is not one of its domains · +30 pts">published by a look-alike</span> </div></div>
     
-    <div class="small" style="padding:6px 0;border-bottom:1px solid var(--border)"><span class="badge sev-critical">critical</span>  <a href="/ui/findings/27ceca7f-5129-4f1d-ad51-b194ed5448f9/"><span class="mono">03-9817777</span></a> <span class="muted">100 · awaiting verdict</span>
+    <div class="small" style="padding:6px 0;border-bottom:1px solid var(--border)"><span class="badge sev-critical">critical</span>  <a href="/ui/findings/27ceca7f-5129-4f1d-ad51-b194ed5448f9/"><span class="mono" dir="ltr">03-9817777</span></a> <span class="muted">100 · awaiting verdict</span>
       <div style="margin-top:3px"><span class="pill g-" title="ChatGPT gave the phone 03-9817777 — it is on none of ShopNova&#39;s pages · +40 pts">not on the brand&#39;s site</span> <span class="pill g-" title="shopnova-support-center.com (a phishing site BrandWatch confirmed) · +40 pts">a known phishing site</span> <span class="pill g-" title="shopnova-support-center.com carries the brand&#39;s name: a look-alike publishes the number · +30 pts">published by a look-alike</span> </div></div>
     
-    <div class="small" style="padding:6px 0;border-bottom:1px solid var(--border)"><span class="badge sev-critical">critical</span> <span class="badge" style="border:1px solid rgba(230,237,245,.35);color:var(--text);background:rgba(230,237,245,.05)" title="the kit hides from scanners: BrandWatch revealed the real page with its cloaking probes">CLOAKED KIT</span> <a href="/ui/findings/6fc97f7b-606c-4e8f-89dd-19b57358c6ff/"><span class="mono">shopnova-refund.net</span></a> <span class="muted">89 · awaiting verdict</span>
+    <div class="small" style="padding:6px 0;border-bottom:1px solid var(--border)"><span class="badge sev-critical">critical</span> <span class="badge" style="border:1px solid rgba(230,237,245,.35);color:var(--text);background:rgba(230,237,245,.05)" title="the kit hides from scanners: BrandWatch revealed the real page with its cloaking probes">CLOAKED KIT</span> <a href="/ui/findings/6fc97f7b-606c-4e8f-89dd-19b57358c6ff/"><span class="mono" dir="ltr">shopnova-refund.net</span></a> <span class="muted">89 · awaiting verdict</span>
       <div style="margin-top:3px"><span class="pill g-visual" title="favicon mmh3 -2029202433 equals the brand&#39;s favicon hash · +22 pts">identical favicon</span> <span class="pill g-visual" title="homepage screenshot is 99% similar to the brand&#39;s (pHash) · +18 pts">looks like the real site</span> <span class="pill g-infrastructure" title="shares server 203.0.113.102 with known phishing of this brand · +15 pts">shares a server with phishing</span> </div></div>
     
-    <div class="small" style="padding:6px 0;border-bottom:1px solid var(--border)"><span class="badge sev-critical">critical</span> <span class="badge" style="border:1px solid rgba(230,237,245,.35);color:var(--text);background:rgba(230,237,245,.05)" title="the kit hides from scanners: BrandWatch revealed the real page with its cloaking probes">CLOAKED KIT</span> <a href="/ui/findings/6ed451ca-2fd1-464b-b381-03f8df804f34/"><span class="mono">shopnova-eu.com</span></a> <span class="muted">75 · awaiting verdict</span>
+    <div class="small" style="padding:6px 0;border-bottom:1px solid var(--border)"><span class="badge sev-critical">critical</span> <span class="badge" style="border:1px solid rgba(230,237,245,.35);color:var(--text);background:rgba(230,237,245,.05)" title="the kit hides from scanners: BrandWatch revealed the real page with its cloaking probes">CLOAKED KIT</span> <a href="/ui/findings/6ed451ca-2fd1-464b-b381-03f8df804f34/"><span class="mono" dir="ltr">shopnova-eu.com</span></a> <span class="muted">75 · awaiting verdict</span>
       <div style="margin-top:3px"><span class="pill g-visual" title="favicon mmh3 -2029202433 equals the brand&#39;s favicon hash · +22 pts">identical favicon</span> <span class="pill g-visual" title="homepage screenshot is 100% similar to the brand&#39;s (pHash) · +18 pts">looks like the real site</span> <span class="pill g-behavior" title="page contains a password field · +14 pts">asks for a password</span> </div></div>
     
     
@@ -616,7 +647,7 @@ header nav{display:flex;align-items:center;min-width:0}
     <div class="mono small" style="margin:4px 0 12px">$0.0000 / no daily cap set (0 = unlimited)</div>
     <div class="small muted">API calls today</div>
     <div class="meter"><i style="width:0%"></i></div>
-    <div class="mono small" style="margin-top:4px">148 / 100000</div>
+    <div class="mono small" style="margin-top:4px">178 / 100000</div>
   </div>
     <div class="panel">
       <h2 style="margin-top:0">Evidence &amp; indicators</h2>
@@ -669,6 +700,12 @@ header nav{display:flex;align-items:center;min-width:0}
   pollFeed();
 
   // ---- globe (globe.gl if the CDN loaded, else a hand-drawn canvas globe)
+  // the map can be hidden (remembered in this browser); hidden, it is not started at all
+  const tog = document.getElementById('maptog');
+  const hidden = document.documentElement.classList.contains('nomap');
+  if (tog) { tog.textContent = hidden ? 'show the attack map ▾' : 'hide the attack map ▴';
+    tog.addEventListener('click', () => { try { localStorage.setItem('bw-dash-map', hidden ? 'on' : 'off'); } catch (e) { /* ignore */ } location.reload(); }); }
+  if (hidden) return;
   const el = document.getElementById('globe');
   // size from the real box (the hero grid stretches it to the tallest column), never from a breakpoint guess
   const phone = window.matchMedia('(max-width: 900px)').matches;
@@ -803,7 +840,8 @@ header nav{display:flex;align-items:center;min-width:0}
     const fit = fitAltitude(W, H), R = g.getGlobeRadius();
     ctl.minDistance = R * 1.35; ctl.maxDistance = R * (1 + fit * 1.9);
     let handling = false, resume = null;
-    const setRot = () => { ctl.autoRotate = !handling && !(hovered && !hovered.cluster); };
+    const still = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const setRot = () => { ctl.autoRotate = !still && !handling && !(hovered && !hovered.cluster); };
     ctl.addEventListener('start', () => { handling = true; clearTimeout(resume); setRot(); });
     ctl.addEventListener('end', () => { clearTimeout(resume); resume = setTimeout(() => { handling = false; setRot(); }, 1500); });
     onHoverChange = setRot; setRot();
@@ -1162,12 +1200,18 @@ header nav{display:flex;align-items:center;min-width:0}
   if (!savedView) { try { savedView = localStorage.getItem('bw.geoView2'); } catch (e) {} }
   setView(savedView === 'globe' ? 'globe' : 'map');  // the flat map unless you chose the globe
 
-  // ---- refresh KPIs every 20s without reloading the globe
+})();
+</script>
+<script>
+(function(){
+  // ---- refresh the numbers every 20 s without reloading the map: the tiles and the "Action required" counts; paused in a hidden tab
+  const brandId = "";
   setInterval(async () => {
+    if (document.hidden) return;
     try {
       const r = await fetch(`/api/dashboard${brandId ? '?brand_id=' + brandId : ''}`, {credentials:'same-origin'});
       if (!r.ok) return; const d = await r.json();
-      document.querySelectorAll('#kpis .v[data-k]').forEach(el => { const v = d.kpis[el.dataset.k]; if (v !== undefined && v !== null) el.textContent = Number(v).toLocaleString('en-US'); });
+      document.querySelectorAll('#kpis .v[data-k], #action-required [data-k]').forEach(el => { const v = d.kpis[el.dataset.k]; if (v !== undefined && v !== null) el.textContent = Number(v).toLocaleString('en-US'); });
       document.getElementById('updated').textContent = d.generated_at.slice(11, 19);
     } catch (e) {}
   }, 20000);
@@ -1188,6 +1232,16 @@ header nav{display:flex;align-items:center;min-width:0}
     setTimeout(() => { if (e.defaultPrevented) return; f.__sentAt = Date.now();
       if (f.hasAttribute('data-busy') && b && b.tagName === 'BUTTON') { b.disabled = true; b.dataset.was = b.textContent; b.textContent = f.getAttribute('data-busy') || 'Working…';
         setTimeout(() => { b.disabled = false; b.textContent = b.dataset.was; }, 30000); } }, 0); });
+  // "/" opens the search from any page (a page with its own search box — findings, watchlist — takes it first)
+  document.addEventListener('keydown', e => {
+    if (e.key !== '/' || e.defaultPrevented || e.ctrlKey || e.metaKey || e.altKey) return;
+    const a = document.activeElement; if (a && (/INPUT|SELECT|TEXTAREA/.test(a.tagName) || a.isContentEditable)) return;
+    const box = document.getElementById('hsearch'); if (!box || !box.offsetParent) { location.href = '/ui/search'; return; }
+    e.preventDefault(); box.focus();
+  });
+  // phones: a "rwd" table shows one card per row, each cell labelled with its column (see the CSS)
+  document.querySelectorAll('table.rwd').forEach(t => { const heads = [...t.querySelectorAll('thead th')].map(th => th.textContent.trim());
+    t.querySelectorAll('tbody tr').forEach(tr => [...tr.children].forEach((td, i) => { if (!td.hasAttribute('data-label')) td.dataset.label = heads[i] || ''; })); });
   // the sticky header's height, for anything that sticks under it
   const hdr = document.querySelector('header'); const setH = () => document.documentElement.style.setProperty('--hdr', (hdr ? hdr.offsetHeight : 56) + 'px');
   setH(); window.addEventListener('resize', setH);
@@ -1207,7 +1261,9 @@ header nav{display:flex;align-items:center;min-width:0}
   document.querySelectorAll('main table').forEach(t => { if (t.parentElement.classList.contains('tw')) return;
     const w = document.createElement('div'); w.className = 'tw'; t.parentNode.insertBefore(w, t); w.appendChild(t); });
   // keep the active tab visible in the scrollable mobile nav
-  const act = document.querySelector('header nav a.active'); if (act && act.scrollIntoView) act.scrollIntoView({block: 'nearest', inline: 'center'});
+  // (by scrolling the bar itself: scrollIntoView would also move where the first Tab press starts, past the skip links)
+  const act = document.querySelector('header nav a.active'), bar = act && act.parentElement;
+  if (act && bar.scrollWidth > bar.clientWidth) bar.scrollLeft = act.offsetLeft - (bar.clientWidth - act.offsetWidth) / 2;
   // stagger entrances
   document.querySelectorAll('.kpis').forEach(g => [...g.children].forEach((el, i) => el.style.setProperty('--i', i)));
   document.querySelectorAll('main .panel').forEach((el, i) => el.style.setProperty('--i', Math.min(i, 12)));
@@ -1363,6 +1419,9 @@ header nav{display:flex;align-items:center;min-width:0}
   document.addEventListener('keydown', ev => {
     if (modal.hidden) return;
     if (ev.key === 'Escape') { ev.preventDefault(); close(false); }
+    else if (ev.key === 'Tab') {  // the focus stays in the dialog
+      const f = [inp, cancel, ok].filter(x => !x.hidden); const i = f.indexOf(document.activeElement);
+      ev.preventDefault(); f[(i + (ev.shiftKey ? -1 : 1) + f.length) % f.length].focus(); }
     else if (ev.key === 'Enter' && document.activeElement !== cancel) { ev.preventDefault(); ok.click(); }
   });
   // forms and buttons that ask first

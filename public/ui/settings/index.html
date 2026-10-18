@@ -33,11 +33,17 @@ header{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:24px
 header .logo{font-family:var(--mono);font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);display:flex;align-items:center;gap:8px}
 header .logo::before{content:"";width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 10px var(--accent);animation:beat 2.2s ease-in-out infinite}
 @keyframes beat{0%,100%{opacity:.45;transform:scale(.85)}50%{opacity:1;transform:scale(1.1)}}
-header nav a{position:relative;font-family:var(--mono);font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-right:16px;padding:4px 0}
+header nav a{position:relative;font-family:var(--mono);font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-right:14px;padding:4px 0;white-space:nowrap}
+@media (min-width:901px) and (max-width:1500px){header{gap:14px}header nav a{font-size:11px;letter-spacing:.04em;margin-right:11px}header .hsearch input{width:130px}header .who .email{display:none}}
 header nav a::after{content:"";position:absolute;left:0;right:0;bottom:-2px;height:2px;background:var(--accent);transform:scaleX(0);transform-origin:left;transition:transform .3s}
 header nav a.active,header nav a:hover{color:var(--text)}header nav a.active::after,header nav a:hover::after{transform:scaleX(1)}
 header nav a.active::after{box-shadow:0 0 8px var(--accent)}
-header .who{margin-left:auto;color:var(--muted);font-size:12px}
+header .who{color:var(--muted);font-size:12px;white-space:nowrap}
+header .hsearch{margin-left:auto}header .hsearch input{width:170px;padding:5px 10px;font-size:12.5px;border-radius:999px;background:#0b1220}
+header .hsearch input:focus{width:240px}
+header nav .nc{display:inline-block;min-width:18px;padding:0 5px;margin-left:4px;border-radius:999px;background:rgba(53,199,242,.18);color:var(--accent2);font-size:10.5px;text-align:center;letter-spacing:0}
+header nav .nc.warn{background:rgba(255,77,77,.16);color:var(--crit)}
+@media (max-width:900px){header .hsearch{display:none}}
 main{position:relative;z-index:1;padding:20px;max-width:1440px;margin:0 auto}
 h1{font-family:var(--display);font-size:26px;letter-spacing:.04em;margin:0 0 14px;font-weight:700;
   background:linear-gradient(90deg,#E6EDF5 0%,#E6EDF5 55%,var(--accent2) 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
@@ -64,7 +70,7 @@ tr:hover td{background:rgba(53,199,242,.05)}
 .sev-low{background:rgba(46,204,113,.15);color:var(--low);border:1px solid var(--low)}
 .state{background:var(--panel2);color:var(--muted);border:1px solid var(--border)}
 .st-open,.st-new{color:var(--text)}.st-confirmed,.st-flagged{color:var(--crit);border-color:rgba(255,77,77,.5)}
-.st-dismissed{color:#5a6678}.st-watching{color:var(--accent);border-color:rgba(53,199,242,.4)}.st-long_watch{color:var(--muted)}
+.st-dismissed{color:var(--muted)}.st-watching{color:var(--accent);border-color:rgba(53,199,242,.4)}.st-long_watch{color:var(--muted)}
 .pill{background:var(--panel2);border:1px solid var(--border);border-radius:6px;padding:1px 6px;font-family:var(--mono);font-size:11px;color:var(--text);white-space:nowrap}
 /* signal pills: one neutral style for every group (the group is in the tooltip and the Explain table) */
 .pill[class*="g-"]{border-color:var(--border);color:#c9d3df}
@@ -73,6 +79,18 @@ button:hover,.btn:hover{border-color:var(--accent);box-shadow:0 0 12px rgba(53,1
 button.danger{border-color:var(--crit);color:var(--crit)}button.ok{border-color:var(--low);color:var(--low)}
 input,select,textarea{background:#0b1220;color:var(--text);border:1px solid var(--border);border-radius:6px;padding:7px 9px;font:inherit;width:100%;transition:border-color .2s,box-shadow .2s}
 input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(53,199,242,.15)}
+/* a paragraph that may be Hebrew or Arabic (a brand name, an ad, a reason) takes its direction from its own first letter */
+.lead,.summary,.story,.say,.reason,.ev .diff{unicode-bidi:plaintext}
+button.chip{font:inherit;font-family:var(--mono);font-size:11px;box-shadow:none}
+/* on a phone a wide table (class "rwd") becomes one card per row; each cell says what it is (from the header) */
+@media (max-width:700px){
+  table.rwd thead{display:none}
+  table.rwd,table.rwd tbody,table.rwd tr,table.rwd td{display:block;width:100%}
+  table.rwd tr{border:1px solid var(--border);border-radius:10px;margin:0 0 10px;padding:6px 10px;background:var(--panel2)}
+  table.rwd td{border:0;padding:4px 0;min-height:0}
+  table.rwd td[data-label]:not([data-label=""])::before{content:attr(data-label);display:block;font:600 10px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:2px}
+  table.rwd td:empty{display:none}
+}
 /* keyboard users see where they are; mouse clicks do not get the ring */
 :focus-visible{outline:2px solid var(--accent2);outline-offset:2px;border-radius:4px}
 a:focus-visible,button:focus-visible,.btn:focus-visible{box-shadow:0 0 0 3px rgba(53,199,242,.25)}
@@ -144,7 +162,7 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
 .grid>*,.cols>*{min-width:0}
 .tw{overflow-x:auto;-webkit-overflow-scrolling:touch;max-width:100%;overscroll-behavior-x:contain}
 .tw>table{min-width:100%}
-header nav{display:flex;align-items:center;min-width:0}
+header nav{display:flex;align-items:center;min-width:0;overflow-x:auto;scrollbar-width:none}  /* a narrow desktop scrolls the bar, never overlaps the search */
 @media (max-width:1100px){.grid.four{grid-template-columns:1fr 1fr}}
 @media (max-width:900px){
   .grid,.grid.two,.grid.three,.grid.four,.cols{grid-template-columns:1fr!important}
@@ -192,19 +210,19 @@ header nav{display:flex;align-items:center;min-width:0}
 <header>
   <a class="logo" href="/ui/dashboard/">BrandWatch</a>
   
-  <nav>
+  <nav aria-label="Main">
     <a href="/ui/dashboard/" class="">Dashboard</a>
-    <a href="/ui/how-it-works/" class="">How it works</a>
-    <a href="/ui/brands/" class="">Brands &amp; Scans</a>
-    <a href="/ui/findings/" class="">Findings</a>
+    <a href="/ui/findings/" class="">Findings <span class="nc" title="9 awaiting a verdict">9</span></a>
     <a href="/ui/candidates/" class="">Watchlist</a>
     <a href="/ui/campaigns/" class="">Attack infrastructure</a>
-    <a href="/ui/takedowns/" class="">Takedowns</a>
+    <a href="/ui/takedowns/" class="">Takedowns <span class="nc warn" title="38 confirmed site(s) whose takedown was not sent">38</span></a>
+    <a href="/ui/brands/" class="">Brands &amp; Scans</a>
     <a href="/ui/activity/" class="">Activity</a>
     <a href="/ui/settings/" class="active">Settings</a>
-    <a href="/docs" target="_blank">API</a>
+    <a href="/ui/how-it-works/" class="">How it works</a>
   </nav>
-  <span class="who"><span class="email">admin · </span>admin · <a href="/ui/logout">logout</a></span>
+  <form method="get" action="/ui/search" class="hsearch" role="search"><input name="q" id="hsearch" placeholder="Search · /" aria-label="Search a domain, an IP, a takedown reference" autocomplete="off" maxlength="120"></form>
+  <span class="who"><span class="email">admin · </span>admin · <a href="/docs" target="_blank" title="the REST API reference">API</a> · <a href="/ui/logout">logout</a></span>
   
 </header>
 <main id="main">
@@ -216,6 +234,7 @@ header nav{display:flex;align-items:center;min-width:0}
 
 
 <style>
+  .sec .hint{font-size:11.5px;color:var(--muted);margin-top:3px;line-height:1.4}
   .set-layout{display:grid;grid-template-columns:210px minmax(0,1fr);gap:18px;align-items:start;margin-top:14px}
   .set-layout>*{min-width:0}
   .set-nav{position:sticky;top:64px;display:grid;gap:2px}
@@ -272,6 +291,8 @@ header nav{display:flex;align-items:center;min-width:0}
   <a href="#team"><div class="k">Team</div><div class="v">1 user(s)</div><div class="d">1 admin · 1 API token(s)</div></a>
 </div>
 
+
+
 <div class="set-layout">
   <nav class="set-nav" id="setnav" aria-label="Settings sections">
     <div class="grp">Data sources</div>
@@ -299,9 +320,9 @@ header nav{display:flex;align-items:center;min-width:0}
     
     <div class="keygrp">Threat reputation <span>· is this site already known as bad?</span></div>
     
-    <div class="krow">
+    <div class="krow" id="key-virustotal">
       <div>
-        <div class="nm">VirusTotal<span class="tag rec">recommended</span><a href="https://www.virustotal.com" target="_blank" rel="noreferrer noopener">get a key ↗</a></div>
+        <div class="nm">VirusTotal<span class="tag rec">recommended</span><span class="tag" title="this key is used by every track">every track</span><span class="tag" title="this key is used by the site investigation">the site investigation</span><a href="https://www.virustotal.com" target="_blank" rel="noreferrer noopener">get a key ↗</a></div>
         <div class="ds">Verdicts from 70+ anti-virus and blocklist engines for every visited site. Also powers passive DNS on the infrastructure map and most of a finding&#39;s site &amp; network investigation. · <span class="mono">free public key · 4 requests/min</span></div>
       </div>
       <div>
@@ -315,9 +336,9 @@ header nav{display:flex;align-items:center;min-width:0}
       </div>
     </div>
     
-    <div class="krow">
+    <div class="krow" id="key-urlhaus">
       <div>
-        <div class="nm">URLhaus · abuse.ch<a href="https://urlhaus.abuse.ch" target="_blank" rel="noreferrer noopener">get a key ↗</a></div>
+        <div class="nm">URLhaus · abuse.ch<span class="tag" title="this key is used by every track">every track</span><a href="https://urlhaus.abuse.ch" target="_blank" rel="noreferrer noopener">get a key ↗</a></div>
         <div class="ds">Checks each URL against abuse.ch&#39;s feed of malware and phishing URLs (second in the reputation chain). · <span class="mono">free key</span></div>
       </div>
       <div>
@@ -331,9 +352,9 @@ header nav{display:flex;align-items:center;min-width:0}
       </div>
     </div>
     
-    <div class="krow">
+    <div class="krow" id="key-safebrowsing">
       <div>
-        <div class="nm">Google Safe Browsing<span class="tag rec">recommended</span><a href="https://developers.google.com/safe-browsing/v4/get-started" target="_blank" rel="noreferrer noopener">get a key ↗</a></div>
+        <div class="nm">Google Safe Browsing<span class="tag rec">recommended</span><span class="tag" title="this key is used by every track">every track</span><a href="https://developers.google.com/safe-browsing/v4/get-started" target="_blank" rel="noreferrer noopener">get a key ↗</a></div>
         <div class="ds">The list Chrome, Firefox and Safari use to warn users. Checked for every visited site: shows whether Google already warns about it, so you can tell when BrandWatch found a kit first. · <span class="mono">free for non-commercial use · Google Cloud key</span></div>
       </div>
       <div>
@@ -347,9 +368,9 @@ header nav{display:flex;align-items:center;min-width:0}
       </div>
     </div>
     
-    <div class="krow">
+    <div class="krow" id="key-abuseipdb">
       <div>
-        <div class="nm">AbuseIPDB<a href="https://www.abuseipdb.com/account/api" target="_blank" rel="noreferrer noopener">get a key ↗</a></div>
+        <div class="nm">AbuseIPDB<span class="tag" title="this key is used by the site investigation">the site investigation</span><a href="https://www.abuseipdb.com/account/api" target="_blank" rel="noreferrer noopener">get a key ↗</a></div>
         <div class="ds">Community abuse reports for every server in a finding&#39;s investigation: a 0–100 abuse score, how many reports, from how many reporters, and when last. · <span class="mono">free daily quota</span></div>
       </div>
       <div>
@@ -366,9 +387,9 @@ header nav{display:flex;align-items:center;min-width:0}
     
     <div class="keygrp">Discovery &amp; search <span>· where look-alikes are found</span></div>
     
-    <div class="krow">
+    <div class="krow" id="key-serpapi">
       <div>
-        <div class="nm">SerpApi<span class="tag rec">recommended</span><a href="https://serpapi.com" target="_blank" rel="noreferrer noopener">get a key ↗</a></div>
+        <div class="nm">SerpApi<span class="tag rec">recommended</span><span class="tag" title="this key is used by Google search">Google search</span><a href="https://serpapi.com" target="_blank" rel="noreferrer noopener">get a key ↗</a></div>
         <div class="ds">Google results for the brand&#39;s search queries: the &#39;Google search&#39; discovery stream, run per country. · <span class="mono">free tier</span></div>
       </div>
       <div>
@@ -382,9 +403,9 @@ header nav{display:flex;align-items:center;min-width:0}
       </div>
     </div>
     
-    <div class="krow">
+    <div class="krow" id="key-scraperapi">
       <div>
-        <div class="nm">ScraperAPI<a href="https://www.scraperapi.com" target="_blank" rel="noreferrer noopener">get a key ↗</a></div>
+        <div class="nm">ScraperAPI<span class="tag" title="this key is used by Google search (fallback)">Google search (fallback)</span><a href="https://www.scraperapi.com" target="_blank" rel="noreferrer noopener">get a key ↗</a></div>
         <div class="ds">The fallback of SerpApi for the &#39;Google search&#39; discovery stream: when SerpApi has no key, no quota left or is down, the same searches go to ScraperAPI (about 25 credits a search). · <span class="mono">paid · free trial credits</span></div>
       </div>
       <div>
@@ -398,9 +419,9 @@ header nav{display:flex;align-items:center;min-width:0}
       </div>
     </div>
     
-    <div class="krow">
+    <div class="krow" id="key-urlscan">
       <div>
-        <div class="nm">urlscan.io<span class="tag rec">recommended</span><a href="https://urlscan.io" target="_blank" rel="noreferrer noopener">get a key ↗</a></div>
+        <div class="nm">urlscan.io<span class="tag rec">recommended</span><span class="tag" title="this key is used by Standard · Deep">Standard · Deep</span><span class="tag" title="this key is used by the site investigation">the site investigation</span><a href="https://urlscan.io" target="_blank" rel="noreferrer noopener">get a key ↗</a></div>
         <div class="ds">Searches the urlscan.io archive for pages that mention the brand (a discovery stream), and submits fresh scans from a finding&#39;s investigation. · <span class="mono">free key</span></div>
       </div>
       <div>
@@ -417,9 +438,9 @@ header nav{display:flex;align-items:center;min-width:0}
     
     <div class="keygrp">Domains &amp; servers <span>· who registered it and where it runs</span></div>
     
-    <div class="krow">
+    <div class="krow" id="key-shodan">
       <div>
-        <div class="nm">Shodan<a href="https://www.shodan.io" target="_blank" rel="noreferrer noopener">get a key ↗</a></div>
+        <div class="nm">Shodan<span class="tag" title="this key is used by the infrastructure map">the infrastructure map</span><a href="https://www.shodan.io" target="_blank" rel="noreferrer noopener">get a key ↗</a></div>
         <div class="ds">Infrastructure map: what runs on each hosting server, and other servers that serve the same favicon. · <span class="mono">paid membership for search</span></div>
       </div>
       <div>
@@ -433,9 +454,9 @@ header nav{display:flex;align-items:center;min-width:0}
       </div>
     </div>
     
-    <div class="krow">
+    <div class="krow" id="key-whoisxml">
       <div>
-        <div class="nm">WhoisXML API<a href="https://whoisxmlapi.com" target="_blank" rel="noreferrer noopener">get a key ↗</a></div>
+        <div class="nm">WhoisXML API<span class="tag" title="this key is used by WHOIS history">WHOIS history</span><span class="tag" title="this key is used by WHOIS by service">WHOIS by service</span><a href="https://whoisxmlapi.com" target="_blank" rel="noreferrer noopener">get a key ↗</a></div>
         <div class="ds">WHOIS history on the finding page: every past owner, registrar and privacy change, and owner details hidden after registration. Also WHOIS records when Lookups → WHOIS is &#39;Service&#39; (the default RDAP method needs no key). · <span class="mono">paid · WHOIS History is its own product on the same key</span></div>
       </div>
       <div>
@@ -452,9 +473,9 @@ header nav{display:flex;align-items:center;min-width:0}
     
     <div class="keygrp">Suspicious shops <span>· ads selling the brand&#39;s products, and whether the seller exists</span></div>
     
-    <div class="krow">
+    <div class="krow" id="key-searchapi">
       <div>
-        <div class="nm">SearchApi.io · Meta Ad Library, social accounts, AI answers<span class="tag rec">recommended</span><a href="https://www.searchapi.io/meta-ad-library-api" target="_blank" rel="noreferrer noopener">get a key ↗</a></div>
+        <div class="nm">SearchApi.io · Meta Ad Library, social accounts, AI answers<span class="tag rec">recommended</span><span class="tag" title="this key is used by social media">social media</span><span class="tag" title="this key is used by ads">ads</span><span class="tag" title="this key is used by AI answers">AI answers</span><a href="https://www.searchapi.io/meta-ad-library-api" target="_blank" rel="noreferrer noopener">get a key ↗</a></div>
         <div class="ds">Finds Facebook and Instagram ads that sell the brand&#39;s products in each chosen country, and the shops they link to (brands whose products other shops resell); fake Facebook pages and Instagram profiles; and what ChatGPT, Gemini and Google AI Mode tell users about the brand&#39;s phone, e-mail and login. Meta&#39;s own Ad Library API only covers ads that ran in the EU/UK. · <span class="mono">100 free requests · then $40/month for 10k</span></div>
       </div>
       <div>
@@ -468,9 +489,9 @@ header nav{display:flex;align-items:center;min-width:0}
       </div>
     </div>
     
-    <div class="krow">
+    <div class="krow" id="key-companies_house">
       <div>
-        <div class="nm">UK Companies House<a href="https://developer.company-information.service.gov.uk/get-started" target="_blank" rel="noreferrer noopener">get a key ↗</a></div>
+        <div class="nm">UK Companies House<span class="tag" title="this key is used by scam-shop checks (UK)">scam-shop checks (UK)</span><a href="https://developer.company-information.service.gov.uk/get-started" target="_blank" rel="noreferrer noopener">get a key ↗</a></div>
         <div class="ds">Checks that a UK company number printed on a shop exists and is not dissolved. · <span class="mono">free key</span></div>
       </div>
       <div>
@@ -484,9 +505,9 @@ header nav{display:flex;align-items:center;min-width:0}
       </div>
     </div>
     
-    <div class="krow">
+    <div class="krow" id="key-opencorporates">
       <div>
-        <div class="nm">OpenCorporates<a href="https://opencorporates.com/api_accounts/new" target="_blank" rel="noreferrer noopener">get a key ↗</a></div>
+        <div class="nm">OpenCorporates<span class="tag" title="this key is used by scam-shop checks">scam-shop checks</span><a href="https://opencorporates.com/api_accounts/new" target="_blank" rel="noreferrer noopener">get a key ↗</a></div>
         <div class="ds">Company numbers in 140+ countries — only needed for countries without a free official registry (otherwise BrandWatch searches Google for the company). · <span class="mono">paid · optional</span></div>
       </div>
       <div>
@@ -503,9 +524,9 @@ header nav{display:flex;align-items:center;min-width:0}
     
     <div class="keygrp">AI <span>· advisory only, never part of the score</span></div>
     
-    <div class="krow">
+    <div class="krow" id="key-openai">
       <div>
-        <div class="nm">OpenAI<span class="tag rec">recommended</span><a href="https://platform.openai.com/api-keys" target="_blank" rel="noreferrer noopener">get a key ↗</a></div>
+        <div class="nm">OpenAI<span class="tag rec">recommended</span><span class="tag" title="this key is used by AI second opinion">AI second opinion</span><span class="tag" title="this key is used by Suggest with AI">Suggest with AI</span><span class="tag" title="this key is used by ad relevance">ad relevance</span><a href="https://platform.openai.com/api-keys" target="_blank" rel="noreferrer noopener">get a key ↗</a></div>
         <div class="ds">Writes the Google queries a phisher would target, gives the advisory second opinion on findings, and triages co-hosted pages on the infrastructure map. · <span class="mono">paid per token</span></div>
       </div>
       <div>
@@ -581,8 +602,10 @@ header nav{display:flex;align-items:center;min-width:0}
         <div><label>Username</label><input name="username" value="" autocomplete="off" ></div>
         <div><label>Password <span style="text-transform:none">(manual; blank keeps it)</span></label><input name="password" type="password" autocomplete="off" ></div>
       </div>
-      <label>Webshare API token <span style="text-transform:none">(blank keeps the stored one)</span></label>
-      <input name="webshare_token" type="password" autocomplete="off" placeholder="webshare.io → API" >
+      <div id="ws-token" hidden><label for="ws-tok">Webshare API token <span style="text-transform:none">(blank keeps the stored one)</span></label>
+      <input id="ws-tok" name="webshare_token" type="password" autocomplete="off" placeholder="webshare.io → API" ></div>
+      <script>(function(){const f=document.getElementById('proxy-form'),w=document.getElementById('ws-token');if(!f||!w)return;const d=f.querySelector('details');
+        f.addEventListener('change',e=>{if(e.target.name!=='mode')return;w.hidden=e.target.value!=='webshare';if(d&&e.target.value!=='off')d.open=true;});})();</script>
       <label class="opt" style="margin-top:8px"><input type="checkbox" name="rotating" checked > rotate to a new IP on every request (Webshare)</label>
       </details>
       <h3 class="subh" style="margin-top:14px">MOBILE PROXY</h3>
@@ -609,11 +632,11 @@ header nav{display:flex;align-items:center;min-width:0}
     <form method="post" action="/ui/settings/workspace">
       <label>Workspace name</label><input name="name" value="default"  style="max-width:420px">
       <div class="grid three" style="margin-top:4px">
-        <div><label>Max daily spend (USD)</label><input name="max_daily_spend" value="0.0" ></div>
-        <div><label>Max API calls / day</label><input name="max_api_calls" value="100000" ></div>
-        <div><label title="the highest 'Max sites to visit' that any scan or brand can use, whatever the track or the START SCAN field says">Max sites visited per scan (hard cap)</label><input name="max_candidate_count" value="500" ></div>
-        <div><label>Max residential GB / day</label><input name="max_residential_gb" value="0.0" ></div>
-        <div><label>Max investigation cost (USD)</label><input name="max_investigation_cost" value="0.0" ></div>
+        <div><label for="b-spend">Max daily spend (USD)</label><input id="b-spend" name="max_daily_spend" value="0.0" ><div class="hint">paid calls over 24 h · <b>0 = no cap</b></div></div>
+        <div><label for="b-calls">Max API calls / day</label><input id="b-calls" name="max_api_calls" value="100000" ><div class="hint">paid calls only (free ones are not counted)</div></div>
+        <div><label for="b-sites" title="the highest 'Max sites to visit' that any scan or brand can use, whatever the track or the START SCAN field says">Max sites visited per scan (hard cap)</label><input id="b-sites" name="max_candidate_count" value="500" ><div class="hint">no track or brand visits more · Deep asks for 1500</div></div>
+        <div><label for="b-gb">Max residential GB / day</label><input id="b-gb" name="max_residential_gb" value="0.0" ><div class="hint"><b>0 = the home / mobile IP probe is off</b></div></div>
+        <div><label for="b-inv">Max investigation cost (USD)</label><input id="b-inv" name="max_investigation_cost" value="0.0" ><div class="hint">one infrastructure map · 0 = the default $1</div></div>
       </div>
       <div style="margin-top:10px"><button class="primary" type="submit">Save budget</button></div>
     </form>
@@ -632,11 +655,12 @@ header nav{display:flex;align-items:center;min-width:0}
         <td>
           <form method="post" action="/ui/settings/users/bc089017-3cdf-4d6a-90a5-d397ceef5fba" class="actions" style="gap:6px;align-items:center">
             <select name="role" style="width:auto"><option selected>admin</option><option >analyst</option><option >viewer</option></select>
-            <select name="is_active" style="width:auto"><option value="true" selected>active</option><option value="false" >disabled</option></select>
+            <select name="is_active" style="width:auto" aria-label="status of admin"><option value="true" selected>active</option><option value="false" >disabled</option></select>
+            <input name="password" type="password" minlength="10" autocomplete="new-password" placeholder="new password (optional)" aria-label="new password for admin" style="width:200px">
             <button type="submit">Save</button>
           </form>
         </td>
-        <td class="mono small muted">2026-10-18 19:59</td>
+        <td class="mono small muted"><time datetime="2026-10-18T21:30:58.492211" data-local title="2026-10-18T21:30:58.492211 UTC">2026-10-18 21:30</time></td>
       </tr>
       
     </table>
@@ -647,7 +671,7 @@ header nav{display:flex;align-items:center;min-width:0}
       <div><label>Role</label><select name="role"><option>analyst</option><option>viewer</option><option>admin</option></select></div>
       <div><button class="primary" type="submit">Add user</button></div>
     </form></details>
-    <p class="small muted" style="margin-bottom:0">admin: everything · analyst: scans, verdicts, reports, takedowns, investigations · viewer: read-only.</p>
+    <p class="small muted" style="margin-bottom:0">admin: everything · analyst: scans, verdicts, reports, takedowns, investigations · viewer: read-only. A forgotten password: type a new one on the user's row and press Save (at least 10 characters; tell the user yourself).</p>
   </section>
   
 
@@ -829,6 +853,16 @@ curl -N -H "Authorization: Bearer $TOKEN" http://127.0.0.1:8765/api/jobs/&lt;job
     setTimeout(() => { if (e.defaultPrevented) return; f.__sentAt = Date.now();
       if (f.hasAttribute('data-busy') && b && b.tagName === 'BUTTON') { b.disabled = true; b.dataset.was = b.textContent; b.textContent = f.getAttribute('data-busy') || 'Working…';
         setTimeout(() => { b.disabled = false; b.textContent = b.dataset.was; }, 30000); } }, 0); });
+  // "/" opens the search from any page (a page with its own search box — findings, watchlist — takes it first)
+  document.addEventListener('keydown', e => {
+    if (e.key !== '/' || e.defaultPrevented || e.ctrlKey || e.metaKey || e.altKey) return;
+    const a = document.activeElement; if (a && (/INPUT|SELECT|TEXTAREA/.test(a.tagName) || a.isContentEditable)) return;
+    const box = document.getElementById('hsearch'); if (!box || !box.offsetParent) { location.href = '/ui/search'; return; }
+    e.preventDefault(); box.focus();
+  });
+  // phones: a "rwd" table shows one card per row, each cell labelled with its column (see the CSS)
+  document.querySelectorAll('table.rwd').forEach(t => { const heads = [...t.querySelectorAll('thead th')].map(th => th.textContent.trim());
+    t.querySelectorAll('tbody tr').forEach(tr => [...tr.children].forEach((td, i) => { if (!td.hasAttribute('data-label')) td.dataset.label = heads[i] || ''; })); });
   // the sticky header's height, for anything that sticks under it
   const hdr = document.querySelector('header'); const setH = () => document.documentElement.style.setProperty('--hdr', (hdr ? hdr.offsetHeight : 56) + 'px');
   setH(); window.addEventListener('resize', setH);
@@ -848,7 +882,9 @@ curl -N -H "Authorization: Bearer $TOKEN" http://127.0.0.1:8765/api/jobs/&lt;job
   document.querySelectorAll('main table').forEach(t => { if (t.parentElement.classList.contains('tw')) return;
     const w = document.createElement('div'); w.className = 'tw'; t.parentNode.insertBefore(w, t); w.appendChild(t); });
   // keep the active tab visible in the scrollable mobile nav
-  const act = document.querySelector('header nav a.active'); if (act && act.scrollIntoView) act.scrollIntoView({block: 'nearest', inline: 'center'});
+  // (by scrolling the bar itself: scrollIntoView would also move where the first Tab press starts, past the skip links)
+  const act = document.querySelector('header nav a.active'), bar = act && act.parentElement;
+  if (act && bar.scrollWidth > bar.clientWidth) bar.scrollLeft = act.offsetLeft - (bar.clientWidth - act.offsetWidth) / 2;
   // stagger entrances
   document.querySelectorAll('.kpis').forEach(g => [...g.children].forEach((el, i) => el.style.setProperty('--i', i)));
   document.querySelectorAll('main .panel').forEach((el, i) => el.style.setProperty('--i', Math.min(i, 12)));
@@ -1004,6 +1040,9 @@ curl -N -H "Authorization: Bearer $TOKEN" http://127.0.0.1:8765/api/jobs/&lt;job
   document.addEventListener('keydown', ev => {
     if (modal.hidden) return;
     if (ev.key === 'Escape') { ev.preventDefault(); close(false); }
+    else if (ev.key === 'Tab') {  // the focus stays in the dialog
+      const f = [inp, cancel, ok].filter(x => !x.hidden); const i = f.indexOf(document.activeElement);
+      ev.preventDefault(); f[(i + (ev.shiftKey ? -1 : 1) + f.length) % f.length].focus(); }
     else if (ev.key === 'Enter' && document.activeElement !== cancel) { ev.preventDefault(); ok.click(); }
   });
   // forms and buttons that ask first

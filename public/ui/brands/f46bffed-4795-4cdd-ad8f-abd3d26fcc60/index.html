@@ -33,11 +33,17 @@ header{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:24px
 header .logo{font-family:var(--mono);font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);display:flex;align-items:center;gap:8px}
 header .logo::before{content:"";width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 10px var(--accent);animation:beat 2.2s ease-in-out infinite}
 @keyframes beat{0%,100%{opacity:.45;transform:scale(.85)}50%{opacity:1;transform:scale(1.1)}}
-header nav a{position:relative;font-family:var(--mono);font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-right:16px;padding:4px 0}
+header nav a{position:relative;font-family:var(--mono);font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-right:14px;padding:4px 0;white-space:nowrap}
+@media (min-width:901px) and (max-width:1500px){header{gap:14px}header nav a{font-size:11px;letter-spacing:.04em;margin-right:11px}header .hsearch input{width:130px}header .who .email{display:none}}
 header nav a::after{content:"";position:absolute;left:0;right:0;bottom:-2px;height:2px;background:var(--accent);transform:scaleX(0);transform-origin:left;transition:transform .3s}
 header nav a.active,header nav a:hover{color:var(--text)}header nav a.active::after,header nav a:hover::after{transform:scaleX(1)}
 header nav a.active::after{box-shadow:0 0 8px var(--accent)}
-header .who{margin-left:auto;color:var(--muted);font-size:12px}
+header .who{color:var(--muted);font-size:12px;white-space:nowrap}
+header .hsearch{margin-left:auto}header .hsearch input{width:170px;padding:5px 10px;font-size:12.5px;border-radius:999px;background:#0b1220}
+header .hsearch input:focus{width:240px}
+header nav .nc{display:inline-block;min-width:18px;padding:0 5px;margin-left:4px;border-radius:999px;background:rgba(53,199,242,.18);color:var(--accent2);font-size:10.5px;text-align:center;letter-spacing:0}
+header nav .nc.warn{background:rgba(255,77,77,.16);color:var(--crit)}
+@media (max-width:900px){header .hsearch{display:none}}
 main{position:relative;z-index:1;padding:20px;max-width:1440px;margin:0 auto}
 h1{font-family:var(--display);font-size:26px;letter-spacing:.04em;margin:0 0 14px;font-weight:700;
   background:linear-gradient(90deg,#E6EDF5 0%,#E6EDF5 55%,var(--accent2) 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
@@ -64,7 +70,7 @@ tr:hover td{background:rgba(53,199,242,.05)}
 .sev-low{background:rgba(46,204,113,.15);color:var(--low);border:1px solid var(--low)}
 .state{background:var(--panel2);color:var(--muted);border:1px solid var(--border)}
 .st-open,.st-new{color:var(--text)}.st-confirmed,.st-flagged{color:var(--crit);border-color:rgba(255,77,77,.5)}
-.st-dismissed{color:#5a6678}.st-watching{color:var(--accent);border-color:rgba(53,199,242,.4)}.st-long_watch{color:var(--muted)}
+.st-dismissed{color:var(--muted)}.st-watching{color:var(--accent);border-color:rgba(53,199,242,.4)}.st-long_watch{color:var(--muted)}
 .pill{background:var(--panel2);border:1px solid var(--border);border-radius:6px;padding:1px 6px;font-family:var(--mono);font-size:11px;color:var(--text);white-space:nowrap}
 /* signal pills: one neutral style for every group (the group is in the tooltip and the Explain table) */
 .pill[class*="g-"]{border-color:var(--border);color:#c9d3df}
@@ -73,6 +79,18 @@ button:hover,.btn:hover{border-color:var(--accent);box-shadow:0 0 12px rgba(53,1
 button.danger{border-color:var(--crit);color:var(--crit)}button.ok{border-color:var(--low);color:var(--low)}
 input,select,textarea{background:#0b1220;color:var(--text);border:1px solid var(--border);border-radius:6px;padding:7px 9px;font:inherit;width:100%;transition:border-color .2s,box-shadow .2s}
 input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(53,199,242,.15)}
+/* a paragraph that may be Hebrew or Arabic (a brand name, an ad, a reason) takes its direction from its own first letter */
+.lead,.summary,.story,.say,.reason,.ev .diff{unicode-bidi:plaintext}
+button.chip{font:inherit;font-family:var(--mono);font-size:11px;box-shadow:none}
+/* on a phone a wide table (class "rwd") becomes one card per row; each cell says what it is (from the header) */
+@media (max-width:700px){
+  table.rwd thead{display:none}
+  table.rwd,table.rwd tbody,table.rwd tr,table.rwd td{display:block;width:100%}
+  table.rwd tr{border:1px solid var(--border);border-radius:10px;margin:0 0 10px;padding:6px 10px;background:var(--panel2)}
+  table.rwd td{border:0;padding:4px 0;min-height:0}
+  table.rwd td[data-label]:not([data-label=""])::before{content:attr(data-label);display:block;font:600 10px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:2px}
+  table.rwd td:empty{display:none}
+}
 /* keyboard users see where they are; mouse clicks do not get the ring */
 :focus-visible{outline:2px solid var(--accent2);outline-offset:2px;border-radius:4px}
 a:focus-visible,button:focus-visible,.btn:focus-visible{box-shadow:0 0 0 3px rgba(53,199,242,.25)}
@@ -144,7 +162,7 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
 .grid>*,.cols>*{min-width:0}
 .tw{overflow-x:auto;-webkit-overflow-scrolling:touch;max-width:100%;overscroll-behavior-x:contain}
 .tw>table{min-width:100%}
-header nav{display:flex;align-items:center;min-width:0}
+header nav{display:flex;align-items:center;min-width:0;overflow-x:auto;scrollbar-width:none}  /* a narrow desktop scrolls the bar, never overlaps the search */
 @media (max-width:1100px){.grid.four{grid-template-columns:1fr 1fr}}
 @media (max-width:900px){
   .grid,.grid.two,.grid.three,.grid.four,.cols{grid-template-columns:1fr!important}
@@ -192,19 +210,19 @@ header nav{display:flex;align-items:center;min-width:0}
 <header>
   <a class="logo" href="/ui/dashboard/">BrandWatch</a>
   
-  <nav>
+  <nav aria-label="Main">
     <a href="/ui/dashboard/" class="">Dashboard</a>
-    <a href="/ui/how-it-works/" class="">How it works</a>
-    <a href="/ui/brands/" class="active">Brands &amp; Scans</a>
-    <a href="/ui/findings/" class="">Findings</a>
+    <a href="/ui/findings/" class="">Findings <span class="nc" title="9 awaiting a verdict">9</span></a>
     <a href="/ui/candidates/" class="">Watchlist</a>
     <a href="/ui/campaigns/" class="">Attack infrastructure</a>
-    <a href="/ui/takedowns/" class="">Takedowns</a>
+    <a href="/ui/takedowns/" class="">Takedowns <span class="nc warn" title="38 confirmed site(s) whose takedown was not sent">38</span></a>
+    <a href="/ui/brands/" class="active">Brands &amp; Scans</a>
     <a href="/ui/activity/" class="">Activity</a>
     <a href="/ui/settings/" class="">Settings</a>
-    <a href="/docs" target="_blank">API</a>
+    <a href="/ui/how-it-works/" class="">How it works</a>
   </nav>
-  <span class="who"><span class="email">admin · </span>admin · <a href="/ui/logout">logout</a></span>
+  <form method="get" action="/ui/search" class="hsearch" role="search"><input name="q" id="hsearch" placeholder="Search · /" aria-label="Search a domain, an IP, a takedown reference" autocomplete="off" maxlength="120"></form>
+  <span class="who"><span class="email">admin · </span>admin · <a href="/docs" target="_blank" title="the REST API reference">API</a> · <a href="/ui/logout">logout</a></span>
   
 </header>
 <main id="main">
@@ -315,17 +333,17 @@ header nav{display:flex;align-items:center;min-width:0}
 
 
 
-<div class="crumbs"><a href="/ui/brands/">Brands &amp; Scans</a><span class="sep">›</span><span class="cur">CoinPilot</span><span class="side"><a href="/ui/findings/_9ffb45703e/">Findings</a><a href="/ui/candidates/_9ffb45703e/">Watchlist</a><a href="/ui/campaigns/_9ffb45703e/">Attack infrastructure</a><a href="/ui/takedowns/_9ffb45703e/">Takedowns</a></span></div>
-<h1>CoinPilot <span class="muted small">· fintech · <span class="mono">coinpilot.io</span> · <span class="mono">www.coinpilot.io</span> · <a href="#edit" class="mono">edit ›</a></span></h1>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="/ui/brands/"><bdi>Brands &amp; Scans</bdi></a><span class="sep">›</span><span class="cur" aria-current="page"><bdi>CoinPilot</bdi></span><span class="side"><a href="/ui/findings?brand_id=f46bffed-4795-4cdd-ad8f-abd3d26fcc60">Findings</a><a href="/ui/candidates/_9ffb45703e/">Watchlist</a><a href="/ui/campaigns/_9ffb45703e/">Attack infrastructure</a><a href="/ui/takedowns/_9ffb45703e/">Takedowns</a></span></nav>
+<h1><bdi dir="auto">CoinPilot</bdi> <span class="muted small">· fintech · <span class="mono">coinpilot.io</span> · <span class="mono">www.coinpilot.io</span> · <a href="#edit" class="mono">edit ›</a></span></h1>
 
 
 
 
 
 <div class="kpis">
-  <a class="kpi lnk crit" href="/ui/findings/_fe04a390a2/"><div class="v" data-count="0">0</div><div class="l"><span class="pulse"></span> critical open</div></a>
-  <a class="kpi lnk hi" href="/ui/findings/_9ffb45703e/"><div class="v" data-count="0">0</div><div class="l">open findings</div></a>
-  <a class="kpi lnk ok" href="/ui/findings/_765a627de5/"><div class="v" data-count="7">0</div><div class="l">confirmed</div></a>
+  <a class="kpi lnk crit" href="/ui/findings?brand_id=f46bffed-4795-4cdd-ad8f-abd3d26fcc60&severity=critical"><div class="v" data-count="0">0</div><div class="l"><span class="pulse"></span> critical open</div></a>
+  <a class="kpi lnk hi" href="/ui/findings?brand_id=f46bffed-4795-4cdd-ad8f-abd3d26fcc60"><div class="v" data-count="0">0</div><div class="l">open findings</div></a>
+  <a class="kpi lnk ok" href="/ui/findings?brand_id=f46bffed-4795-4cdd-ad8f-abd3d26fcc60&state=confirmed"><div class="v" data-count="7">0</div><div class="l">confirmed</div></a>
   <a class="kpi lnk cy" href="/ui/candidates/_9ffb45703e/"><div class="v" data-count="508">0</div><div class="l">domains examined</div></a>
   <a class="kpi lnk vi" href="/ui/candidates/_b17e9577d2/"><div class="v" data-count="0">0</div><div class="l">on watchlist</div></a>
   <a class="kpi lnk mg" href="/ui/campaigns/_9ffb45703e/"><div class="v" data-count="1">0</div><div class="l">infrastructure maps</div></a>
@@ -349,7 +367,7 @@ header nav{display:flex;align-items:center;min-width:0}
         <div class="pd">dnstwist · ct · urlscan · TLDs popular · up to 500 sites</div></div>
       
       
-      <div class="part off"><div class="ph"><i></i><b>Google search</b><span class="st">off</span></div><div class="pd">not in this track · <a href="#config">add the “search” stream</a></div></div>
+      <div class="part off"><div class="ph"><i></i><b>Google search</b><span class="st">off</span></div><div class="pd">not in this track · <a href="#config" data-open-custom title="opens Customise parameters, where the streams are ticked">add the “search” stream</a></div></div>
       
       
       
@@ -377,7 +395,8 @@ header nav{display:flex;align-items:center;min-width:0}
       <div class="part off"><div class="ph"><i></i><b>Automatic scans</b><span class="st">off</span></div>
         <div class="pd">only when someone presses Start scan · <a href="#schedule">set</a></div></div>
     </div>
-    <div class="small muted" style="margin-top:8px">Every scan: cloaking probes on · AI second opinion on · re-check every 12h · fingerprint v1</div>
+    <div class="small muted" style="margin-top:8px">Every scan: cloaking probes on · home / mobile IP probe gated
+      · AI second opinion on · re-check every 12h · markets US EN · fingerprint v1</div>
     
     
     
@@ -408,6 +427,7 @@ header nav{display:flex;align-items:center;min-width:0}
         <div style="margin-top:6px;display:flex;align-items:center;gap:8px;justify-content:center">
           <label for="rbl" style="margin:0;font-size:11px;text-transform:none;letter-spacing:0;display:inline-flex;gap:6px;align-items:center"><input id="rbl" name="rebuild_baseline" type="checkbox" style="width:auto" > include fingerprinting of the official site · ~2 s</label>
         </div>
+        
         <div class="small muted" style="margin-top:4px">no scan visits more than <b>500</b> sites — the workspace limit · <a href="/ui/settings/#budget">change it in Settings → Workspace &amp; budget</a></div>
         
       </form>
@@ -451,8 +471,8 @@ header nav{display:flex;align-items:center;min-width:0}
 <section class="bpane" data-pane="overview" role="tabpanel">
 <div class="grid two" style="margin-top:14px">
   <div class="panel">
-    <h2 style="margin-top:0">Latest findings <a class="small" href="/ui/findings/_9ffb45703e/" style="text-transform:none;letter-spacing:0;font-family:var(--sans)">all findings →</a></h2>
-    <div style="padding:4px 0;border-bottom:1px solid var(--border)"><span class="badge sev-critical">critical</span> <a href="/ui/findings/63381bcd-78de-4d7a-b9e2-cd7b4a59a00d/"><span class="mono">coinpilot-bot.io</span></a> <span class="muted small"> · confirmed</span></div><div style="padding:4px 0;border-bottom:1px solid var(--border)"><span class="badge sev-critical">critical</span> <a href="/ui/findings/2fdd823a-9baa-49d3-82b8-e1ce0bda2c44/"><span class="mono">coin-pilot.io</span></a> <span class="muted small"> · confirmed</span></div><div style="padding:4px 0;border-bottom:1px solid var(--border)"><span class="badge sev-critical">critical</span> <a href="/ui/findings/6a5a2896-2bbf-4f37-b51a-6df99b0d48fe/"><span class="mono">cooinpilot.io</span></a> <span class="muted small"> · confirmed</span></div><div style="padding:4px 0;border-bottom:1px solid var(--border)"><span class="badge sev-critical">critical</span> <a href="/ui/findings/4aa4555a-8a52-4bab-a6da-8427753c97d3/"><span class="mono">koinpilot.io</span></a> <span class="muted small"> · confirmed</span></div><div style="padding:4px 0;border-bottom:1px solid var(--border)"><span class="badge sev-critical">critical</span> <a href="/ui/findings/fd5a72c5-532f-4614-a113-c4d848d99888/"><span class="mono">coinplot.io</span></a> <span class="muted small"> · confirmed</span></div><div style="padding:4px 0;border-bottom:1px solid var(--border)"><span class="badge sev-critical">critical</span> <a href="/ui/findings/198e2d54-3884-47d5-a887-1d328cce77c2/"><span class="mono">coinpllot.io</span></a> <span class="muted small"> · confirmed</span></div><div style="padding:4px 0;border-bottom:1px solid var(--border)"><span class="badge sev-critical">critical</span> <a href="/ui/findings/5da0ffd7-d892-4cfd-9f55-c87b543dfac7/"><span class="mono">coinpilott.io</span></a> <span class="muted small"> · confirmed</span></div>
+    <h2 style="margin-top:0">Latest findings <a class="small" href="/ui/findings?brand_id=f46bffed-4795-4cdd-ad8f-abd3d26fcc60" style="text-transform:none;letter-spacing:0;font-family:var(--sans)">all findings →</a></h2>
+    <div style="padding:4px 0;border-bottom:1px solid var(--border)"><span class="badge sev-critical">critical</span> <a href="/ui/findings/63381bcd-78de-4d7a-b9e2-cd7b4a59a00d/"><span class="mono" dir="ltr">coinpilot-bot.io</span></a> <span class="muted small"> · confirmed</span></div><div style="padding:4px 0;border-bottom:1px solid var(--border)"><span class="badge sev-critical">critical</span> <a href="/ui/findings/2fdd823a-9baa-49d3-82b8-e1ce0bda2c44/"><span class="mono" dir="ltr">coin-pilot.io</span></a> <span class="muted small"> · confirmed</span></div><div style="padding:4px 0;border-bottom:1px solid var(--border)"><span class="badge sev-critical">critical</span> <a href="/ui/findings/6a5a2896-2bbf-4f37-b51a-6df99b0d48fe/"><span class="mono" dir="ltr">cooinpilot.io</span></a> <span class="muted small"> · confirmed</span></div><div style="padding:4px 0;border-bottom:1px solid var(--border)"><span class="badge sev-critical">critical</span> <a href="/ui/findings/4aa4555a-8a52-4bab-a6da-8427753c97d3/"><span class="mono" dir="ltr">koinpilot.io</span></a> <span class="muted small"> · confirmed</span></div><div style="padding:4px 0;border-bottom:1px solid var(--border)"><span class="badge sev-critical">critical</span> <a href="/ui/findings/fd5a72c5-532f-4614-a113-c4d848d99888/"><span class="mono" dir="ltr">coinplot.io</span></a> <span class="muted small"> · confirmed</span></div><div style="padding:4px 0;border-bottom:1px solid var(--border)"><span class="badge sev-critical">critical</span> <a href="/ui/findings/198e2d54-3884-47d5-a887-1d328cce77c2/"><span class="mono" dir="ltr">coinpllot.io</span></a> <span class="muted small"> · confirmed</span></div><div style="padding:4px 0;border-bottom:1px solid var(--border)"><span class="badge sev-critical">critical</span> <a href="/ui/findings/5da0ffd7-d892-4cfd-9f55-c87b543dfac7/"><span class="mono" dir="ltr">coinpilott.io</span></a> <span class="muted small"> · confirmed</span></div>
     
     <h2>Recent scans</h2>
     
@@ -776,29 +796,11 @@ header nav{display:flex;align-items:center;min-width:0}
       
     </div>
 
-    <div class="customhd">
-      <button type="button" class="toggle on" id="customBtn"><span class="sw"></span> Customise parameters</button>
-      <span class="small muted" id="customNote">This brand deviates from its track. Switch off to go back to the pure track.</span>
-    </div>
+    <div class="cfgcard" id="markets" style="margin-top:12px">
+      <h3>Where its customers are <span style="text-transform:none;letter-spacing:0;color:var(--muted);font-family:var(--sans)">· the countries and languages Google, the ads and the AI assistants are searched in — the brand's, kept when the track changes</span></h3>
+      
 
-    <div id="custom" class="">
-      <div class="grid three">
-        <div class="cfgcard">
-          <h3>Discovery</h3>
-          <label>Streams</label>
-          <div class="chkrow"><label><input type="checkbox" name="streams" value="dnstwist" checked > dnstwist</label><label><input type="checkbox" name="streams" value="ct" checked > ct</label><label><input type="checkbox" name="streams" value="nrd"  > nrd</label><label><input type="checkbox" name="streams" value="search"  > search</label><label><input type="checkbox" name="streams" value="urlscan" checked > urlscan</label></div>
-          <div class="chkrow"><label title="Facebook pages / Instagram profiles under the brand's name — page history, logo, links and posts, read by an AI"><input type="checkbox" name="social_accounts" checked > social media (Facebook pages · Instagram profiles)</label></div>
-          <label>dnstwist TLDs</label><select name="tlds" ><option >common</option><option selected>popular</option><option >all</option></select>
-          <label title="how many sites a scan opens in the browser and compares with the real one">Max sites to visit per scan</label><input name="max_candidates" value="500" >
-          <div class="small" style="margin:2px 0 6px;text-transform:none;color:var(--muted)">Never more than the workspace limit, <b>500</b>. <a href="/ui/settings/#budget">Settings → Workspace &amp; budget</a> (an admin changes it).</div>
-          <label title="dnstwist look-alike names checked in DNS - keyword combinations, other TLDs and typos first">Max look-alike names to check</label><input name="max_names_checked" value="3000" >
-          <label>Google search queries</label>
-          <div class="small" style="margin:2px 0 6px;text-transform:none">Edited and approved in <a href="#queries">Google search queries ↓</a> — 6 waiting for approval.</div>
-          <label>Max queries per scan</label><input name="search_queries_max" value="10" >
-          <label>Search countries · languages <span style="text-transform:none">(each country, in one or more languages)</span></label>
-          
-
-<div class="mkt" id="mk540558" data-markets='[{"country": "us", "langs": ["en"]}]' data-disabled="0">
+<div class="mkt" id="mk116314" data-markets='[{"country": "us", "langs": ["en"]}]' data-disabled="0">
   <input type="hidden" name="search_geo" value="us">
   <input type="hidden" name="search_lang" value="en">
   <input type="hidden" name="search_markets" value='[{"country": "us", "langs": ["en"]}]'>
@@ -829,7 +831,7 @@ header nav{display:flex;align-items:center;min-width:0}
 </style>
 <script>
 (function(){
-  const root = document.getElementById('mk540558');
+  const root = document.getElementById('mk116314');
   if (!root) return;
   const D = {"countries": [{"code": "al", "name": "Albania"}, {"code": "dz", "name": "Algeria"}, {"code": "ar", "name": "Argentina"}, {"code": "am", "name": "Armenia"}, {"code": "au", "name": "Australia"}, {"code": "at", "name": "Austria"}, {"code": "az", "name": "Azerbaijan"}, {"code": "bh", "name": "Bahrain"}, {"code": "bd", "name": "Bangladesh"}, {"code": "by", "name": "Belarus"}, {"code": "be", "name": "Belgium"}, {"code": "bo", "name": "Bolivia"}, {"code": "ba", "name": "Bosnia and Herzegovina"}, {"code": "br", "name": "Brazil"}, {"code": "bg", "name": "Bulgaria"}, {"code": "kh", "name": "Cambodia"}, {"code": "ca", "name": "Canada"}, {"code": "cl", "name": "Chile"}, {"code": "cn", "name": "China"}, {"code": "co", "name": "Colombia"}, {"code": "cr", "name": "Costa Rica"}, {"code": "hr", "name": "Croatia"}, {"code": "cy", "name": "Cyprus"}, {"code": "cz", "name": "Czechia"}, {"code": "dk", "name": "Denmark"}, {"code": "do", "name": "Dominican Republic"}, {"code": "ec", "name": "Ecuador"}, {"code": "eg", "name": "Egypt"}, {"code": "ee", "name": "Estonia"}, {"code": "fi", "name": "Finland"}, {"code": "fr", "name": "France"}, {"code": "ge", "name": "Georgia"}, {"code": "de", "name": "Germany"}, {"code": "gh", "name": "Ghana"}, {"code": "gr", "name": "Greece"}, {"code": "gt", "name": "Guatemala"}, {"code": "hk", "name": "Hong Kong"}, {"code": "hu", "name": "Hungary"}, {"code": "is", "name": "Iceland"}, {"code": "in", "name": "India"}, {"code": "id", "name": "Indonesia"}, {"code": "ir", "name": "Iran"}, {"code": "iq", "name": "Iraq"}, {"code": "ie", "name": "Ireland"}, {"code": "il", "name": "Israel"}, {"code": "it", "name": "Italy"}, {"code": "jm", "name": "Jamaica"}, {"code": "jp", "name": "Japan"}, {"code": "jo", "name": "Jordan"}, {"code": "kz", "name": "Kazakhstan"}, {"code": "ke", "name": "Kenya"}, {"code": "kw", "name": "Kuwait"}, {"code": "lv", "name": "Latvia"}, {"code": "lb", "name": "Lebanon"}, {"code": "lt", "name": "Lithuania"}, {"code": "lu", "name": "Luxembourg"}, {"code": "my", "name": "Malaysia"}, {"code": "mt", "name": "Malta"}, {"code": "mx", "name": "Mexico"}, {"code": "md", "name": "Moldova"}, {"code": "ma", "name": "Morocco"}, {"code": "np", "name": "Nepal"}, {"code": "nl", "name": "Netherlands"}, {"code": "nz", "name": "New Zealand"}, {"code": "ng", "name": "Nigeria"}, {"code": "mk", "name": "North Macedonia"}, {"code": "no", "name": "Norway"}, {"code": "om", "name": "Oman"}, {"code": "pk", "name": "Pakistan"}, {"code": "pa", "name": "Panama"}, {"code": "py", "name": "Paraguay"}, {"code": "pe", "name": "Peru"}, {"code": "ph", "name": "Philippines"}, {"code": "pl", "name": "Poland"}, {"code": "pt", "name": "Portugal"}, {"code": "pr", "name": "Puerto Rico"}, {"code": "qa", "name": "Qatar"}, {"code": "ro", "name": "Romania"}, {"code": "ru", "name": "Russia"}, {"code": "sa", "name": "Saudi Arabia"}, {"code": "rs", "name": "Serbia"}, {"code": "sc", "name": "Seychelles"}, {"code": "sg", "name": "Singapore"}, {"code": "sk", "name": "Slovakia"}, {"code": "si", "name": "Slovenia"}, {"code": "za", "name": "South Africa"}, {"code": "kr", "name": "South Korea"}, {"code": "es", "name": "Spain"}, {"code": "lk", "name": "Sri Lanka"}, {"code": "se", "name": "Sweden"}, {"code": "ch", "name": "Switzerland"}, {"code": "tw", "name": "Taiwan"}, {"code": "tz", "name": "Tanzania"}, {"code": "th", "name": "Thailand"}, {"code": "tn", "name": "Tunisia"}, {"code": "tr", "name": "T\u00fcrkiye"}, {"code": "ug", "name": "Uganda"}, {"code": "ua", "name": "Ukraine"}, {"code": "ae", "name": "United Arab Emirates"}, {"code": "gb", "name": "United Kingdom"}, {"code": "us", "name": "United States"}, {"code": "uy", "name": "Uruguay"}, {"code": "uz", "name": "Uzbekistan"}, {"code": "ve", "name": "Venezuela"}, {"code": "vn", "name": "Vietnam"}], "defaults": {"ae": "ar", "ar": "es", "at": "de", "au": "en", "bd": "bn", "be": "fr", "bg": "bg", "br": "pt", "by": "ru", "ca": "en", "ch": "de", "cl": "es", "cn": "zh", "co": "es", "cy": "el", "cz": "cs", "de": "de", "dk": "da", "ee": "et", "eg": "ar", "es": "es", "fi": "fi", "fr": "fr", "gb": "en", "gr": "el", "hk": "zh", "hr": "hr", "hu": "hu", "id": "id", "ie": "en", "il": "he", "in": "en", "ir": "fa", "it": "it", "jp": "ja", "ke": "en", "kr": "ko", "kz": "ru", "lt": "lt", "lu": "fr", "lv": "lv", "md": "ro", "mx": "es", "my": "ms", "ng": "en", "nl": "nl", "no": "no", "nz": "en", "ph": "en", "pk": "ur", "pl": "pl", "pt": "pt", "ro": "ro", "rs": "sr", "ru": "ru", "sa": "ar", "se": "sv", "sg": "en", "si": "sl", "sk": "sk", "th": "th", "tr": "tr", "tw": "zh", "ua": "uk", "us": "en", "vn": "vi", "za": "en"}, "languages": [{"code": "en", "name": "English"}, {"code": "es", "name": "Spanish"}, {"code": "he", "name": "Hebrew"}, {"code": "ar", "name": "Arabic"}, {"code": "fr", "name": "French"}, {"code": "de", "name": "German"}, {"code": "it", "name": "Italian"}, {"code": "pt", "name": "Portuguese"}, {"code": "nl", "name": "Dutch"}, {"code": "ru", "name": "Russian"}, {"code": "pl", "name": "Polish"}, {"code": "tr", "name": "Turkish"}, {"code": "uk", "name": "Ukrainian"}, {"code": "cs", "name": "Czech"}, {"code": "sv", "name": "Swedish"}, {"code": "no", "name": "Norwegian"}, {"code": "da", "name": "Danish"}, {"code": "fi", "name": "Finnish"}, {"code": "el", "name": "Greek"}, {"code": "hu", "name": "Hungarian"}, {"code": "ro", "name": "Romanian"}, {"code": "bg", "name": "Bulgarian"}, {"code": "sr", "name": "Serbian"}, {"code": "hr", "name": "Croatian"}, {"code": "sk", "name": "Slovak"}, {"code": "sl", "name": "Slovenian"}, {"code": "lt", "name": "Lithuanian"}, {"code": "lv", "name": "Latvian"}, {"code": "et", "name": "Estonian"}, {"code": "ja", "name": "Japanese"}, {"code": "ko", "name": "Korean"}, {"code": "zh", "name": "Chinese"}, {"code": "hi", "name": "Hindi"}, {"code": "bn", "name": "Bengali"}, {"code": "ur", "name": "Urdu"}, {"code": "fa", "name": "Persian"}, {"code": "id", "name": "Indonesian"}, {"code": "ms", "name": "Malay"}, {"code": "th", "name": "Thai"}, {"code": "vi", "name": "Vietnamese"}, {"code": "tl", "name": "Filipino"}, {"code": "sw", "name": "Swahili"}, {"code": "af", "name": "Afrikaans"}]};
   const cname = Object.fromEntries(D.countries.map(c => [c.code, c.name])), lname = Object.fromEntries(D.languages.map(l => [l.code, l.name]));
@@ -896,6 +898,29 @@ header nav{display:flex;align-items:center;min-width:0}
   draw();
 })();
 </script>
+      <div class="small muted" style="margin-top:6px">Saved with the button below.</div>
+    </div>
+
+    <div class="customhd">
+      <button type="button" class="toggle on" id="customBtn"><span class="sw"></span> Customise parameters</button>
+      <span class="small muted" id="customNote">This brand deviates from its track. Switch off to go back to the pure track.</span>
+    </div>
+
+    <div id="custom" class="">
+      <div class="grid three">
+        <div class="cfgcard">
+          <h3>Discovery</h3>
+          <label>Streams</label>
+          <div class="chkrow"><label><input type="checkbox" name="streams" value="dnstwist" checked > dnstwist</label><label><input type="checkbox" name="streams" value="ct" checked > ct</label><label><input type="checkbox" name="streams" value="nrd"  > nrd</label><label><input type="checkbox" name="streams" value="search"  > search</label><label><input type="checkbox" name="streams" value="urlscan" checked > urlscan</label></div>
+          <div class="chkrow"><label title="Facebook pages / Instagram profiles under the brand's name — page history, logo, links and posts, read by an AI"><input type="checkbox" name="social_accounts" checked > social media (Facebook pages · Instagram profiles)</label></div>
+          <label>dnstwist TLDs</label><select name="tlds" ><option >common</option><option selected>popular</option><option >all</option></select>
+          <label title="how many sites a scan opens in the browser and compares with the real one">Max sites to visit per scan</label><input name="max_candidates" value="500" >
+          <div class="small" style="margin:2px 0 6px;text-transform:none;color:var(--muted)">Never more than the workspace limit, <b>500</b>. <a href="/ui/settings/#budget">Settings → Workspace &amp; budget</a> (an admin changes it).</div>
+          <label title="dnstwist look-alike names checked in DNS - keyword combinations, other TLDs and typos first">Max look-alike names to check</label><input name="max_names_checked" value="3000" >
+          <label>Google search queries</label>
+          <div class="small" style="margin:2px 0 6px;text-transform:none">Edited and approved in <a href="#queries">Google search queries ↓</a> — 6 waiting for approval.</div>
+          <label>Max queries per scan</label><input name="search_queries_max" value="10" >
+          <div class="small muted" style="margin-top:6px;text-transform:none">Search countries and languages: “Where its customers are”, above.</div>
         </div>
         <div class="cfgcard">
           <h3>Cadence</h3>
@@ -1846,6 +1871,14 @@ header nav{display:flex;align-items:center;min-width:0}
     return true;
   }
   tabs.forEach(t => t.addEventListener('click', () => { show(t.dataset.pane, true); setUrl(location.pathname + location.search); }));
+  // screen readers: each tab names its panel; ← → move between the tabs
+  panes.forEach(p => { if (!p.id) p.id = 'pane-' + p.dataset.pane; });
+  tabs.forEach(t => { t.setAttribute('aria-controls', 'pane-' + t.dataset.pane); });
+  document.getElementById('btabs').addEventListener('keydown', e => {
+    if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+    const i = tabs.findIndex(t => t.getAttribute('aria-selected') === 'true'), j = (i + (e.key === 'ArrowRight' ? 1 : -1) + tabs.length) % tabs.length;
+    tabs[j].click(); tabs[j].focus(); e.preventDefault();
+  });
   document.addEventListener('click', e => {
     const a = e.target.closest && e.target.closest('a[href^="#"]'); if (!a) return;
     const id = a.getAttribute('href').slice(1); const el = id && document.getElementById(id);
@@ -1886,6 +1919,8 @@ header nav{display:flex;align-items:center;min-width:0}
     }
     fill(c.dataset.key);  // the detailed fields mirror the chosen track until edited
   }));
+  document.querySelectorAll('[data-open-custom]').forEach(a => a.addEventListener('click', () => {
+    if (customBox && customBox.classList.contains('hidden') && customBtn) setTimeout(() => customBtn.click(), 60); }));
   customBtn && customBtn.addEventListener('click', async () => {
     if (!customBox.classList.contains('hidden') && !(await bwConfirm("When you save, the track's own profile replaces every parameter you changed.",
         {title: 'Switch off custom parameters?', ok: 'Switch off', cancel: 'Keep them'}))) return;
@@ -1933,6 +1968,16 @@ header nav{display:flex;align-items:center;min-width:0}
     setTimeout(() => { if (e.defaultPrevented) return; f.__sentAt = Date.now();
       if (f.hasAttribute('data-busy') && b && b.tagName === 'BUTTON') { b.disabled = true; b.dataset.was = b.textContent; b.textContent = f.getAttribute('data-busy') || 'Working…';
         setTimeout(() => { b.disabled = false; b.textContent = b.dataset.was; }, 30000); } }, 0); });
+  // "/" opens the search from any page (a page with its own search box — findings, watchlist — takes it first)
+  document.addEventListener('keydown', e => {
+    if (e.key !== '/' || e.defaultPrevented || e.ctrlKey || e.metaKey || e.altKey) return;
+    const a = document.activeElement; if (a && (/INPUT|SELECT|TEXTAREA/.test(a.tagName) || a.isContentEditable)) return;
+    const box = document.getElementById('hsearch'); if (!box || !box.offsetParent) { location.href = '/ui/search'; return; }
+    e.preventDefault(); box.focus();
+  });
+  // phones: a "rwd" table shows one card per row, each cell labelled with its column (see the CSS)
+  document.querySelectorAll('table.rwd').forEach(t => { const heads = [...t.querySelectorAll('thead th')].map(th => th.textContent.trim());
+    t.querySelectorAll('tbody tr').forEach(tr => [...tr.children].forEach((td, i) => { if (!td.hasAttribute('data-label')) td.dataset.label = heads[i] || ''; })); });
   // the sticky header's height, for anything that sticks under it
   const hdr = document.querySelector('header'); const setH = () => document.documentElement.style.setProperty('--hdr', (hdr ? hdr.offsetHeight : 56) + 'px');
   setH(); window.addEventListener('resize', setH);
@@ -1952,7 +1997,9 @@ header nav{display:flex;align-items:center;min-width:0}
   document.querySelectorAll('main table').forEach(t => { if (t.parentElement.classList.contains('tw')) return;
     const w = document.createElement('div'); w.className = 'tw'; t.parentNode.insertBefore(w, t); w.appendChild(t); });
   // keep the active tab visible in the scrollable mobile nav
-  const act = document.querySelector('header nav a.active'); if (act && act.scrollIntoView) act.scrollIntoView({block: 'nearest', inline: 'center'});
+  // (by scrolling the bar itself: scrollIntoView would also move where the first Tab press starts, past the skip links)
+  const act = document.querySelector('header nav a.active'), bar = act && act.parentElement;
+  if (act && bar.scrollWidth > bar.clientWidth) bar.scrollLeft = act.offsetLeft - (bar.clientWidth - act.offsetWidth) / 2;
   // stagger entrances
   document.querySelectorAll('.kpis').forEach(g => [...g.children].forEach((el, i) => el.style.setProperty('--i', i)));
   document.querySelectorAll('main .panel').forEach((el, i) => el.style.setProperty('--i', Math.min(i, 12)));
@@ -2108,6 +2155,9 @@ header nav{display:flex;align-items:center;min-width:0}
   document.addEventListener('keydown', ev => {
     if (modal.hidden) return;
     if (ev.key === 'Escape') { ev.preventDefault(); close(false); }
+    else if (ev.key === 'Tab') {  // the focus stays in the dialog
+      const f = [inp, cancel, ok].filter(x => !x.hidden); const i = f.indexOf(document.activeElement);
+      ev.preventDefault(); f[(i + (ev.shiftKey ? -1 : 1) + f.length) % f.length].focus(); }
     else if (ev.key === 'Enter' && document.activeElement !== cancel) { ev.preventDefault(); ok.click(); }
   });
   // forms and buttons that ask first

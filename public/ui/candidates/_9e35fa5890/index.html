@@ -33,11 +33,17 @@ header{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:24px
 header .logo{font-family:var(--mono);font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);display:flex;align-items:center;gap:8px}
 header .logo::before{content:"";width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 10px var(--accent);animation:beat 2.2s ease-in-out infinite}
 @keyframes beat{0%,100%{opacity:.45;transform:scale(.85)}50%{opacity:1;transform:scale(1.1)}}
-header nav a{position:relative;font-family:var(--mono);font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-right:16px;padding:4px 0}
+header nav a{position:relative;font-family:var(--mono);font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-right:14px;padding:4px 0;white-space:nowrap}
+@media (min-width:901px) and (max-width:1500px){header{gap:14px}header nav a{font-size:11px;letter-spacing:.04em;margin-right:11px}header .hsearch input{width:130px}header .who .email{display:none}}
 header nav a::after{content:"";position:absolute;left:0;right:0;bottom:-2px;height:2px;background:var(--accent);transform:scaleX(0);transform-origin:left;transition:transform .3s}
 header nav a.active,header nav a:hover{color:var(--text)}header nav a.active::after,header nav a:hover::after{transform:scaleX(1)}
 header nav a.active::after{box-shadow:0 0 8px var(--accent)}
-header .who{margin-left:auto;color:var(--muted);font-size:12px}
+header .who{color:var(--muted);font-size:12px;white-space:nowrap}
+header .hsearch{margin-left:auto}header .hsearch input{width:170px;padding:5px 10px;font-size:12.5px;border-radius:999px;background:#0b1220}
+header .hsearch input:focus{width:240px}
+header nav .nc{display:inline-block;min-width:18px;padding:0 5px;margin-left:4px;border-radius:999px;background:rgba(53,199,242,.18);color:var(--accent2);font-size:10.5px;text-align:center;letter-spacing:0}
+header nav .nc.warn{background:rgba(255,77,77,.16);color:var(--crit)}
+@media (max-width:900px){header .hsearch{display:none}}
 main{position:relative;z-index:1;padding:20px;max-width:1440px;margin:0 auto}
 h1{font-family:var(--display);font-size:26px;letter-spacing:.04em;margin:0 0 14px;font-weight:700;
   background:linear-gradient(90deg,#E6EDF5 0%,#E6EDF5 55%,var(--accent2) 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
@@ -64,7 +70,7 @@ tr:hover td{background:rgba(53,199,242,.05)}
 .sev-low{background:rgba(46,204,113,.15);color:var(--low);border:1px solid var(--low)}
 .state{background:var(--panel2);color:var(--muted);border:1px solid var(--border)}
 .st-open,.st-new{color:var(--text)}.st-confirmed,.st-flagged{color:var(--crit);border-color:rgba(255,77,77,.5)}
-.st-dismissed{color:#5a6678}.st-watching{color:var(--accent);border-color:rgba(53,199,242,.4)}.st-long_watch{color:var(--muted)}
+.st-dismissed{color:var(--muted)}.st-watching{color:var(--accent);border-color:rgba(53,199,242,.4)}.st-long_watch{color:var(--muted)}
 .pill{background:var(--panel2);border:1px solid var(--border);border-radius:6px;padding:1px 6px;font-family:var(--mono);font-size:11px;color:var(--text);white-space:nowrap}
 /* signal pills: one neutral style for every group (the group is in the tooltip and the Explain table) */
 .pill[class*="g-"]{border-color:var(--border);color:#c9d3df}
@@ -73,6 +79,18 @@ button:hover,.btn:hover{border-color:var(--accent);box-shadow:0 0 12px rgba(53,1
 button.danger{border-color:var(--crit);color:var(--crit)}button.ok{border-color:var(--low);color:var(--low)}
 input,select,textarea{background:#0b1220;color:var(--text);border:1px solid var(--border);border-radius:6px;padding:7px 9px;font:inherit;width:100%;transition:border-color .2s,box-shadow .2s}
 input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(53,199,242,.15)}
+/* a paragraph that may be Hebrew or Arabic (a brand name, an ad, a reason) takes its direction from its own first letter */
+.lead,.summary,.story,.say,.reason,.ev .diff{unicode-bidi:plaintext}
+button.chip{font:inherit;font-family:var(--mono);font-size:11px;box-shadow:none}
+/* on a phone a wide table (class "rwd") becomes one card per row; each cell says what it is (from the header) */
+@media (max-width:700px){
+  table.rwd thead{display:none}
+  table.rwd,table.rwd tbody,table.rwd tr,table.rwd td{display:block;width:100%}
+  table.rwd tr{border:1px solid var(--border);border-radius:10px;margin:0 0 10px;padding:6px 10px;background:var(--panel2)}
+  table.rwd td{border:0;padding:4px 0;min-height:0}
+  table.rwd td[data-label]:not([data-label=""])::before{content:attr(data-label);display:block;font:600 10px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:2px}
+  table.rwd td:empty{display:none}
+}
 /* keyboard users see where they are; mouse clicks do not get the ring */
 :focus-visible{outline:2px solid var(--accent2);outline-offset:2px;border-radius:4px}
 a:focus-visible,button:focus-visible,.btn:focus-visible{box-shadow:0 0 0 3px rgba(53,199,242,.25)}
@@ -144,7 +162,7 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
 .grid>*,.cols>*{min-width:0}
 .tw{overflow-x:auto;-webkit-overflow-scrolling:touch;max-width:100%;overscroll-behavior-x:contain}
 .tw>table{min-width:100%}
-header nav{display:flex;align-items:center;min-width:0}
+header nav{display:flex;align-items:center;min-width:0;overflow-x:auto;scrollbar-width:none}  /* a narrow desktop scrolls the bar, never overlaps the search */
 @media (max-width:1100px){.grid.four{grid-template-columns:1fr 1fr}}
 @media (max-width:900px){
   .grid,.grid.two,.grid.three,.grid.four,.cols{grid-template-columns:1fr!important}
@@ -192,19 +210,19 @@ header nav{display:flex;align-items:center;min-width:0}
 <header>
   <a class="logo" href="/ui/dashboard/">BrandWatch</a>
   
-  <nav>
+  <nav aria-label="Main">
     <a href="/ui/dashboard/" class="">Dashboard</a>
-    <a href="/ui/how-it-works/" class="">How it works</a>
-    <a href="/ui/brands/" class="">Brands &amp; Scans</a>
-    <a href="/ui/findings/" class="">Findings</a>
+    <a href="/ui/findings/" class="">Findings <span class="nc" title="9 awaiting a verdict">9</span></a>
     <a href="/ui/candidates/" class="active">Watchlist</a>
     <a href="/ui/campaigns/" class="">Attack infrastructure</a>
-    <a href="/ui/takedowns/" class="">Takedowns</a>
+    <a href="/ui/takedowns/" class="">Takedowns <span class="nc warn" title="38 confirmed site(s) whose takedown was not sent">38</span></a>
+    <a href="/ui/brands/" class="">Brands &amp; Scans</a>
     <a href="/ui/activity/" class="">Activity</a>
     <a href="/ui/settings/" class="">Settings</a>
-    <a href="/docs" target="_blank">API</a>
+    <a href="/ui/how-it-works/" class="">How it works</a>
   </nav>
-  <span class="who"><span class="email">admin · </span>admin · <a href="/ui/logout">logout</a></span>
+  <form method="get" action="/ui/search" class="hsearch" role="search"><input name="q" id="hsearch" placeholder="Search · /" aria-label="Search a domain, an IP, a takedown reference" autocomplete="off" maxlength="120"></form>
+  <span class="who"><span class="email">admin · </span>admin · <a href="/docs" target="_blank" title="the REST API reference">API</a> · <a href="/ui/logout">logout</a></span>
   
 </header>
 <main id="main">
@@ -280,7 +298,7 @@ header nav{display:flex;align-items:center;min-width:0}
   <form method="get" action="/ui/candidates/" class="filters" id="filters">
     <input type="hidden" name="brand_id" value="eb019060-41b6-4160-871c-14094ad558a4">
     <div class="wide"><label for="q">Search host</label><input id="q" name="q" value="" placeholder="part of a host name" autocomplete="off" maxlength="120"></div>
-    <div><label for="c-state">State</label><select id="c-state" name="state"><option value="">all</option><option value="new" >new</option><option value="watching" >watching</option><option value="analyzing" >analysing</option><option value="flagged" >flagged (finding)</option><option value="long_watch" >long watch</option><option value="dismissed" >dismissed</option></select></div>
+    <div><label for="c-state">State</label><select id="c-state" name="state"><option value="">all</option><option value="new" >new</option><option value="watching" >watching</option><option value="flagged" >flagged (finding)</option><option value="long_watch" >long watch</option><option value="dismissed" >dismissed</option></select></div>
     <div class="go"><button type="submit" class="primary">Apply</button></div>
     <div class="muted small" style="align-self:center">196 domains · page 1 of 4</div>
   </form>
@@ -296,13 +314,13 @@ header nav{display:flex;align-items:center;min-width:0}
     <button type="button" id="bulkclear" class="small">clear</button>
   </form>
   
-  <table id="ctable">
+  <table id="ctable" class="rwd">
     <thead><tr><th class="selcol"><input type="checkbox" id="selall" aria-label="select every domain on this page"></th><th>Domain</th><th>Brand</th><th>Why it is here</th><th>State</th><th>Finding</th><th>Priority</th><th>First seen</th><th>Last seen</th><th>Next scan</th><th class="right">Scans</th><th>Actions</th></tr></thead>
     <tbody>
     
     <tr class="wrow" style="--sc:#FF4D4D" data-host="shopnova-refund.net">
       <td class="selcol"><input type="checkbox" class="sel" name="ids" value="1709923f-5c2a-4a93-86bc-f421bbf7c479" form="bulkform" aria-label="select shopnova-refund.net"></td>
-      <td><a href="/ui/candidates/1709923f-5c2a-4a93-86bc-f421bbf7c479/"><span class="mono">shopnova-refund.net</span></a><div class="small muted">domain name</div></td>
+      <td><a href="/ui/candidates/1709923f-5c2a-4a93-86bc-f421bbf7c479/"><span class="mono" dir="ltr">shopnova-refund.net</span></a><div class="small muted">domain name</div></td>
       <td class="small"><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/"><bdi>ShopNova</bdi></a></td>
       <td class="why"><b>Certificate logs</b> <span class="mono" dir="ltr">san:6aaefd363c66</span> · <b>Analyst URL scan</b></td>
       <td><span class="badge state st-flagged" title="scored Medium or higher: there is a finding for it">flagged (finding)</span></td>
@@ -329,7 +347,7 @@ header nav{display:flex;align-items:center;min-width:0}
     
     <tr class="wrow" style="--sc:#FF4D4D" data-host="shopnova-giftcard.com">
       <td class="selcol"><input type="checkbox" class="sel" name="ids" value="1d1d7ed6-291b-4016-8ed4-f533c3b69582" form="bulkform" aria-label="select shopnova-giftcard.com"></td>
-      <td><a href="/ui/candidates/1d1d7ed6-291b-4016-8ed4-f533c3b69582/"><span class="mono">shopnova-giftcard.com</span></a><div class="small muted">domain name</div></td>
+      <td><a href="/ui/candidates/1d1d7ed6-291b-4016-8ed4-f533c3b69582/"><span class="mono" dir="ltr">shopnova-giftcard.com</span></a><div class="small muted">domain name</div></td>
       <td class="small"><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/"><bdi>ShopNova</bdi></a></td>
       <td class="why"><b>Certificate logs</b> <span class="mono" dir="ltr">san:5a09a5acbf21</span> · <b>Analyst URL scan</b></td>
       <td><span class="badge state st-flagged" title="scored Medium or higher: there is a finding for it">flagged (finding)</span></td>
@@ -356,9 +374,9 @@ header nav{display:flex;align-items:center;min-width:0}
     
     <tr class="wrow" style="--sc:#8A97A8" data-host="shopnova-eu.com">
       <td class="selcol"><input type="checkbox" class="sel" name="ids" value="d25b56ef-f7ee-48c2-aae9-543efa44b68b" form="bulkform" aria-label="select shopnova-eu.com"></td>
-      <td><a href="/ui/candidates/d25b56ef-f7ee-48c2-aae9-543efa44b68b/"><span class="mono">shopnova-eu.com</span></a><div class="small muted">domain name</div></td>
+      <td><a href="/ui/candidates/d25b56ef-f7ee-48c2-aae9-543efa44b68b/"><span class="mono" dir="ltr">shopnova-eu.com</span></a><div class="small muted">domain name</div></td>
       <td class="small"><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/"><bdi>ShopNova</bdi></a></td>
-      <td class="why"><b>Analyst URL scan</b> <span class="mono" dir="ltr">pivot:brand pattern in hostname</span></td>
+      <td class="why"><b>Infrastructure map</b> <span title="pivot:brand pattern in hostname">brand pattern in hostname</span></td>
       <td><span class="badge state st-new" title="just discovered, not visited yet">new</span></td>
       <td><span class="muted small">—</span></td>
       <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="60" style="max-width:60px"></span> 20</td>
@@ -383,9 +401,9 @@ header nav{display:flex;align-items:center;min-width:0}
     
     <tr class="wrow" style="--sc:#8A97A8" data-host="coinpilott.io">
       <td class="selcol"><input type="checkbox" class="sel" name="ids" value="4952e586-bee9-47e8-95e6-b2e6bd2d687e" form="bulkform" aria-label="select coinpilott.io"></td>
-      <td><a href="/ui/candidates/4952e586-bee9-47e8-95e6-b2e6bd2d687e/"><span class="mono">coinpilott.io</span></a><div class="small muted">domain name</div></td>
+      <td><a href="/ui/candidates/4952e586-bee9-47e8-95e6-b2e6bd2d687e/"><span class="mono" dir="ltr">coinpilott.io</span></a><div class="small muted">domain name</div></td>
       <td class="small"><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/"><bdi>ShopNova</bdi></a></td>
-      <td class="why"><b>Analyst URL scan</b> <span class="mono" dir="ltr">pivot:shares cert with the campaign</span></td>
+      <td class="why"><b>Infrastructure map</b> <span title="pivot:shares cert with the campaign">shares cert with the campaign</span></td>
       <td><span class="badge state st-new" title="just discovered, not visited yet">new</span></td>
       <td><span class="muted small">—</span></td>
       <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="60" style="max-width:60px"></span> 20</td>
@@ -410,9 +428,9 @@ header nav{display:flex;align-items:center;min-width:0}
     
     <tr class="wrow" style="--sc:#8A97A8" data-host="coinpllot.io">
       <td class="selcol"><input type="checkbox" class="sel" name="ids" value="123efcdb-fbb0-4b2d-9575-72eb36b84466" form="bulkform" aria-label="select coinpllot.io"></td>
-      <td><a href="/ui/candidates/123efcdb-fbb0-4b2d-9575-72eb36b84466/"><span class="mono">coinpllot.io</span></a><div class="small muted">domain name</div></td>
+      <td><a href="/ui/candidates/123efcdb-fbb0-4b2d-9575-72eb36b84466/"><span class="mono" dir="ltr">coinpllot.io</span></a><div class="small muted">domain name</div></td>
       <td class="small"><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/"><bdi>ShopNova</bdi></a></td>
-      <td class="why"><b>Analyst URL scan</b> <span class="mono" dir="ltr">pivot:shares cert with the campaign</span></td>
+      <td class="why"><b>Infrastructure map</b> <span title="pivot:shares cert with the campaign">shares cert with the campaign</span></td>
       <td><span class="badge state st-new" title="just discovered, not visited yet">new</span></td>
       <td><span class="muted small">—</span></td>
       <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="60" style="max-width:60px"></span> 20</td>
@@ -437,9 +455,9 @@ header nav{display:flex;align-items:center;min-width:0}
     
     <tr class="wrow" style="--sc:#8A97A8" data-host="coin-pilot.io">
       <td class="selcol"><input type="checkbox" class="sel" name="ids" value="34a395c5-524a-4108-9917-e124040166d9" form="bulkform" aria-label="select coin-pilot.io"></td>
-      <td><a href="/ui/candidates/34a395c5-524a-4108-9917-e124040166d9/"><span class="mono">coin-pilot.io</span></a><div class="small muted">domain name</div></td>
+      <td><a href="/ui/candidates/34a395c5-524a-4108-9917-e124040166d9/"><span class="mono" dir="ltr">coin-pilot.io</span></a><div class="small muted">domain name</div></td>
       <td class="small"><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/"><bdi>ShopNova</bdi></a></td>
-      <td class="why"><b>Analyst URL scan</b> <span class="mono" dir="ltr">pivot:shares cert with the campaign</span></td>
+      <td class="why"><b>Infrastructure map</b> <span title="pivot:shares cert with the campaign">shares cert with the campaign</span></td>
       <td><span class="badge state st-new" title="just discovered, not visited yet">new</span></td>
       <td><span class="muted small">—</span></td>
       <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="60" style="max-width:60px"></span> 20</td>
@@ -464,9 +482,9 @@ header nav{display:flex;align-items:center;min-width:0}
     
     <tr class="wrow" style="--sc:#8A97A8" data-host="vaultpay-login.com">
       <td class="selcol"><input type="checkbox" class="sel" name="ids" value="90326556-116b-4edb-ad02-26d53e01a006" form="bulkform" aria-label="select vaultpay-login.com"></td>
-      <td><a href="/ui/candidates/90326556-116b-4edb-ad02-26d53e01a006/"><span class="mono">vaultpay-login.com</span></a><div class="small muted">domain name</div></td>
+      <td><a href="/ui/candidates/90326556-116b-4edb-ad02-26d53e01a006/"><span class="mono" dir="ltr">vaultpay-login.com</span></a><div class="small muted">domain name</div></td>
       <td class="small"><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/"><bdi>ShopNova</bdi></a></td>
-      <td class="why"><b>Analyst URL scan</b> <span class="mono" dir="ltr">pivot:shares cert with the campaign</span></td>
+      <td class="why"><b>Infrastructure map</b> <span title="pivot:shares cert with the campaign">shares cert with the campaign</span></td>
       <td><span class="badge state st-new" title="just discovered, not visited yet">new</span></td>
       <td><span class="muted small">—</span></td>
       <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="60" style="max-width:60px"></span> 20</td>
@@ -491,9 +509,9 @@ header nav{display:flex;align-items:center;min-width:0}
     
     <tr class="wrow" style="--sc:#8A97A8" data-host="vaultpay-secure.net">
       <td class="selcol"><input type="checkbox" class="sel" name="ids" value="ed249af2-ab24-44a7-bd07-501c8a441887" form="bulkform" aria-label="select vaultpay-secure.net"></td>
-      <td><a href="/ui/candidates/ed249af2-ab24-44a7-bd07-501c8a441887/"><span class="mono">vaultpay-secure.net</span></a><div class="small muted">domain name</div></td>
+      <td><a href="/ui/candidates/ed249af2-ab24-44a7-bd07-501c8a441887/"><span class="mono" dir="ltr">vaultpay-secure.net</span></a><div class="small muted">domain name</div></td>
       <td class="small"><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/"><bdi>ShopNova</bdi></a></td>
-      <td class="why"><b>Analyst URL scan</b> <span class="mono" dir="ltr">pivot:shares cert with the campaign</span></td>
+      <td class="why"><b>Infrastructure map</b> <span title="pivot:shares cert with the campaign">shares cert with the campaign</span></td>
       <td><span class="badge state st-new" title="just discovered, not visited yet">new</span></td>
       <td><span class="muted small">—</span></td>
       <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="60" style="max-width:60px"></span> 20</td>
@@ -518,9 +536,9 @@ header nav{display:flex;align-items:center;min-width:0}
     
     <tr class="wrow" style="--sc:#8A97A8" data-host="vault-pay.co">
       <td class="selcol"><input type="checkbox" class="sel" name="ids" value="4f4fd33c-9cc1-4682-9d7f-a381682dd39a" form="bulkform" aria-label="select vault-pay.co"></td>
-      <td><a href="/ui/candidates/4f4fd33c-9cc1-4682-9d7f-a381682dd39a/"><span class="mono">vault-pay.co</span></a><div class="small muted">domain name</div></td>
+      <td><a href="/ui/candidates/4f4fd33c-9cc1-4682-9d7f-a381682dd39a/"><span class="mono" dir="ltr">vault-pay.co</span></a><div class="small muted">domain name</div></td>
       <td class="small"><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/"><bdi>ShopNova</bdi></a></td>
-      <td class="why"><b>Analyst URL scan</b> <span class="mono" dir="ltr">pivot:shares cert with the campaign</span></td>
+      <td class="why"><b>Infrastructure map</b> <span title="pivot:shares cert with the campaign">shares cert with the campaign</span></td>
       <td><span class="badge state st-new" title="just discovered, not visited yet">new</span></td>
       <td><span class="muted small">—</span></td>
       <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="60" style="max-width:60px"></span> 20</td>
@@ -545,9 +563,9 @@ header nav{display:flex;align-items:center;min-width:0}
     
     <tr class="wrow" style="--sc:#8A97A8" data-host="vaultpay-verify.com">
       <td class="selcol"><input type="checkbox" class="sel" name="ids" value="181f56a2-5e4e-4949-b6d2-be4bf8082f32" form="bulkform" aria-label="select vaultpay-verify.com"></td>
-      <td><a href="/ui/candidates/181f56a2-5e4e-4949-b6d2-be4bf8082f32/"><span class="mono">vaultpay-verify.com</span></a><div class="small muted">domain name</div></td>
+      <td><a href="/ui/candidates/181f56a2-5e4e-4949-b6d2-be4bf8082f32/"><span class="mono" dir="ltr">vaultpay-verify.com</span></a><div class="small muted">domain name</div></td>
       <td class="small"><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/"><bdi>ShopNova</bdi></a></td>
-      <td class="why"><b>Analyst URL scan</b> <span class="mono" dir="ltr">pivot:shares cert with the campaign</span></td>
+      <td class="why"><b>Infrastructure map</b> <span title="pivot:shares cert with the campaign">shares cert with the campaign</span></td>
       <td><span class="badge state st-new" title="just discovered, not visited yet">new</span></td>
       <td><span class="muted small">—</span></td>
       <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="60" style="max-width:60px"></span> 20</td>
@@ -572,9 +590,9 @@ header nav{display:flex;align-items:center;min-width:0}
     
     <tr class="wrow" style="--sc:#8A97A8" data-host="coinpilot-bot.io">
       <td class="selcol"><input type="checkbox" class="sel" name="ids" value="14a14d64-6604-41ea-838b-f51c4f34aa83" form="bulkform" aria-label="select coinpilot-bot.io"></td>
-      <td><a href="/ui/candidates/14a14d64-6604-41ea-838b-f51c4f34aa83/"><span class="mono">coinpilot-bot.io</span></a><div class="small muted">domain name</div></td>
+      <td><a href="/ui/candidates/14a14d64-6604-41ea-838b-f51c4f34aa83/"><span class="mono" dir="ltr">coinpilot-bot.io</span></a><div class="small muted">domain name</div></td>
       <td class="small"><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/"><bdi>ShopNova</bdi></a></td>
-      <td class="why"><b>Analyst URL scan</b> <span class="mono" dir="ltr">pivot:shares cert with the campaign</span></td>
+      <td class="why"><b>Infrastructure map</b> <span title="pivot:shares cert with the campaign">shares cert with the campaign</span></td>
       <td><span class="badge state st-new" title="just discovered, not visited yet">new</span></td>
       <td><span class="muted small">—</span></td>
       <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="60" style="max-width:60px"></span> 20</td>
@@ -599,9 +617,9 @@ header nav{display:flex;align-items:center;min-width:0}
     
     <tr class="wrow" style="--sc:#8A97A8" data-host="coinplot.io">
       <td class="selcol"><input type="checkbox" class="sel" name="ids" value="c6729bdc-7a71-44dc-8aec-24e28fd5c4c4" form="bulkform" aria-label="select coinplot.io"></td>
-      <td><a href="/ui/candidates/c6729bdc-7a71-44dc-8aec-24e28fd5c4c4/"><span class="mono">coinplot.io</span></a><div class="small muted">domain name</div></td>
+      <td><a href="/ui/candidates/c6729bdc-7a71-44dc-8aec-24e28fd5c4c4/"><span class="mono" dir="ltr">coinplot.io</span></a><div class="small muted">domain name</div></td>
       <td class="small"><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/"><bdi>ShopNova</bdi></a></td>
-      <td class="why"><b>Analyst URL scan</b> <span class="mono" dir="ltr">pivot:shares cert with the campaign</span></td>
+      <td class="why"><b>Infrastructure map</b> <span title="pivot:shares cert with the campaign">shares cert with the campaign</span></td>
       <td><span class="badge state st-new" title="just discovered, not visited yet">new</span></td>
       <td><span class="muted small">—</span></td>
       <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="60" style="max-width:60px"></span> 20</td>
@@ -626,9 +644,9 @@ header nav{display:flex;align-items:center;min-width:0}
     
     <tr class="wrow" style="--sc:#8A97A8" data-host="cooinpilot.io">
       <td class="selcol"><input type="checkbox" class="sel" name="ids" value="f3c2e3c5-8743-4723-8d7b-b3d4b6ed835a" form="bulkform" aria-label="select cooinpilot.io"></td>
-      <td><a href="/ui/candidates/f3c2e3c5-8743-4723-8d7b-b3d4b6ed835a/"><span class="mono">cooinpilot.io</span></a><div class="small muted">domain name</div></td>
+      <td><a href="/ui/candidates/f3c2e3c5-8743-4723-8d7b-b3d4b6ed835a/"><span class="mono" dir="ltr">cooinpilot.io</span></a><div class="small muted">domain name</div></td>
       <td class="small"><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/"><bdi>ShopNova</bdi></a></td>
-      <td class="why"><b>Analyst URL scan</b> <span class="mono" dir="ltr">pivot:shares cert with the campaign</span></td>
+      <td class="why"><b>Infrastructure map</b> <span title="pivot:shares cert with the campaign">shares cert with the campaign</span></td>
       <td><span class="badge state st-new" title="just discovered, not visited yet">new</span></td>
       <td><span class="muted small">—</span></td>
       <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="60" style="max-width:60px"></span> 20</td>
@@ -653,9 +671,9 @@ header nav{display:flex;align-items:center;min-width:0}
     
     <tr class="wrow" style="--sc:#8A97A8" data-host="koinpilot.io">
       <td class="selcol"><input type="checkbox" class="sel" name="ids" value="6bce9476-6d0f-42b5-89ff-56ad19ec289a" form="bulkform" aria-label="select koinpilot.io"></td>
-      <td><a href="/ui/candidates/6bce9476-6d0f-42b5-89ff-56ad19ec289a/"><span class="mono">koinpilot.io</span></a><div class="small muted">domain name</div></td>
+      <td><a href="/ui/candidates/6bce9476-6d0f-42b5-89ff-56ad19ec289a/"><span class="mono" dir="ltr">koinpilot.io</span></a><div class="small muted">domain name</div></td>
       <td class="small"><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/"><bdi>ShopNova</bdi></a></td>
-      <td class="why"><b>Analyst URL scan</b> <span class="mono" dir="ltr">pivot:shares cert with the campaign</span></td>
+      <td class="why"><b>Infrastructure map</b> <span title="pivot:shares cert with the campaign">shares cert with the campaign</span></td>
       <td><span class="badge state st-new" title="just discovered, not visited yet">new</span></td>
       <td><span class="muted small">—</span></td>
       <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="60" style="max-width:60px"></span> 20</td>
@@ -680,7 +698,7 @@ header nav{display:flex;align-items:center;min-width:0}
     
     <tr class="wrow" style="--sc:#FF4D4D" data-host="shopnova-support-center.com">
       <td class="selcol"><input type="checkbox" class="sel" name="ids" value="fa7e6540-34b8-44c4-8ea7-22c057ebc4bc" form="bulkform" aria-label="select shopnova-support-center.com"></td>
-      <td><a href="/ui/candidates/fa7e6540-34b8-44c4-8ea7-22c057ebc4bc/"><span class="mono">shopnova-support-center.com</span></a><div class="small muted">domain name</div></td>
+      <td><a href="/ui/candidates/fa7e6540-34b8-44c4-8ea7-22c057ebc4bc/"><span class="mono" dir="ltr">shopnova-support-center.com</span></a><div class="small muted">domain name</div></td>
       <td class="small"><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/"><bdi>ShopNova</bdi></a></td>
       <td class="why"><b>AI answer (ChatGPT / Gemini / Google AI Mode)</b> <span class="mono" dir="ltr">ai answer: 03-9817777 — ChatGPT</span> · <b>Certificate logs</b> <span class="mono" dir="ltr">san:f3ee7bffaf74</span> · <b>Analyst URL scan</b></td>
       <td><span class="badge state st-flagged" title="scored Medium or higher: there is a finding for it">flagged (finding)</span></td>
@@ -707,7 +725,7 @@ header nav{display:flex;align-items:center;min-width:0}
     
     <tr class="wrow" style="--sc:#FF4D4D" data-host="shopnova-login.com">
       <td class="selcol"><input type="checkbox" class="sel" name="ids" value="0e4c2f54-46e9-4eb8-88e8-5e8ec1e97ba9" form="bulkform" aria-label="select shopnova-login.com"></td>
-      <td><a href="/ui/candidates/0e4c2f54-46e9-4eb8-88e8-5e8ec1e97ba9/"><span class="mono">shopnova-login.com</span></a><div class="small muted">domain name</div></td>
+      <td><a href="/ui/candidates/0e4c2f54-46e9-4eb8-88e8-5e8ec1e97ba9/"><span class="mono" dir="ltr">shopnova-login.com</span></a><div class="small muted">domain name</div></td>
       <td class="small"><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/"><bdi>ShopNova</bdi></a></td>
       <td class="why"><b>AI answer (ChatGPT / Gemini / Google AI Mode)</b> <span class="mono" dir="ltr">ai answer: shopnova-login.com — Gemini</span> · <b>Certificate logs</b> <span class="mono" dir="ltr">san:69d4c596d715</span> · <b>Analyst URL scan</b></td>
       <td><span class="badge state st-flagged" title="scored Medium or higher: there is a finding for it">flagged (finding)</span></td>
@@ -734,7 +752,7 @@ header nav{display:flex;align-items:center;min-width:0}
     
     <tr class="wrow" style="--sc:#FF4D4D" data-host="shopnova-login.com">
       <td class="selcol"><input type="checkbox" class="sel" name="ids" value="a53b1e5e-736f-457b-a797-848fa573f88b" form="bulkform" aria-label="select shopnova-login.com"></td>
-      <td><a href="/ui/candidates/a53b1e5e-736f-457b-a797-848fa573f88b/"><span class="mono">shopnova-login.com</span></a><div class="small muted">content</div></td>
+      <td><a href="/ui/candidates/a53b1e5e-736f-457b-a797-848fa573f88b/"><span class="mono" dir="ltr">shopnova-login.com</span></a><div class="small muted">content</div></td>
       <td class="small"><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/"><bdi>ShopNova</bdi></a></td>
       <td class="why"><b>AI answer (ChatGPT / Gemini / Google AI Mode)</b> <span class="mono" dir="ltr">AI answer: Gemini</span></td>
       <td><span class="badge state st-flagged" title="scored Medium or higher: there is a finding for it">flagged (finding)</span></td>
@@ -761,7 +779,7 @@ header nav{display:flex;align-items:center;min-width:0}
     
     <tr class="wrow" style="--sc:#FF4D4D" data-host="help@shopnova-care.net">
       <td class="selcol"><input type="checkbox" class="sel" name="ids" value="e8314377-bba0-4c1d-b458-94a1304d87d5" form="bulkform" aria-label="select help@shopnova-care.net"></td>
-      <td><a href="/ui/candidates/e8314377-bba0-4c1d-b458-94a1304d87d5/"><span class="mono">help@shopnova-care.net</span></a><div class="small muted">content</div></td>
+      <td><a href="/ui/candidates/e8314377-bba0-4c1d-b458-94a1304d87d5/"><span class="mono" dir="ltr">help@shopnova-care.net</span></a><div class="small muted">content</div></td>
       <td class="small"><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/"><bdi>ShopNova</bdi></a></td>
       <td class="why"><b>AI answer (ChatGPT / Gemini / Google AI Mode)</b> <span class="mono" dir="ltr">AI answer: Gemini</span></td>
       <td><span class="badge state st-flagged" title="scored Medium or higher: there is a finding for it">flagged (finding)</span></td>
@@ -788,7 +806,7 @@ header nav{display:flex;align-items:center;min-width:0}
     
     <tr class="wrow" style="--sc:#FF4D4D" data-host="03-9817777">
       <td class="selcol"><input type="checkbox" class="sel" name="ids" value="1ad285cd-0586-4728-b94d-4123d1caec94" form="bulkform" aria-label="select 03-9817777"></td>
-      <td><a href="/ui/candidates/1ad285cd-0586-4728-b94d-4123d1caec94/"><span class="mono">03-9817777</span></a><div class="small muted">content</div></td>
+      <td><a href="/ui/candidates/1ad285cd-0586-4728-b94d-4123d1caec94/"><span class="mono" dir="ltr">03-9817777</span></a><div class="small muted">content</div></td>
       <td class="small"><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/"><bdi>ShopNova</bdi></a></td>
       <td class="why"><b>AI answer (ChatGPT / Gemini / Google AI Mode)</b> <span class="mono" dir="ltr">AI answer: ChatGPT</span></td>
       <td><span class="badge state st-flagged" title="scored Medium or higher: there is a finding for it">flagged (finding)</span></td>
@@ -815,7 +833,7 @@ header nav{display:flex;align-items:center;min-width:0}
     
     <tr class="wrow" style="--sc:#FF4D4D" data-host="shopnova-refund.net">
       <td class="selcol"><input type="checkbox" class="sel" name="ids" value="c1a549d4-c861-446e-8919-15dc44930f73" form="bulkform" aria-label="select shopnova-refund.net"></td>
-      <td><a href="/ui/candidates/c1a549d4-c861-446e-8919-15dc44930f73/"><span class="mono">shopnova-refund.net</span></a><div class="small muted">URL path</div></td>
+      <td><a href="/ui/candidates/c1a549d4-c861-446e-8919-15dc44930f73/"><span class="mono" dir="ltr">shopnova-refund.net</span></a><div class="small muted">URL path</div></td>
       <td class="small"><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/"><bdi>ShopNova</bdi></a></td>
       <td class="why"><b>Facebook pages / Instagram profiles</b> <span class="mono" dir="ltr">social: linked from the Facebook...</span></td>
       <td><span class="badge state st-flagged" title="scored Medium or higher: there is a finding for it">flagged (finding)</span></td>
@@ -842,7 +860,7 @@ header nav{display:flex;align-items:center;min-width:0}
     
     <tr class="wrow" style="--sc:#FF4D4D" data-host="onestyle-shopping.com">
       <td class="selcol"><input type="checkbox" class="sel" name="ids" value="656ccb9e-7a12-451c-91aa-32bad6cd7d10" form="bulkform" aria-label="select onestyle-shopping.com"></td>
-      <td><a href="/ui/candidates/656ccb9e-7a12-451c-91aa-32bad6cd7d10/"><span class="mono">onestyle-shopping.com</span></a><div class="small muted">domain name</div></td>
+      <td><a href="/ui/candidates/656ccb9e-7a12-451c-91aa-32bad6cd7d10/"><span class="mono" dir="ltr">onestyle-shopping.com</span></a><div class="small muted">domain name</div></td>
       <td class="small"><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/"><bdi>ShopNova</bdi></a></td>
       <td class="why"><b>Facebook / Instagram ads</b> <span class="mono" dir="ltr">meta_ad:IL:3998405574774845</span> · <b>Facebook pages / Instagram profiles</b> <span class="mono" dir="ltr">social: linked from the Instagram...</span></td>
       <td><span class="badge state st-flagged" title="scored Medium or higher: there is a finding for it">flagged (finding)</span></td>
@@ -869,7 +887,7 @@ header nav{display:flex;align-items:center;min-width:0}
     
     <tr class="wrow" style="--sc:#35C7F2" data-host="facebook.com/shopnovarunners">
       <td class="selcol"><input type="checkbox" class="sel" name="ids" value="45352c91-8db7-41b7-ac4e-a8757ecfe479" form="bulkform" aria-label="select facebook.com/shopnovarunners"></td>
-      <td><a href="/ui/candidates/45352c91-8db7-41b7-ac4e-a8757ecfe479/"><span class="mono">facebook.com/shopnovarunners</span></a><div class="small muted">content</div></td>
+      <td><a href="/ui/candidates/45352c91-8db7-41b7-ac4e-a8757ecfe479/"><span class="mono" dir="ltr">facebook.com/shopnovarunners</span></a><div class="small muted">content</div></td>
       <td class="small"><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/"><bdi>ShopNova</bdi></a></td>
       <td class="why"><b>Facebook pages / Instagram profiles</b> <span class="mono" dir="ltr">Facebook page search “ShopNova”;...</span></td>
       <td><span class="badge state st-watching" title="visited, below the finding threshold: re-checked on a schedule">watching</span></td>
@@ -896,7 +914,7 @@ header nav{display:flex;align-items:center;min-width:0}
     
     <tr class="wrow" style="--sc:#FF4D4D" data-host="facebook.com/shopnova.support.help">
       <td class="selcol"><input type="checkbox" class="sel" name="ids" value="4b9c37d8-83cb-48cc-8a51-17e612c26abe" form="bulkform" aria-label="select facebook.com/shopnova.support.help"></td>
-      <td><a href="/ui/candidates/4b9c37d8-83cb-48cc-8a51-17e612c26abe/"><span class="mono">facebook.com/shopnova.support.help</span></a><div class="small muted">content</div></td>
+      <td><a href="/ui/candidates/4b9c37d8-83cb-48cc-8a51-17e612c26abe/"><span class="mono" dir="ltr">facebook.com/shopnova.support.help</span></a><div class="small muted">content</div></td>
       <td class="small"><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/"><bdi>ShopNova</bdi></a></td>
       <td class="why"><b>Facebook pages / Instagram profiles</b> <span class="mono" dir="ltr">Facebook page search “ShopNova”;...</span></td>
       <td><span class="badge state st-flagged" title="scored Medium or higher: there is a finding for it">flagged (finding)</span></td>
@@ -923,7 +941,7 @@ header nav{display:flex;align-items:center;min-width:0}
     
     <tr class="wrow" style="--sc:#FF4D4D" data-host="instagram.com/shopnova.israel.official">
       <td class="selcol"><input type="checkbox" class="sel" name="ids" value="8aa63d52-1f50-44a9-b52c-275e4f528d2d" form="bulkform" aria-label="select instagram.com/shopnova.israel.official"></td>
-      <td><a href="/ui/candidates/8aa63d52-1f50-44a9-b52c-275e4f528d2d/"><span class="mono">instagram.com/shopnova.israel.official</span></a><div class="small muted">content</div></td>
+      <td><a href="/ui/candidates/8aa63d52-1f50-44a9-b52c-275e4f528d2d/"><span class="mono" dir="ltr">instagram.com/shopnova.israel.official</span></a><div class="small muted">content</div></td>
       <td class="small"><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/"><bdi>ShopNova</bdi></a></td>
       <td class="why"><b>Facebook pages / Instagram profiles</b> <span class="mono" dir="ltr">Google: site:instagram.com</span></td>
       <td><span class="badge state st-flagged" title="scored Medium or higher: there is a finding for it">flagged (finding)</span></td>
@@ -950,7 +968,7 @@ header nav{display:flex;align-items:center;min-width:0}
     
     <tr class="wrow" style="--sc:#3a4658" data-host="shopnovo.co.il">
       <td class="selcol"></td>
-      <td><a href="/ui/candidates/5f68018c-bf80-4b1d-ba4c-086cc801d968/"><span class="mono">shopnovo.co.il</span></a><div class="small muted">domain name</div></td>
+      <td><a href="/ui/candidates/5f68018c-bf80-4b1d-ba4c-086cc801d968/"><span class="mono" dir="ltr">shopnovo.co.il</span></a><div class="small muted">domain name</div></td>
       <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/"><bdi>ShopNova · Israel</bdi></a></td>
       <td class="why"><b>Look-alike names</b> <span class="mono" dir="ltr">vowel-swap:shopnova.co.il</span></td>
       <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
@@ -970,7 +988,7 @@ header nav{display:flex;align-items:center;min-width:0}
     
     <tr class="wrow" style="--sc:#3a4658" data-host="shopoova.co.il">
       <td class="selcol"></td>
-      <td><a href="/ui/candidates/a88cb3f1-96f2-4d1f-8d17-315c44d8d4c4/"><span class="mono">shopoova.co.il</span></a><div class="small muted">domain name</div></td>
+      <td><a href="/ui/candidates/a88cb3f1-96f2-4d1f-8d17-315c44d8d4c4/"><span class="mono" dir="ltr">shopoova.co.il</span></a><div class="small muted">domain name</div></td>
       <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/"><bdi>ShopNova · Israel</bdi></a></td>
       <td class="why"><b>Look-alike names</b> <span class="mono" dir="ltr">bitsquatting:shopnova.co.il</span></td>
       <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
@@ -990,7 +1008,7 @@ header nav{display:flex;align-items:center;min-width:0}
     
     <tr class="wrow" style="--sc:#3a4658" data-host="shopnovy.co.il">
       <td class="selcol"></td>
-      <td><a href="/ui/candidates/733db5aa-ef1e-47e4-b2ab-0330db5fd32e/"><span class="mono">shopnovy.co.il</span></a><div class="small muted">domain name</div></td>
+      <td><a href="/ui/candidates/733db5aa-ef1e-47e4-b2ab-0330db5fd32e/"><span class="mono" dir="ltr">shopnovy.co.il</span></a><div class="small muted">domain name</div></td>
       <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/"><bdi>ShopNova · Israel</bdi></a></td>
       <td class="why"><b>Look-alike names</b> <span class="mono" dir="ltr">replacement:shopnova.co.il</span></td>
       <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
@@ -1010,7 +1028,7 @@ header nav{display:flex;align-items:center;min-width:0}
     
     <tr class="wrow" style="--sc:#3a4658" data-host="shhopnova.co.il">
       <td class="selcol"></td>
-      <td><a href="/ui/candidates/b65d7df8-7310-4f89-99f0-03a4f186f92c/"><span class="mono">shhopnova.co.il</span></a><div class="small muted">domain name</div></td>
+      <td><a href="/ui/candidates/b65d7df8-7310-4f89-99f0-03a4f186f92c/"><span class="mono" dir="ltr">shhopnova.co.il</span></a><div class="small muted">domain name</div></td>
       <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/"><bdi>ShopNova · Israel</bdi></a></td>
       <td class="why"><b>Look-alike names</b> <span class="mono" dir="ltr">repetition:shopnova.co.il</span></td>
       <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
@@ -1030,7 +1048,7 @@ header nav{display:flex;align-items:center;min-width:0}
     
     <tr class="wrow" style="--sc:#3a4658" data-host="shopnvoa.co.il">
       <td class="selcol"></td>
-      <td><a href="/ui/candidates/66566c18-cd00-4286-99db-d5ee4d511315/"><span class="mono">shopnvoa.co.il</span></a><div class="small muted">domain name</div></td>
+      <td><a href="/ui/candidates/66566c18-cd00-4286-99db-d5ee4d511315/"><span class="mono" dir="ltr">shopnvoa.co.il</span></a><div class="small muted">domain name</div></td>
       <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/"><bdi>ShopNova · Israel</bdi></a></td>
       <td class="why"><b>Look-alike names</b> <span class="mono" dir="ltr">transposition:shopnova.co.il</span></td>
       <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
@@ -1050,7 +1068,7 @@ header nav{display:flex;align-items:center;min-width:0}
     
     <tr class="wrow" style="--sc:#3a4658" data-host="shopnoa.co.il">
       <td class="selcol"></td>
-      <td><a href="/ui/candidates/adca22e2-3a23-4723-986a-a76a7566880f/"><span class="mono">shopnoa.co.il</span></a><div class="small muted">domain name</div></td>
+      <td><a href="/ui/candidates/adca22e2-3a23-4723-986a-a76a7566880f/"><span class="mono" dir="ltr">shopnoa.co.il</span></a><div class="small muted">domain name</div></td>
       <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/"><bdi>ShopNova · Israel</bdi></a></td>
       <td class="why"><b>Look-alike names</b> <span class="mono" dir="ltr">omission:shopnova.co.il</span></td>
       <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
@@ -1070,7 +1088,7 @@ header nav{display:flex;align-items:center;min-width:0}
     
     <tr class="wrow" style="--sc:#3a4658" data-host="shopnova1.co.il">
       <td class="selcol"></td>
-      <td><a href="/ui/candidates/61191d8a-b0c0-4357-ab3c-e4c23d23b1c0/"><span class="mono">shopnova1.co.il</span></a><div class="small muted">domain name</div></td>
+      <td><a href="/ui/candidates/61191d8a-b0c0-4357-ab3c-e4c23d23b1c0/"><span class="mono" dir="ltr">shopnova1.co.il</span></a><div class="small muted">domain name</div></td>
       <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/"><bdi>ShopNova · Israel</bdi></a></td>
       <td class="why"><b>Look-alike names</b> <span class="mono" dir="ltr">addition:shopnova.co.il</span></td>
       <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
@@ -1090,7 +1108,7 @@ header nav{display:flex;align-items:center;min-width:0}
     
     <tr class="wrow" style="--sc:#3a4658" data-host="shopnova.sb">
       <td class="selcol"></td>
-      <td><a href="/ui/candidates/771c3eeb-c13e-4fc9-aa53-ef09c8da2e40/"><span class="mono">shopnova.sb</span></a><div class="small muted">domain name</div></td>
+      <td><a href="/ui/candidates/771c3eeb-c13e-4fc9-aa53-ef09c8da2e40/"><span class="mono" dir="ltr">shopnova.sb</span></a><div class="small muted">domain name</div></td>
       <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/"><bdi>ShopNova · Israel</bdi></a></td>
       <td class="why"><b>Look-alike names</b> <span class="mono" dir="ltr">tld-swap:shopnova.co.il</span></td>
       <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
@@ -1110,7 +1128,7 @@ header nav{display:flex;align-items:center;min-width:0}
     
     <tr class="wrow" style="--sc:#35C7F2" data-host="shopnova-news.com">
       <td class="selcol"><input type="checkbox" class="sel" name="ids" value="352f6a93-d4de-41f3-830b-c6403e351138" form="bulkform" aria-label="select shopnova-news.com"></td>
-      <td><a href="/ui/candidates/352f6a93-d4de-41f3-830b-c6403e351138"><span class="mono">shopnova-news.com</span></a><div class="small muted">domain name</div></td>
+      <td><a href="/ui/candidates/352f6a93-d4de-41f3-830b-c6403e351138"><span class="mono" dir="ltr">shopnova-news.com</span></a><div class="small muted">domain name</div></td>
       <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/"><bdi>ShopNova · Israel</bdi></a></td>
       <td class="why"><b>Certificate logs</b> <span class="mono" dir="ltr">san:b5052a5fcbc2</span></td>
       <td><span class="badge state st-watching" title="visited, below the finding threshold: re-checked on a schedule">watching</span></td>
@@ -1137,7 +1155,7 @@ header nav{display:flex;align-items:center;min-width:0}
     
     <tr class="wrow" style="--sc:#35C7F2" data-host="shopnova-fanclub.com">
       <td class="selcol"><input type="checkbox" class="sel" name="ids" value="f574559a-0bea-4df5-874a-abb368bf1685" form="bulkform" aria-label="select shopnova-fanclub.com"></td>
-      <td><a href="/ui/candidates/f574559a-0bea-4df5-874a-abb368bf1685"><span class="mono">shopnova-fanclub.com</span></a><div class="small muted">domain name</div></td>
+      <td><a href="/ui/candidates/f574559a-0bea-4df5-874a-abb368bf1685"><span class="mono" dir="ltr">shopnova-fanclub.com</span></a><div class="small muted">domain name</div></td>
       <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/"><bdi>ShopNova · Israel</bdi></a></td>
       <td class="why"><b>Certificate logs</b> <span class="mono" dir="ltr">san:e5167c0e8125</span></td>
       <td><span class="badge state st-watching" title="visited, below the finding threshold: re-checked on a schedule">watching</span></td>
@@ -1164,7 +1182,7 @@ header nav{display:flex;align-items:center;min-width:0}
     
     <tr class="wrow" style="--sc:#35C7F2" data-host="shopnova-outlet.com">
       <td class="selcol"><input type="checkbox" class="sel" name="ids" value="d9c15dd5-fbb2-46c9-b962-939ee7992dac" form="bulkform" aria-label="select shopnova-outlet.com"></td>
-      <td><a href="/ui/candidates/d9c15dd5-fbb2-46c9-b962-939ee7992dac"><span class="mono">shopnova-outlet.com</span></a><div class="small muted">domain name</div></td>
+      <td><a href="/ui/candidates/d9c15dd5-fbb2-46c9-b962-939ee7992dac"><span class="mono" dir="ltr">shopnova-outlet.com</span></a><div class="small muted">domain name</div></td>
       <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/"><bdi>ShopNova · Israel</bdi></a></td>
       <td class="why"><b>Certificate logs</b> <span class="mono" dir="ltr">san:85fa970792d5</span></td>
       <td><span class="badge state st-watching" title="visited, below the finding threshold: re-checked on a schedule">watching</span></td>
@@ -1191,7 +1209,7 @@ header nav{display:flex;align-items:center;min-width:0}
     
     <tr class="wrow" style="--sc:#35C7F2" data-host="shopnovaa.com">
       <td class="selcol"><input type="checkbox" class="sel" name="ids" value="a05f447b-9242-4bd5-9fa3-d43829b179bc" form="bulkform" aria-label="select shopnovaa.com"></td>
-      <td><a href="/ui/candidates/a05f447b-9242-4bd5-9fa3-d43829b179bc"><span class="mono">shopnovaa.com</span></a><div class="small muted">domain name</div></td>
+      <td><a href="/ui/candidates/a05f447b-9242-4bd5-9fa3-d43829b179bc"><span class="mono" dir="ltr">shopnovaa.com</span></a><div class="small muted">domain name</div></td>
       <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/"><bdi>ShopNova · Israel</bdi></a></td>
       <td class="why"><b>Certificate logs</b> <span class="mono" dir="ltr">san:c5844bae6057</span></td>
       <td><span class="badge state st-watching" title="visited, below the finding threshold: re-checked on a schedule">watching</span></td>
@@ -1218,7 +1236,7 @@ header nav{display:flex;align-items:center;min-width:0}
     
     <tr class="wrow" style="--sc:#35C7F2" data-host="shopnova-login-help.com">
       <td class="selcol"><input type="checkbox" class="sel" name="ids" value="6fed8ca7-24cd-46e5-8845-976d55f9b5d3" form="bulkform" aria-label="select shopnova-login-help.com"></td>
-      <td><a href="/ui/candidates/6fed8ca7-24cd-46e5-8845-976d55f9b5d3"><span class="mono">shopnova-login-help.com</span></a><div class="small muted">domain name</div></td>
+      <td><a href="/ui/candidates/6fed8ca7-24cd-46e5-8845-976d55f9b5d3"><span class="mono" dir="ltr">shopnova-login-help.com</span></a><div class="small muted">domain name</div></td>
       <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/"><bdi>ShopNova · Israel</bdi></a></td>
       <td class="why"><b>Certificate logs</b> <span class="mono" dir="ltr">san:cd17df811cc3</span></td>
       <td><span class="badge state st-watching" title="visited, below the finding threshold: re-checked on a schedule">watching</span></td>
@@ -1245,7 +1263,7 @@ header nav{display:flex;align-items:center;min-width:0}
     
     <tr class="wrow" style="--sc:#35C7F2" data-host="shopnova-review.com">
       <td class="selcol"><input type="checkbox" class="sel" name="ids" value="79c81c8a-9983-4122-a5ef-db6ea542c351" form="bulkform" aria-label="select shopnova-review.com"></td>
-      <td><a href="/ui/candidates/79c81c8a-9983-4122-a5ef-db6ea542c351"><span class="mono">shopnova-review.com</span></a><div class="small muted">domain name</div></td>
+      <td><a href="/ui/candidates/79c81c8a-9983-4122-a5ef-db6ea542c351"><span class="mono" dir="ltr">shopnova-review.com</span></a><div class="small muted">domain name</div></td>
       <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/"><bdi>ShopNova · Israel</bdi></a></td>
       <td class="why"><b>Certificate logs</b> <span class="mono" dir="ltr">san:e672d48342c7</span></td>
       <td><span class="badge state st-watching" title="visited, below the finding threshold: re-checked on a schedule">watching</span></td>
@@ -1272,7 +1290,7 @@ header nav{display:flex;align-items:center;min-width:0}
     
     <tr class="wrow" style="--sc:#35C7F2" data-host="shopnova-support.com">
       <td class="selcol"><input type="checkbox" class="sel" name="ids" value="0da5ff53-9cad-4c9c-b589-0ffef13e0fbc" form="bulkform" aria-label="select shopnova-support.com"></td>
-      <td><a href="/ui/candidates/0da5ff53-9cad-4c9c-b589-0ffef13e0fbc"><span class="mono">shopnova-support.com</span></a><div class="small muted">domain name</div></td>
+      <td><a href="/ui/candidates/0da5ff53-9cad-4c9c-b589-0ffef13e0fbc"><span class="mono" dir="ltr">shopnova-support.com</span></a><div class="small muted">domain name</div></td>
       <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/"><bdi>ShopNova · Israel</bdi></a></td>
       <td class="why"><b>Certificate logs</b> <span class="mono" dir="ltr">san:4b4d801b63ea</span></td>
       <td><span class="badge state st-watching" title="visited, below the finding threshold: re-checked on a schedule">watching</span></td>
@@ -1299,7 +1317,7 @@ header nav{display:flex;align-items:center;min-width:0}
     
     <tr class="wrow" style="--sc:#FF4D4D" data-host="shopnova-id-check.com">
       <td class="selcol"><input type="checkbox" class="sel" name="ids" value="0c006a3c-1616-4784-a476-ac3f45637acd" form="bulkform" aria-label="select shopnova-id-check.com"></td>
-      <td><a href="/ui/candidates/0c006a3c-1616-4784-a476-ac3f45637acd"><span class="mono">shopnova-id-check.com</span></a><div class="small muted">domain name</div></td>
+      <td><a href="/ui/candidates/0c006a3c-1616-4784-a476-ac3f45637acd"><span class="mono" dir="ltr">shopnova-id-check.com</span></a><div class="small muted">domain name</div></td>
       <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/"><bdi>ShopNova · Israel</bdi></a></td>
       <td class="why"><b>Certificate logs</b> <span class="mono" dir="ltr">san:4dc364ebca25</span></td>
       <td><span class="badge state st-flagged" title="scored Medium or higher: there is a finding for it">flagged (finding)</span></td>
@@ -1326,7 +1344,7 @@ header nav{display:flex;align-items:center;min-width:0}
     
     <tr class="wrow" style="--sc:#FF4D4D" data-host="shopnova-eu.com">
       <td class="selcol"><input type="checkbox" class="sel" name="ids" value="ce5fe6c8-d95c-4123-a5c9-2321fcf6d99a" form="bulkform" aria-label="select shopnova-eu.com"></td>
-      <td><a href="/ui/candidates/ce5fe6c8-d95c-4123-a5c9-2321fcf6d99a/"><span class="mono">shopnova-eu.com</span></a><div class="small muted">domain name</div></td>
+      <td><a href="/ui/candidates/ce5fe6c8-d95c-4123-a5c9-2321fcf6d99a/"><span class="mono" dir="ltr">shopnova-eu.com</span></a><div class="small muted">domain name</div></td>
       <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/"><bdi>ShopNova · Israel</bdi></a></td>
       <td class="why"><b>Certificate logs</b> <span class="mono" dir="ltr">san:cfe0a3f2eab0</span></td>
       <td><span class="badge state st-flagged" title="scored Medium or higher: there is a finding for it">flagged (finding)</span></td>
@@ -1353,7 +1371,7 @@ header nav{display:flex;align-items:center;min-width:0}
     
     <tr class="wrow" style="--sc:#35C7F2" data-host="shopnova-events.com">
       <td class="selcol"><input type="checkbox" class="sel" name="ids" value="b9ead3d8-473e-49db-ab80-0769544901f2" form="bulkform" aria-label="select shopnova-events.com"></td>
-      <td><a href="/ui/candidates/b9ead3d8-473e-49db-ab80-0769544901f2"><span class="mono">shopnova-events.com</span></a><div class="small muted">domain name</div></td>
+      <td><a href="/ui/candidates/b9ead3d8-473e-49db-ab80-0769544901f2"><span class="mono" dir="ltr">shopnova-events.com</span></a><div class="small muted">domain name</div></td>
       <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/"><bdi>ShopNova · Israel</bdi></a></td>
       <td class="why"><b>Certificate logs</b> <span class="mono" dir="ltr">san:cb0526f89f22</span></td>
       <td><span class="badge state st-watching" title="visited, below the finding threshold: re-checked on a schedule">watching</span></td>
@@ -1380,7 +1398,7 @@ header nav{display:flex;align-items:center;min-width:0}
     
     <tr class="wrow" style="--sc:#35C7F2" data-host="shopnova-community.org">
       <td class="selcol"><input type="checkbox" class="sel" name="ids" value="9bc0c8bf-9842-48d7-b4ae-3c005578eeed" form="bulkform" aria-label="select shopnova-community.org"></td>
-      <td><a href="/ui/candidates/9bc0c8bf-9842-48d7-b4ae-3c005578eeed"><span class="mono">shopnova-community.org</span></a><div class="small muted">domain name</div></td>
+      <td><a href="/ui/candidates/9bc0c8bf-9842-48d7-b4ae-3c005578eeed"><span class="mono" dir="ltr">shopnova-community.org</span></a><div class="small muted">domain name</div></td>
       <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/"><bdi>ShopNova · Israel</bdi></a></td>
       <td class="why"><b>Certificate logs</b> <span class="mono" dir="ltr">san:83b5669ea040</span></td>
       <td><span class="badge state st-watching" title="visited, below the finding threshold: re-checked on a schedule">watching</span></td>
@@ -1407,7 +1425,7 @@ header nav{display:flex;align-items:center;min-width:0}
     
     <tr class="wrow" style="--sc:#35C7F2" data-host="shopnova-deals.com">
       <td class="selcol"><input type="checkbox" class="sel" name="ids" value="979903d9-1b5a-404c-8aa9-1a9a9db881f1" form="bulkform" aria-label="select shopnova-deals.com"></td>
-      <td><a href="/ui/candidates/979903d9-1b5a-404c-8aa9-1a9a9db881f1"><span class="mono">shopnova-deals.com</span></a><div class="small muted">domain name</div></td>
+      <td><a href="/ui/candidates/979903d9-1b5a-404c-8aa9-1a9a9db881f1"><span class="mono" dir="ltr">shopnova-deals.com</span></a><div class="small muted">domain name</div></td>
       <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/"><bdi>ShopNova · Israel</bdi></a></td>
       <td class="why"><b>Certificate logs</b> <span class="mono" dir="ltr">san:8a313d7a8ae7</span></td>
       <td><span class="badge state st-watching" title="visited, below the finding threshold: re-checked on a schedule">watching</span></td>
@@ -1434,7 +1452,7 @@ header nav{display:flex;align-items:center;min-width:0}
     
     <tr class="wrow" style="--sc:#35C7F2" data-host="shopnova-reviews.com">
       <td class="selcol"><input type="checkbox" class="sel" name="ids" value="2dfeaaaa-f1c9-4fac-8491-d7b191a7e086" form="bulkform" aria-label="select shopnova-reviews.com"></td>
-      <td><a href="/ui/candidates/2dfeaaaa-f1c9-4fac-8491-d7b191a7e086"><span class="mono">shopnova-reviews.com</span></a><div class="small muted">domain name</div></td>
+      <td><a href="/ui/candidates/2dfeaaaa-f1c9-4fac-8491-d7b191a7e086"><span class="mono" dir="ltr">shopnova-reviews.com</span></a><div class="small muted">domain name</div></td>
       <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/"><bdi>ShopNova · Israel</bdi></a></td>
       <td class="why"><b>Certificate logs</b> <span class="mono" dir="ltr">san:beec35b02f8d</span></td>
       <td><span class="badge state st-watching" title="visited, below the finding threshold: re-checked on a schedule">watching</span></td>
@@ -1461,7 +1479,7 @@ header nav{display:flex;align-items:center;min-width:0}
     
     <tr class="wrow" style="--sc:#35C7F2" data-host="shopnovafans.com">
       <td class="selcol"><input type="checkbox" class="sel" name="ids" value="5fe0a685-d970-4030-868a-63e06215aba3" form="bulkform" aria-label="select shopnovafans.com"></td>
-      <td><a href="/ui/candidates/5fe0a685-d970-4030-868a-63e06215aba3"><span class="mono">shopnovafans.com</span></a><div class="small muted">domain name</div></td>
+      <td><a href="/ui/candidates/5fe0a685-d970-4030-868a-63e06215aba3"><span class="mono" dir="ltr">shopnovafans.com</span></a><div class="small muted">domain name</div></td>
       <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/"><bdi>ShopNova · Israel</bdi></a></td>
       <td class="why"><b>Certificate logs</b> <span class="mono" dir="ltr">san:ac506c294959</span></td>
       <td><span class="badge state st-watching" title="visited, below the finding threshold: re-checked on a schedule">watching</span></td>
@@ -1488,7 +1506,7 @@ header nav{display:flex;align-items:center;min-width:0}
     
     <tr class="wrow" style="--sc:#35C7F2" data-host="shopnova-blog.net">
       <td class="selcol"><input type="checkbox" class="sel" name="ids" value="6c625740-ffec-4699-8ad2-4fbab078502f" form="bulkform" aria-label="select shopnova-blog.net"></td>
-      <td><a href="/ui/candidates/6c625740-ffec-4699-8ad2-4fbab078502f"><span class="mono">shopnova-blog.net</span></a><div class="small muted">domain name</div></td>
+      <td><a href="/ui/candidates/6c625740-ffec-4699-8ad2-4fbab078502f"><span class="mono" dir="ltr">shopnova-blog.net</span></a><div class="small muted">domain name</div></td>
       <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/"><bdi>ShopNova · Israel</bdi></a></td>
       <td class="why"><b>Certificate logs</b> <span class="mono" dir="ltr">san:527c870f34b3</span></td>
       <td><span class="badge state st-watching" title="visited, below the finding threshold: re-checked on a schedule">watching</span></td>
@@ -1515,7 +1533,7 @@ header nav{display:flex;align-items:center;min-width:0}
     
     <tr class="wrow" style="--sc:#35C7F2" data-host="runimport.com">
       <td class="selcol"><input type="checkbox" class="sel" name="ids" value="e8406b2d-c2c1-41e3-a1e6-85a566822cca" form="bulkform" aria-label="select runimport.com"></td>
-      <td><a href="/ui/candidates/e8406b2d-c2c1-41e3-a1e6-85a566822cca"><span class="mono">runimport.com</span></a><div class="small muted">domain name</div></td>
+      <td><a href="/ui/candidates/e8406b2d-c2c1-41e3-a1e6-85a566822cca"><span class="mono" dir="ltr">runimport.com</span></a><div class="small muted">domain name</div></td>
       <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/"><bdi>ShopNova · Israel</bdi></a></td>
       <td class="why"><b>Facebook / Instagram ads</b> <span class="mono" dir="ltr">meta_ad:IL:3972032650395871</span></td>
       <td><span class="badge state st-watching" title="visited, below the finding threshold: re-checked on a schedule">watching</span></td>
@@ -1542,7 +1560,7 @@ header nav{display:flex;align-items:center;min-width:0}
     
     <tr class="wrow" style="--sc:#35C7F2" data-host="nofim-sport.co.il">
       <td class="selcol"><input type="checkbox" class="sel" name="ids" value="fb71ff94-8182-4bb7-ad85-aa83079d5a8c" form="bulkform" aria-label="select nofim-sport.co.il"></td>
-      <td><a href="/ui/candidates/fb71ff94-8182-4bb7-ad85-aa83079d5a8c"><span class="mono">nofim-sport.co.il</span></a><div class="small muted">domain name</div></td>
+      <td><a href="/ui/candidates/fb71ff94-8182-4bb7-ad85-aa83079d5a8c"><span class="mono" dir="ltr">nofim-sport.co.il</span></a><div class="small muted">domain name</div></td>
       <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/"><bdi>ShopNova · Israel</bdi></a></td>
       <td class="why"><b>Facebook / Instagram ads</b> <span class="mono" dir="ltr">meta_ad:IL:3313643058143215</span></td>
       <td><span class="badge state st-watching" title="visited, below the finding threshold: re-checked on a schedule">watching</span></td>
@@ -1569,7 +1587,7 @@ header nav{display:flex;align-items:center;min-width:0}
     
     <tr class="wrow" style="--sc:#35C7F2" data-host="outlet-sportive.co.il">
       <td class="selcol"><input type="checkbox" class="sel" name="ids" value="4c3979e3-f3d7-4ed0-b373-ca70db183d2c" form="bulkform" aria-label="select outlet-sportive.co.il"></td>
-      <td><a href="/ui/candidates/4c3979e3-f3d7-4ed0-b373-ca70db183d2c"><span class="mono">outlet-sportive.co.il</span></a><div class="small muted">domain name</div></td>
+      <td><a href="/ui/candidates/4c3979e3-f3d7-4ed0-b373-ca70db183d2c"><span class="mono" dir="ltr">outlet-sportive.co.il</span></a><div class="small muted">domain name</div></td>
       <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/"><bdi>ShopNova · Israel</bdi></a></td>
       <td class="why"><b>Facebook / Instagram ads</b> <span class="mono" dir="ltr">meta_ad:IL:3064936146021637</span></td>
       <td><span class="badge state st-watching" title="visited, below the finding threshold: re-checked on a schedule">watching</span></td>
@@ -1605,6 +1623,7 @@ header nav{display:flex;align-items:center;min-width:0}
   <a class="btn small" href="?brand_id=eb019060-41b6-4160-871c-14094ad558a4&page=2" rel="next">next →</a>
 </nav>
 
+  <div class="small muted" style="margin-top:8px">Download these 196: <a href="/ui/candidates?brand_id=eb019060-41b6-4160-871c-14094ad558a4&amp;fmt=csv">CSV</a> · <a href="/ui/candidates?brand_id=eb019060-41b6-4160-871c-14094ad558a4&amp;fmt=json">JSON</a></div>
   
 </div>
 
@@ -1717,6 +1736,16 @@ header nav{display:flex;align-items:center;min-width:0}
     setTimeout(() => { if (e.defaultPrevented) return; f.__sentAt = Date.now();
       if (f.hasAttribute('data-busy') && b && b.tagName === 'BUTTON') { b.disabled = true; b.dataset.was = b.textContent; b.textContent = f.getAttribute('data-busy') || 'Working…';
         setTimeout(() => { b.disabled = false; b.textContent = b.dataset.was; }, 30000); } }, 0); });
+  // "/" opens the search from any page (a page with its own search box — findings, watchlist — takes it first)
+  document.addEventListener('keydown', e => {
+    if (e.key !== '/' || e.defaultPrevented || e.ctrlKey || e.metaKey || e.altKey) return;
+    const a = document.activeElement; if (a && (/INPUT|SELECT|TEXTAREA/.test(a.tagName) || a.isContentEditable)) return;
+    const box = document.getElementById('hsearch'); if (!box || !box.offsetParent) { location.href = '/ui/search'; return; }
+    e.preventDefault(); box.focus();
+  });
+  // phones: a "rwd" table shows one card per row, each cell labelled with its column (see the CSS)
+  document.querySelectorAll('table.rwd').forEach(t => { const heads = [...t.querySelectorAll('thead th')].map(th => th.textContent.trim());
+    t.querySelectorAll('tbody tr').forEach(tr => [...tr.children].forEach((td, i) => { if (!td.hasAttribute('data-label')) td.dataset.label = heads[i] || ''; })); });
   // the sticky header's height, for anything that sticks under it
   const hdr = document.querySelector('header'); const setH = () => document.documentElement.style.setProperty('--hdr', (hdr ? hdr.offsetHeight : 56) + 'px');
   setH(); window.addEventListener('resize', setH);
@@ -1736,7 +1765,9 @@ header nav{display:flex;align-items:center;min-width:0}
   document.querySelectorAll('main table').forEach(t => { if (t.parentElement.classList.contains('tw')) return;
     const w = document.createElement('div'); w.className = 'tw'; t.parentNode.insertBefore(w, t); w.appendChild(t); });
   // keep the active tab visible in the scrollable mobile nav
-  const act = document.querySelector('header nav a.active'); if (act && act.scrollIntoView) act.scrollIntoView({block: 'nearest', inline: 'center'});
+  // (by scrolling the bar itself: scrollIntoView would also move where the first Tab press starts, past the skip links)
+  const act = document.querySelector('header nav a.active'), bar = act && act.parentElement;
+  if (act && bar.scrollWidth > bar.clientWidth) bar.scrollLeft = act.offsetLeft - (bar.clientWidth - act.offsetWidth) / 2;
   // stagger entrances
   document.querySelectorAll('.kpis').forEach(g => [...g.children].forEach((el, i) => el.style.setProperty('--i', i)));
   document.querySelectorAll('main .panel').forEach((el, i) => el.style.setProperty('--i', Math.min(i, 12)));
@@ -1892,6 +1923,9 @@ header nav{display:flex;align-items:center;min-width:0}
   document.addEventListener('keydown', ev => {
     if (modal.hidden) return;
     if (ev.key === 'Escape') { ev.preventDefault(); close(false); }
+    else if (ev.key === 'Tab') {  // the focus stays in the dialog
+      const f = [inp, cancel, ok].filter(x => !x.hidden); const i = f.indexOf(document.activeElement);
+      ev.preventDefault(); f[(i + (ev.shiftKey ? -1 : 1) + f.length) % f.length].focus(); }
     else if (ev.key === 'Enter' && document.activeElement !== cancel) { ev.preventDefault(); ok.click(); }
   });
   // forms and buttons that ask first

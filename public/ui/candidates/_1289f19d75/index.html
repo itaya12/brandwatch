@@ -33,11 +33,17 @@ header{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:24px
 header .logo{font-family:var(--mono);font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);display:flex;align-items:center;gap:8px}
 header .logo::before{content:"";width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 10px var(--accent);animation:beat 2.2s ease-in-out infinite}
 @keyframes beat{0%,100%{opacity:.45;transform:scale(.85)}50%{opacity:1;transform:scale(1.1)}}
-header nav a{position:relative;font-family:var(--mono);font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-right:16px;padding:4px 0}
+header nav a{position:relative;font-family:var(--mono);font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-right:14px;padding:4px 0;white-space:nowrap}
+@media (min-width:901px) and (max-width:1500px){header{gap:14px}header nav a{font-size:11px;letter-spacing:.04em;margin-right:11px}header .hsearch input{width:130px}header .who .email{display:none}}
 header nav a::after{content:"";position:absolute;left:0;right:0;bottom:-2px;height:2px;background:var(--accent);transform:scaleX(0);transform-origin:left;transition:transform .3s}
 header nav a.active,header nav a:hover{color:var(--text)}header nav a.active::after,header nav a:hover::after{transform:scaleX(1)}
 header nav a.active::after{box-shadow:0 0 8px var(--accent)}
-header .who{margin-left:auto;color:var(--muted);font-size:12px}
+header .who{color:var(--muted);font-size:12px;white-space:nowrap}
+header .hsearch{margin-left:auto}header .hsearch input{width:170px;padding:5px 10px;font-size:12.5px;border-radius:999px;background:#0b1220}
+header .hsearch input:focus{width:240px}
+header nav .nc{display:inline-block;min-width:18px;padding:0 5px;margin-left:4px;border-radius:999px;background:rgba(53,199,242,.18);color:var(--accent2);font-size:10.5px;text-align:center;letter-spacing:0}
+header nav .nc.warn{background:rgba(255,77,77,.16);color:var(--crit)}
+@media (max-width:900px){header .hsearch{display:none}}
 main{position:relative;z-index:1;padding:20px;max-width:1440px;margin:0 auto}
 h1{font-family:var(--display);font-size:26px;letter-spacing:.04em;margin:0 0 14px;font-weight:700;
   background:linear-gradient(90deg,#E6EDF5 0%,#E6EDF5 55%,var(--accent2) 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
@@ -64,7 +70,7 @@ tr:hover td{background:rgba(53,199,242,.05)}
 .sev-low{background:rgba(46,204,113,.15);color:var(--low);border:1px solid var(--low)}
 .state{background:var(--panel2);color:var(--muted);border:1px solid var(--border)}
 .st-open,.st-new{color:var(--text)}.st-confirmed,.st-flagged{color:var(--crit);border-color:rgba(255,77,77,.5)}
-.st-dismissed{color:#5a6678}.st-watching{color:var(--accent);border-color:rgba(53,199,242,.4)}.st-long_watch{color:var(--muted)}
+.st-dismissed{color:var(--muted)}.st-watching{color:var(--accent);border-color:rgba(53,199,242,.4)}.st-long_watch{color:var(--muted)}
 .pill{background:var(--panel2);border:1px solid var(--border);border-radius:6px;padding:1px 6px;font-family:var(--mono);font-size:11px;color:var(--text);white-space:nowrap}
 /* signal pills: one neutral style for every group (the group is in the tooltip and the Explain table) */
 .pill[class*="g-"]{border-color:var(--border);color:#c9d3df}
@@ -73,6 +79,18 @@ button:hover,.btn:hover{border-color:var(--accent);box-shadow:0 0 12px rgba(53,1
 button.danger{border-color:var(--crit);color:var(--crit)}button.ok{border-color:var(--low);color:var(--low)}
 input,select,textarea{background:#0b1220;color:var(--text);border:1px solid var(--border);border-radius:6px;padding:7px 9px;font:inherit;width:100%;transition:border-color .2s,box-shadow .2s}
 input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(53,199,242,.15)}
+/* a paragraph that may be Hebrew or Arabic (a brand name, an ad, a reason) takes its direction from its own first letter */
+.lead,.summary,.story,.say,.reason,.ev .diff{unicode-bidi:plaintext}
+button.chip{font:inherit;font-family:var(--mono);font-size:11px;box-shadow:none}
+/* on a phone a wide table (class "rwd") becomes one card per row; each cell says what it is (from the header) */
+@media (max-width:700px){
+  table.rwd thead{display:none}
+  table.rwd,table.rwd tbody,table.rwd tr,table.rwd td{display:block;width:100%}
+  table.rwd tr{border:1px solid var(--border);border-radius:10px;margin:0 0 10px;padding:6px 10px;background:var(--panel2)}
+  table.rwd td{border:0;padding:4px 0;min-height:0}
+  table.rwd td[data-label]:not([data-label=""])::before{content:attr(data-label);display:block;font:600 10px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:2px}
+  table.rwd td:empty{display:none}
+}
 /* keyboard users see where they are; mouse clicks do not get the ring */
 :focus-visible{outline:2px solid var(--accent2);outline-offset:2px;border-radius:4px}
 a:focus-visible,button:focus-visible,.btn:focus-visible{box-shadow:0 0 0 3px rgba(53,199,242,.25)}
@@ -144,7 +162,7 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
 .grid>*,.cols>*{min-width:0}
 .tw{overflow-x:auto;-webkit-overflow-scrolling:touch;max-width:100%;overscroll-behavior-x:contain}
 .tw>table{min-width:100%}
-header nav{display:flex;align-items:center;min-width:0}
+header nav{display:flex;align-items:center;min-width:0;overflow-x:auto;scrollbar-width:none}  /* a narrow desktop scrolls the bar, never overlaps the search */
 @media (max-width:1100px){.grid.four{grid-template-columns:1fr 1fr}}
 @media (max-width:900px){
   .grid,.grid.two,.grid.three,.grid.four,.cols{grid-template-columns:1fr!important}
@@ -192,19 +210,19 @@ header nav{display:flex;align-items:center;min-width:0}
 <header>
   <a class="logo" href="/ui/dashboard/">BrandWatch</a>
   
-  <nav>
+  <nav aria-label="Main">
     <a href="/ui/dashboard/" class="">Dashboard</a>
-    <a href="/ui/how-it-works/" class="">How it works</a>
-    <a href="/ui/brands/" class="">Brands &amp; Scans</a>
-    <a href="/ui/findings/" class="">Findings</a>
+    <a href="/ui/findings/" class="">Findings <span class="nc" title="9 awaiting a verdict">9</span></a>
     <a href="/ui/candidates/" class="active">Watchlist</a>
     <a href="/ui/campaigns/" class="">Attack infrastructure</a>
-    <a href="/ui/takedowns/" class="">Takedowns</a>
+    <a href="/ui/takedowns/" class="">Takedowns <span class="nc warn" title="38 confirmed site(s) whose takedown was not sent">38</span></a>
+    <a href="/ui/brands/" class="">Brands &amp; Scans</a>
     <a href="/ui/activity/" class="">Activity</a>
     <a href="/ui/settings/" class="">Settings</a>
-    <a href="/docs" target="_blank">API</a>
+    <a href="/ui/how-it-works/" class="">How it works</a>
   </nav>
-  <span class="who"><span class="email">admin · </span>admin · <a href="/ui/logout">logout</a></span>
+  <form method="get" action="/ui/search" class="hsearch" role="search"><input name="q" id="hsearch" placeholder="Search · /" aria-label="Search a domain, an IP, a takedown reference" autocomplete="off" maxlength="120"></form>
+  <span class="who"><span class="email">admin · </span>admin · <a href="/docs" target="_blank" title="the REST API reference">API</a> · <a href="/ui/logout">logout</a></span>
   
 </header>
 <main id="main">
@@ -280,7 +298,7 @@ header nav{display:flex;align-items:center;min-width:0}
   <form method="get" action="/ui/candidates/" class="filters" id="filters">
     <input type="hidden" name="brand_id" value="f46bffed-4795-4cdd-ad8f-abd3d26fcc60">
     <div class="wide"><label for="q">Search host</label><input id="q" name="q" value="" placeholder="part of a host name" autocomplete="off" maxlength="120"></div>
-    <div><label for="c-state">State</label><select id="c-state" name="state"><option value="">all</option><option value="new" >new</option><option value="watching" >watching</option><option value="analyzing" >analysing</option><option value="flagged" >flagged (finding)</option><option value="long_watch" >long watch</option><option value="dismissed" selected>dismissed</option></select></div>
+    <div><label for="c-state">State</label><select id="c-state" name="state"><option value="">all</option><option value="new" >new</option><option value="watching" >watching</option><option value="flagged" >flagged (finding)</option><option value="long_watch" >long watch</option><option value="dismissed" selected>dismissed</option></select></div>
     <div class="go"><button type="submit" class="primary">Apply</button><a class="btn" href="/ui/candidates/_9ffb45703e/">Reset</a></div>
     <div class="muted small" style="align-self:center">494 domains · page 1 of 10</div>
   </form>
@@ -296,13 +314,13 @@ header nav{display:flex;align-items:center;min-width:0}
     <button type="button" id="bulkclear" class="small">clear</button>
   </form>
   
-  <table id="ctable">
+  <table id="ctable" class="rwd">
     <thead><tr><th class="selcol"><input type="checkbox" id="selall" aria-label="select every domain on this page"></th><th>Domain</th><th>Brand</th><th>Why it is here</th><th>State</th><th>Finding</th><th>Priority</th><th>First seen</th><th>Last seen</th><th>Next scan</th><th class="right">Scans</th><th>Actions</th></tr></thead>
     <tbody>
     
     <tr class="wrow" style="--sc:#3a4658" data-host="xn--c0inplot-xkb.io">
       <td class="selcol"></td>
-      <td><a href="/ui/candidates/0cbb42eb-0cc8-4380-8040-3bb7d6cc5623"><span class="mono">c0inpılot.io</span> <span class="pill" style="font-size:10px" title="written with look-alike Unicode characters; the real (punycode) name is xn--c0inplot-xkb.io">homoglyph</span></a><div class="small muted">domain name</div></td>
+      <td><a href="/ui/candidates/0cbb42eb-0cc8-4380-8040-3bb7d6cc5623"><span class="mono" dir="ltr">c0inpılot.io</span> <span class="pill" style="font-size:10px" title="written with look-alike Unicode characters; the real (punycode) name is xn--c0inplot-xkb.io">homoglyph</span></a><div class="small muted">domain name</div></td>
       <td class="small"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/"><bdi>CoinPilot</bdi></a></td>
       <td class="why"><b>Look-alike names</b> <span class="mono" dir="ltr">homoglyph:coinpilot.io</span></td>
       <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
@@ -322,7 +340,7 @@ header nav{display:flex;align-items:center;min-width:0}
     
     <tr class="wrow" style="--sc:#3a4658" data-host="coinpilotbot.io">
       <td class="selcol"></td>
-      <td><a href="/ui/candidates/b76f5fda-38b1-4479-8a53-27b155e30f89"><span class="mono">coinpilotbot.io</span></a><div class="small muted">domain name</div></td>
+      <td><a href="/ui/candidates/b76f5fda-38b1-4479-8a53-27b155e30f89"><span class="mono" dir="ltr">coinpilotbot.io</span></a><div class="small muted">domain name</div></td>
       <td class="small"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/"><bdi>CoinPilot</bdi></a></td>
       <td class="why"><b>Look-alike names</b> <span class="mono" dir="ltr">dictionary:coinpilot.io</span></td>
       <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
@@ -342,7 +360,7 @@ header nav{display:flex;align-items:center;min-width:0}
     
     <tr class="wrow" style="--sc:#3a4658" data-host="xn--c0inplot-wud.io">
       <td class="selcol"></td>
-      <td><a href="/ui/candidates/b7f79927-16f2-45b1-a672-c3466f5dbeab"><span class="mono">c0inpɨlot.io</span> <span class="pill" style="font-size:10px" title="written with look-alike Unicode characters; the real (punycode) name is xn--c0inplot-wud.io">homoglyph</span></a><div class="small muted">domain name</div></td>
+      <td><a href="/ui/candidates/b7f79927-16f2-45b1-a672-c3466f5dbeab"><span class="mono" dir="ltr">c0inpɨlot.io</span> <span class="pill" style="font-size:10px" title="written with look-alike Unicode characters; the real (punycode) name is xn--c0inplot-wud.io">homoglyph</span></a><div class="small muted">domain name</div></td>
       <td class="small"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/"><bdi>CoinPilot</bdi></a></td>
       <td class="why"><b>Look-alike names</b> <span class="mono" dir="ltr">homoglyph:coinpilot.io</span></td>
       <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
@@ -362,7 +380,7 @@ header nav{display:flex;align-items:center;min-width:0}
     
     <tr class="wrow" style="--sc:#3a4658" data-host="botscoinpilot.io">
       <td class="selcol"></td>
-      <td><a href="/ui/candidates/325e2ce1-fc92-4167-b113-9f8b30fcf9b7"><span class="mono">botscoinpilot.io</span></a><div class="small muted">domain name</div></td>
+      <td><a href="/ui/candidates/325e2ce1-fc92-4167-b113-9f8b30fcf9b7"><span class="mono" dir="ltr">botscoinpilot.io</span></a><div class="small muted">domain name</div></td>
       <td class="small"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/"><bdi>CoinPilot</bdi></a></td>
       <td class="why"><b>Look-alike names</b> <span class="mono" dir="ltr">dictionary:coinpilot.io</span></td>
       <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
@@ -382,7 +400,7 @@ header nav{display:flex;align-items:center;min-width:0}
     
     <tr class="wrow" style="--sc:#3a4658" data-host="xn--c0inplot-wjb.io">
       <td class="selcol"></td>
-      <td><a href="/ui/candidates/7b673679-59b6-4213-8389-8ac3d67283a5"><span class="mono">c0inpĭlot.io</span> <span class="pill" style="font-size:10px" title="written with look-alike Unicode characters; the real (punycode) name is xn--c0inplot-wjb.io">homoglyph</span></a><div class="small muted">domain name</div></td>
+      <td><a href="/ui/candidates/7b673679-59b6-4213-8389-8ac3d67283a5"><span class="mono" dir="ltr">c0inpĭlot.io</span> <span class="pill" style="font-size:10px" title="written with look-alike Unicode characters; the real (punycode) name is xn--c0inplot-wjb.io">homoglyph</span></a><div class="small muted">domain name</div></td>
       <td class="small"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/"><bdi>CoinPilot</bdi></a></td>
       <td class="why"><b>Look-alike names</b> <span class="mono" dir="ltr">homoglyph:coinpilot.io</span></td>
       <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
@@ -402,7 +420,7 @@ header nav{display:flex;align-items:center;min-width:0}
     
     <tr class="wrow" style="--sc:#3a4658" data-host="bot-coinpilot.io">
       <td class="selcol"></td>
-      <td><a href="/ui/candidates/856a3801-9acc-42f8-9318-380b5def7d99"><span class="mono">bot-coinpilot.io</span></a><div class="small muted">domain name</div></td>
+      <td><a href="/ui/candidates/856a3801-9acc-42f8-9318-380b5def7d99"><span class="mono" dir="ltr">bot-coinpilot.io</span></a><div class="small muted">domain name</div></td>
       <td class="small"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/"><bdi>CoinPilot</bdi></a></td>
       <td class="why"><b>Look-alike names</b> <span class="mono" dir="ltr">dictionary:coinpilot.io</span></td>
       <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
@@ -422,7 +440,7 @@ header nav{display:flex;align-items:center;min-width:0}
     
     <tr class="wrow" style="--sc:#3a4658" data-host="xn--c0inplot-vib.io">
       <td class="selcol"></td>
-      <td><a href="/ui/candidates/a0f9529b-bcbe-437d-b45a-fcc194daff22"><span class="mono">c0inpĩlot.io</span> <span class="pill" style="font-size:10px" title="written with look-alike Unicode characters; the real (punycode) name is xn--c0inplot-vib.io">homoglyph</span></a><div class="small muted">domain name</div></td>
+      <td><a href="/ui/candidates/a0f9529b-bcbe-437d-b45a-fcc194daff22"><span class="mono" dir="ltr">c0inpĩlot.io</span> <span class="pill" style="font-size:10px" title="written with look-alike Unicode characters; the real (punycode) name is xn--c0inplot-vib.io">homoglyph</span></a><div class="small muted">domain name</div></td>
       <td class="small"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/"><bdi>CoinPilot</bdi></a></td>
       <td class="why"><b>Look-alike names</b> <span class="mono" dir="ltr">homoglyph:coinpilot.io</span></td>
       <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
@@ -442,7 +460,7 @@ header nav{display:flex;align-items:center;min-width:0}
     
     <tr class="wrow" style="--sc:#3a4658" data-host="tradingcoinpilot.io">
       <td class="selcol"></td>
-      <td><a href="/ui/candidates/cef3b4f6-fd6f-4bd7-a4a7-f4983fa60017"><span class="mono">tradingcoinpilot.io</span></a><div class="small muted">domain name</div></td>
+      <td><a href="/ui/candidates/cef3b4f6-fd6f-4bd7-a4a7-f4983fa60017"><span class="mono" dir="ltr">tradingcoinpilot.io</span></a><div class="small muted">domain name</div></td>
       <td class="small"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/"><bdi>CoinPilot</bdi></a></td>
       <td class="why"><b>Look-alike names</b> <span class="mono" dir="ltr">dictionary:coinpilot.io</span></td>
       <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
@@ -462,7 +480,7 @@ header nav{display:flex;align-items:center;min-width:0}
     
     <tr class="wrow" style="--sc:#3a4658" data-host="xn--c0inplot-tqc.io">
       <td class="selcol"></td>
-      <td><a href="/ui/candidates/f68032d3-c96a-4c17-91b3-19784c5f2bde"><span class="mono">c0inpǐlot.io</span> <span class="pill" style="font-size:10px" title="written with look-alike Unicode characters; the real (punycode) name is xn--c0inplot-tqc.io">homoglyph</span></a><div class="small muted">domain name</div></td>
+      <td><a href="/ui/candidates/f68032d3-c96a-4c17-91b3-19784c5f2bde"><span class="mono" dir="ltr">c0inpǐlot.io</span> <span class="pill" style="font-size:10px" title="written with look-alike Unicode characters; the real (punycode) name is xn--c0inplot-tqc.io">homoglyph</span></a><div class="small muted">domain name</div></td>
       <td class="small"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/"><bdi>CoinPilot</bdi></a></td>
       <td class="why"><b>Look-alike names</b> <span class="mono" dir="ltr">homoglyph:coinpilot.io</span></td>
       <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
@@ -482,7 +500,7 @@ header nav{display:flex;align-items:center;min-width:0}
     
     <tr class="wrow" style="--sc:#3a4658" data-host="trading-coinpilot.io">
       <td class="selcol"></td>
-      <td><a href="/ui/candidates/03ab1bd6-c509-4859-bc95-049c8bbf8538"><span class="mono">trading-coinpilot.io</span></a><div class="small muted">domain name</div></td>
+      <td><a href="/ui/candidates/03ab1bd6-c509-4859-bc95-049c8bbf8538"><span class="mono" dir="ltr">trading-coinpilot.io</span></a><div class="small muted">domain name</div></td>
       <td class="small"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/"><bdi>CoinPilot</bdi></a></td>
       <td class="why"><b>Look-alike names</b> <span class="mono" dir="ltr">dictionary:coinpilot.io</span></td>
       <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
@@ -502,7 +520,7 @@ header nav{display:flex;align-items:center;min-width:0}
     
     <tr class="wrow" style="--sc:#3a4658" data-host="xn--c0inplot-p2a.io">
       <td class="selcol"></td>
-      <td><a href="/ui/candidates/02d066cd-a162-437a-8785-1ccc683bfc44"><span class="mono">c0inpîlot.io</span> <span class="pill" style="font-size:10px" title="written with look-alike Unicode characters; the real (punycode) name is xn--c0inplot-p2a.io">homoglyph</span></a><div class="small muted">domain name</div></td>
+      <td><a href="/ui/candidates/02d066cd-a162-437a-8785-1ccc683bfc44"><span class="mono" dir="ltr">c0inpîlot.io</span> <span class="pill" style="font-size:10px" title="written with look-alike Unicode characters; the real (punycode) name is xn--c0inplot-p2a.io">homoglyph</span></a><div class="small muted">domain name</div></td>
       <td class="small"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/"><bdi>CoinPilot</bdi></a></td>
       <td class="why"><b>Look-alike names</b> <span class="mono" dir="ltr">homoglyph:coinpilot.io</span></td>
       <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
@@ -522,7 +540,7 @@ header nav{display:flex;align-items:center;min-width:0}
     
     <tr class="wrow" style="--sc:#3a4658" data-host="coinpilottrading.io">
       <td class="selcol"></td>
-      <td><a href="/ui/candidates/b87b2555-2882-4857-8885-d6b0940bec48"><span class="mono">coinpilottrading.io</span></a><div class="small muted">domain name</div></td>
+      <td><a href="/ui/candidates/b87b2555-2882-4857-8885-d6b0940bec48"><span class="mono" dir="ltr">coinpilottrading.io</span></a><div class="small muted">domain name</div></td>
       <td class="small"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/"><bdi>CoinPilot</bdi></a></td>
       <td class="why"><b>Look-alike names</b> <span class="mono" dir="ltr">dictionary:coinpilot.io</span></td>
       <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
@@ -542,7 +560,7 @@ header nav{display:flex;align-items:center;min-width:0}
     
     <tr class="wrow" style="--sc:#3a4658" data-host="xn--c0inplot-k80d.io">
       <td class="selcol"></td>
-      <td><a href="/ui/candidates/3ea8ff3e-8b96-4531-8756-51f1a5249719"><span class="mono">c0inpịlot.io</span> <span class="pill" style="font-size:10px" title="written with look-alike Unicode characters; the real (punycode) name is xn--c0inplot-k80d.io">homoglyph</span></a><div class="small muted">domain name</div></td>
+      <td><a href="/ui/candidates/3ea8ff3e-8b96-4531-8756-51f1a5249719"><span class="mono" dir="ltr">c0inpịlot.io</span> <span class="pill" style="font-size:10px" title="written with look-alike Unicode characters; the real (punycode) name is xn--c0inplot-k80d.io">homoglyph</span></a><div class="small muted">domain name</div></td>
       <td class="small"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/"><bdi>CoinPilot</bdi></a></td>
       <td class="why"><b>Look-alike names</b> <span class="mono" dir="ltr">homoglyph:coinpilot.io</span></td>
       <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
@@ -562,7 +580,7 @@ header nav{display:flex;align-items:center;min-width:0}
     
     <tr class="wrow" style="--sc:#3a4658" data-host="coinpilot-trading.io">
       <td class="selcol"></td>
-      <td><a href="/ui/candidates/9432a581-da7a-4825-8a49-313ebbba08f6"><span class="mono">coinpilot-trading.io</span></a><div class="small muted">domain name</div></td>
+      <td><a href="/ui/candidates/9432a581-da7a-4825-8a49-313ebbba08f6"><span class="mono" dir="ltr">coinpilot-trading.io</span></a><div class="small muted">domain name</div></td>
       <td class="small"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/"><bdi>CoinPilot</bdi></a></td>
       <td class="why"><b>Look-alike names</b> <span class="mono" dir="ltr">dictionary:coinpilot.io</span></td>
       <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
@@ -582,7 +600,7 @@ header nav{display:flex;align-items:center;min-width:0}
     
     <tr class="wrow" style="--sc:#3a4658" data-host="xn--c0inplot-g2a.io">
       <td class="selcol"></td>
-      <td><a href="/ui/candidates/dbb45c77-9f5f-4c3a-aabe-83676e920095"><span class="mono">c0inpílot.io</span> <span class="pill" style="font-size:10px" title="written with look-alike Unicode characters; the real (punycode) name is xn--c0inplot-g2a.io">homoglyph</span></a><div class="small muted">domain name</div></td>
+      <td><a href="/ui/candidates/dbb45c77-9f5f-4c3a-aabe-83676e920095"><span class="mono" dir="ltr">c0inpílot.io</span> <span class="pill" style="font-size:10px" title="written with look-alike Unicode characters; the real (punycode) name is xn--c0inplot-g2a.io">homoglyph</span></a><div class="small muted">domain name</div></td>
       <td class="small"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/"><bdi>CoinPilot</bdi></a></td>
       <td class="why"><b>Look-alike names</b> <span class="mono" dir="ltr">homoglyph:coinpilot.io</span></td>
       <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
@@ -602,7 +620,7 @@ header nav{display:flex;align-items:center;min-width:0}
     
     <tr class="wrow" style="--sc:#3a4658" data-host="coinpilot-register.io">
       <td class="selcol"></td>
-      <td><a href="/ui/candidates/43f0052f-951d-44d7-9e85-a12106821683"><span class="mono">coinpilot-register.io</span></a><div class="small muted">domain name</div></td>
+      <td><a href="/ui/candidates/43f0052f-951d-44d7-9e85-a12106821683"><span class="mono" dir="ltr">coinpilot-register.io</span></a><div class="small muted">domain name</div></td>
       <td class="small"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/"><bdi>CoinPilot</bdi></a></td>
       <td class="why"><b>Look-alike names</b> <span class="mono" dir="ltr">dictionary:coinpilot.io</span></td>
       <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
@@ -622,7 +640,7 @@ header nav{display:flex;align-items:center;min-width:0}
     
     <tr class="wrow" style="--sc:#3a4658" data-host="xn--c0inplot-fvd.io">
       <td class="selcol"></td>
-      <td><a href="/ui/candidates/2f4a720d-7cee-4bd1-ab11-bf842776ef21"><span class="mono">c0inpɪlot.io</span> <span class="pill" style="font-size:10px" title="written with look-alike Unicode characters; the real (punycode) name is xn--c0inplot-fvd.io">homoglyph</span></a><div class="small muted">domain name</div></td>
+      <td><a href="/ui/candidates/2f4a720d-7cee-4bd1-ab11-bf842776ef21"><span class="mono" dir="ltr">c0inpɪlot.io</span> <span class="pill" style="font-size:10px" title="written with look-alike Unicode characters; the real (punycode) name is xn--c0inplot-fvd.io">homoglyph</span></a><div class="small muted">domain name</div></td>
       <td class="small"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/"><bdi>CoinPilot</bdi></a></td>
       <td class="why"><b>Look-alike names</b> <span class="mono" dir="ltr">homoglyph:coinpilot.io</span></td>
       <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
@@ -642,7 +660,7 @@ header nav{display:flex;align-items:center;min-width:0}
     
     <tr class="wrow" style="--sc:#3a4658" data-host="register-coinpilot.io">
       <td class="selcol"></td>
-      <td><a href="/ui/candidates/a1238a17-237d-432f-ac4d-bf42e7243bd5"><span class="mono">register-coinpilot.io</span></a><div class="small muted">domain name</div></td>
+      <td><a href="/ui/candidates/a1238a17-237d-432f-ac4d-bf42e7243bd5"><span class="mono" dir="ltr">register-coinpilot.io</span></a><div class="small muted">domain name</div></td>
       <td class="small"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/"><bdi>CoinPilot</bdi></a></td>
       <td class="why"><b>Look-alike names</b> <span class="mono" dir="ltr">dictionary:coinpilot.io</span></td>
       <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
@@ -662,7 +680,7 @@ header nav{display:flex;align-items:center;min-width:0}
     
     <tr class="wrow" style="--sc:#3a4658" data-host="xn--c0inplot-fkb.io">
       <td class="selcol"></td>
-      <td><a href="/ui/candidates/0edeb409-789a-41b7-8058-280f49cae568"><span class="mono">c0inpįlot.io</span> <span class="pill" style="font-size:10px" title="written with look-alike Unicode characters; the real (punycode) name is xn--c0inplot-fkb.io">homoglyph</span></a><div class="small muted">domain name</div></td>
+      <td><a href="/ui/candidates/0edeb409-789a-41b7-8058-280f49cae568"><span class="mono" dir="ltr">c0inpįlot.io</span> <span class="pill" style="font-size:10px" title="written with look-alike Unicode characters; the real (punycode) name is xn--c0inplot-fkb.io">homoglyph</span></a><div class="small muted">domain name</div></td>
       <td class="small"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/"><bdi>CoinPilot</bdi></a></td>
       <td class="why"><b>Look-alike names</b> <span class="mono" dir="ltr">homoglyph:coinpilot.io</span></td>
       <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
@@ -682,7 +700,7 @@ header nav{display:flex;align-items:center;min-width:0}
     
     <tr class="wrow" style="--sc:#3a4658" data-host="coinpilotregister.io">
       <td class="selcol"></td>
-      <td><a href="/ui/candidates/4ada8a51-e007-4135-9656-f9bcedc76145"><span class="mono">coinpilotregister.io</span></a><div class="small muted">domain name</div></td>
+      <td><a href="/ui/candidates/4ada8a51-e007-4135-9656-f9bcedc76145"><span class="mono" dir="ltr">coinpilotregister.io</span></a><div class="small muted">domain name</div></td>
       <td class="small"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/"><bdi>CoinPilot</bdi></a></td>
       <td class="why"><b>Look-alike names</b> <span class="mono" dir="ltr">dictionary:coinpilot.io</span></td>
       <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
@@ -702,7 +720,7 @@ header nav{display:flex;align-items:center;min-width:0}
     
     <tr class="wrow" style="--sc:#3a4658" data-host="xn--c0inplot-ejb.io">
       <td class="selcol"></td>
-      <td><a href="/ui/candidates/2d895fd5-7277-4153-a528-1285f0fb4d12"><span class="mono">c0inpīlot.io</span> <span class="pill" style="font-size:10px" title="written with look-alike Unicode characters; the real (punycode) name is xn--c0inplot-ejb.io">homoglyph</span></a><div class="small muted">domain name</div></td>
+      <td><a href="/ui/candidates/2d895fd5-7277-4153-a528-1285f0fb4d12"><span class="mono" dir="ltr">c0inpīlot.io</span> <span class="pill" style="font-size:10px" title="written with look-alike Unicode characters; the real (punycode) name is xn--c0inplot-ejb.io">homoglyph</span></a><div class="small muted">domain name</div></td>
       <td class="small"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/"><bdi>CoinPilot</bdi></a></td>
       <td class="why"><b>Look-alike names</b> <span class="mono" dir="ltr">homoglyph:coinpilot.io</span></td>
       <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
@@ -722,7 +740,7 @@ header nav{display:flex;align-items:center;min-width:0}
     
     <tr class="wrow" style="--sc:#3a4658" data-host="registercoinpilot.io">
       <td class="selcol"></td>
-      <td><a href="/ui/candidates/702cbe93-7823-4676-a8d0-6948f452915d"><span class="mono">registercoinpilot.io</span></a><div class="small muted">domain name</div></td>
+      <td><a href="/ui/candidates/702cbe93-7823-4676-a8d0-6948f452915d"><span class="mono" dir="ltr">registercoinpilot.io</span></a><div class="small muted">domain name</div></td>
       <td class="small"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/"><bdi>CoinPilot</bdi></a></td>
       <td class="why"><b>Look-alike names</b> <span class="mono" dir="ltr">dictionary:coinpilot.io</span></td>
       <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
@@ -742,7 +760,7 @@ header nav{display:flex;align-items:center;min-width:0}
     
     <tr class="wrow" style="--sc:#3a4658" data-host="xn--c0inplot-61a.io">
       <td class="selcol"></td>
-      <td><a href="/ui/candidates/c3c640ec-27c9-4d50-a311-1686be6ccdb9"><span class="mono">c0inpìlot.io</span> <span class="pill" style="font-size:10px" title="written with look-alike Unicode characters; the real (punycode) name is xn--c0inplot-61a.io">homoglyph</span></a><div class="small muted">domain name</div></td>
+      <td><a href="/ui/candidates/c3c640ec-27c9-4d50-a311-1686be6ccdb9"><span class="mono" dir="ltr">c0inpìlot.io</span> <span class="pill" style="font-size:10px" title="written with look-alike Unicode characters; the real (punycode) name is xn--c0inplot-61a.io">homoglyph</span></a><div class="small muted">domain name</div></td>
       <td class="small"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/"><bdi>CoinPilot</bdi></a></td>
       <td class="why"><b>Look-alike names</b> <span class="mono" dir="ltr">homoglyph:coinpilot.io</span></td>
       <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
@@ -762,7 +780,7 @@ header nav{display:flex;align-items:center;min-width:0}
     
     <tr class="wrow" style="--sc:#3a4658" data-host="signupcoinpilot.io">
       <td class="selcol"></td>
-      <td><a href="/ui/candidates/0c11f165-58e8-4972-8339-7ed2a74df5e0"><span class="mono">signupcoinpilot.io</span></a><div class="small muted">domain name</div></td>
+      <td><a href="/ui/candidates/0c11f165-58e8-4972-8339-7ed2a74df5e0"><span class="mono" dir="ltr">signupcoinpilot.io</span></a><div class="small muted">domain name</div></td>
       <td class="small"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/"><bdi>CoinPilot</bdi></a></td>
       <td class="why"><b>Look-alike names</b> <span class="mono" dir="ltr">dictionary:coinpilot.io</span></td>
       <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
@@ -782,7 +800,7 @@ header nav{display:flex;align-items:center;min-width:0}
     
     <tr class="wrow" style="--sc:#3a4658" data-host="xn--c0inplot-5ud.io">
       <td class="selcol"></td>
-      <td><a href="/ui/candidates/faee231c-afb9-4e1b-9529-c8a18a84a119"><span class="mono">c0inpɩlot.io</span> <span class="pill" style="font-size:10px" title="written with look-alike Unicode characters; the real (punycode) name is xn--c0inplot-5ud.io">homoglyph</span></a><div class="small muted">domain name</div></td>
+      <td><a href="/ui/candidates/faee231c-afb9-4e1b-9529-c8a18a84a119"><span class="mono" dir="ltr">c0inpɩlot.io</span> <span class="pill" style="font-size:10px" title="written with look-alike Unicode characters; the real (punycode) name is xn--c0inplot-5ud.io">homoglyph</span></a><div class="small muted">domain name</div></td>
       <td class="small"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/"><bdi>CoinPilot</bdi></a></td>
       <td class="why"><b>Look-alike names</b> <span class="mono" dir="ltr">homoglyph:coinpilot.io</span></td>
       <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
@@ -802,7 +820,7 @@ header nav{display:flex;align-items:center;min-width:0}
     
     <tr class="wrow" style="--sc:#3a4658" data-host="signup-coinpilot.io">
       <td class="selcol"></td>
-      <td><a href="/ui/candidates/f700783c-43ee-4357-a026-4bf06fc9db7f"><span class="mono">signup-coinpilot.io</span></a><div class="small muted">domain name</div></td>
+      <td><a href="/ui/candidates/f700783c-43ee-4357-a026-4bf06fc9db7f"><span class="mono" dir="ltr">signup-coinpilot.io</span></a><div class="small muted">domain name</div></td>
       <td class="small"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/"><bdi>CoinPilot</bdi></a></td>
       <td class="why"><b>Look-alike names</b> <span class="mono" dir="ltr">dictionary:coinpilot.io</span></td>
       <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
@@ -822,7 +840,7 @@ header nav{display:flex;align-items:center;min-width:0}
     
     <tr class="wrow" style="--sc:#3a4658" data-host="xn--c0inplot-170d.io">
       <td class="selcol"></td>
-      <td><a href="/ui/candidates/13be6b20-248f-4195-93e2-6285a05526df"><span class="mono">c0inpỉlot.io</span> <span class="pill" style="font-size:10px" title="written with look-alike Unicode characters; the real (punycode) name is xn--c0inplot-170d.io">homoglyph</span></a><div class="small muted">domain name</div></td>
+      <td><a href="/ui/candidates/13be6b20-248f-4195-93e2-6285a05526df"><span class="mono" dir="ltr">c0inpỉlot.io</span> <span class="pill" style="font-size:10px" title="written with look-alike Unicode characters; the real (punycode) name is xn--c0inplot-170d.io">homoglyph</span></a><div class="small muted">domain name</div></td>
       <td class="small"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/"><bdi>CoinPilot</bdi></a></td>
       <td class="why"><b>Look-alike names</b> <span class="mono" dir="ltr">homoglyph:coinpilot.io</span></td>
       <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
@@ -842,7 +860,7 @@ header nav{display:flex;align-items:center;min-width:0}
     
     <tr class="wrow" style="--sc:#3a4658" data-host="coinpilot-signup.io">
       <td class="selcol"></td>
-      <td><a href="/ui/candidates/0377e5b1-932a-4e4b-87d2-6bb04e01f28a"><span class="mono">coinpilot-signup.io</span></a><div class="small muted">domain name</div></td>
+      <td><a href="/ui/candidates/0377e5b1-932a-4e4b-87d2-6bb04e01f28a"><span class="mono" dir="ltr">coinpilot-signup.io</span></a><div class="small muted">domain name</div></td>
       <td class="small"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/"><bdi>CoinPilot</bdi></a></td>
       <td class="why"><b>Look-alike names</b> <span class="mono" dir="ltr">dictionary:coinpilot.io</span></td>
       <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
@@ -862,7 +880,7 @@ header nav{display:flex;align-items:center;min-width:0}
     
     <tr class="wrow" style="--sc:#3a4658" data-host="xn--c0inpiot-snb.io">
       <td class="selcol"></td>
-      <td><a href="/ui/candidates/f6c5ac73-51bb-4d2c-9d79-9397435ae00e"><span class="mono">c0inpiļot.io</span> <span class="pill" style="font-size:10px" title="written with look-alike Unicode characters; the real (punycode) name is xn--c0inpiot-snb.io">homoglyph</span></a><div class="small muted">domain name</div></td>
+      <td><a href="/ui/candidates/f6c5ac73-51bb-4d2c-9d79-9397435ae00e"><span class="mono" dir="ltr">c0inpiļot.io</span> <span class="pill" style="font-size:10px" title="written with look-alike Unicode characters; the real (punycode) name is xn--c0inpiot-snb.io">homoglyph</span></a><div class="small muted">domain name</div></td>
       <td class="small"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/"><bdi>CoinPilot</bdi></a></td>
       <td class="why"><b>Look-alike names</b> <span class="mono" dir="ltr">homoglyph:coinpilot.io</span></td>
       <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
@@ -882,7 +900,7 @@ header nav{display:flex;align-items:center;min-width:0}
     
     <tr class="wrow" style="--sc:#3a4658" data-host="coinpilotsignup.io">
       <td class="selcol"></td>
-      <td><a href="/ui/candidates/1ae92db8-adaa-4011-a836-962f63d476a3"><span class="mono">coinpilotsignup.io</span></a><div class="small muted">domain name</div></td>
+      <td><a href="/ui/candidates/1ae92db8-adaa-4011-a836-962f63d476a3"><span class="mono" dir="ltr">coinpilotsignup.io</span></a><div class="small muted">domain name</div></td>
       <td class="small"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/"><bdi>CoinPilot</bdi></a></td>
       <td class="why"><b>Look-alike names</b> <span class="mono" dir="ltr">dictionary:coinpilot.io</span></td>
       <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
@@ -902,7 +920,7 @@ header nav{display:flex;align-items:center;min-width:0}
     
     <tr class="wrow" style="--sc:#3a4658" data-host="xn--c0inpiot-pvd.io">
       <td class="selcol"></td>
-      <td><a href="/ui/candidates/9c11896e-ecad-468c-84e7-42295a9c5f67"><span class="mono">c0inpiɫot.io</span> <span class="pill" style="font-size:10px" title="written with look-alike Unicode characters; the real (punycode) name is xn--c0inpiot-pvd.io">homoglyph</span></a><div class="small muted">domain name</div></td>
+      <td><a href="/ui/candidates/9c11896e-ecad-468c-84e7-42295a9c5f67"><span class="mono" dir="ltr">c0inpiɫot.io</span> <span class="pill" style="font-size:10px" title="written with look-alike Unicode characters; the real (punycode) name is xn--c0inpiot-pvd.io">homoglyph</span></a><div class="small muted">domain name</div></td>
       <td class="small"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/"><bdi>CoinPilot</bdi></a></td>
       <td class="why"><b>Look-alike names</b> <span class="mono" dir="ltr">homoglyph:coinpilot.io</span></td>
       <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
@@ -922,7 +940,7 @@ header nav{display:flex;align-items:center;min-width:0}
     
     <tr class="wrow" style="--sc:#3a4658" data-host="coinpilot-mail.io">
       <td class="selcol"></td>
-      <td><a href="/ui/candidates/a14f2c30-cac2-4abb-8ca3-2755b1541c07"><span class="mono">coinpilot-mail.io</span></a><div class="small muted">domain name</div></td>
+      <td><a href="/ui/candidates/a14f2c30-cac2-4abb-8ca3-2755b1541c07"><span class="mono" dir="ltr">coinpilot-mail.io</span></a><div class="small muted">domain name</div></td>
       <td class="small"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/"><bdi>CoinPilot</bdi></a></td>
       <td class="why"><b>Look-alike names</b> <span class="mono" dir="ltr">dictionary:coinpilot.io</span></td>
       <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
@@ -942,7 +960,7 @@ header nav{display:flex;align-items:center;min-width:0}
     
     <tr class="wrow" style="--sc:#3a4658" data-host="xn--c0inpiot-cpb.io">
       <td class="selcol"></td>
-      <td><a href="/ui/candidates/40ec669c-a943-46f1-b60e-2d429ae8f688"><span class="mono">c0inpiłot.io</span> <span class="pill" style="font-size:10px" title="written with look-alike Unicode characters; the real (punycode) name is xn--c0inpiot-cpb.io">homoglyph</span></a><div class="small muted">domain name</div></td>
+      <td><a href="/ui/candidates/40ec669c-a943-46f1-b60e-2d429ae8f688"><span class="mono" dir="ltr">c0inpiłot.io</span> <span class="pill" style="font-size:10px" title="written with look-alike Unicode characters; the real (punycode) name is xn--c0inpiot-cpb.io">homoglyph</span></a><div class="small muted">domain name</div></td>
       <td class="small"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/"><bdi>CoinPilot</bdi></a></td>
       <td class="why"><b>Look-alike names</b> <span class="mono" dir="ltr">homoglyph:coinpilot.io</span></td>
       <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
@@ -962,7 +980,7 @@ header nav{display:flex;align-items:center;min-width:0}
     
     <tr class="wrow" style="--sc:#3a4658" data-host="coinpilotmail.io">
       <td class="selcol"></td>
-      <td><a href="/ui/candidates/a9869532-9fd6-48af-961d-9d2105209628"><span class="mono">coinpilotmail.io</span></a><div class="small muted">domain name</div></td>
+      <td><a href="/ui/candidates/a9869532-9fd6-48af-961d-9d2105209628"><span class="mono" dir="ltr">coinpilotmail.io</span></a><div class="small muted">domain name</div></td>
       <td class="small"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/"><bdi>CoinPilot</bdi></a></td>
       <td class="why"><b>Look-alike names</b> <span class="mono" dir="ltr">dictionary:coinpilot.io</span></td>
       <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
@@ -982,7 +1000,7 @@ header nav{display:flex;align-items:center;min-width:0}
     
     <tr class="wrow" style="--sc:#3a4658" data-host="xn--c0inpiot-bob.io">
       <td class="selcol"></td>
-      <td><a href="/ui/candidates/adc907ae-1e60-4666-a537-b98d88a75ed1"><span class="mono">c0inpiľot.io</span> <span class="pill" style="font-size:10px" title="written with look-alike Unicode characters; the real (punycode) name is xn--c0inpiot-bob.io">homoglyph</span></a><div class="small muted">domain name</div></td>
+      <td><a href="/ui/candidates/adc907ae-1e60-4666-a537-b98d88a75ed1"><span class="mono" dir="ltr">c0inpiľot.io</span> <span class="pill" style="font-size:10px" title="written with look-alike Unicode characters; the real (punycode) name is xn--c0inpiot-bob.io">homoglyph</span></a><div class="small muted">domain name</div></td>
       <td class="small"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/"><bdi>CoinPilot</bdi></a></td>
       <td class="why"><b>Look-alike names</b> <span class="mono" dir="ltr">homoglyph:coinpilot.io</span></td>
       <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
@@ -1002,7 +1020,7 @@ header nav{display:flex;align-items:center;min-width:0}
     
     <tr class="wrow" style="--sc:#3a4658" data-host="mail-coinpilot.io">
       <td class="selcol"></td>
-      <td><a href="/ui/candidates/a23f5cd8-d0d2-4ca6-a835-f61e6b92ba5e"><span class="mono">mail-coinpilot.io</span></a><div class="small muted">domain name</div></td>
+      <td><a href="/ui/candidates/a23f5cd8-d0d2-4ca6-a835-f61e6b92ba5e"><span class="mono" dir="ltr">mail-coinpilot.io</span></a><div class="small muted">domain name</div></td>
       <td class="small"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/"><bdi>CoinPilot</bdi></a></td>
       <td class="why"><b>Look-alike names</b> <span class="mono" dir="ltr">dictionary:coinpilot.io</span></td>
       <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
@@ -1022,7 +1040,7 @@ header nav{display:flex;align-items:center;min-width:0}
     
     <tr class="wrow" style="--sc:#3a4658" data-host="xn--c0inpiot-9mb.io">
       <td class="selcol"></td>
-      <td><a href="/ui/candidates/0a78021e-ec3d-4c65-9f57-695b2ac4368a"><span class="mono">c0inpiĺot.io</span> <span class="pill" style="font-size:10px" title="written with look-alike Unicode characters; the real (punycode) name is xn--c0inpiot-9mb.io">homoglyph</span></a><div class="small muted">domain name</div></td>
+      <td><a href="/ui/candidates/0a78021e-ec3d-4c65-9f57-695b2ac4368a"><span class="mono" dir="ltr">c0inpiĺot.io</span> <span class="pill" style="font-size:10px" title="written with look-alike Unicode characters; the real (punycode) name is xn--c0inpiot-9mb.io">homoglyph</span></a><div class="small muted">domain name</div></td>
       <td class="small"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/"><bdi>CoinPilot</bdi></a></td>
       <td class="why"><b>Look-alike names</b> <span class="mono" dir="ltr">homoglyph:coinpilot.io</span></td>
       <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
@@ -1042,7 +1060,7 @@ header nav{display:flex;align-items:center;min-width:0}
     
     <tr class="wrow" style="--sc:#3a4658" data-host="mailcoinpilot.io">
       <td class="selcol"></td>
-      <td><a href="/ui/candidates/dbf76b96-e2e1-4408-934f-4c3a5602cec8"><span class="mono">mailcoinpilot.io</span></a><div class="small muted">domain name</div></td>
+      <td><a href="/ui/candidates/dbf76b96-e2e1-4408-934f-4c3a5602cec8"><span class="mono" dir="ltr">mailcoinpilot.io</span></a><div class="small muted">domain name</div></td>
       <td class="small"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/"><bdi>CoinPilot</bdi></a></td>
       <td class="why"><b>Look-alike names</b> <span class="mono" dir="ltr">dictionary:coinpilot.io</span></td>
       <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
@@ -1062,7 +1080,7 @@ header nav{display:flex;align-items:center;min-width:0}
     
     <tr class="wrow" style="--sc:#3a4658" data-host="xn--c0inpilt-t4a.io">
       <td class="selcol"></td>
-      <td><a href="/ui/candidates/72fe6ec9-9564-4cb8-b89d-4156b4599f0f"><span class="mono">c0inpilöt.io</span> <span class="pill" style="font-size:10px" title="written with look-alike Unicode characters; the real (punycode) name is xn--c0inpilt-t4a.io">homoglyph</span></a><div class="small muted">domain name</div></td>
+      <td><a href="/ui/candidates/72fe6ec9-9564-4cb8-b89d-4156b4599f0f"><span class="mono" dir="ltr">c0inpilöt.io</span> <span class="pill" style="font-size:10px" title="written with look-alike Unicode characters; the real (punycode) name is xn--c0inpilt-t4a.io">homoglyph</span></a><div class="small muted">domain name</div></td>
       <td class="small"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/"><bdi>CoinPilot</bdi></a></td>
       <td class="why"><b>Look-alike names</b> <span class="mono" dir="ltr">homoglyph:coinpilot.io</span></td>
       <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
@@ -1082,7 +1100,7 @@ header nav{display:flex;align-items:center;min-width:0}
     
     <tr class="wrow" style="--sc:#3a4658" data-host="coinpilotapp.io">
       <td class="selcol"></td>
-      <td><a href="/ui/candidates/dcb2c24b-dd52-44f8-a48c-2f3cc3d446b7"><span class="mono">coinpilotapp.io</span></a><div class="small muted">domain name</div></td>
+      <td><a href="/ui/candidates/dcb2c24b-dd52-44f8-a48c-2f3cc3d446b7"><span class="mono" dir="ltr">coinpilotapp.io</span></a><div class="small muted">domain name</div></td>
       <td class="small"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/"><bdi>CoinPilot</bdi></a></td>
       <td class="why"><b>Look-alike names</b> <span class="mono" dir="ltr">dictionary:coinpilot.io</span></td>
       <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
@@ -1102,7 +1120,7 @@ header nav{display:flex;align-items:center;min-width:0}
     
     <tr class="wrow" style="--sc:#3a4658" data-host="xn--c0inpilt-sec.io">
       <td class="selcol"></td>
-      <td><a href="/ui/candidates/facaea5f-7638-474f-bc47-ae424cd0992e"><span class="mono">c0inpilơt.io</span> <span class="pill" style="font-size:10px" title="written with look-alike Unicode characters; the real (punycode) name is xn--c0inpilt-sec.io">homoglyph</span></a><div class="small muted">domain name</div></td>
+      <td><a href="/ui/candidates/facaea5f-7638-474f-bc47-ae424cd0992e"><span class="mono" dir="ltr">c0inpilơt.io</span> <span class="pill" style="font-size:10px" title="written with look-alike Unicode characters; the real (punycode) name is xn--c0inpilt-sec.io">homoglyph</span></a><div class="small muted">domain name</div></td>
       <td class="small"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/"><bdi>CoinPilot</bdi></a></td>
       <td class="why"><b>Look-alike names</b> <span class="mono" dir="ltr">homoglyph:coinpilot.io</span></td>
       <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
@@ -1122,7 +1140,7 @@ header nav{display:flex;align-items:center;min-width:0}
     
     <tr class="wrow" style="--sc:#3a4658" data-host="coinpilot-app.io">
       <td class="selcol"></td>
-      <td><a href="/ui/candidates/1ddb425c-a9f8-46bb-9d8c-5641fdd0a79a"><span class="mono">coinpilot-app.io</span></a><div class="small muted">domain name</div></td>
+      <td><a href="/ui/candidates/1ddb425c-a9f8-46bb-9d8c-5641fdd0a79a"><span class="mono" dir="ltr">coinpilot-app.io</span></a><div class="small muted">domain name</div></td>
       <td class="small"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/"><bdi>CoinPilot</bdi></a></td>
       <td class="why"><b>Look-alike names</b> <span class="mono" dir="ltr">dictionary:coinpilot.io</span></td>
       <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
@@ -1142,7 +1160,7 @@ header nav{display:flex;align-items:center;min-width:0}
     
     <tr class="wrow" style="--sc:#3a4658" data-host="xn--c0inpilt-s3a.io">
       <td class="selcol"></td>
-      <td><a href="/ui/candidates/823a839c-b54f-40ed-9daf-57a4f115532e"><span class="mono">c0inpilòt.io</span> <span class="pill" style="font-size:10px" title="written with look-alike Unicode characters; the real (punycode) name is xn--c0inpilt-s3a.io">homoglyph</span></a><div class="small muted">domain name</div></td>
+      <td><a href="/ui/candidates/823a839c-b54f-40ed-9daf-57a4f115532e"><span class="mono" dir="ltr">c0inpilòt.io</span> <span class="pill" style="font-size:10px" title="written with look-alike Unicode characters; the real (punycode) name is xn--c0inpilt-s3a.io">homoglyph</span></a><div class="small muted">domain name</div></td>
       <td class="small"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/"><bdi>CoinPilot</bdi></a></td>
       <td class="why"><b>Look-alike names</b> <span class="mono" dir="ltr">homoglyph:coinpilot.io</span></td>
       <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
@@ -1162,7 +1180,7 @@ header nav{display:flex;align-items:center;min-width:0}
     
     <tr class="wrow" style="--sc:#3a4658" data-host="app-coinpilot.io">
       <td class="selcol"></td>
-      <td><a href="/ui/candidates/deb16b00-13b1-44fe-8840-c5531c1523f2"><span class="mono">app-coinpilot.io</span></a><div class="small muted">domain name</div></td>
+      <td><a href="/ui/candidates/deb16b00-13b1-44fe-8840-c5531c1523f2"><span class="mono" dir="ltr">app-coinpilot.io</span></a><div class="small muted">domain name</div></td>
       <td class="small"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/"><bdi>CoinPilot</bdi></a></td>
       <td class="why"><b>Look-alike names</b> <span class="mono" dir="ltr">dictionary:coinpilot.io</span></td>
       <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
@@ -1182,7 +1200,7 @@ header nav{display:flex;align-items:center;min-width:0}
     
     <tr class="wrow" style="--sc:#3a4658" data-host="xn--c0inpilt-psb.io">
       <td class="selcol"></td>
-      <td><a href="/ui/candidates/3df600ba-bbae-4e54-903f-a84b2f71dd8d"><span class="mono">c0inpilŏt.io</span> <span class="pill" style="font-size:10px" title="written with look-alike Unicode characters; the real (punycode) name is xn--c0inpilt-psb.io">homoglyph</span></a><div class="small muted">domain name</div></td>
+      <td><a href="/ui/candidates/3df600ba-bbae-4e54-903f-a84b2f71dd8d"><span class="mono" dir="ltr">c0inpilŏt.io</span> <span class="pill" style="font-size:10px" title="written with look-alike Unicode characters; the real (punycode) name is xn--c0inpilt-psb.io">homoglyph</span></a><div class="small muted">domain name</div></td>
       <td class="small"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/"><bdi>CoinPilot</bdi></a></td>
       <td class="why"><b>Look-alike names</b> <span class="mono" dir="ltr">homoglyph:coinpilot.io</span></td>
       <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
@@ -1202,7 +1220,7 @@ header nav{display:flex;align-items:center;min-width:0}
     
     <tr class="wrow" style="--sc:#3a4658" data-host="appcoinpilot.io">
       <td class="selcol"></td>
-      <td><a href="/ui/candidates/e3777220-c3a6-44b5-819c-c57a2e295391"><span class="mono">appcoinpilot.io</span></a><div class="small muted">domain name</div></td>
+      <td><a href="/ui/candidates/e3777220-c3a6-44b5-819c-c57a2e295391"><span class="mono" dir="ltr">appcoinpilot.io</span></a><div class="small muted">domain name</div></td>
       <td class="small"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/"><bdi>CoinPilot</bdi></a></td>
       <td class="why"><b>Look-alike names</b> <span class="mono" dir="ltr">dictionary:coinpilot.io</span></td>
       <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
@@ -1222,7 +1240,7 @@ header nav{display:flex;align-items:center;min-width:0}
     
     <tr class="wrow" style="--sc:#3a4658" data-host="xn--c0inpilt-n90d.io">
       <td class="selcol"></td>
-      <td><a href="/ui/candidates/a043cd63-00fb-4ad4-8571-881479613152"><span class="mono">c0inpilỏt.io</span> <span class="pill" style="font-size:10px" title="written with look-alike Unicode characters; the real (punycode) name is xn--c0inpilt-n90d.io">homoglyph</span></a><div class="small muted">domain name</div></td>
+      <td><a href="/ui/candidates/a043cd63-00fb-4ad4-8571-881479613152"><span class="mono" dir="ltr">c0inpilỏt.io</span> <span class="pill" style="font-size:10px" title="written with look-alike Unicode characters; the real (punycode) name is xn--c0inpilt-n90d.io">homoglyph</span></a><div class="small muted">domain name</div></td>
       <td class="small"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/"><bdi>CoinPilot</bdi></a></td>
       <td class="why"><b>Look-alike names</b> <span class="mono" dir="ltr">homoglyph:coinpilot.io</span></td>
       <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
@@ -1242,7 +1260,7 @@ header nav{display:flex;align-items:center;min-width:0}
     
     <tr class="wrow" style="--sc:#3a4658" data-host="coinpilot-portal.io">
       <td class="selcol"></td>
-      <td><a href="/ui/candidates/862acbb2-9827-4a40-876a-377012e04af6"><span class="mono">coinpilot-portal.io</span></a><div class="small muted">domain name</div></td>
+      <td><a href="/ui/candidates/862acbb2-9827-4a40-876a-377012e04af6"><span class="mono" dir="ltr">coinpilot-portal.io</span></a><div class="small muted">domain name</div></td>
       <td class="small"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/"><bdi>CoinPilot</bdi></a></td>
       <td class="why"><b>Look-alike names</b> <span class="mono" dir="ltr">dictionary:coinpilot.io</span></td>
       <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
@@ -1262,7 +1280,7 @@ header nav{display:flex;align-items:center;min-width:0}
     
     <tr class="wrow" style="--sc:#3a4658" data-host="xn--c0inpilt-k4a.io">
       <td class="selcol"></td>
-      <td><a href="/ui/candidates/ef334fb8-0aa1-4a9c-8669-e43074bd3a14"><span class="mono">c0inpilõt.io</span> <span class="pill" style="font-size:10px" title="written with look-alike Unicode characters; the real (punycode) name is xn--c0inpilt-k4a.io">homoglyph</span></a><div class="small muted">domain name</div></td>
+      <td><a href="/ui/candidates/ef334fb8-0aa1-4a9c-8669-e43074bd3a14"><span class="mono" dir="ltr">c0inpilõt.io</span> <span class="pill" style="font-size:10px" title="written with look-alike Unicode characters; the real (punycode) name is xn--c0inpilt-k4a.io">homoglyph</span></a><div class="small muted">domain name</div></td>
       <td class="small"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/"><bdi>CoinPilot</bdi></a></td>
       <td class="why"><b>Look-alike names</b> <span class="mono" dir="ltr">homoglyph:coinpilot.io</span></td>
       <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
@@ -1282,7 +1300,7 @@ header nav{display:flex;align-items:center;min-width:0}
     
     <tr class="wrow" style="--sc:#3a4658" data-host="coinpilotportal.io">
       <td class="selcol"></td>
-      <td><a href="/ui/candidates/0fe9eac5-61c3-4787-8261-b5247ad9f5aa"><span class="mono">coinpilotportal.io</span></a><div class="small muted">domain name</div></td>
+      <td><a href="/ui/candidates/0fe9eac5-61c3-4787-8261-b5247ad9f5aa"><span class="mono" dir="ltr">coinpilotportal.io</span></a><div class="small muted">domain name</div></td>
       <td class="small"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/"><bdi>CoinPilot</bdi></a></td>
       <td class="why"><b>Look-alike names</b> <span class="mono" dir="ltr">dictionary:coinpilot.io</span></td>
       <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
@@ -1311,6 +1329,7 @@ header nav{display:flex;align-items:center;min-width:0}
   <a class="btn small" href="?brand_id=f46bffed-4795-4cdd-ad8f-abd3d26fcc60&amp;state=dismissed&page=2" rel="next">next →</a>
 </nav>
 
+  <div class="small muted" style="margin-top:8px">Download these 494: <a href="/ui/candidates?brand_id=f46bffed-4795-4cdd-ad8f-abd3d26fcc60&amp;state=dismissed&amp;fmt=csv">CSV</a> · <a href="/ui/candidates?brand_id=f46bffed-4795-4cdd-ad8f-abd3d26fcc60&amp;state=dismissed&amp;fmt=json">JSON</a></div>
   
 </div>
 
@@ -1419,6 +1438,16 @@ header nav{display:flex;align-items:center;min-width:0}
     setTimeout(() => { if (e.defaultPrevented) return; f.__sentAt = Date.now();
       if (f.hasAttribute('data-busy') && b && b.tagName === 'BUTTON') { b.disabled = true; b.dataset.was = b.textContent; b.textContent = f.getAttribute('data-busy') || 'Working…';
         setTimeout(() => { b.disabled = false; b.textContent = b.dataset.was; }, 30000); } }, 0); });
+  // "/" opens the search from any page (a page with its own search box — findings, watchlist — takes it first)
+  document.addEventListener('keydown', e => {
+    if (e.key !== '/' || e.defaultPrevented || e.ctrlKey || e.metaKey || e.altKey) return;
+    const a = document.activeElement; if (a && (/INPUT|SELECT|TEXTAREA/.test(a.tagName) || a.isContentEditable)) return;
+    const box = document.getElementById('hsearch'); if (!box || !box.offsetParent) { location.href = '/ui/search'; return; }
+    e.preventDefault(); box.focus();
+  });
+  // phones: a "rwd" table shows one card per row, each cell labelled with its column (see the CSS)
+  document.querySelectorAll('table.rwd').forEach(t => { const heads = [...t.querySelectorAll('thead th')].map(th => th.textContent.trim());
+    t.querySelectorAll('tbody tr').forEach(tr => [...tr.children].forEach((td, i) => { if (!td.hasAttribute('data-label')) td.dataset.label = heads[i] || ''; })); });
   // the sticky header's height, for anything that sticks under it
   const hdr = document.querySelector('header'); const setH = () => document.documentElement.style.setProperty('--hdr', (hdr ? hdr.offsetHeight : 56) + 'px');
   setH(); window.addEventListener('resize', setH);
@@ -1438,7 +1467,9 @@ header nav{display:flex;align-items:center;min-width:0}
   document.querySelectorAll('main table').forEach(t => { if (t.parentElement.classList.contains('tw')) return;
     const w = document.createElement('div'); w.className = 'tw'; t.parentNode.insertBefore(w, t); w.appendChild(t); });
   // keep the active tab visible in the scrollable mobile nav
-  const act = document.querySelector('header nav a.active'); if (act && act.scrollIntoView) act.scrollIntoView({block: 'nearest', inline: 'center'});
+  // (by scrolling the bar itself: scrollIntoView would also move where the first Tab press starts, past the skip links)
+  const act = document.querySelector('header nav a.active'), bar = act && act.parentElement;
+  if (act && bar.scrollWidth > bar.clientWidth) bar.scrollLeft = act.offsetLeft - (bar.clientWidth - act.offsetWidth) / 2;
   // stagger entrances
   document.querySelectorAll('.kpis').forEach(g => [...g.children].forEach((el, i) => el.style.setProperty('--i', i)));
   document.querySelectorAll('main .panel').forEach((el, i) => el.style.setProperty('--i', Math.min(i, 12)));
@@ -1594,6 +1625,9 @@ header nav{display:flex;align-items:center;min-width:0}
   document.addEventListener('keydown', ev => {
     if (modal.hidden) return;
     if (ev.key === 'Escape') { ev.preventDefault(); close(false); }
+    else if (ev.key === 'Tab') {  // the focus stays in the dialog
+      const f = [inp, cancel, ok].filter(x => !x.hidden); const i = f.indexOf(document.activeElement);
+      ev.preventDefault(); f[(i + (ev.shiftKey ? -1 : 1) + f.length) % f.length].focus(); }
     else if (ev.key === 'Enter' && document.activeElement !== cancel) { ev.preventDefault(); ok.click(); }
   });
   // forms and buttons that ask first

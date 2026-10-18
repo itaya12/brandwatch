@@ -33,11 +33,17 @@ header{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:24px
 header .logo{font-family:var(--mono);font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);display:flex;align-items:center;gap:8px}
 header .logo::before{content:"";width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 10px var(--accent);animation:beat 2.2s ease-in-out infinite}
 @keyframes beat{0%,100%{opacity:.45;transform:scale(.85)}50%{opacity:1;transform:scale(1.1)}}
-header nav a{position:relative;font-family:var(--mono);font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-right:16px;padding:4px 0}
+header nav a{position:relative;font-family:var(--mono);font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-right:14px;padding:4px 0;white-space:nowrap}
+@media (min-width:901px) and (max-width:1500px){header{gap:14px}header nav a{font-size:11px;letter-spacing:.04em;margin-right:11px}header .hsearch input{width:130px}header .who .email{display:none}}
 header nav a::after{content:"";position:absolute;left:0;right:0;bottom:-2px;height:2px;background:var(--accent);transform:scaleX(0);transform-origin:left;transition:transform .3s}
 header nav a.active,header nav a:hover{color:var(--text)}header nav a.active::after,header nav a:hover::after{transform:scaleX(1)}
 header nav a.active::after{box-shadow:0 0 8px var(--accent)}
-header .who{margin-left:auto;color:var(--muted);font-size:12px}
+header .who{color:var(--muted);font-size:12px;white-space:nowrap}
+header .hsearch{margin-left:auto}header .hsearch input{width:170px;padding:5px 10px;font-size:12.5px;border-radius:999px;background:#0b1220}
+header .hsearch input:focus{width:240px}
+header nav .nc{display:inline-block;min-width:18px;padding:0 5px;margin-left:4px;border-radius:999px;background:rgba(53,199,242,.18);color:var(--accent2);font-size:10.5px;text-align:center;letter-spacing:0}
+header nav .nc.warn{background:rgba(255,77,77,.16);color:var(--crit)}
+@media (max-width:900px){header .hsearch{display:none}}
 main{position:relative;z-index:1;padding:20px;max-width:1440px;margin:0 auto}
 h1{font-family:var(--display);font-size:26px;letter-spacing:.04em;margin:0 0 14px;font-weight:700;
   background:linear-gradient(90deg,#E6EDF5 0%,#E6EDF5 55%,var(--accent2) 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
@@ -64,7 +70,7 @@ tr:hover td{background:rgba(53,199,242,.05)}
 .sev-low{background:rgba(46,204,113,.15);color:var(--low);border:1px solid var(--low)}
 .state{background:var(--panel2);color:var(--muted);border:1px solid var(--border)}
 .st-open,.st-new{color:var(--text)}.st-confirmed,.st-flagged{color:var(--crit);border-color:rgba(255,77,77,.5)}
-.st-dismissed{color:#5a6678}.st-watching{color:var(--accent);border-color:rgba(53,199,242,.4)}.st-long_watch{color:var(--muted)}
+.st-dismissed{color:var(--muted)}.st-watching{color:var(--accent);border-color:rgba(53,199,242,.4)}.st-long_watch{color:var(--muted)}
 .pill{background:var(--panel2);border:1px solid var(--border);border-radius:6px;padding:1px 6px;font-family:var(--mono);font-size:11px;color:var(--text);white-space:nowrap}
 /* signal pills: one neutral style for every group (the group is in the tooltip and the Explain table) */
 .pill[class*="g-"]{border-color:var(--border);color:#c9d3df}
@@ -73,6 +79,18 @@ button:hover,.btn:hover{border-color:var(--accent);box-shadow:0 0 12px rgba(53,1
 button.danger{border-color:var(--crit);color:var(--crit)}button.ok{border-color:var(--low);color:var(--low)}
 input,select,textarea{background:#0b1220;color:var(--text);border:1px solid var(--border);border-radius:6px;padding:7px 9px;font:inherit;width:100%;transition:border-color .2s,box-shadow .2s}
 input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(53,199,242,.15)}
+/* a paragraph that may be Hebrew or Arabic (a brand name, an ad, a reason) takes its direction from its own first letter */
+.lead,.summary,.story,.say,.reason,.ev .diff{unicode-bidi:plaintext}
+button.chip{font:inherit;font-family:var(--mono);font-size:11px;box-shadow:none}
+/* on a phone a wide table (class "rwd") becomes one card per row; each cell says what it is (from the header) */
+@media (max-width:700px){
+  table.rwd thead{display:none}
+  table.rwd,table.rwd tbody,table.rwd tr,table.rwd td{display:block;width:100%}
+  table.rwd tr{border:1px solid var(--border);border-radius:10px;margin:0 0 10px;padding:6px 10px;background:var(--panel2)}
+  table.rwd td{border:0;padding:4px 0;min-height:0}
+  table.rwd td[data-label]:not([data-label=""])::before{content:attr(data-label);display:block;font:600 10px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:2px}
+  table.rwd td:empty{display:none}
+}
 /* keyboard users see where they are; mouse clicks do not get the ring */
 :focus-visible{outline:2px solid var(--accent2);outline-offset:2px;border-radius:4px}
 a:focus-visible,button:focus-visible,.btn:focus-visible{box-shadow:0 0 0 3px rgba(53,199,242,.25)}
@@ -144,7 +162,7 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
 .grid>*,.cols>*{min-width:0}
 .tw{overflow-x:auto;-webkit-overflow-scrolling:touch;max-width:100%;overscroll-behavior-x:contain}
 .tw>table{min-width:100%}
-header nav{display:flex;align-items:center;min-width:0}
+header nav{display:flex;align-items:center;min-width:0;overflow-x:auto;scrollbar-width:none}  /* a narrow desktop scrolls the bar, never overlaps the search */
 @media (max-width:1100px){.grid.four{grid-template-columns:1fr 1fr}}
 @media (max-width:900px){
   .grid,.grid.two,.grid.three,.grid.four,.cols{grid-template-columns:1fr!important}
@@ -192,19 +210,19 @@ header nav{display:flex;align-items:center;min-width:0}
 <header>
   <a class="logo" href="/ui/dashboard/">BrandWatch</a>
   
-  <nav>
+  <nav aria-label="Main">
     <a href="/ui/dashboard/" class="">Dashboard</a>
-    <a href="/ui/how-it-works/" class="">How it works</a>
-    <a href="/ui/brands/" class="">Brands &amp; Scans</a>
-    <a href="/ui/findings/" class="">Findings</a>
+    <a href="/ui/findings/" class="">Findings <span class="nc" title="9 awaiting a verdict">9</span></a>
     <a href="/ui/candidates/" class="">Watchlist</a>
     <a href="/ui/campaigns/" class="">Attack infrastructure</a>
-    <a href="/ui/takedowns/" class="">Takedowns</a>
+    <a href="/ui/takedowns/" class="">Takedowns <span class="nc warn" title="38 confirmed site(s) whose takedown was not sent">38</span></a>
+    <a href="/ui/brands/" class="">Brands &amp; Scans</a>
     <a href="/ui/activity/" class="active">Activity</a>
     <a href="/ui/settings/" class="">Settings</a>
-    <a href="/docs" target="_blank">API</a>
+    <a href="/ui/how-it-works/" class="">How it works</a>
   </nav>
-  <span class="who"><span class="email">admin · </span>admin · <a href="/ui/logout">logout</a></span>
+  <form method="get" action="/ui/search" class="hsearch" role="search"><input name="q" id="hsearch" placeholder="Search · /" aria-label="Search a domain, an IP, a takedown reference" autocomplete="off" maxlength="120"></form>
+  <span class="who"><span class="email">admin · </span>admin · <a href="/docs" target="_blank" title="the REST API reference">API</a> · <a href="/ui/logout">logout</a></span>
   
 </header>
 <main id="main">
@@ -237,19 +255,35 @@ header nav{display:flex;align-items:center;min-width:0}
 <p class="intro">The append-only audit trail: who did what, when, old → new, and why. The database itself refuses to edit or delete it.</p>
 
 <div class="kpis">
-  <div class="kpi"><div class="v" data-count="214">0</div><div class="l">events (latest)</div></div>
-  <div class="kpi"><div class="v" data-count="53">0</div><div class="l">analyst actions</div></div>
-  <div class="kpi"><div class="v" data-count="161">0</div><div class="l">system actions</div></div>
+  <div class="kpi"><div class="v" data-count="212">0</div><div class="l">events (latest)</div></div>
+  <div class="kpi"><div class="v" data-count="54">0</div><div class="l">analyst actions</div></div>
+  <div class="kpi"><div class="v" data-count="158">0</div><div class="l">system actions</div></div>
   <div class="kpi"><div class="v" data-count="25">0</div><div class="l">verdicts recorded</div></div>
-  <div class="kpi"><div class="v" data-count="7">0</div><div class="l">logins (24h)</div></div>
+  <div class="kpi"><div class="v" data-count="9">0</div><div class="l">logins (24h)</div></div>
 </div>
 
-<div class="grid" style="grid-template-columns:2.2fr 1fr;margin-top:14px">
+<form method="get" action="/ui/activity/" class="afilters" style="margin-top:14px">
+  <div><label for="a-actor">Who</label><select id="a-actor" name="actor"><option value="">anyone</option><option value="system" >the system</option><option value="admin" >admin</option></select></div>
+  <div><label for="a-cat">What</label><select id="a-cat" name="category"><option value="">everything</option><option value="finding" >finding</option><option value="takedown" >takedown</option><option value="brand" >brand</option><option value="candidate" >candidate</option><option value="scan" >scan</option><option value="campaign" >campaign</option><option value="intel" >intel</option><option value="user" >user</option><option value="workspace" >workspace</option><option value="notification" >notification</option><option value="report" >report</option></select></div>
+  <div><label for="a-since">From</label><input id="a-since" type="date" name="since" value=""></div>
+  <div><label for="a-until">To</label><input id="a-until" type="date" name="until" value=""></div>
+  
+  <div class="go"><button type="submit" class="primary">Apply</button>
+    <a class="btn" href="/ui/activity.csv" title="the events these filters keep, one row each, as a spreadsheet">⤓ CSV</a></div>
+</form>
+
+<style>.afilters{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px 10px;align-items:end}
+  .afilters label{display:block;font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:3px}
+  .afilters .go{display:flex;gap:6px;flex-wrap:wrap}
+  @media (max-width:700px){.grid.actg{grid-template-columns:1fr!important}}</style>
+
+<div class="grid actg" style="grid-template-columns:2.2fr 1fr;margin-top:14px">
   <div class="panel">
+    <div class="small muted" style="margin-bottom:6px">2711 events</div>
     <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px" id="chips">
-      <span class="chip on" data-cat="notable" title="everything except sign-ins">notable</span>
-      <span class="chip" data-cat="*">all</span>
-      <span class="chip" data-cat="brand">brand</span><span class="chip" data-cat="campaign">campaign</span><span class="chip" data-cat="finding">finding</span><span class="chip" data-cat="intel">intel</span><span class="chip" data-cat="investigation">investigation</span><span class="chip" data-cat="notification">notification</span><span class="chip" data-cat="report">report</span><span class="chip" data-cat="scan">scan</span><span class="chip" data-cat="user">user</span>
+      <button type="button" class="chip on" data-cat="notable" title="everything except sign-ins" aria-pressed="true">notable</button>
+      <button type="button" class="chip" data-cat="*" aria-pressed="false">all</button>
+      <button type="button" class="chip" data-cat="brand" aria-pressed="false">brand</button><button type="button" class="chip" data-cat="campaign" aria-pressed="false">campaign</button><button type="button" class="chip" data-cat="finding" aria-pressed="false">finding</button><button type="button" class="chip" data-cat="intel" aria-pressed="false">intel</button><button type="button" class="chip" data-cat="investigation" aria-pressed="false">investigation</button><button type="button" class="chip" data-cat="notification" aria-pressed="false">notification</button><button type="button" class="chip" data-cat="report" aria-pressed="false">report</button><button type="button" class="chip" data-cat="scan" aria-pressed="false">scan</button><button type="button" class="chip" data-cat="user" aria-pressed="false">user</button>
     </div>
     <div class="feed" id="feed">
       
@@ -258,16 +292,84 @@ header nav{display:flex;align-items:center;min-width:0}
       <div class="ev " data-cat="user" data-notable="0" style="--r:0;display:none">
         <div class="av " title="admin">AD</div>
         <div>
+          <div class="what"><span class="muted">admin</span> <b>user</b> · login <span class="pill" title="3 consecutive events, first 2026-10-18 21:18">×3</span>
+            
+            <span class="muted small">user bc089017</span></div>
+          
+        </div>
+        <div class="when"><time datetime="2026-10-18T21:30:58.491211+00:00" data-local title="2026-10-18T21:30:58.491211+00:00 UTC">2026-10-18 21:30</time><div><a class="small" href="/ui/activity/_d2793a420a/" title="every event about this user">history</a></div></div>
+      </div>
+      
+      
+      <div class="ev " data-cat="user" data-notable="0" style="--r:1;display:none">
+        <div class="av " title="admin">AD</div>
+        <div>
+          <div class="what"><span class="muted">admin</span> <b>user</b> · login failed
+            
+            <span class="muted small">user bc089017</span></div>
+          
+        </div>
+        <div class="when"><time datetime="2026-10-18T20:48:51.885161+00:00" data-local title="2026-10-18T20:48:51.885161+00:00 UTC">2026-10-18 20:48</time><div><a class="small" href="/ui/activity/_d2793a420a/" title="every event about this user">history</a></div></div>
+      </div>
+      
+      
+      <div class="ev " data-cat="user" data-notable="0" style="--r:2;display:none">
+        <div class="av " title="admin">AD</div>
+        <div>
+          <div class="what"><span class="muted">admin</span> <b>user</b> · login
+            
+            <span class="muted small">user bc089017</span></div>
+          
+        </div>
+        <div class="when"><time datetime="2026-10-18T20:48:44.514313+00:00" data-local title="2026-10-18T20:48:44.514313+00:00 UTC">2026-10-18 20:48</time><div><a class="small" href="/ui/activity/_d2793a420a/" title="every event about this user">history</a></div></div>
+      </div>
+      
+      
+      <div class="ev " data-cat="intel" data-notable="1" style="--r:3">
+        <div class="av sys" title="system">SYS</div>
+        <div>
+          <div class="what"><span class="muted">system</span> <b>intel</b> · started
+            
+            <span class="muted small">finding <a href="/ui/findings/6ed451ca-2fd1-464b-b381-03f8df804f34/" class="mono">shopnova-eu.com ↗</a></span></div>
+          
+          
+          <div class="diff"><span class="new">force: no · light: yes · package: no · auto: yes</span>
+            </div>
+          
+        </div>
+        <div class="when"><time datetime="2026-10-18T20:00:24.464435+00:00" data-local title="2026-10-18T20:00:24.464435+00:00 UTC">2026-10-18 20:00</time><div><a class="small" href="/ui/activity/_fe1ce76898/" title="every event about this finding">history</a></div></div>
+      </div>
+      
+      
+      <div class="ev " data-cat="intel" data-notable="1" style="--r:4">
+        <div class="av sys" title="system">SYS</div>
+        <div>
+          <div class="what"><span class="muted">system</span> <b>intel</b> · started
+            
+            <span class="muted small">finding <a href="/ui/findings/b8ee9a9b-16e7-4c1f-be0b-6756491abd64/" class="mono">account-review-center.com ↗</a></span></div>
+          
+          
+          <div class="diff"><span class="new">force: no · light: yes · package: no · auto: yes</span>
+            </div>
+          
+        </div>
+        <div class="when"><time datetime="2026-10-18T20:00:20.309323+00:00" data-local title="2026-10-18T20:00:20.309323+00:00 UTC">2026-10-18 20:00</time><div><a class="small" href="/ui/activity/_aed6eaa9be/" title="every event about this finding">history</a></div></div>
+      </div>
+      
+      
+      <div class="ev " data-cat="user" data-notable="0" style="--r:5;display:none">
+        <div class="av " title="admin">AD</div>
+        <div>
           <div class="what"><span class="muted">admin</span> <b>user</b> · login <span class="pill" title="31 consecutive events, first 2026-10-18 17:10">×31</span>
             
             <span class="muted small">user bc089017</span></div>
           
         </div>
-        <div class="when" data-rel="2026-10-18T19:59:55.211725+00:00" title="2026-10-18T19:59:55.211725+00:00">2026-10-18 19:59:55</div>
+        <div class="when"><time datetime="2026-10-18T19:59:55.211725+00:00" data-local title="2026-10-18T19:59:55.211725+00:00 UTC">2026-10-18 19:59</time><div><a class="small" href="/ui/activity/_d2793a420a/" title="every event about this user">history</a></div></div>
       </div>
       
       
-      <div class="ev " data-cat="notification" data-notable="1" style="--r:1">
+      <div class="ev " data-cat="notification" data-notable="1" style="--r:6">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>notification</b> · sent
@@ -279,11 +381,11 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-18T17:10:05.104755+00:00" title="2026-10-18T17:10:05.104755+00:00">2026-10-18 17:10:05</div>
+        <div class="when"><time datetime="2026-10-18T17:10:05.104755+00:00" data-local title="2026-10-18T17:10:05.104755+00:00 UTC">2026-10-18 17:10</time><div><a class="small" href="/ui/activity/_aed6eaa9be/" title="every event about this notification">history</a></div></div>
       </div>
       
       
-      <div class="ev " data-cat="finding" data-notable="1" style="--r:2">
+      <div class="ev " data-cat="finding" data-notable="1" style="--r:7">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>finding</b> · created
@@ -295,11 +397,11 @@ header nav{display:flex;align-items:center;min-width:0}
             <div style="color:var(--text);opacity:.8;margin-top:2px">“14 signals fired; rules: [&#39;pixel_clone_login&#39;, &#39;fresh_lookalike_login&#39;, &#39;brand_title_login&#39;, &#39;campaign_linked_login&#39;, &#39;looks_like_brand_verdict&#39;]”</div></div>
           
         </div>
-        <div class="when" data-rel="2026-10-18T17:10:05.093176+00:00" title="2026-10-18T17:10:05.093176+00:00">2026-10-18 17:10:05</div>
+        <div class="when"><time datetime="2026-10-18T17:10:05.093176+00:00" data-local title="2026-10-18T17:10:05.093176+00:00 UTC">2026-10-18 17:10</time><div><a class="small" href="/ui/activity/_aed6eaa9be/" title="every event about this finding">history</a></div></div>
       </div>
       
       
-      <div class="ev " data-cat="scan" data-notable="1" style="--r:3">
+      <div class="ev " data-cat="scan" data-notable="1" style="--r:8">
         <div class="av " title="admin">AD</div>
         <div>
           <div class="what"><span class="muted">admin</span> <b>scan</b> · started
@@ -311,11 +413,11 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-18T17:10:04.708334+00:00" title="2026-10-18T17:10:04.708334+00:00">2026-10-18 17:10:04</div>
+        <div class="when"><time datetime="2026-10-18T17:10:04.708334+00:00" data-local title="2026-10-18T17:10:04.708334+00:00 UTC">2026-10-18 17:10</time><div><a class="small" href="/ui/activity/_ef31816219/" title="every event about this scan job">history</a></div></div>
       </div>
       
       
-      <div class="ev " data-cat="brand" data-notable="1" style="--r:4">
+      <div class="ev " data-cat="brand" data-notable="1" style="--r:9">
         <div class="av " title="admin">AD</div>
         <div>
           <div class="what"><span class="muted">admin</span> <b>brand</b> · config updated
@@ -327,11 +429,11 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-18T17:10:04.648262+00:00" title="2026-10-18T17:10:04.648262+00:00">2026-10-18 17:10:04</div>
+        <div class="when"><time datetime="2026-10-18T17:10:04.648262+00:00" data-local title="2026-10-18T17:10:04.648262+00:00 UTC">2026-10-18 17:10</time><div><a class="small" href="/ui/activity/_c13cd41005/" title="every event about this brand">history</a></div></div>
       </div>
       
       
-      <div class="ev " data-cat="user" data-notable="0" style="--r:5;display:none">
+      <div class="ev " data-cat="user" data-notable="0" style="--r:10;display:none">
         <div class="av " title="admin">AD</div>
         <div>
           <div class="what"><span class="muted">admin</span> <b>user</b> · login <span class="pill" title="36 consecutive events, first 2026-10-18 07:32">×36</span>
@@ -339,11 +441,11 @@ header nav{display:flex;align-items:center;min-width:0}
             <span class="muted small">user bc089017</span></div>
           
         </div>
-        <div class="when" data-rel="2026-10-18T17:10:04.575456+00:00" title="2026-10-18T17:10:04.575456+00:00">2026-10-18 17:10:04</div>
+        <div class="when"><time datetime="2026-10-18T17:10:04.575456+00:00" data-local title="2026-10-18T17:10:04.575456+00:00 UTC">2026-10-18 17:10</time><div><a class="small" href="/ui/activity/_d2793a420a/" title="every event about this user">history</a></div></div>
       </div>
       
       
-      <div class="ev " data-cat="notification" data-notable="1" style="--r:6">
+      <div class="ev " data-cat="notification" data-notable="1" style="--r:11">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>notification</b> · sent
@@ -355,11 +457,11 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-18T07:32:13.769318+00:00" title="2026-10-18T07:32:13.769318+00:00">2026-10-18 07:32:13</div>
+        <div class="when"><time datetime="2026-10-18T07:32:13.769318+00:00" data-local title="2026-10-18T07:32:13.769318+00:00 UTC">2026-10-18 07:32</time><div><a class="small" href="/ui/activity/_36cdcddc36/" title="every event about this notification">history</a></div></div>
       </div>
       
       
-      <div class="ev " data-cat="finding" data-notable="1" style="--r:7">
+      <div class="ev " data-cat="finding" data-notable="1" style="--r:12">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>finding</b> · rescored
@@ -371,11 +473,11 @@ header nav{display:flex;align-items:center;min-width:0}
             <div style="color:var(--text);opacity:.8;margin-top:2px">“17 signals fired; rules: [&#39;pixel_clone_login&#39;, &#39;fresh_lookalike_login&#39;, &#39;brand_title_login&#39;, &#39;campaign_linked_login&#39;, &#39;looks_like_brand_verdict&#39;]; already confirmed by an analyst — score history appended”</div></div>
           
         </div>
-        <div class="when" data-rel="2026-10-18T07:32:13.756289+00:00" title="2026-10-18T07:32:13.756289+00:00">2026-10-18 07:32:13</div>
+        <div class="when"><time datetime="2026-10-18T07:32:13.756289+00:00" data-local title="2026-10-18T07:32:13.756289+00:00 UTC">2026-10-18 07:32</time><div><a class="small" href="/ui/activity/_36cdcddc36/" title="every event about this finding">history</a></div></div>
       </div>
       
       
-      <div class="ev " data-cat="notification" data-notable="1" style="--r:8">
+      <div class="ev " data-cat="notification" data-notable="1" style="--r:13">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>notification</b> · sent
@@ -387,11 +489,11 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-18T07:32:13.349904+00:00" title="2026-10-18T07:32:13.349904+00:00">2026-10-18 07:32:13</div>
+        <div class="when"><time datetime="2026-10-18T07:32:13.349904+00:00" data-local title="2026-10-18T07:32:13.349904+00:00 UTC">2026-10-18 07:32</time><div><a class="small" href="/ui/activity/_ba95b11762/" title="every event about this notification">history</a></div></div>
       </div>
       
       
-      <div class="ev " data-cat="finding" data-notable="1" style="--r:9">
+      <div class="ev " data-cat="finding" data-notable="1" style="--r:14">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>finding</b> · rescored
@@ -403,11 +505,11 @@ header nav{display:flex;align-items:center;min-width:0}
             <div style="color:var(--text);opacity:.8;margin-top:2px">“11 signals fired; rules: [&#39;brand_title_login&#39;, &#39;campaign_linked_login&#39;]; already confirmed by an analyst — score history appended”</div></div>
           
         </div>
-        <div class="when" data-rel="2026-10-18T07:32:13.322714+00:00" title="2026-10-18T07:32:13.322714+00:00">2026-10-18 07:32:13</div>
+        <div class="when"><time datetime="2026-10-18T07:32:13.322714+00:00" data-local title="2026-10-18T07:32:13.322714+00:00 UTC">2026-10-18 07:32</time><div><a class="small" href="/ui/activity/_ba95b11762/" title="every event about this finding">history</a></div></div>
       </div>
       
       
-      <div class="ev " data-cat="notification" data-notable="1" style="--r:10">
+      <div class="ev " data-cat="notification" data-notable="1" style="--r:15">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>notification</b> · sent
@@ -419,11 +521,11 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-18T07:32:12.949459+00:00" title="2026-10-18T07:32:12.949459+00:00">2026-10-18 07:32:12</div>
+        <div class="when"><time datetime="2026-10-18T07:32:12.949459+00:00" data-local title="2026-10-18T07:32:12.949459+00:00 UTC">2026-10-18 07:32</time><div><a class="small" href="/ui/activity/_d562813e7c/" title="every event about this notification">history</a></div></div>
       </div>
       
       
-      <div class="ev " data-cat="finding" data-notable="1" style="--r:11">
+      <div class="ev " data-cat="finding" data-notable="1" style="--r:16">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>finding</b> · rescored
@@ -435,11 +537,11 @@ header nav{display:flex;align-items:center;min-width:0}
             <div style="color:var(--text);opacity:.8;margin-top:2px">“3 signals fired; rules: []”</div></div>
           
         </div>
-        <div class="when" data-rel="2026-10-18T07:32:12.939844+00:00" title="2026-10-18T07:32:12.939844+00:00">2026-10-18 07:32:12</div>
+        <div class="when"><time datetime="2026-10-18T07:32:12.939844+00:00" data-local title="2026-10-18T07:32:12.939844+00:00 UTC">2026-10-18 07:32</time><div><a class="small" href="/ui/activity/_d562813e7c/" title="every event about this finding">history</a></div></div>
       </div>
       
       
-      <div class="ev " data-cat="notification" data-notable="1" style="--r:12">
+      <div class="ev " data-cat="notification" data-notable="1" style="--r:17">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>notification</b> · sent
@@ -451,11 +553,11 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-18T07:32:12.926460+00:00" title="2026-10-18T07:32:12.926460+00:00">2026-10-18 07:32:12</div>
+        <div class="when"><time datetime="2026-10-18T07:32:12.926460+00:00" data-local title="2026-10-18T07:32:12.926460+00:00 UTC">2026-10-18 07:32</time><div><a class="small" href="/ui/activity/_cff24ba9c5/" title="every event about this notification">history</a></div></div>
       </div>
       
       
-      <div class="ev " data-cat="finding" data-notable="1" style="--r:13">
+      <div class="ev " data-cat="finding" data-notable="1" style="--r:18">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>finding</b> · rescored
@@ -467,11 +569,11 @@ header nav{display:flex;align-items:center;min-width:0}
             <div style="color:var(--text);opacity:.8;margin-top:2px">“3 signals fired; rules: []”</div></div>
           
         </div>
-        <div class="when" data-rel="2026-10-18T07:32:12.913865+00:00" title="2026-10-18T07:32:12.913865+00:00">2026-10-18 07:32:12</div>
+        <div class="when"><time datetime="2026-10-18T07:32:12.913865+00:00" data-local title="2026-10-18T07:32:12.913865+00:00 UTC">2026-10-18 07:32</time><div><a class="small" href="/ui/activity/_cff24ba9c5/" title="every event about this finding">history</a></div></div>
       </div>
       
       
-      <div class="ev " data-cat="notification" data-notable="1" style="--r:14">
+      <div class="ev " data-cat="notification" data-notable="1" style="--r:19">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>notification</b> · sent
@@ -483,11 +585,11 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-18T07:32:12.894461+00:00" title="2026-10-18T07:32:12.894461+00:00">2026-10-18 07:32:12</div>
+        <div class="when"><time datetime="2026-10-18T07:32:12.894461+00:00" data-local title="2026-10-18T07:32:12.894461+00:00 UTC">2026-10-18 07:32</time><div><a class="small" href="/ui/activity/_57f9082199/" title="every event about this notification">history</a></div></div>
       </div>
       
       
-      <div class="ev " data-cat="finding" data-notable="1" style="--r:15">
+      <div class="ev " data-cat="finding" data-notable="1" style="--r:20">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>finding</b> · rescored
@@ -499,11 +601,11 @@ header nav{display:flex;align-items:center;min-width:0}
             <div style="color:var(--text);opacity:.8;margin-top:2px">“4 signals fired; rules: []”</div></div>
           
         </div>
-        <div class="when" data-rel="2026-10-18T07:32:12.883415+00:00" title="2026-10-18T07:32:12.883415+00:00">2026-10-18 07:32:12</div>
+        <div class="when"><time datetime="2026-10-18T07:32:12.883415+00:00" data-local title="2026-10-18T07:32:12.883415+00:00 UTC">2026-10-18 07:32</time><div><a class="small" href="/ui/activity/_57f9082199/" title="every event about this finding">history</a></div></div>
       </div>
       
       
-      <div class="ev " data-cat="scan" data-notable="1" style="--r:16">
+      <div class="ev " data-cat="scan" data-notable="1" style="--r:21">
         <div class="av " title="admin">AD</div>
         <div>
           <div class="what"><span class="muted">admin</span> <b>scan</b> · started
@@ -515,11 +617,11 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-18T07:32:12.572608+00:00" title="2026-10-18T07:32:12.572608+00:00">2026-10-18 07:32:12</div>
+        <div class="when"><time datetime="2026-10-18T07:32:12.572608+00:00" data-local title="2026-10-18T07:32:12.572608+00:00 UTC">2026-10-18 07:32</time><div><a class="small" href="/ui/activity/_e60f5de899/" title="every event about this scan job">history</a></div></div>
       </div>
       
       
-      <div class="ev " data-cat="brand" data-notable="1" style="--r:17">
+      <div class="ev " data-cat="brand" data-notable="1" style="--r:22">
         <div class="av " title="admin">AD</div>
         <div>
           <div class="what"><span class="muted">admin</span> <b>brand</b> · ai prompts approved
@@ -531,11 +633,11 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-18T07:32:09.694731+00:00" title="2026-10-18T07:32:09.694731+00:00">2026-10-18 07:32:09</div>
+        <div class="when"><time datetime="2026-10-18T07:32:09.694731+00:00" data-local title="2026-10-18T07:32:09.694731+00:00 UTC">2026-10-18 07:32</time><div><a class="small" href="/ui/activity/_e46932bea5/" title="every event about this brand">history</a></div></div>
       </div>
       
       
-      <div class="ev " data-cat="scan" data-notable="1" style="--r:18">
+      <div class="ev " data-cat="scan" data-notable="1" style="--r:23">
         <div class="av " title="admin">AD</div>
         <div>
           <div class="what"><span class="muted">admin</span> <b>scan</b> · started
@@ -547,11 +649,11 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-18T07:32:06.133868+00:00" title="2026-10-18T07:32:06.133868+00:00">2026-10-18 07:32:06</div>
+        <div class="when"><time datetime="2026-10-18T07:32:06.133868+00:00" data-local title="2026-10-18T07:32:06.133868+00:00 UTC">2026-10-18 07:32</time><div><a class="small" href="/ui/activity/_bed24861e0/" title="every event about this scan job">history</a></div></div>
       </div>
       
       
-      <div class="ev " data-cat="user" data-notable="0" style="--r:19;display:none">
+      <div class="ev " data-cat="user" data-notable="0" style="--r:24;display:none">
         <div class="av " title="admin">AD</div>
         <div>
           <div class="what"><span class="muted">admin</span> <b>user</b> · login <span class="pill" title="2 consecutive events, first 2026-10-18 07:29">×2</span>
@@ -559,11 +661,11 @@ header nav{display:flex;align-items:center;min-width:0}
             <span class="muted small">user bc089017</span></div>
           
         </div>
-        <div class="when" data-rel="2026-10-18T07:32:01.827694+00:00" title="2026-10-18T07:32:01.827694+00:00">2026-10-18 07:32:01</div>
+        <div class="when"><time datetime="2026-10-18T07:32:01.827694+00:00" data-local title="2026-10-18T07:32:01.827694+00:00 UTC">2026-10-18 07:32</time><div><a class="small" href="/ui/activity/_d2793a420a/" title="every event about this user">history</a></div></div>
       </div>
       
       
-      <div class="ev " data-cat="notification" data-notable="1" style="--r:20">
+      <div class="ev " data-cat="notification" data-notable="1" style="--r:25">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>notification</b> · sent
@@ -575,11 +677,11 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-18T07:29:26.280085+00:00" title="2026-10-18T07:29:26.280085+00:00">2026-10-18 07:29:26</div>
+        <div class="when"><time datetime="2026-10-18T07:29:26.280085+00:00" data-local title="2026-10-18T07:29:26.280085+00:00 UTC">2026-10-18 07:29</time><div><a class="small" href="/ui/activity/_36cdcddc36/" title="every event about this notification">history</a></div></div>
       </div>
       
       
-      <div class="ev " data-cat="finding" data-notable="1" style="--r:21">
+      <div class="ev " data-cat="finding" data-notable="1" style="--r:26">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>finding</b> · rescored
@@ -591,11 +693,11 @@ header nav{display:flex;align-items:center;min-width:0}
             <div style="color:var(--text);opacity:.8;margin-top:2px">“17 signals fired; rules: [&#39;pixel_clone_login&#39;, &#39;fresh_lookalike_login&#39;, &#39;brand_title_login&#39;, &#39;campaign_linked_login&#39;, &#39;looks_like_brand_verdict&#39;]; already confirmed by an analyst — score history appended”</div></div>
           
         </div>
-        <div class="when" data-rel="2026-10-18T07:29:26.271442+00:00" title="2026-10-18T07:29:26.271442+00:00">2026-10-18 07:29:26</div>
+        <div class="when"><time datetime="2026-10-18T07:29:26.271442+00:00" data-local title="2026-10-18T07:29:26.271442+00:00 UTC">2026-10-18 07:29</time><div><a class="small" href="/ui/activity/_36cdcddc36/" title="every event about this finding">history</a></div></div>
       </div>
       
       
-      <div class="ev " data-cat="notification" data-notable="1" style="--r:22">
+      <div class="ev " data-cat="notification" data-notable="1" style="--r:27">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>notification</b> · sent
@@ -607,11 +709,11 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-18T07:29:25.998527+00:00" title="2026-10-18T07:29:25.998527+00:00">2026-10-18 07:29:25</div>
+        <div class="when"><time datetime="2026-10-18T07:29:25.998527+00:00" data-local title="2026-10-18T07:29:25.998527+00:00 UTC">2026-10-18 07:29</time><div><a class="small" href="/ui/activity/_ba95b11762/" title="every event about this notification">history</a></div></div>
       </div>
       
       
-      <div class="ev " data-cat="finding" data-notable="1" style="--r:23">
+      <div class="ev " data-cat="finding" data-notable="1" style="--r:28">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>finding</b> · rescored
@@ -623,11 +725,11 @@ header nav{display:flex;align-items:center;min-width:0}
             <div style="color:var(--text);opacity:.8;margin-top:2px">“11 signals fired; rules: [&#39;brand_title_login&#39;, &#39;campaign_linked_login&#39;]; already confirmed by an analyst — score history appended”</div></div>
           
         </div>
-        <div class="when" data-rel="2026-10-18T07:29:25.993528+00:00" title="2026-10-18T07:29:25.993528+00:00">2026-10-18 07:29:25</div>
+        <div class="when"><time datetime="2026-10-18T07:29:25.993528+00:00" data-local title="2026-10-18T07:29:25.993528+00:00 UTC">2026-10-18 07:29</time><div><a class="small" href="/ui/activity/_ba95b11762/" title="every event about this finding">history</a></div></div>
       </div>
       
       
-      <div class="ev " data-cat="notification" data-notable="1" style="--r:24">
+      <div class="ev " data-cat="notification" data-notable="1" style="--r:29">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>notification</b> · sent
@@ -639,11 +741,11 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-18T07:29:25.760151+00:00" title="2026-10-18T07:29:25.760151+00:00">2026-10-18 07:29:25</div>
+        <div class="when"><time datetime="2026-10-18T07:29:25.760151+00:00" data-local title="2026-10-18T07:29:25.760151+00:00 UTC">2026-10-18 07:29</time><div><a class="small" href="/ui/activity/_d562813e7c/" title="every event about this notification">history</a></div></div>
       </div>
       
       
-      <div class="ev " data-cat="finding" data-notable="1" style="--r:25">
+      <div class="ev " data-cat="finding" data-notable="1" style="--r:30">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>finding</b> · created
@@ -655,11 +757,11 @@ header nav{display:flex;align-items:center;min-width:0}
             <div style="color:var(--text);opacity:.8;margin-top:2px">“3 signals fired; rules: []”</div></div>
           
         </div>
-        <div class="when" data-rel="2026-10-18T07:29:25.749620+00:00" title="2026-10-18T07:29:25.749620+00:00">2026-10-18 07:29:25</div>
+        <div class="when"><time datetime="2026-10-18T07:29:25.749620+00:00" data-local title="2026-10-18T07:29:25.749620+00:00 UTC">2026-10-18 07:29</time><div><a class="small" href="/ui/activity/_d562813e7c/" title="every event about this finding">history</a></div></div>
       </div>
       
       
-      <div class="ev " data-cat="notification" data-notable="1" style="--r:26">
+      <div class="ev " data-cat="notification" data-notable="1" style="--r:30">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>notification</b> · sent
@@ -671,11 +773,11 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-18T07:29:25.730573+00:00" title="2026-10-18T07:29:25.730573+00:00">2026-10-18 07:29:25</div>
+        <div class="when"><time datetime="2026-10-18T07:29:25.730573+00:00" data-local title="2026-10-18T07:29:25.730573+00:00 UTC">2026-10-18 07:29</time><div><a class="small" href="/ui/activity/_cff24ba9c5/" title="every event about this notification">history</a></div></div>
       </div>
       
       
-      <div class="ev " data-cat="finding" data-notable="1" style="--r:27">
+      <div class="ev " data-cat="finding" data-notable="1" style="--r:30">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>finding</b> · created
@@ -687,11 +789,11 @@ header nav{display:flex;align-items:center;min-width:0}
             <div style="color:var(--text);opacity:.8;margin-top:2px">“3 signals fired; rules: []”</div></div>
           
         </div>
-        <div class="when" data-rel="2026-10-18T07:29:25.721526+00:00" title="2026-10-18T07:29:25.721526+00:00">2026-10-18 07:29:25</div>
+        <div class="when"><time datetime="2026-10-18T07:29:25.721526+00:00" data-local title="2026-10-18T07:29:25.721526+00:00 UTC">2026-10-18 07:29</time><div><a class="small" href="/ui/activity/_cff24ba9c5/" title="every event about this finding">history</a></div></div>
       </div>
       
       
-      <div class="ev " data-cat="notification" data-notable="1" style="--r:28">
+      <div class="ev " data-cat="notification" data-notable="1" style="--r:30">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>notification</b> · sent
@@ -703,11 +805,11 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-18T07:29:25.699446+00:00" title="2026-10-18T07:29:25.699446+00:00">2026-10-18 07:29:25</div>
+        <div class="when"><time datetime="2026-10-18T07:29:25.699446+00:00" data-local title="2026-10-18T07:29:25.699446+00:00 UTC">2026-10-18 07:29</time><div><a class="small" href="/ui/activity/_57f9082199/" title="every event about this notification">history</a></div></div>
       </div>
       
       
-      <div class="ev " data-cat="finding" data-notable="1" style="--r:29">
+      <div class="ev " data-cat="finding" data-notable="1" style="--r:30">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>finding</b> · created
@@ -719,7 +821,7 @@ header nav{display:flex;align-items:center;min-width:0}
             <div style="color:var(--text);opacity:.8;margin-top:2px">“4 signals fired; rules: []”</div></div>
           
         </div>
-        <div class="when" data-rel="2026-10-18T07:29:25.688339+00:00" title="2026-10-18T07:29:25.688339+00:00">2026-10-18 07:29:25</div>
+        <div class="when"><time datetime="2026-10-18T07:29:25.688339+00:00" data-local title="2026-10-18T07:29:25.688339+00:00 UTC">2026-10-18 07:29</time><div><a class="small" href="/ui/activity/_57f9082199/" title="every event about this finding">history</a></div></div>
       </div>
       
       
@@ -735,7 +837,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-18T07:29:25.488991+00:00" title="2026-10-18T07:29:25.488991+00:00">2026-10-18 07:29:25</div>
+        <div class="when"><time datetime="2026-10-18T07:29:25.488991+00:00" data-local title="2026-10-18T07:29:25.488991+00:00 UTC">2026-10-18 07:29</time><div><a class="small" href="/ui/activity/_c36e1d1b1e/" title="every event about this scan job">history</a></div></div>
       </div>
       
       
@@ -751,7 +853,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-18T07:29:22.955941+00:00" title="2026-10-18T07:29:22.955941+00:00">2026-10-18 07:29:22</div>
+        <div class="when"><time datetime="2026-10-18T07:29:22.955941+00:00" data-local title="2026-10-18T07:29:22.955941+00:00 UTC">2026-10-18 07:29</time><div><a class="small" href="/ui/activity/_e46932bea5/" title="every event about this brand">history</a></div></div>
       </div>
       
       
@@ -767,7 +869,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-18T07:29:19.593400+00:00" title="2026-10-18T07:29:19.593400+00:00">2026-10-18 07:29:19</div>
+        <div class="when"><time datetime="2026-10-18T07:29:19.593400+00:00" data-local title="2026-10-18T07:29:19.593400+00:00 UTC">2026-10-18 07:29</time><div><a class="small" href="/ui/activity/_ea31da8e10/" title="every event about this scan job">history</a></div></div>
       </div>
       
       
@@ -783,7 +885,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-18T07:29:18.590986+00:00" title="2026-10-18T07:29:18.590986+00:00">2026-10-18 07:29:18</div>
+        <div class="when"><time datetime="2026-10-18T07:29:18.590986+00:00" data-local title="2026-10-18T07:29:18.590986+00:00 UTC">2026-10-18 07:29</time><div><a class="small" href="/ui/activity/_e46932bea5/" title="every event about this brand">history</a></div></div>
       </div>
       
       
@@ -795,7 +897,7 @@ header nav{display:flex;align-items:center;min-width:0}
             <span class="muted small">user bc089017</span></div>
           
         </div>
-        <div class="when" data-rel="2026-10-18T07:29:12.527700+00:00" title="2026-10-18T07:29:12.527700+00:00">2026-10-18 07:29:12</div>
+        <div class="when"><time datetime="2026-10-18T07:29:12.527700+00:00" data-local title="2026-10-18T07:29:12.527700+00:00 UTC">2026-10-18 07:29</time><div><a class="small" href="/ui/activity/_d2793a420a/" title="every event about this user">history</a></div></div>
       </div>
       
       
@@ -811,7 +913,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-18T06:30:01.062059+00:00" title="2026-10-18T06:30:01.062059+00:00">2026-10-18 06:30:01</div>
+        <div class="when"><time datetime="2026-10-18T06:30:01.062059+00:00" data-local title="2026-10-18T06:30:01.062059+00:00 UTC">2026-10-18 06:30</time><div><a class="small" href="/ui/activity/_e46932bea5/" title="every event about this brand">history</a></div></div>
       </div>
       
       
@@ -823,7 +925,7 @@ header nav{display:flex;align-items:center;min-width:0}
             <span class="muted small">user bc089017</span></div>
           
         </div>
-        <div class="when" data-rel="2026-10-18T06:29:59.651413+00:00" title="2026-10-18T06:29:59.651413+00:00">2026-10-18 06:29:59</div>
+        <div class="when"><time datetime="2026-10-18T06:29:59.651413+00:00" data-local title="2026-10-18T06:29:59.651413+00:00 UTC">2026-10-18 06:29</time><div><a class="small" href="/ui/activity/_d2793a420a/" title="every event about this user">history</a></div></div>
       </div>
       
       
@@ -839,7 +941,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-18T06:29:19.948811+00:00" title="2026-10-18T06:29:19.948811+00:00">2026-10-18 06:29:19</div>
+        <div class="when"><time datetime="2026-10-18T06:29:19.948811+00:00" data-local title="2026-10-18T06:29:19.948811+00:00 UTC">2026-10-18 06:29</time><div><a class="small" href="/ui/activity/_29f39195e9/" title="every event about this notification">history</a></div></div>
       </div>
       
       
@@ -855,7 +957,7 @@ header nav{display:flex;align-items:center;min-width:0}
             <div style="color:var(--text);opacity:.8;margin-top:2px">“15 signals fired; rules: [&#39;pixel_clone_login&#39;, &#39;fresh_lookalike_login&#39;, &#39;brand_title_login&#39;, &#39;campaign_linked_login&#39;, &#39;looks_like_brand_verdict&#39;]”</div></div>
           
         </div>
-        <div class="when" data-rel="2026-10-18T06:29:19.940619+00:00" title="2026-10-18T06:29:19.940619+00:00">2026-10-18 06:29:19</div>
+        <div class="when"><time datetime="2026-10-18T06:29:19.940619+00:00" data-local title="2026-10-18T06:29:19.940619+00:00 UTC">2026-10-18 06:29</time><div><a class="small" href="/ui/activity/_29f39195e9/" title="every event about this finding">history</a></div></div>
       </div>
       
       
@@ -871,7 +973,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-18T06:29:19.586387+00:00" title="2026-10-18T06:29:19.586387+00:00">2026-10-18 06:29:19</div>
+        <div class="when"><time datetime="2026-10-18T06:29:19.586387+00:00" data-local title="2026-10-18T06:29:19.586387+00:00 UTC">2026-10-18 06:29</time><div><a class="small" href="/ui/activity/_a95e11a78f/" title="every event about this notification">history</a></div></div>
       </div>
       
       
@@ -887,7 +989,7 @@ header nav{display:flex;align-items:center;min-width:0}
             <div style="color:var(--text);opacity:.8;margin-top:2px">“10 signals fired; rules: []; already confirmed by an analyst — score history appended”</div></div>
           
         </div>
-        <div class="when" data-rel="2026-10-18T06:29:19.572661+00:00" title="2026-10-18T06:29:19.572661+00:00">2026-10-18 06:29:19</div>
+        <div class="when"><time datetime="2026-10-18T06:29:19.572661+00:00" data-local title="2026-10-18T06:29:19.572661+00:00 UTC">2026-10-18 06:29</time><div><a class="small" href="/ui/activity/_a95e11a78f/" title="every event about this finding">history</a></div></div>
       </div>
       
       
@@ -903,7 +1005,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-18T06:29:19.289273+00:00" title="2026-10-18T06:29:19.289273+00:00">2026-10-18 06:29:19</div>
+        <div class="when"><time datetime="2026-10-18T06:29:19.289273+00:00" data-local title="2026-10-18T06:29:19.289273+00:00 UTC">2026-10-18 06:29</time><div><a class="small" href="/ui/activity/_c88f8018b8/" title="every event about this notification">history</a></div></div>
       </div>
       
       
@@ -919,7 +1021,7 @@ header nav{display:flex;align-items:center;min-width:0}
             <div style="color:var(--text);opacity:.8;margin-top:2px">“9 signals fired; rules: []”</div></div>
           
         </div>
-        <div class="when" data-rel="2026-10-18T06:29:19.284167+00:00" title="2026-10-18T06:29:19.284167+00:00">2026-10-18 06:29:19</div>
+        <div class="when"><time datetime="2026-10-18T06:29:19.284167+00:00" data-local title="2026-10-18T06:29:19.284167+00:00 UTC">2026-10-18 06:29</time><div><a class="small" href="/ui/activity/_c88f8018b8/" title="every event about this finding">history</a></div></div>
       </div>
       
       
@@ -935,7 +1037,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-18T06:29:19.269985+00:00" title="2026-10-18T06:29:19.269985+00:00">2026-10-18 06:29:19</div>
+        <div class="when"><time datetime="2026-10-18T06:29:19.269985+00:00" data-local title="2026-10-18T06:29:19.269985+00:00 UTC">2026-10-18 06:29</time><div><a class="small" href="/ui/activity/_85f623e143/" title="every event about this notification">history</a></div></div>
       </div>
       
       
@@ -951,7 +1053,7 @@ header nav{display:flex;align-items:center;min-width:0}
             <div style="color:var(--text);opacity:.8;margin-top:2px">“5 signals fired; rules: []”</div></div>
           
         </div>
-        <div class="when" data-rel="2026-10-18T06:29:19.260104+00:00" title="2026-10-18T06:29:19.260104+00:00">2026-10-18 06:29:19</div>
+        <div class="when"><time datetime="2026-10-18T06:29:19.260104+00:00" data-local title="2026-10-18T06:29:19.260104+00:00 UTC">2026-10-18 06:29</time><div><a class="small" href="/ui/activity/_85f623e143/" title="every event about this finding">history</a></div></div>
       </div>
       
       
@@ -967,7 +1069,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-18T06:29:19.150585+00:00" title="2026-10-18T06:29:19.150585+00:00">2026-10-18 06:29:19</div>
+        <div class="when"><time datetime="2026-10-18T06:29:19.150585+00:00" data-local title="2026-10-18T06:29:19.150585+00:00 UTC">2026-10-18 06:29</time><div><a class="small" href="/ui/activity/_b5be14db59/" title="every event about this scan job">history</a></div></div>
       </div>
       
       
@@ -983,7 +1085,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-18T06:29:17.417077+00:00" title="2026-10-18T06:29:17.417077+00:00">2026-10-18 06:29:17</div>
+        <div class="when"><time datetime="2026-10-18T06:29:17.417077+00:00" data-local title="2026-10-18T06:29:17.417077+00:00 UTC">2026-10-18 06:29</time><div><a class="small" href="/ui/activity/_e46932bea5/" title="every event about this brand">history</a></div></div>
       </div>
       
       
@@ -999,7 +1101,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-18T06:29:16.392939+00:00" title="2026-10-18T06:29:16.392939+00:00">2026-10-18 06:29:16</div>
+        <div class="when"><time datetime="2026-10-18T06:29:16.392939+00:00" data-local title="2026-10-18T06:29:16.392939+00:00 UTC">2026-10-18 06:29</time><div><a class="small" href="/ui/activity/_e46932bea5/" title="every event about this brand">history</a></div></div>
       </div>
       
       
@@ -1015,7 +1117,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-18T06:29:14.689456+00:00" title="2026-10-18T06:29:14.689456+00:00">2026-10-18 06:29:14</div>
+        <div class="when"><time datetime="2026-10-18T06:29:14.689456+00:00" data-local title="2026-10-18T06:29:14.689456+00:00 UTC">2026-10-18 06:29</time><div><a class="small" href="/ui/activity/_e46932bea5/" title="every event about this brand">history</a></div></div>
       </div>
       
       
@@ -1027,7 +1129,7 @@ header nav{display:flex;align-items:center;min-width:0}
             <span class="muted small">user bc089017</span></div>
           
         </div>
-        <div class="when" data-rel="2026-10-18T06:29:10.982860+00:00" title="2026-10-18T06:29:10.982860+00:00">2026-10-18 06:29:10</div>
+        <div class="when"><time datetime="2026-10-18T06:29:10.982860+00:00" data-local title="2026-10-18T06:29:10.982860+00:00 UTC">2026-10-18 06:29</time><div><a class="small" href="/ui/activity/_d2793a420a/" title="every event about this user">history</a></div></div>
       </div>
       
       
@@ -1043,7 +1145,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-18T06:16:04.046867+00:00" title="2026-10-18T06:16:04.046867+00:00">2026-10-18 06:16:04</div>
+        <div class="when"><time datetime="2026-10-18T06:16:04.046867+00:00" data-local title="2026-10-18T06:16:04.046867+00:00 UTC">2026-10-18 06:16</time><div><a class="small" href="/ui/activity/_e46932bea5/" title="every event about this brand">history</a></div></div>
       </div>
       
       
@@ -1055,7 +1157,7 @@ header nav{display:flex;align-items:center;min-width:0}
             <span class="muted small">user bc089017</span></div>
           
         </div>
-        <div class="when" data-rel="2026-10-18T06:16:01.378105+00:00" title="2026-10-18T06:16:01.378105+00:00">2026-10-18 06:16:01</div>
+        <div class="when"><time datetime="2026-10-18T06:16:01.378105+00:00" data-local title="2026-10-18T06:16:01.378105+00:00 UTC">2026-10-18 06:16</time><div><a class="small" href="/ui/activity/_d2793a420a/" title="every event about this user">history</a></div></div>
       </div>
       
       <div class="day" data-day="2026-10-14">2026-10-14</div>
@@ -1071,7 +1173,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:53:07.927416+00:00" title="2026-10-14T09:53:07.927416+00:00">2026-10-14 09:53:07</div>
+        <div class="when"><time datetime="2026-10-14T09:53:07.927416+00:00" data-local title="2026-10-14T09:53:07.927416+00:00 UTC">2026-10-14 09:53</time><div><a class="small" href="/ui/activity/_ba95b11762/" title="every event about this finding">history</a></div></div>
       </div>
       
       
@@ -1087,7 +1189,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:53:07.823347+00:00" title="2026-10-14T09:53:07.823347+00:00">2026-10-14 09:53:07</div>
+        <div class="when"><time datetime="2026-10-14T09:53:07.823347+00:00" data-local title="2026-10-14T09:53:07.823347+00:00 UTC">2026-10-14 09:53</time><div><a class="small" href="/ui/activity/_93fd19fa39/" title="every event about this campaign">history</a></div></div>
       </div>
       
       
@@ -1103,7 +1205,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:53:07.552391+00:00" title="2026-10-14T09:53:07.552391+00:00">2026-10-14 09:53:07</div>
+        <div class="when"><time datetime="2026-10-14T09:53:07.552391+00:00" data-local title="2026-10-14T09:53:07.552391+00:00 UTC">2026-10-14 09:53</time><div><a class="small" href="/ui/activity/_ba95b11762/" title="every event about this finding">history</a></div></div>
       </div>
       
       
@@ -1119,7 +1221,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:53:07.552391+00:00" title="2026-10-14T09:53:07.552391+00:00">2026-10-14 09:53:07</div>
+        <div class="when"><time datetime="2026-10-14T09:53:07.552391+00:00" data-local title="2026-10-14T09:53:07.552391+00:00 UTC">2026-10-14 09:53</time><div><a class="small" href="/ui/activity/_ba95b11762/" title="every event about this finding">history</a></div></div>
       </div>
       
       
@@ -1135,7 +1237,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:53:07.552391+00:00" title="2026-10-14T09:53:07.552391+00:00">2026-10-14 09:53:07</div>
+        <div class="when"><time datetime="2026-10-14T09:53:07.552391+00:00" data-local title="2026-10-14T09:53:07.552391+00:00 UTC">2026-10-14 09:53</time><div><a class="small" href="/ui/activity/_ba95b11762/" title="every event about this finding">history</a></div></div>
       </div>
       
       
@@ -1151,7 +1253,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:53:05.004790+00:00" title="2026-10-14T09:53:05.004790+00:00">2026-10-14 09:53:05</div>
+        <div class="when"><time datetime="2026-10-14T09:53:05.004790+00:00" data-local title="2026-10-14T09:53:05.004790+00:00 UTC">2026-10-14 09:53</time><div><a class="small" href="/ui/activity/_0a347c09f2/" title="every event about this finding">history</a></div></div>
       </div>
       
       
@@ -1167,7 +1269,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:53:04.620572+00:00" title="2026-10-14T09:53:04.620572+00:00">2026-10-14 09:53:04</div>
+        <div class="when"><time datetime="2026-10-14T09:53:04.620572+00:00" data-local title="2026-10-14T09:53:04.620572+00:00 UTC">2026-10-14 09:53</time><div><a class="small" href="/ui/activity/_758ac2998f/" title="every event about this campaign">history</a></div></div>
       </div>
       
       
@@ -1183,7 +1285,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:53:04.450470+00:00" title="2026-10-14T09:53:04.450470+00:00">2026-10-14 09:53:04</div>
+        <div class="when"><time datetime="2026-10-14T09:53:04.450470+00:00" data-local title="2026-10-14T09:53:04.450470+00:00 UTC">2026-10-14 09:53</time><div><a class="small" href="/ui/activity/_0a347c09f2/" title="every event about this finding">history</a></div></div>
       </div>
       
       
@@ -1199,7 +1301,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:53:04.449593+00:00" title="2026-10-14T09:53:04.449593+00:00">2026-10-14 09:53:04</div>
+        <div class="when"><time datetime="2026-10-14T09:53:04.449593+00:00" data-local title="2026-10-14T09:53:04.449593+00:00 UTC">2026-10-14 09:53</time><div><a class="small" href="/ui/activity/_0a347c09f2/" title="every event about this finding">history</a></div></div>
       </div>
       
       
@@ -1215,7 +1317,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:53:04.433887+00:00" title="2026-10-14T09:53:04.433887+00:00">2026-10-14 09:53:04</div>
+        <div class="when"><time datetime="2026-10-14T09:53:04.433887+00:00" data-local title="2026-10-14T09:53:04.433887+00:00 UTC">2026-10-14 09:53</time><div><a class="small" href="/ui/activity/_0a347c09f2/" title="every event about this finding">history</a></div></div>
       </div>
       
       
@@ -1231,7 +1333,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:53:04.424699+00:00" title="2026-10-14T09:53:04.424699+00:00">2026-10-14 09:53:04</div>
+        <div class="when"><time datetime="2026-10-14T09:53:04.424699+00:00" data-local title="2026-10-14T09:53:04.424699+00:00 UTC">2026-10-14 09:53</time><div><a class="small" href="/ui/activity/_10738e8928/" title="every event about this campaign">history</a></div></div>
       </div>
       
       
@@ -1247,7 +1349,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:53:01.543206+00:00" title="2026-10-14T09:53:01.543206+00:00">2026-10-14 09:53:01</div>
+        <div class="when"><time datetime="2026-10-14T09:53:01.543206+00:00" data-local title="2026-10-14T09:53:01.543206+00:00 UTC">2026-10-14 09:53</time><div><a class="small" href="/ui/activity/_7f5a69d382/" title="every event about this finding">history</a></div></div>
       </div>
       
       
@@ -1263,7 +1365,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:53:00.961797+00:00" title="2026-10-14T09:53:00.961797+00:00">2026-10-14 09:53:00</div>
+        <div class="when"><time datetime="2026-10-14T09:53:00.961797+00:00" data-local title="2026-10-14T09:53:00.961797+00:00 UTC">2026-10-14 09:53</time><div><a class="small" href="/ui/activity/_7f5a69d382/" title="every event about this finding">history</a></div></div>
       </div>
       
       
@@ -1279,7 +1381,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:53:00.961797+00:00" title="2026-10-14T09:53:00.961797+00:00">2026-10-14 09:53:00</div>
+        <div class="when"><time datetime="2026-10-14T09:53:00.961797+00:00" data-local title="2026-10-14T09:53:00.961797+00:00 UTC">2026-10-14 09:53</time><div><a class="small" href="/ui/activity/_7f5a69d382/" title="every event about this finding">history</a></div></div>
       </div>
       
       
@@ -1295,7 +1397,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:53:00.961797+00:00" title="2026-10-14T09:53:00.961797+00:00">2026-10-14 09:53:00</div>
+        <div class="when"><time datetime="2026-10-14T09:53:00.961797+00:00" data-local title="2026-10-14T09:53:00.961797+00:00 UTC">2026-10-14 09:53</time><div><a class="small" href="/ui/activity/_7f5a69d382/" title="every event about this finding">history</a></div></div>
       </div>
       
       
@@ -1311,7 +1413,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:52:57.852022+00:00" title="2026-10-14T09:52:57.852022+00:00">2026-10-14 09:52:57</div>
+        <div class="when"><time datetime="2026-10-14T09:52:57.852022+00:00" data-local title="2026-10-14T09:52:57.852022+00:00 UTC">2026-10-14 09:52</time><div><a class="small" href="/ui/activity/_1399873f95/" title="every event about this finding">history</a></div></div>
       </div>
       
       
@@ -1327,7 +1429,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:52:57.572125+00:00" title="2026-10-14T09:52:57.572125+00:00">2026-10-14 09:52:57</div>
+        <div class="when"><time datetime="2026-10-14T09:52:57.572125+00:00" data-local title="2026-10-14T09:52:57.572125+00:00 UTC">2026-10-14 09:52</time><div><a class="small" href="/ui/activity/_0ff39d7c43/" title="every event about this campaign">history</a></div></div>
       </div>
       
       
@@ -1343,7 +1445,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:52:57.341584+00:00" title="2026-10-14T09:52:57.341584+00:00">2026-10-14 09:52:57</div>
+        <div class="when"><time datetime="2026-10-14T09:52:57.341584+00:00" data-local title="2026-10-14T09:52:57.341584+00:00 UTC">2026-10-14 09:52</time><div><a class="small" href="/ui/activity/_1399873f95/" title="every event about this finding">history</a></div></div>
       </div>
       
       
@@ -1359,7 +1461,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:52:57.339023+00:00" title="2026-10-14T09:52:57.339023+00:00">2026-10-14 09:52:57</div>
+        <div class="when"><time datetime="2026-10-14T09:52:57.339023+00:00" data-local title="2026-10-14T09:52:57.339023+00:00 UTC">2026-10-14 09:52</time><div><a class="small" href="/ui/activity/_1399873f95/" title="every event about this finding">history</a></div></div>
       </div>
       
       
@@ -1375,7 +1477,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:52:57.322420+00:00" title="2026-10-14T09:52:57.322420+00:00">2026-10-14 09:52:57</div>
+        <div class="when"><time datetime="2026-10-14T09:52:57.322420+00:00" data-local title="2026-10-14T09:52:57.322420+00:00 UTC">2026-10-14 09:52</time><div><a class="small" href="/ui/activity/_1399873f95/" title="every event about this finding">history</a></div></div>
       </div>
       
       
@@ -1391,7 +1493,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:52:54.285866+00:00" title="2026-10-14T09:52:54.285866+00:00">2026-10-14 09:52:54</div>
+        <div class="when"><time datetime="2026-10-14T09:52:54.285866+00:00" data-local title="2026-10-14T09:52:54.285866+00:00 UTC">2026-10-14 09:52</time><div><a class="small" href="/ui/activity/_cb60832dd1/" title="every event about this finding">history</a></div></div>
       </div>
       
       
@@ -1407,7 +1509,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:52:54.013289+00:00" title="2026-10-14T09:52:54.013289+00:00">2026-10-14 09:52:54</div>
+        <div class="when"><time datetime="2026-10-14T09:52:54.013289+00:00" data-local title="2026-10-14T09:52:54.013289+00:00 UTC">2026-10-14 09:52</time><div><a class="small" href="/ui/activity/_cb3e035ca6/" title="every event about this campaign">history</a></div></div>
       </div>
       
       
@@ -1423,7 +1525,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:52:53.905459+00:00" title="2026-10-14T09:52:53.905459+00:00">2026-10-14 09:52:53</div>
+        <div class="when"><time datetime="2026-10-14T09:52:53.905459+00:00" data-local title="2026-10-14T09:52:53.905459+00:00 UTC">2026-10-14 09:52</time><div><a class="small" href="/ui/activity/_cb60832dd1/" title="every event about this finding">history</a></div></div>
       </div>
       
       
@@ -1439,7 +1541,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:52:53.905459+00:00" title="2026-10-14T09:52:53.905459+00:00">2026-10-14 09:52:53</div>
+        <div class="when"><time datetime="2026-10-14T09:52:53.905459+00:00" data-local title="2026-10-14T09:52:53.905459+00:00 UTC">2026-10-14 09:52</time><div><a class="small" href="/ui/activity/_cb60832dd1/" title="every event about this finding">history</a></div></div>
       </div>
       
       
@@ -1455,7 +1557,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:52:53.905459+00:00" title="2026-10-14T09:52:53.905459+00:00">2026-10-14 09:52:53</div>
+        <div class="when"><time datetime="2026-10-14T09:52:53.905459+00:00" data-local title="2026-10-14T09:52:53.905459+00:00 UTC">2026-10-14 09:52</time><div><a class="small" href="/ui/activity/_cb60832dd1/" title="every event about this finding">history</a></div></div>
       </div>
       
       
@@ -1471,7 +1573,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:52:51.362768+00:00" title="2026-10-14T09:52:51.362768+00:00">2026-10-14 09:52:51</div>
+        <div class="when"><time datetime="2026-10-14T09:52:51.362768+00:00" data-local title="2026-10-14T09:52:51.362768+00:00 UTC">2026-10-14 09:52</time><div><a class="small" href="/ui/activity/_6f34abf147/" title="every event about this finding">history</a></div></div>
       </div>
       
       
@@ -1487,7 +1589,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:52:51.170271+00:00" title="2026-10-14T09:52:51.170271+00:00">2026-10-14 09:52:51</div>
+        <div class="when"><time datetime="2026-10-14T09:52:51.170271+00:00" data-local title="2026-10-14T09:52:51.170271+00:00 UTC">2026-10-14 09:52</time><div><a class="small" href="/ui/activity/_27b316b81f/" title="every event about this campaign">history</a></div></div>
       </div>
       
       
@@ -1503,7 +1605,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:52:50.970703+00:00" title="2026-10-14T09:52:50.970703+00:00">2026-10-14 09:52:50</div>
+        <div class="when"><time datetime="2026-10-14T09:52:50.970703+00:00" data-local title="2026-10-14T09:52:50.970703+00:00 UTC">2026-10-14 09:52</time><div><a class="small" href="/ui/activity/_6f34abf147/" title="every event about this finding">history</a></div></div>
       </div>
       
       
@@ -1519,7 +1621,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:52:50.970703+00:00" title="2026-10-14T09:52:50.970703+00:00">2026-10-14 09:52:50</div>
+        <div class="when"><time datetime="2026-10-14T09:52:50.970703+00:00" data-local title="2026-10-14T09:52:50.970703+00:00 UTC">2026-10-14 09:52</time><div><a class="small" href="/ui/activity/_6f34abf147/" title="every event about this finding">history</a></div></div>
       </div>
       
       
@@ -1535,7 +1637,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:52:50.970703+00:00" title="2026-10-14T09:52:50.970703+00:00">2026-10-14 09:52:50</div>
+        <div class="when"><time datetime="2026-10-14T09:52:50.970703+00:00" data-local title="2026-10-14T09:52:50.970703+00:00 UTC">2026-10-14 09:52</time><div><a class="small" href="/ui/activity/_6f34abf147/" title="every event about this finding">history</a></div></div>
       </div>
       
       
@@ -1551,7 +1653,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:52:48.552756+00:00" title="2026-10-14T09:52:48.552756+00:00">2026-10-14 09:52:48</div>
+        <div class="when"><time datetime="2026-10-14T09:52:48.552756+00:00" data-local title="2026-10-14T09:52:48.552756+00:00 UTC">2026-10-14 09:52</time><div><a class="small" href="/ui/activity/_e9e3fdca66/" title="every event about this finding">history</a></div></div>
       </div>
       
       
@@ -1567,7 +1669,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:52:48.411076+00:00" title="2026-10-14T09:52:48.411076+00:00">2026-10-14 09:52:48</div>
+        <div class="when"><time datetime="2026-10-14T09:52:48.411076+00:00" data-local title="2026-10-14T09:52:48.411076+00:00 UTC">2026-10-14 09:52</time><div><a class="small" href="/ui/activity/_a16d1ffa7b/" title="every event about this campaign">history</a></div></div>
       </div>
       
       
@@ -1583,7 +1685,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:52:48.105464+00:00" title="2026-10-14T09:52:48.105464+00:00">2026-10-14 09:52:48</div>
+        <div class="when"><time datetime="2026-10-14T09:52:48.105464+00:00" data-local title="2026-10-14T09:52:48.105464+00:00 UTC">2026-10-14 09:52</time><div><a class="small" href="/ui/activity/_e9e3fdca66/" title="every event about this finding">history</a></div></div>
       </div>
       
       
@@ -1599,7 +1701,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:52:48.102322+00:00" title="2026-10-14T09:52:48.102322+00:00">2026-10-14 09:52:48</div>
+        <div class="when"><time datetime="2026-10-14T09:52:48.102322+00:00" data-local title="2026-10-14T09:52:48.102322+00:00 UTC">2026-10-14 09:52</time><div><a class="small" href="/ui/activity/_e9e3fdca66/" title="every event about this finding">history</a></div></div>
       </div>
       
       
@@ -1615,7 +1717,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:52:48.084179+00:00" title="2026-10-14T09:52:48.084179+00:00">2026-10-14 09:52:48</div>
+        <div class="when"><time datetime="2026-10-14T09:52:48.084179+00:00" data-local title="2026-10-14T09:52:48.084179+00:00 UTC">2026-10-14 09:52</time><div><a class="small" href="/ui/activity/_e9e3fdca66/" title="every event about this finding">history</a></div></div>
       </div>
       
       
@@ -1631,7 +1733,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:52:45.094433+00:00" title="2026-10-14T09:52:45.094433+00:00">2026-10-14 09:52:45</div>
+        <div class="when"><time datetime="2026-10-14T09:52:45.094433+00:00" data-local title="2026-10-14T09:52:45.094433+00:00 UTC">2026-10-14 09:52</time><div><a class="small" href="/ui/activity/_5372fdd8e1/" title="every event about this finding">history</a></div></div>
       </div>
       
       
@@ -1647,7 +1749,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:52:44.910123+00:00" title="2026-10-14T09:52:44.910123+00:00">2026-10-14 09:52:44</div>
+        <div class="when"><time datetime="2026-10-14T09:52:44.910123+00:00" data-local title="2026-10-14T09:52:44.910123+00:00 UTC">2026-10-14 09:52</time><div><a class="small" href="/ui/activity/_a8daaf8de9/" title="every event about this campaign">history</a></div></div>
       </div>
       
       
@@ -1663,7 +1765,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:52:44.663275+00:00" title="2026-10-14T09:52:44.663275+00:00">2026-10-14 09:52:44</div>
+        <div class="when"><time datetime="2026-10-14T09:52:44.663275+00:00" data-local title="2026-10-14T09:52:44.663275+00:00 UTC">2026-10-14 09:52</time><div><a class="small" href="/ui/activity/_5372fdd8e1/" title="every event about this finding">history</a></div></div>
       </div>
       
       
@@ -1679,7 +1781,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:52:44.663275+00:00" title="2026-10-14T09:52:44.663275+00:00">2026-10-14 09:52:44</div>
+        <div class="when"><time datetime="2026-10-14T09:52:44.663275+00:00" data-local title="2026-10-14T09:52:44.663275+00:00 UTC">2026-10-14 09:52</time><div><a class="small" href="/ui/activity/_5372fdd8e1/" title="every event about this finding">history</a></div></div>
       </div>
       
       
@@ -1695,7 +1797,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:52:44.663275+00:00" title="2026-10-14T09:52:44.663275+00:00">2026-10-14 09:52:44</div>
+        <div class="when"><time datetime="2026-10-14T09:52:44.663275+00:00" data-local title="2026-10-14T09:52:44.663275+00:00 UTC">2026-10-14 09:52</time><div><a class="small" href="/ui/activity/_5372fdd8e1/" title="every event about this finding">history</a></div></div>
       </div>
       
       
@@ -1711,7 +1813,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:52:41.284786+00:00" title="2026-10-14T09:52:41.284786+00:00">2026-10-14 09:52:41</div>
+        <div class="when"><time datetime="2026-10-14T09:52:41.284786+00:00" data-local title="2026-10-14T09:52:41.284786+00:00 UTC">2026-10-14 09:52</time><div><a class="small" href="/ui/activity/_8fcba53b14/" title="every event about this finding">history</a></div></div>
       </div>
       
       
@@ -1727,7 +1829,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:52:40.994734+00:00" title="2026-10-14T09:52:40.994734+00:00">2026-10-14 09:52:40</div>
+        <div class="when"><time datetime="2026-10-14T09:52:40.994734+00:00" data-local title="2026-10-14T09:52:40.994734+00:00 UTC">2026-10-14 09:52</time><div><a class="small" href="/ui/activity/_9172e9b9d3/" title="every event about this campaign">history</a></div></div>
       </div>
       
       
@@ -1743,7 +1845,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:52:40.809968+00:00" title="2026-10-14T09:52:40.809968+00:00">2026-10-14 09:52:40</div>
+        <div class="when"><time datetime="2026-10-14T09:52:40.809968+00:00" data-local title="2026-10-14T09:52:40.809968+00:00 UTC">2026-10-14 09:52</time><div><a class="small" href="/ui/activity/_8fcba53b14/" title="every event about this finding">history</a></div></div>
       </div>
       
       
@@ -1759,7 +1861,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:52:40.799937+00:00" title="2026-10-14T09:52:40.799937+00:00">2026-10-14 09:52:40</div>
+        <div class="when"><time datetime="2026-10-14T09:52:40.799937+00:00" data-local title="2026-10-14T09:52:40.799937+00:00 UTC">2026-10-14 09:52</time><div><a class="small" href="/ui/activity/_8fcba53b14/" title="every event about this finding">history</a></div></div>
       </div>
       
       
@@ -1775,7 +1877,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:52:40.796248+00:00" title="2026-10-14T09:52:40.796248+00:00">2026-10-14 09:52:40</div>
+        <div class="when"><time datetime="2026-10-14T09:52:40.796248+00:00" data-local title="2026-10-14T09:52:40.796248+00:00 UTC">2026-10-14 09:52</time><div><a class="small" href="/ui/activity/_8fcba53b14/" title="every event about this finding">history</a></div></div>
       </div>
       
       
@@ -1791,7 +1893,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:52:37.822814+00:00" title="2026-10-14T09:52:37.822814+00:00">2026-10-14 09:52:37</div>
+        <div class="when"><time datetime="2026-10-14T09:52:37.822814+00:00" data-local title="2026-10-14T09:52:37.822814+00:00 UTC">2026-10-14 09:52</time><div><a class="small" href="/ui/activity/_21dbff7936/" title="every event about this finding">history</a></div></div>
       </div>
       
       
@@ -1807,7 +1909,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:52:37.350084+00:00" title="2026-10-14T09:52:37.350084+00:00">2026-10-14 09:52:37</div>
+        <div class="when"><time datetime="2026-10-14T09:52:37.350084+00:00" data-local title="2026-10-14T09:52:37.350084+00:00 UTC">2026-10-14 09:52</time><div><a class="small" href="/ui/activity/_d014fba333/" title="every event about this campaign">history</a></div></div>
       </div>
       
       
@@ -1823,7 +1925,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:52:37.208291+00:00" title="2026-10-14T09:52:37.208291+00:00">2026-10-14 09:52:37</div>
+        <div class="when"><time datetime="2026-10-14T09:52:37.208291+00:00" data-local title="2026-10-14T09:52:37.208291+00:00 UTC">2026-10-14 09:52</time><div><a class="small" href="/ui/activity/_21dbff7936/" title="every event about this finding">history</a></div></div>
       </div>
       
       
@@ -1839,7 +1941,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:52:37.202065+00:00" title="2026-10-14T09:52:37.202065+00:00">2026-10-14 09:52:37</div>
+        <div class="when"><time datetime="2026-10-14T09:52:37.202065+00:00" data-local title="2026-10-14T09:52:37.202065+00:00 UTC">2026-10-14 09:52</time><div><a class="small" href="/ui/activity/_21dbff7936/" title="every event about this finding">history</a></div></div>
       </div>
       
       
@@ -1855,7 +1957,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:52:37.193950+00:00" title="2026-10-14T09:52:37.193950+00:00">2026-10-14 09:52:37</div>
+        <div class="when"><time datetime="2026-10-14T09:52:37.193950+00:00" data-local title="2026-10-14T09:52:37.193950+00:00 UTC">2026-10-14 09:52</time><div><a class="small" href="/ui/activity/_21dbff7936/" title="every event about this finding">history</a></div></div>
       </div>
       
       
@@ -1871,7 +1973,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:52:26.121898+00:00" title="2026-10-14T09:52:26.121898+00:00">2026-10-14 09:52:26</div>
+        <div class="when"><time datetime="2026-10-14T09:52:26.121898+00:00" data-local title="2026-10-14T09:52:26.121898+00:00 UTC">2026-10-14 09:52</time><div><a class="small" href="/ui/activity/_18e2ee327b/" title="every event about this notification">history</a></div></div>
       </div>
       
       
@@ -1887,7 +1989,7 @@ header nav{display:flex;align-items:center;min-width:0}
             <div style="color:var(--text);opacity:.8;margin-top:2px">“7 signals fired; rules: [&#39;known_phishing_verdict&#39;]; already confirmed by an analyst — score history appended”</div></div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:52:26.114380+00:00" title="2026-10-14T09:52:26.114380+00:00">2026-10-14 09:52:26</div>
+        <div class="when"><time datetime="2026-10-14T09:52:26.114380+00:00" data-local title="2026-10-14T09:52:26.114380+00:00 UTC">2026-10-14 09:52</time><div><a class="small" href="/ui/activity/_18e2ee327b/" title="every event about this finding">history</a></div></div>
       </div>
       
       
@@ -1903,7 +2005,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:52:26.017485+00:00" title="2026-10-14T09:52:26.017485+00:00">2026-10-14 09:52:26</div>
+        <div class="when"><time datetime="2026-10-14T09:52:26.017485+00:00" data-local title="2026-10-14T09:52:26.017485+00:00 UTC">2026-10-14 09:52</time><div><a class="small" href="/ui/activity/_fe1ce76898/" title="every event about this notification">history</a></div></div>
       </div>
       
       
@@ -1919,7 +2021,7 @@ header nav{display:flex;align-items:center;min-width:0}
             <div style="color:var(--text);opacity:.8;margin-top:2px">“14 signals fired; rules: [&#39;pixel_clone_login&#39;, &#39;fresh_lookalike_login&#39;, &#39;brand_title_login&#39;, &#39;looks_like_brand_verdict&#39;]”</div></div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:52:26.017485+00:00" title="2026-10-14T09:52:26.017485+00:00">2026-10-14 09:52:26</div>
+        <div class="when"><time datetime="2026-10-14T09:52:26.017485+00:00" data-local title="2026-10-14T09:52:26.017485+00:00 UTC">2026-10-14 09:52</time><div><a class="small" href="/ui/activity/_fe1ce76898/" title="every event about this finding">history</a></div></div>
       </div>
       
       
@@ -1935,7 +2037,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:52:23.731723+00:00" title="2026-10-14T09:52:23.731723+00:00">2026-10-14 09:52:23</div>
+        <div class="when"><time datetime="2026-10-14T09:52:23.731723+00:00" data-local title="2026-10-14T09:52:23.731723+00:00 UTC">2026-10-14 09:52</time><div><a class="small" href="/ui/activity?object_id=aa855f45-18cf-4272-ac1c-effbe5955f9c" title="every event about this notification">history</a></div></div>
       </div>
       
       
@@ -1951,7 +2053,7 @@ header nav{display:flex;align-items:center;min-width:0}
             <div style="color:var(--text);opacity:.8;margin-top:2px">“9 signals fired; rules: []”</div></div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:52:23.712060+00:00" title="2026-10-14T09:52:23.712060+00:00">2026-10-14 09:52:23</div>
+        <div class="when"><time datetime="2026-10-14T09:52:23.712060+00:00" data-local title="2026-10-14T09:52:23.712060+00:00 UTC">2026-10-14 09:52</time><div><a class="small" href="/ui/activity?object_id=aa855f45-18cf-4272-ac1c-effbe5955f9c" title="every event about this finding">history</a></div></div>
       </div>
       
       
@@ -1967,7 +2069,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:52:23.704925+00:00" title="2026-10-14T09:52:23.704925+00:00">2026-10-14 09:52:23</div>
+        <div class="when"><time datetime="2026-10-14T09:52:23.704925+00:00" data-local title="2026-10-14T09:52:23.704925+00:00 UTC">2026-10-14 09:52</time><div><a class="small" href="/ui/activity?object_id=3ef032cc-e0af-4d14-a4b1-f1bde6e033e9" title="every event about this notification">history</a></div></div>
       </div>
       
       
@@ -1983,7 +2085,7 @@ header nav{display:flex;align-items:center;min-width:0}
             <div style="color:var(--text);opacity:.8;margin-top:2px">“5 signals fired; rules: []; already confirmed by an analyst — score history appended”</div></div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:52:23.694546+00:00" title="2026-10-14T09:52:23.694546+00:00">2026-10-14 09:52:23</div>
+        <div class="when"><time datetime="2026-10-14T09:52:23.694546+00:00" data-local title="2026-10-14T09:52:23.694546+00:00 UTC">2026-10-14 09:52</time><div><a class="small" href="/ui/activity?object_id=3ef032cc-e0af-4d14-a4b1-f1bde6e033e9" title="every event about this finding">history</a></div></div>
       </div>
       
       
@@ -1999,7 +2101,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:52:22.751572+00:00" title="2026-10-14T09:52:22.751572+00:00">2026-10-14 09:52:22</div>
+        <div class="when"><time datetime="2026-10-14T09:52:22.751572+00:00" data-local title="2026-10-14T09:52:22.751572+00:00 UTC">2026-10-14 09:52</time><div><a class="small" href="/ui/activity?object_id=c8a8b3bf-162f-4dd1-a17c-e51123594eb5" title="every event about this scan job">history</a></div></div>
       </div>
       
       
@@ -2015,7 +2117,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:52:10.169836+00:00" title="2026-10-14T09:52:10.169836+00:00">2026-10-14 09:52:10</div>
+        <div class="when"><time datetime="2026-10-14T09:52:10.169836+00:00" data-local title="2026-10-14T09:52:10.169836+00:00 UTC">2026-10-14 09:52</time><div><a class="small" href="/ui/activity/_18e2ee327b/" title="every event about this finding">history</a></div></div>
       </div>
       
       
@@ -2031,7 +2133,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:52:09.521391+00:00" title="2026-10-14T09:52:09.521391+00:00">2026-10-14 09:52:09</div>
+        <div class="when"><time datetime="2026-10-14T09:52:09.521391+00:00" data-local title="2026-10-14T09:52:09.521391+00:00 UTC">2026-10-14 09:52</time><div><a class="small" href="/ui/activity?object_id=892f1586-8229-40cb-bd40-1d37816f98f4" title="every event about this campaign">history</a></div></div>
       </div>
       
       
@@ -2047,7 +2149,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:52:09.385251+00:00" title="2026-10-14T09:52:09.385251+00:00">2026-10-14 09:52:09</div>
+        <div class="when"><time datetime="2026-10-14T09:52:09.385251+00:00" data-local title="2026-10-14T09:52:09.385251+00:00 UTC">2026-10-14 09:52</time><div><a class="small" href="/ui/activity/_18e2ee327b/" title="every event about this finding">history</a></div></div>
       </div>
       
       
@@ -2063,7 +2165,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:52:09.385251+00:00" title="2026-10-14T09:52:09.385251+00:00">2026-10-14 09:52:09</div>
+        <div class="when"><time datetime="2026-10-14T09:52:09.385251+00:00" data-local title="2026-10-14T09:52:09.385251+00:00 UTC">2026-10-14 09:52</time><div><a class="small" href="/ui/activity/_18e2ee327b/" title="every event about this finding">history</a></div></div>
       </div>
       
       
@@ -2079,7 +2181,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:52:09.370650+00:00" title="2026-10-14T09:52:09.370650+00:00">2026-10-14 09:52:09</div>
+        <div class="when"><time datetime="2026-10-14T09:52:09.370650+00:00" data-local title="2026-10-14T09:52:09.370650+00:00 UTC">2026-10-14 09:52</time><div><a class="small" href="/ui/activity/_18e2ee327b/" title="every event about this finding">history</a></div></div>
       </div>
       
       
@@ -2095,7 +2197,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:51:55.361270+00:00" title="2026-10-14T09:51:55.361270+00:00">2026-10-14 09:51:55</div>
+        <div class="when"><time datetime="2026-10-14T09:51:55.361270+00:00" data-local title="2026-10-14T09:51:55.361270+00:00 UTC">2026-10-14 09:51</time><div><a class="small" href="/ui/activity?object_id=f08c0261-6754-4724-baf4-94c5e6354112" title="every event about this finding">history</a></div></div>
       </div>
       
       
@@ -2111,7 +2213,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:51:54.824502+00:00" title="2026-10-14T09:51:54.824502+00:00">2026-10-14 09:51:54</div>
+        <div class="when"><time datetime="2026-10-14T09:51:54.824502+00:00" data-local title="2026-10-14T09:51:54.824502+00:00 UTC">2026-10-14 09:51</time><div><a class="small" href="/ui/activity?object_id=f08c0261-6754-4724-baf4-94c5e6354112" title="every event about this finding">history</a></div></div>
       </div>
       
       
@@ -2127,7 +2229,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:51:54.824502+00:00" title="2026-10-14T09:51:54.824502+00:00">2026-10-14 09:51:54</div>
+        <div class="when"><time datetime="2026-10-14T09:51:54.824502+00:00" data-local title="2026-10-14T09:51:54.824502+00:00 UTC">2026-10-14 09:51</time><div><a class="small" href="/ui/activity?object_id=f08c0261-6754-4724-baf4-94c5e6354112" title="every event about this finding">history</a></div></div>
       </div>
       
       
@@ -2143,7 +2245,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:51:54.824502+00:00" title="2026-10-14T09:51:54.824502+00:00">2026-10-14 09:51:54</div>
+        <div class="when"><time datetime="2026-10-14T09:51:54.824502+00:00" data-local title="2026-10-14T09:51:54.824502+00:00 UTC">2026-10-14 09:51</time><div><a class="small" href="/ui/activity?object_id=f08c0261-6754-4724-baf4-94c5e6354112" title="every event about this finding">history</a></div></div>
       </div>
       
       
@@ -2159,7 +2261,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:51:03.177992+00:00" title="2026-10-14T09:51:03.177992+00:00">2026-10-14 09:51:03</div>
+        <div class="when"><time datetime="2026-10-14T09:51:03.177992+00:00" data-local title="2026-10-14T09:51:03.177992+00:00 UTC">2026-10-14 09:51</time><div><a class="small" href="/ui/activity?object_id=a23df14d-cb1c-4080-85ed-433169dcc100" title="every event about this campaign">history</a></div></div>
       </div>
       
       
@@ -2175,7 +2277,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:50:57.129843+00:00" title="2026-10-14T09:50:57.129843+00:00">2026-10-14 09:50:57</div>
+        <div class="when"><time datetime="2026-10-14T09:50:57.129843+00:00" data-local title="2026-10-14T09:50:57.129843+00:00 UTC">2026-10-14 09:50</time><div><a class="small" href="/ui/activity?object_id=f091cd7c-448b-4aee-a165-217d48127136" title="every event about this finding">history</a></div></div>
       </div>
       
       
@@ -2191,7 +2293,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:50:56.644130+00:00" title="2026-10-14T09:50:56.644130+00:00">2026-10-14 09:50:56</div>
+        <div class="when"><time datetime="2026-10-14T09:50:56.644130+00:00" data-local title="2026-10-14T09:50:56.644130+00:00 UTC">2026-10-14 09:50</time><div><a class="small" href="/ui/activity?object_id=f091cd7c-448b-4aee-a165-217d48127136" title="every event about this finding">history</a></div></div>
       </div>
       
       
@@ -2207,7 +2309,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:50:56.644130+00:00" title="2026-10-14T09:50:56.644130+00:00">2026-10-14 09:50:56</div>
+        <div class="when"><time datetime="2026-10-14T09:50:56.644130+00:00" data-local title="2026-10-14T09:50:56.644130+00:00 UTC">2026-10-14 09:50</time><div><a class="small" href="/ui/activity?object_id=f091cd7c-448b-4aee-a165-217d48127136" title="every event about this finding">history</a></div></div>
       </div>
       
       
@@ -2223,7 +2325,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:50:56.644130+00:00" title="2026-10-14T09:50:56.644130+00:00">2026-10-14 09:50:56</div>
+        <div class="when"><time datetime="2026-10-14T09:50:56.644130+00:00" data-local title="2026-10-14T09:50:56.644130+00:00 UTC">2026-10-14 09:50</time><div><a class="small" href="/ui/activity?object_id=f091cd7c-448b-4aee-a165-217d48127136" title="every event about this finding">history</a></div></div>
       </div>
       
       
@@ -2239,7 +2341,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:50:55.742858+00:00" title="2026-10-14T09:50:55.742858+00:00">2026-10-14 09:50:55</div>
+        <div class="when"><time datetime="2026-10-14T09:50:55.742858+00:00" data-local title="2026-10-14T09:50:55.742858+00:00 UTC">2026-10-14 09:50</time><div><a class="small" href="/ui/activity?object_id=a23df14d-cb1c-4080-85ed-433169dcc100" title="every event about this campaign">history</a></div></div>
       </div>
       
       
@@ -2255,7 +2357,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:50:53.433268+00:00" title="2026-10-14T09:50:53.433268+00:00">2026-10-14 09:50:53</div>
+        <div class="when"><time datetime="2026-10-14T09:50:53.433268+00:00" data-local title="2026-10-14T09:50:53.433268+00:00 UTC">2026-10-14 09:50</time><div><a class="small" href="/ui/activity?object_id=873e1acc-f60d-495a-9bd3-ac614fdb9cb4" title="every event about this finding">history</a></div></div>
       </div>
       
       
@@ -2271,7 +2373,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:50:53.178982+00:00" title="2026-10-14T09:50:53.178982+00:00">2026-10-14 09:50:53</div>
+        <div class="when"><time datetime="2026-10-14T09:50:53.178982+00:00" data-local title="2026-10-14T09:50:53.178982+00:00 UTC">2026-10-14 09:50</time><div><a class="small" href="/ui/activity?object_id=424045a3-a06b-4109-b981-795bec20e88f" title="every event about this campaign">history</a></div></div>
       </div>
       
       
@@ -2287,7 +2389,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:50:53.064666+00:00" title="2026-10-14T09:50:53.064666+00:00">2026-10-14 09:50:53</div>
+        <div class="when"><time datetime="2026-10-14T09:50:53.064666+00:00" data-local title="2026-10-14T09:50:53.064666+00:00 UTC">2026-10-14 09:50</time><div><a class="small" href="/ui/activity?object_id=873e1acc-f60d-495a-9bd3-ac614fdb9cb4" title="every event about this finding">history</a></div></div>
       </div>
       
       
@@ -2303,7 +2405,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:50:53.062667+00:00" title="2026-10-14T09:50:53.062667+00:00">2026-10-14 09:50:53</div>
+        <div class="when"><time datetime="2026-10-14T09:50:53.062667+00:00" data-local title="2026-10-14T09:50:53.062667+00:00 UTC">2026-10-14 09:50</time><div><a class="small" href="/ui/activity?object_id=873e1acc-f60d-495a-9bd3-ac614fdb9cb4" title="every event about this finding">history</a></div></div>
       </div>
       
       
@@ -2319,7 +2421,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:50:53.058653+00:00" title="2026-10-14T09:50:53.058653+00:00">2026-10-14 09:50:53</div>
+        <div class="when"><time datetime="2026-10-14T09:50:53.058653+00:00" data-local title="2026-10-14T09:50:53.058653+00:00 UTC">2026-10-14 09:50</time><div><a class="small" href="/ui/activity?object_id=873e1acc-f60d-495a-9bd3-ac614fdb9cb4" title="every event about this finding">history</a></div></div>
       </div>
       
       
@@ -2335,7 +2437,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:50:51.905706+00:00" title="2026-10-14T09:50:51.905706+00:00">2026-10-14 09:50:51</div>
+        <div class="when"><time datetime="2026-10-14T09:50:51.905706+00:00" data-local title="2026-10-14T09:50:51.905706+00:00 UTC">2026-10-14 09:50</time><div><a class="small" href="/ui/activity?object_id=a23df14d-cb1c-4080-85ed-433169dcc100" title="every event about this campaign">history</a></div></div>
       </div>
       
       
@@ -2351,7 +2453,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:50:49.943676+00:00" title="2026-10-14T09:50:49.943676+00:00">2026-10-14 09:50:49</div>
+        <div class="when"><time datetime="2026-10-14T09:50:49.943676+00:00" data-local title="2026-10-14T09:50:49.943676+00:00 UTC">2026-10-14 09:50</time><div><a class="small" href="/ui/activity?object_id=ffe7670f-a966-4921-b136-231284e94c4a" title="every event about this finding">history</a></div></div>
       </div>
       
       
@@ -2367,7 +2469,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:50:49.473946+00:00" title="2026-10-14T09:50:49.473946+00:00">2026-10-14 09:50:49</div>
+        <div class="when"><time datetime="2026-10-14T09:50:49.473946+00:00" data-local title="2026-10-14T09:50:49.473946+00:00 UTC">2026-10-14 09:50</time><div><a class="small" href="/ui/activity?object_id=ffe7670f-a966-4921-b136-231284e94c4a" title="every event about this finding">history</a></div></div>
       </div>
       
       
@@ -2383,7 +2485,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:50:49.473946+00:00" title="2026-10-14T09:50:49.473946+00:00">2026-10-14 09:50:49</div>
+        <div class="when"><time datetime="2026-10-14T09:50:49.473946+00:00" data-local title="2026-10-14T09:50:49.473946+00:00 UTC">2026-10-14 09:50</time><div><a class="small" href="/ui/activity?object_id=ffe7670f-a966-4921-b136-231284e94c4a" title="every event about this finding">history</a></div></div>
       </div>
       
       
@@ -2399,7 +2501,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:50:49.465649+00:00" title="2026-10-14T09:50:49.465649+00:00">2026-10-14 09:50:49</div>
+        <div class="when"><time datetime="2026-10-14T09:50:49.465649+00:00" data-local title="2026-10-14T09:50:49.465649+00:00 UTC">2026-10-14 09:50</time><div><a class="small" href="/ui/activity?object_id=ffe7670f-a966-4921-b136-231284e94c4a" title="every event about this finding">history</a></div></div>
       </div>
       
       
@@ -2411,7 +2513,7 @@ header nav{display:flex;align-items:center;min-width:0}
             <span class="muted small">user bc089017</span></div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:50:47.849197+00:00" title="2026-10-14T09:50:47.849197+00:00">2026-10-14 09:50:47</div>
+        <div class="when"><time datetime="2026-10-14T09:50:47.849197+00:00" data-local title="2026-10-14T09:50:47.849197+00:00 UTC">2026-10-14 09:50</time><div><a class="small" href="/ui/activity/_d2793a420a/" title="every event about this user">history</a></div></div>
       </div>
       
       
@@ -2427,7 +2529,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:50:46.020009+00:00" title="2026-10-14T09:50:46.020009+00:00">2026-10-14 09:50:46</div>
+        <div class="when"><time datetime="2026-10-14T09:50:46.020009+00:00" data-local title="2026-10-14T09:50:46.020009+00:00 UTC">2026-10-14 09:50</time><div><a class="small" href="/ui/activity?object_id=2abe1b4c-5c19-475a-9809-bcfa3ca3146b" title="every event about this finding">history</a></div></div>
       </div>
       
       
@@ -2443,7 +2545,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:50:45.601285+00:00" title="2026-10-14T09:50:45.601285+00:00">2026-10-14 09:50:45</div>
+        <div class="when"><time datetime="2026-10-14T09:50:45.601285+00:00" data-local title="2026-10-14T09:50:45.601285+00:00 UTC">2026-10-14 09:50</time><div><a class="small" href="/ui/activity?object_id=2abe1b4c-5c19-475a-9809-bcfa3ca3146b" title="every event about this finding">history</a></div></div>
       </div>
       
       
@@ -2459,7 +2561,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:50:45.598783+00:00" title="2026-10-14T09:50:45.598783+00:00">2026-10-14 09:50:45</div>
+        <div class="when"><time datetime="2026-10-14T09:50:45.598783+00:00" data-local title="2026-10-14T09:50:45.598783+00:00 UTC">2026-10-14 09:50</time><div><a class="small" href="/ui/activity?object_id=2abe1b4c-5c19-475a-9809-bcfa3ca3146b" title="every event about this finding">history</a></div></div>
       </div>
       
       
@@ -2475,7 +2577,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:50:45.584646+00:00" title="2026-10-14T09:50:45.584646+00:00">2026-10-14 09:50:45</div>
+        <div class="when"><time datetime="2026-10-14T09:50:45.584646+00:00" data-local title="2026-10-14T09:50:45.584646+00:00 UTC">2026-10-14 09:50</time><div><a class="small" href="/ui/activity?object_id=2abe1b4c-5c19-475a-9809-bcfa3ca3146b" title="every event about this finding">history</a></div></div>
       </div>
       
       
@@ -2491,7 +2593,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:50:41.815128+00:00" title="2026-10-14T09:50:41.815128+00:00">2026-10-14 09:50:41</div>
+        <div class="when"><time datetime="2026-10-14T09:50:41.815128+00:00" data-local title="2026-10-14T09:50:41.815128+00:00 UTC">2026-10-14 09:50</time><div><a class="small" href="/ui/activity?object_id=754f17b6-3a8f-42d4-be90-10719b12b052" title="every event about this finding">history</a></div></div>
       </div>
       
       
@@ -2507,7 +2609,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:50:41.449942+00:00" title="2026-10-14T09:50:41.449942+00:00">2026-10-14 09:50:41</div>
+        <div class="when"><time datetime="2026-10-14T09:50:41.449942+00:00" data-local title="2026-10-14T09:50:41.449942+00:00 UTC">2026-10-14 09:50</time><div><a class="small" href="/ui/activity?object_id=60e93342-0bcb-442d-bc7b-9fc5c5e8ab1b" title="every event about this campaign">history</a></div></div>
       </div>
       
       
@@ -2523,7 +2625,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:50:40.888762+00:00" title="2026-10-14T09:50:40.888762+00:00">2026-10-14 09:50:40</div>
+        <div class="when"><time datetime="2026-10-14T09:50:40.888762+00:00" data-local title="2026-10-14T09:50:40.888762+00:00 UTC">2026-10-14 09:50</time><div><a class="small" href="/ui/activity?object_id=754f17b6-3a8f-42d4-be90-10719b12b052" title="every event about this finding">history</a></div></div>
       </div>
       
       
@@ -2539,7 +2641,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:50:40.885357+00:00" title="2026-10-14T09:50:40.885357+00:00">2026-10-14 09:50:40</div>
+        <div class="when"><time datetime="2026-10-14T09:50:40.885357+00:00" data-local title="2026-10-14T09:50:40.885357+00:00 UTC">2026-10-14 09:50</time><div><a class="small" href="/ui/activity?object_id=754f17b6-3a8f-42d4-be90-10719b12b052" title="every event about this finding">history</a></div></div>
       </div>
       
       
@@ -2555,7 +2657,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:50:40.869451+00:00" title="2026-10-14T09:50:40.869451+00:00">2026-10-14 09:50:40</div>
+        <div class="when"><time datetime="2026-10-14T09:50:40.869451+00:00" data-local title="2026-10-14T09:50:40.869451+00:00 UTC">2026-10-14 09:50</time><div><a class="small" href="/ui/activity?object_id=754f17b6-3a8f-42d4-be90-10719b12b052" title="every event about this finding">history</a></div></div>
       </div>
       
       
@@ -2571,7 +2673,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:50:26.769644+00:00" title="2026-10-14T09:50:26.769644+00:00">2026-10-14 09:50:26</div>
+        <div class="when"><time datetime="2026-10-14T09:50:26.769644+00:00" data-local title="2026-10-14T09:50:26.769644+00:00 UTC">2026-10-14 09:50</time><div><a class="small" href="/ui/activity?object_id=393fd129-3312-45a5-aa49-769f1043e156" title="every event about this finding">history</a></div></div>
       </div>
       
       
@@ -2587,7 +2689,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:50:26.455370+00:00" title="2026-10-14T09:50:26.455370+00:00">2026-10-14 09:50:26</div>
+        <div class="when"><time datetime="2026-10-14T09:50:26.455370+00:00" data-local title="2026-10-14T09:50:26.455370+00:00 UTC">2026-10-14 09:50</time><div><a class="small" href="/ui/activity/_9172e9b9d3/" title="every event about this campaign">history</a></div></div>
       </div>
       
       
@@ -2603,7 +2705,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:50:26.286139+00:00" title="2026-10-14T09:50:26.286139+00:00">2026-10-14 09:50:26</div>
+        <div class="when"><time datetime="2026-10-14T09:50:26.286139+00:00" data-local title="2026-10-14T09:50:26.286139+00:00 UTC">2026-10-14 09:50</time><div><a class="small" href="/ui/activity?object_id=393fd129-3312-45a5-aa49-769f1043e156" title="every event about this finding">history</a></div></div>
       </div>
       
       
@@ -2619,7 +2721,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:50:26.286139+00:00" title="2026-10-14T09:50:26.286139+00:00">2026-10-14 09:50:26</div>
+        <div class="when"><time datetime="2026-10-14T09:50:26.286139+00:00" data-local title="2026-10-14T09:50:26.286139+00:00 UTC">2026-10-14 09:50</time><div><a class="small" href="/ui/activity?object_id=393fd129-3312-45a5-aa49-769f1043e156" title="every event about this finding">history</a></div></div>
       </div>
       
       
@@ -2635,7 +2737,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:50:26.286139+00:00" title="2026-10-14T09:50:26.286139+00:00">2026-10-14 09:50:26</div>
+        <div class="when"><time datetime="2026-10-14T09:50:26.286139+00:00" data-local title="2026-10-14T09:50:26.286139+00:00 UTC">2026-10-14 09:50</time><div><a class="small" href="/ui/activity?object_id=393fd129-3312-45a5-aa49-769f1043e156" title="every event about this finding">history</a></div></div>
       </div>
       
       
@@ -2651,7 +2753,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:50:23.650637+00:00" title="2026-10-14T09:50:23.650637+00:00">2026-10-14 09:50:23</div>
+        <div class="when"><time datetime="2026-10-14T09:50:23.650637+00:00" data-local title="2026-10-14T09:50:23.650637+00:00 UTC">2026-10-14 09:50</time><div><a class="small" href="/ui/activity?object_id=e8f52988-e497-493a-99c5-545b054ae118" title="every event about this finding">history</a></div></div>
       </div>
       
       
@@ -2667,7 +2769,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:50:23.411643+00:00" title="2026-10-14T09:50:23.411643+00:00">2026-10-14 09:50:23</div>
+        <div class="when"><time datetime="2026-10-14T09:50:23.411643+00:00" data-local title="2026-10-14T09:50:23.411643+00:00 UTC">2026-10-14 09:50</time><div><a class="small" href="/ui/activity?object_id=d841997a-9584-4c6d-b47e-3b5659a3bdd2" title="every event about this campaign">history</a></div></div>
       </div>
       
       
@@ -2683,7 +2785,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:50:23.207945+00:00" title="2026-10-14T09:50:23.207945+00:00">2026-10-14 09:50:23</div>
+        <div class="when"><time datetime="2026-10-14T09:50:23.207945+00:00" data-local title="2026-10-14T09:50:23.207945+00:00 UTC">2026-10-14 09:50</time><div><a class="small" href="/ui/activity?object_id=e8f52988-e497-493a-99c5-545b054ae118" title="every event about this finding">history</a></div></div>
       </div>
       
       
@@ -2699,7 +2801,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:50:23.205936+00:00" title="2026-10-14T09:50:23.205936+00:00">2026-10-14 09:50:23</div>
+        <div class="when"><time datetime="2026-10-14T09:50:23.205936+00:00" data-local title="2026-10-14T09:50:23.205936+00:00 UTC">2026-10-14 09:50</time><div><a class="small" href="/ui/activity?object_id=e8f52988-e497-493a-99c5-545b054ae118" title="every event about this finding">history</a></div></div>
       </div>
       
       
@@ -2715,7 +2817,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:50:23.199889+00:00" title="2026-10-14T09:50:23.199889+00:00">2026-10-14 09:50:23</div>
+        <div class="when"><time datetime="2026-10-14T09:50:23.199889+00:00" data-local title="2026-10-14T09:50:23.199889+00:00 UTC">2026-10-14 09:50</time><div><a class="small" href="/ui/activity?object_id=e8f52988-e497-493a-99c5-545b054ae118" title="every event about this finding">history</a></div></div>
       </div>
       
       
@@ -2731,7 +2833,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:50:19.756073+00:00" title="2026-10-14T09:50:19.756073+00:00">2026-10-14 09:50:19</div>
+        <div class="when"><time datetime="2026-10-14T09:50:19.756073+00:00" data-local title="2026-10-14T09:50:19.756073+00:00 UTC">2026-10-14 09:50</time><div><a class="small" href="/ui/activity?object_id=c54ccea1-1a4d-4c1e-aabf-876d9c8e5cb4" title="every event about this finding">history</a></div></div>
       </div>
       
       
@@ -2747,7 +2849,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:50:19.418105+00:00" title="2026-10-14T09:50:19.418105+00:00">2026-10-14 09:50:19</div>
+        <div class="when"><time datetime="2026-10-14T09:50:19.418105+00:00" data-local title="2026-10-14T09:50:19.418105+00:00 UTC">2026-10-14 09:50</time><div><a class="small" href="/ui/activity?object_id=2b943239-66aa-4627-9816-088b16b4c6e3" title="every event about this campaign">history</a></div></div>
       </div>
       
       
@@ -2763,7 +2865,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:50:19.331035+00:00" title="2026-10-14T09:50:19.331035+00:00">2026-10-14 09:50:19</div>
+        <div class="when"><time datetime="2026-10-14T09:50:19.331035+00:00" data-local title="2026-10-14T09:50:19.331035+00:00 UTC">2026-10-14 09:50</time><div><a class="small" href="/ui/activity?object_id=c54ccea1-1a4d-4c1e-aabf-876d9c8e5cb4" title="every event about this finding">history</a></div></div>
       </div>
       
       
@@ -2779,7 +2881,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:50:19.331035+00:00" title="2026-10-14T09:50:19.331035+00:00">2026-10-14 09:50:19</div>
+        <div class="when"><time datetime="2026-10-14T09:50:19.331035+00:00" data-local title="2026-10-14T09:50:19.331035+00:00 UTC">2026-10-14 09:50</time><div><a class="small" href="/ui/activity?object_id=c54ccea1-1a4d-4c1e-aabf-876d9c8e5cb4" title="every event about this finding">history</a></div></div>
       </div>
       
       
@@ -2795,7 +2897,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:50:19.330320+00:00" title="2026-10-14T09:50:19.330320+00:00">2026-10-14 09:50:19</div>
+        <div class="when"><time datetime="2026-10-14T09:50:19.330320+00:00" data-local title="2026-10-14T09:50:19.330320+00:00 UTC">2026-10-14 09:50</time><div><a class="small" href="/ui/activity?object_id=c54ccea1-1a4d-4c1e-aabf-876d9c8e5cb4" title="every event about this finding">history</a></div></div>
       </div>
       
       
@@ -2811,7 +2913,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:50:10.942010+00:00" title="2026-10-14T09:50:10.942010+00:00">2026-10-14 09:50:10</div>
+        <div class="when"><time datetime="2026-10-14T09:50:10.942010+00:00" data-local title="2026-10-14T09:50:10.942010+00:00 UTC">2026-10-14 09:50</time><div><a class="small" href="/ui/activity/_a95e11a78f/" title="every event about this finding">history</a></div></div>
       </div>
       
       
@@ -2827,7 +2929,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:50:10.708513+00:00" title="2026-10-14T09:50:10.708513+00:00">2026-10-14 09:50:10</div>
+        <div class="when"><time datetime="2026-10-14T09:50:10.708513+00:00" data-local title="2026-10-14T09:50:10.708513+00:00 UTC">2026-10-14 09:50</time><div><a class="small" href="/ui/activity?object_id=a86f2fe1-0ed5-4975-bdcd-ec2f03b5bc69" title="every event about this campaign">history</a></div></div>
       </div>
       
       
@@ -2843,7 +2945,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:50:10.506173+00:00" title="2026-10-14T09:50:10.506173+00:00">2026-10-14 09:50:10</div>
+        <div class="when"><time datetime="2026-10-14T09:50:10.506173+00:00" data-local title="2026-10-14T09:50:10.506173+00:00 UTC">2026-10-14 09:50</time><div><a class="small" href="/ui/activity/_a95e11a78f/" title="every event about this finding">history</a></div></div>
       </div>
       
       
@@ -2859,7 +2961,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:50:10.506173+00:00" title="2026-10-14T09:50:10.506173+00:00">2026-10-14 09:50:10</div>
+        <div class="when"><time datetime="2026-10-14T09:50:10.506173+00:00" data-local title="2026-10-14T09:50:10.506173+00:00 UTC">2026-10-14 09:50</time><div><a class="small" href="/ui/activity/_a95e11a78f/" title="every event about this finding">history</a></div></div>
       </div>
       
       
@@ -2875,7 +2977,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:50:10.506173+00:00" title="2026-10-14T09:50:10.506173+00:00">2026-10-14 09:50:10</div>
+        <div class="when"><time datetime="2026-10-14T09:50:10.506173+00:00" data-local title="2026-10-14T09:50:10.506173+00:00 UTC">2026-10-14 09:50</time><div><a class="small" href="/ui/activity/_a95e11a78f/" title="every event about this finding">history</a></div></div>
       </div>
       
       
@@ -2891,7 +2993,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:50:07.072160+00:00" title="2026-10-14T09:50:07.072160+00:00">2026-10-14 09:50:07</div>
+        <div class="when"><time datetime="2026-10-14T09:50:07.072160+00:00" data-local title="2026-10-14T09:50:07.072160+00:00 UTC">2026-10-14 09:50</time><div><a class="small" href="/ui/activity?object_id=3ef032cc-e0af-4d14-a4b1-f1bde6e033e9" title="every event about this finding">history</a></div></div>
       </div>
       
       
@@ -2907,7 +3009,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:50:06.783654+00:00" title="2026-10-14T09:50:06.783654+00:00">2026-10-14 09:50:06</div>
+        <div class="when"><time datetime="2026-10-14T09:50:06.783654+00:00" data-local title="2026-10-14T09:50:06.783654+00:00 UTC">2026-10-14 09:50</time><div><a class="small" href="/ui/activity?object_id=906abc19-5643-40c3-a257-30430dd4db0a" title="every event about this campaign">history</a></div></div>
       </div>
       
       
@@ -2923,7 +3025,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:50:06.718336+00:00" title="2026-10-14T09:50:06.718336+00:00">2026-10-14 09:50:06</div>
+        <div class="when"><time datetime="2026-10-14T09:50:06.718336+00:00" data-local title="2026-10-14T09:50:06.718336+00:00 UTC">2026-10-14 09:50</time><div><a class="small" href="/ui/activity?object_id=3ef032cc-e0af-4d14-a4b1-f1bde6e033e9" title="every event about this finding">history</a></div></div>
       </div>
       
       
@@ -2939,7 +3041,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:50:06.718336+00:00" title="2026-10-14T09:50:06.718336+00:00">2026-10-14 09:50:06</div>
+        <div class="when"><time datetime="2026-10-14T09:50:06.718336+00:00" data-local title="2026-10-14T09:50:06.718336+00:00 UTC">2026-10-14 09:50</time><div><a class="small" href="/ui/activity?object_id=3ef032cc-e0af-4d14-a4b1-f1bde6e033e9" title="every event about this finding">history</a></div></div>
       </div>
       
       
@@ -2955,7 +3057,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:50:06.706146+00:00" title="2026-10-14T09:50:06.706146+00:00">2026-10-14 09:50:06</div>
+        <div class="when"><time datetime="2026-10-14T09:50:06.706146+00:00" data-local title="2026-10-14T09:50:06.706146+00:00 UTC">2026-10-14 09:50</time><div><a class="small" href="/ui/activity?object_id=3ef032cc-e0af-4d14-a4b1-f1bde6e033e9" title="every event about this finding">history</a></div></div>
       </div>
       
       
@@ -2971,7 +3073,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:50:03.679965+00:00" title="2026-10-14T09:50:03.679965+00:00">2026-10-14 09:50:03</div>
+        <div class="when"><time datetime="2026-10-14T09:50:03.679965+00:00" data-local title="2026-10-14T09:50:03.679965+00:00 UTC">2026-10-14 09:50</time><div><a class="small" href="/ui/activity?object_id=b50eb843-fe14-4db8-92ed-7cb9a6a6ddb6" title="every event about this finding">history</a></div></div>
       </div>
       
       
@@ -2987,7 +3089,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:50:03.253967+00:00" title="2026-10-14T09:50:03.253967+00:00">2026-10-14 09:50:03</div>
+        <div class="when"><time datetime="2026-10-14T09:50:03.253967+00:00" data-local title="2026-10-14T09:50:03.253967+00:00 UTC">2026-10-14 09:50</time><div><a class="small" href="/ui/activity?object_id=7c222219-60a9-4aa6-9e12-28b5bc104fad" title="every event about this campaign">history</a></div></div>
       </div>
       
       
@@ -3003,7 +3105,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:50:03.065576+00:00" title="2026-10-14T09:50:03.065576+00:00">2026-10-14 09:50:03</div>
+        <div class="when"><time datetime="2026-10-14T09:50:03.065576+00:00" data-local title="2026-10-14T09:50:03.065576+00:00 UTC">2026-10-14 09:50</time><div><a class="small" href="/ui/activity?object_id=b50eb843-fe14-4db8-92ed-7cb9a6a6ddb6" title="every event about this finding">history</a></div></div>
       </div>
       
       
@@ -3019,7 +3121,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:50:03.065576+00:00" title="2026-10-14T09:50:03.065576+00:00">2026-10-14 09:50:03</div>
+        <div class="when"><time datetime="2026-10-14T09:50:03.065576+00:00" data-local title="2026-10-14T09:50:03.065576+00:00 UTC">2026-10-14 09:50</time><div><a class="small" href="/ui/activity?object_id=b50eb843-fe14-4db8-92ed-7cb9a6a6ddb6" title="every event about this finding">history</a></div></div>
       </div>
       
       
@@ -3035,7 +3137,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:50:03.054067+00:00" title="2026-10-14T09:50:03.054067+00:00">2026-10-14 09:50:03</div>
+        <div class="when"><time datetime="2026-10-14T09:50:03.054067+00:00" data-local title="2026-10-14T09:50:03.054067+00:00 UTC">2026-10-14 09:50</time><div><a class="small" href="/ui/activity?object_id=b50eb843-fe14-4db8-92ed-7cb9a6a6ddb6" title="every event about this finding">history</a></div></div>
       </div>
       
       
@@ -3051,7 +3153,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:49:58.749431+00:00" title="2026-10-14T09:49:58.749431+00:00">2026-10-14 09:49:58</div>
+        <div class="when"><time datetime="2026-10-14T09:49:58.749431+00:00" data-local title="2026-10-14T09:49:58.749431+00:00 UTC">2026-10-14 09:49</time><div><a class="small" href="/ui/activity?object_id=1bcfbce5-b1c6-44d8-b534-f678beefe1d5" title="every event about this finding">history</a></div></div>
       </div>
       
       
@@ -3067,7 +3169,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:49:58.445951+00:00" title="2026-10-14T09:49:58.445951+00:00">2026-10-14 09:49:58</div>
+        <div class="when"><time datetime="2026-10-14T09:49:58.445951+00:00" data-local title="2026-10-14T09:49:58.445951+00:00 UTC">2026-10-14 09:49</time><div><a class="small" href="/ui/activity?object_id=b56e4db3-4913-4fef-96a4-43dba7c153d2" title="every event about this campaign">history</a></div></div>
       </div>
       
       
@@ -3083,7 +3185,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:49:58.048437+00:00" title="2026-10-14T09:49:58.048437+00:00">2026-10-14 09:49:58</div>
+        <div class="when"><time datetime="2026-10-14T09:49:58.048437+00:00" data-local title="2026-10-14T09:49:58.048437+00:00 UTC">2026-10-14 09:49</time><div><a class="small" href="/ui/activity?object_id=1bcfbce5-b1c6-44d8-b534-f678beefe1d5" title="every event about this finding">history</a></div></div>
       </div>
       
       
@@ -3099,7 +3201,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:49:58.048437+00:00" title="2026-10-14T09:49:58.048437+00:00">2026-10-14 09:49:58</div>
+        <div class="when"><time datetime="2026-10-14T09:49:58.048437+00:00" data-local title="2026-10-14T09:49:58.048437+00:00 UTC">2026-10-14 09:49</time><div><a class="small" href="/ui/activity?object_id=1bcfbce5-b1c6-44d8-b534-f678beefe1d5" title="every event about this finding">history</a></div></div>
       </div>
       
       
@@ -3115,7 +3217,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:49:58.043702+00:00" title="2026-10-14T09:49:58.043702+00:00">2026-10-14 09:49:58</div>
+        <div class="when"><time datetime="2026-10-14T09:49:58.043702+00:00" data-local title="2026-10-14T09:49:58.043702+00:00 UTC">2026-10-14 09:49</time><div><a class="small" href="/ui/activity?object_id=1bcfbce5-b1c6-44d8-b534-f678beefe1d5" title="every event about this finding">history</a></div></div>
       </div>
       
       
@@ -3131,7 +3233,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:49:54.177118+00:00" title="2026-10-14T09:49:54.177118+00:00">2026-10-14 09:49:54</div>
+        <div class="when"><time datetime="2026-10-14T09:49:54.177118+00:00" data-local title="2026-10-14T09:49:54.177118+00:00 UTC">2026-10-14 09:49</time><div><a class="small" href="/ui/activity?object_id=d3cddf21-a088-4189-9f17-2cf8dba61ab0" title="every event about this finding">history</a></div></div>
       </div>
       
       
@@ -3147,7 +3249,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:49:53.806632+00:00" title="2026-10-14T09:49:53.806632+00:00">2026-10-14 09:49:53</div>
+        <div class="when"><time datetime="2026-10-14T09:49:53.806632+00:00" data-local title="2026-10-14T09:49:53.806632+00:00 UTC">2026-10-14 09:49</time><div><a class="small" href="/ui/activity/_93fd19fa39/" title="every event about this campaign">history</a></div></div>
       </div>
       
       
@@ -3163,7 +3265,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:49:53.508016+00:00" title="2026-10-14T09:49:53.508016+00:00">2026-10-14 09:49:53</div>
+        <div class="when"><time datetime="2026-10-14T09:49:53.508016+00:00" data-local title="2026-10-14T09:49:53.508016+00:00 UTC">2026-10-14 09:49</time><div><a class="small" href="/ui/activity?object_id=d3cddf21-a088-4189-9f17-2cf8dba61ab0" title="every event about this finding">history</a></div></div>
       </div>
       
       
@@ -3179,7 +3281,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:49:53.508016+00:00" title="2026-10-14T09:49:53.508016+00:00">2026-10-14 09:49:53</div>
+        <div class="when"><time datetime="2026-10-14T09:49:53.508016+00:00" data-local title="2026-10-14T09:49:53.508016+00:00 UTC">2026-10-14 09:49</time><div><a class="small" href="/ui/activity?object_id=d3cddf21-a088-4189-9f17-2cf8dba61ab0" title="every event about this finding">history</a></div></div>
       </div>
       
       
@@ -3195,7 +3297,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:49:53.508016+00:00" title="2026-10-14T09:49:53.508016+00:00">2026-10-14 09:49:53</div>
+        <div class="when"><time datetime="2026-10-14T09:49:53.508016+00:00" data-local title="2026-10-14T09:49:53.508016+00:00 UTC">2026-10-14 09:49</time><div><a class="small" href="/ui/activity?object_id=d3cddf21-a088-4189-9f17-2cf8dba61ab0" title="every event about this finding">history</a></div></div>
       </div>
       
       
@@ -3211,7 +3313,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:49:12.438327+00:00" title="2026-10-14T09:49:12.438327+00:00">2026-10-14 09:49:12</div>
+        <div class="when"><time datetime="2026-10-14T09:49:12.438327+00:00" data-local title="2026-10-14T09:49:12.438327+00:00 UTC">2026-10-14 09:49</time><div><a class="small" href="/ui/activity?object_id=198e2d54-3884-47d5-a887-1d328cce77c2" title="every event about this notification">history</a></div></div>
       </div>
       
       
@@ -3227,7 +3329,7 @@ header nav{display:flex;align-items:center;min-width:0}
             <div style="color:var(--text);opacity:.8;margin-top:2px">“12 signals fired; rules: [&#39;pixel_clone_login&#39;, &#39;campaign_linked_login&#39;, &#39;affiliate_redirect_verdict&#39;, &#39;redirect_service_verdict&#39;]; already confirmed by an analyst — score history appended”</div></div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:49:12.438327+00:00" title="2026-10-14T09:49:12.438327+00:00">2026-10-14 09:49:12</div>
+        <div class="when"><time datetime="2026-10-14T09:49:12.438327+00:00" data-local title="2026-10-14T09:49:12.438327+00:00 UTC">2026-10-14 09:49</time><div><a class="small" href="/ui/activity?object_id=198e2d54-3884-47d5-a887-1d328cce77c2" title="every event about this finding">history</a></div></div>
       </div>
       
       
@@ -3243,7 +3345,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:49:03.744975+00:00" title="2026-10-14T09:49:03.744975+00:00">2026-10-14 09:49:03</div>
+        <div class="when"><time datetime="2026-10-14T09:49:03.744975+00:00" data-local title="2026-10-14T09:49:03.744975+00:00 UTC">2026-10-14 09:49</time><div><a class="small" href="/ui/activity?object_id=4aa4555a-8a52-4bab-a6da-8427753c97d3" title="every event about this notification">history</a></div></div>
       </div>
       
       
@@ -3259,7 +3361,7 @@ header nav{display:flex;align-items:center;min-width:0}
             <div style="color:var(--text);opacity:.8;margin-top:2px">“12 signals fired; rules: [&#39;pixel_clone_login&#39;, &#39;campaign_linked_login&#39;, &#39;affiliate_redirect_verdict&#39;, &#39;redirect_service_verdict&#39;]; already confirmed by an analyst — score history appended”</div></div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:49:03.730855+00:00" title="2026-10-14T09:49:03.730855+00:00">2026-10-14 09:49:03</div>
+        <div class="when"><time datetime="2026-10-14T09:49:03.730855+00:00" data-local title="2026-10-14T09:49:03.730855+00:00 UTC">2026-10-14 09:49</time><div><a class="small" href="/ui/activity?object_id=4aa4555a-8a52-4bab-a6da-8427753c97d3" title="every event about this finding">history</a></div></div>
       </div>
       
       
@@ -3275,7 +3377,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:49:03.484665+00:00" title="2026-10-14T09:49:03.484665+00:00">2026-10-14 09:49:03</div>
+        <div class="when"><time datetime="2026-10-14T09:49:03.484665+00:00" data-local title="2026-10-14T09:49:03.484665+00:00 UTC">2026-10-14 09:49</time><div><a class="small" href="/ui/activity?object_id=9e972300-3ba9-4bc8-9db8-d56527f3cc8e" title="every event about this notification">history</a></div></div>
       </div>
       
       
@@ -3291,7 +3393,7 @@ header nav{display:flex;align-items:center;min-width:0}
             <div style="color:var(--text);opacity:.8;margin-top:2px">“16 signals fired; rules: [&#39;pixel_clone_login&#39;, &#39;brand_title_login&#39;, &#39;campaign_linked_login&#39;, &#39;looks_like_brand_verdict&#39;]; already confirmed by an analyst — score history appended”</div></div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:49:03.474227+00:00" title="2026-10-14T09:49:03.474227+00:00">2026-10-14 09:49:03</div>
+        <div class="when"><time datetime="2026-10-14T09:49:03.474227+00:00" data-local title="2026-10-14T09:49:03.474227+00:00 UTC">2026-10-14 09:49</time><div><a class="small" href="/ui/activity?object_id=9e972300-3ba9-4bc8-9db8-d56527f3cc8e" title="every event about this finding">history</a></div></div>
       </div>
       
       
@@ -3307,7 +3409,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:49:03.148625+00:00" title="2026-10-14T09:49:03.148625+00:00">2026-10-14 09:49:03</div>
+        <div class="when"><time datetime="2026-10-14T09:49:03.148625+00:00" data-local title="2026-10-14T09:49:03.148625+00:00 UTC">2026-10-14 09:49</time><div><a class="small" href="/ui/activity?object_id=6a5a2896-2bbf-4f37-b51a-6df99b0d48fe" title="every event about this notification">history</a></div></div>
       </div>
       
       
@@ -3323,7 +3425,7 @@ header nav{display:flex;align-items:center;min-width:0}
             <div style="color:var(--text);opacity:.8;margin-top:2px">“12 signals fired; rules: [&#39;pixel_clone_login&#39;, &#39;campaign_linked_login&#39;, &#39;affiliate_redirect_verdict&#39;, &#39;redirect_service_verdict&#39;]; already confirmed by an analyst — score history appended”</div></div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:49:03.083009+00:00" title="2026-10-14T09:49:03.083009+00:00">2026-10-14 09:49:03</div>
+        <div class="when"><time datetime="2026-10-14T09:49:03.083009+00:00" data-local title="2026-10-14T09:49:03.083009+00:00 UTC">2026-10-14 09:49</time><div><a class="small" href="/ui/activity?object_id=6a5a2896-2bbf-4f37-b51a-6df99b0d48fe" title="every event about this finding">history</a></div></div>
       </div>
       
       
@@ -3339,7 +3441,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:49:01.478860+00:00" title="2026-10-14T09:49:01.478860+00:00">2026-10-14 09:49:01</div>
+        <div class="when"><time datetime="2026-10-14T09:49:01.478860+00:00" data-local title="2026-10-14T09:49:01.478860+00:00 UTC">2026-10-14 09:49</time><div><a class="small" href="/ui/activity?object_id=fd5a72c5-532f-4614-a113-c4d848d99888" title="every event about this notification">history</a></div></div>
       </div>
       
       
@@ -3355,7 +3457,7 @@ header nav{display:flex;align-items:center;min-width:0}
             <div style="color:var(--text);opacity:.8;margin-top:2px">“13 signals fired; rules: [&#39;pixel_clone_login&#39;, &#39;campaign_linked_login&#39;, &#39;affiliate_redirect_verdict&#39;, &#39;redirect_service_verdict&#39;]; already confirmed by an analyst — score history appended”</div></div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:49:01.472586+00:00" title="2026-10-14T09:49:01.472586+00:00">2026-10-14 09:49:01</div>
+        <div class="when"><time datetime="2026-10-14T09:49:01.472586+00:00" data-local title="2026-10-14T09:49:01.472586+00:00 UTC">2026-10-14 09:49</time><div><a class="small" href="/ui/activity?object_id=fd5a72c5-532f-4614-a113-c4d848d99888" title="every event about this finding">history</a></div></div>
       </div>
       
       
@@ -3371,7 +3473,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:48:59.818117+00:00" title="2026-10-14T09:48:59.818117+00:00">2026-10-14 09:48:59</div>
+        <div class="when"><time datetime="2026-10-14T09:48:59.818117+00:00" data-local title="2026-10-14T09:48:59.818117+00:00 UTC">2026-10-14 09:48</time><div><a class="small" href="/ui/activity?object_id=5da0ffd7-d892-4cfd-9f55-c87b543dfac7" title="every event about this notification">history</a></div></div>
       </div>
       
       
@@ -3387,7 +3489,7 @@ header nav{display:flex;align-items:center;min-width:0}
             <div style="color:var(--text);opacity:.8;margin-top:2px">“13 signals fired; rules: [&#39;pixel_clone_login&#39;, &#39;campaign_linked_login&#39;, &#39;affiliate_redirect_verdict&#39;, &#39;redirect_service_verdict&#39;]; already confirmed by an analyst — score history appended”</div></div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:48:59.280526+00:00" title="2026-10-14T09:48:59.280526+00:00">2026-10-14 09:48:59</div>
+        <div class="when"><time datetime="2026-10-14T09:48:59.280526+00:00" data-local title="2026-10-14T09:48:59.280526+00:00 UTC">2026-10-14 09:48</time><div><a class="small" href="/ui/activity?object_id=5da0ffd7-d892-4cfd-9f55-c87b543dfac7" title="every event about this finding">history</a></div></div>
       </div>
       
       
@@ -3403,7 +3505,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:48:56.948377+00:00" title="2026-10-14T09:48:56.948377+00:00">2026-10-14 09:48:56</div>
+        <div class="when"><time datetime="2026-10-14T09:48:56.948377+00:00" data-local title="2026-10-14T09:48:56.948377+00:00 UTC">2026-10-14 09:48</time><div><a class="small" href="/ui/activity?object_id=be5f0a7c-d96e-4260-b413-a70d917bbfe9" title="every event about this notification">history</a></div></div>
       </div>
       
       
@@ -3419,7 +3521,7 @@ header nav{display:flex;align-items:center;min-width:0}
             <div style="color:var(--text);opacity:.8;margin-top:2px">“19 signals fired; rules: [&#39;pixel_clone_login&#39;, &#39;brand_title_login&#39;, &#39;campaign_linked_login&#39;, &#39;known_phishing_verdict&#39;, &#39;looks_like_brand_verdict&#39;]; already confirmed by an analyst — score history appended”</div></div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:48:56.924970+00:00" title="2026-10-14T09:48:56.924970+00:00">2026-10-14 09:48:56</div>
+        <div class="when"><time datetime="2026-10-14T09:48:56.924970+00:00" data-local title="2026-10-14T09:48:56.924970+00:00 UTC">2026-10-14 09:48</time><div><a class="small" href="/ui/activity?object_id=be5f0a7c-d96e-4260-b413-a70d917bbfe9" title="every event about this finding">history</a></div></div>
       </div>
       
       
@@ -3435,7 +3537,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:48:53.374021+00:00" title="2026-10-14T09:48:53.374021+00:00">2026-10-14 09:48:53</div>
+        <div class="when"><time datetime="2026-10-14T09:48:53.374021+00:00" data-local title="2026-10-14T09:48:53.374021+00:00 UTC">2026-10-14 09:48</time><div><a class="small" href="/ui/activity?object_id=d4e76cb9-071c-45d5-abb8-2b9a6ebc25fd" title="every event about this scan job">history</a></div></div>
       </div>
       
       
@@ -3451,7 +3553,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:48:52.755033+00:00" title="2026-10-14T09:48:52.755033+00:00">2026-10-14 09:48:52</div>
+        <div class="when"><time datetime="2026-10-14T09:48:52.755033+00:00" data-local title="2026-10-14T09:48:52.755033+00:00 UTC">2026-10-14 09:48</time><div><a class="small" href="/ui/activity?object_id=2fdd823a-9baa-49d3-82b8-e1ce0bda2c44" title="every event about this notification">history</a></div></div>
       </div>
       
       
@@ -3467,7 +3569,7 @@ header nav{display:flex;align-items:center;min-width:0}
             <div style="color:var(--text);opacity:.8;margin-top:2px">“13 signals fired; rules: [&#39;pixel_clone_login&#39;, &#39;campaign_linked_login&#39;, &#39;affiliate_redirect_verdict&#39;, &#39;redirect_service_verdict&#39;]; already confirmed by an analyst — score history appended”</div></div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:48:52.743993+00:00" title="2026-10-14T09:48:52.743993+00:00">2026-10-14 09:48:52</div>
+        <div class="when"><time datetime="2026-10-14T09:48:52.743993+00:00" data-local title="2026-10-14T09:48:52.743993+00:00 UTC">2026-10-14 09:48</time><div><a class="small" href="/ui/activity?object_id=2fdd823a-9baa-49d3-82b8-e1ce0bda2c44" title="every event about this finding">history</a></div></div>
       </div>
       
       
@@ -3483,7 +3585,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:48:48.283461+00:00" title="2026-10-14T09:48:48.283461+00:00">2026-10-14 09:48:48</div>
+        <div class="when"><time datetime="2026-10-14T09:48:48.283461+00:00" data-local title="2026-10-14T09:48:48.283461+00:00 UTC">2026-10-14 09:48</time><div><a class="small" href="/ui/activity?object_id=e39d2fcf-1c97-45b4-aca8-c72c4a6064e6" title="every event about this scan job">history</a></div></div>
       </div>
       
       
@@ -3499,7 +3601,7 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:48:39.971163+00:00" title="2026-10-14T09:48:39.971163+00:00">2026-10-14 09:48:39</div>
+        <div class="when"><time datetime="2026-10-14T09:48:39.971163+00:00" data-local title="2026-10-14T09:48:39.971163+00:00 UTC">2026-10-14 09:48</time><div><a class="small" href="/ui/activity/_18e2ee327b/" title="every event about this notification">history</a></div></div>
       </div>
       
       
@@ -3515,7 +3617,7 @@ header nav{display:flex;align-items:center;min-width:0}
             <div style="color:var(--text);opacity:.8;margin-top:2px">“6 signals fired; rules: [&#39;known_phishing_verdict&#39;]”</div></div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:48:39.961132+00:00" title="2026-10-14T09:48:39.961132+00:00">2026-10-14 09:48:39</div>
+        <div class="when"><time datetime="2026-10-14T09:48:39.961132+00:00" data-local title="2026-10-14T09:48:39.961132+00:00 UTC">2026-10-14 09:48</time><div><a class="small" href="/ui/activity/_18e2ee327b/" title="every event about this finding">history</a></div></div>
       </div>
       
       
@@ -3531,162 +3633,52 @@ header nav{display:flex;align-items:center;min-width:0}
             </div>
           
         </div>
-        <div class="when" data-rel="2026-10-14T09:48:39.807737+00:00" title="2026-10-14T09:48:39.807737+00:00">2026-10-14 09:48:39</div>
-      </div>
-      
-      
-      <div class="ev " data-cat="finding" data-notable="1" style="--r:30">
-        <div class="av sys" title="system">SYS</div>
-        <div>
-          <div class="what"><span class="muted">system</span> <b>finding</b> · created
-            
-            <span class="muted small">finding <a href="/ui/findings/6ed451ca-2fd1-464b-b381-03f8df804f34/" class="mono">shopnova-eu.com ↗</a></span></div>
-          
-          
-          <div class="diff"><span class="new">severity: critical · score: 75 · confidence: 92.0 · scoring version: v2-c213b21d+c7</span>
-            <div style="color:var(--text);opacity:.8;margin-top:2px">“14 signals fired; rules: [&#39;pixel_clone_login&#39;, &#39;fresh_lookalike_login&#39;, &#39;brand_title_login&#39;, &#39;looks_like_brand_verdict&#39;]”</div></div>
-          
-        </div>
-        <div class="when" data-rel="2026-10-14T09:48:39.795833+00:00" title="2026-10-14T09:48:39.795833+00:00">2026-10-14 09:48:39</div>
-      </div>
-      
-      
-      <div class="ev " data-cat="notification" data-notable="1" style="--r:30">
-        <div class="av sys" title="system">SYS</div>
-        <div>
-          <div class="what"><span class="muted">system</span> <b>notification</b> · sent
-            
-            <span class="muted small">notification facebook.com/shopnova.support.help</span></div>
-          
-          
-          <div class="diff"><span class="new">channel: log · subject: [BrandWatch] CRITICAL new finding: facebook.com/shopnova.support.help impersonates ShopNova · Israel · kind: finding</span>
-            </div>
-          
-        </div>
-        <div class="when" data-rel="2026-10-14T09:48:36.725060+00:00" title="2026-10-14T09:48:36.725060+00:00">2026-10-14 09:48:36</div>
-      </div>
-      
-      
-      <div class="ev " data-cat="finding" data-notable="1" style="--r:30">
-        <div class="av sys" title="system">SYS</div>
-        <div>
-          <div class="what"><span class="muted">system</span> <b>finding</b> · created
-            
-            <span class="muted small">finding <a href="/ui/findings/aa855f45-18cf-4272-ac1c-effbe5955f9c/" class="mono">facebook.com/shopnova.support.help ↗</a></span></div>
-          
-          
-          <div class="diff"><span class="new">severity: critical · score: 100 · confidence: 85 · scoring version: social-v1-6ace7e14</span>
-            <div style="color:var(--text);opacity:.8;margin-top:2px">“9 signals fired; rules: []”</div></div>
-          
-        </div>
-        <div class="when" data-rel="2026-10-14T09:48:36.725060+00:00" title="2026-10-14T09:48:36.725060+00:00">2026-10-14 09:48:36</div>
-      </div>
-      
-      
-      <div class="ev " data-cat="notification" data-notable="1" style="--r:30">
-        <div class="av sys" title="system">SYS</div>
-        <div>
-          <div class="what"><span class="muted">system</span> <b>notification</b> · sent
-            
-            <span class="muted small">notification instagram.com/shopnova.israel.official</span></div>
-          
-          
-          <div class="diff"><span class="new">channel: log · subject: [BrandWatch] CRITICAL new finding: instagram.com/shopnova.israel.official impersonates ShopNova · Israel · kind: finding</span>
-            </div>
-          
-        </div>
-        <div class="when" data-rel="2026-10-14T09:48:36.692044+00:00" title="2026-10-14T09:48:36.692044+00:00">2026-10-14 09:48:36</div>
-      </div>
-      
-      
-      <div class="ev " data-cat="finding" data-notable="1" style="--r:30">
-        <div class="av sys" title="system">SYS</div>
-        <div>
-          <div class="what"><span class="muted">system</span> <b>finding</b> · created
-            
-            <span class="muted small">finding <a href="/ui/findings/3ef032cc-e0af-4d14-a4b1-f1bde6e033e9/" class="mono">instagram.com/shopnova.israel.official ↗</a></span></div>
-          
-          
-          <div class="diff"><span class="new">severity: critical · score: 86 · confidence: 80 · scoring version: social-v1-6ace7e14</span>
-            <div style="color:var(--text);opacity:.8;margin-top:2px">“5 signals fired; rules: []”</div></div>
-          
-        </div>
-        <div class="when" data-rel="2026-10-14T09:48:36.692044+00:00" title="2026-10-14T09:48:36.692044+00:00">2026-10-14 09:48:36</div>
-      </div>
-      
-      
-      <div class="ev " data-cat="scan" data-notable="1" style="--r:30">
-        <div class="av " title="admin">AD</div>
-        <div>
-          <div class="what"><span class="muted">admin</span> <b>scan</b> · started
-            
-            <span class="muted small">scan job <a href="/ui/jobs/1e0ec470-cf8d-44ba-a048-3903149cf87b" class="mono">brand scan 1e0ec470 ↗</a></span></div>
-          
-          
-          <div class="diff"><span class="new">kind: brand_scan · brand: ShopNova · Israel</span>
-            </div>
-          
-        </div>
-        <div class="when" data-rel="2026-10-14T09:48:35.676096+00:00" title="2026-10-14T09:48:35.676096+00:00">2026-10-14 09:48:35</div>
-      </div>
-      
-      
-      <div class="ev " data-cat="brand" data-notable="1" style="--r:30">
-        <div class="av " title="admin">AD</div>
-        <div>
-          <div class="what"><span class="muted">admin</span> <b>brand</b> · search queries approved
-            
-            <span class="muted small">brand <a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/" class="mono">ShopNova · Israel ↗</a></span></div>
-          
-          
-          <div class="diff"><span class="old">approved: None</span> → <span class="new">approved: shopnova sale, shopnova outlet, shopnova discount, shopnova official store, shopnova buy online, shopnova login, shop nova sale, shop nova, shonpova sale, shonpova</span>
-            </div>
-          
-        </div>
-        <div class="when" data-rel="2026-10-14T09:48:35.624565+00:00" title="2026-10-14T09:48:35.624565+00:00">2026-10-14 09:48:35</div>
+        <div class="when"><time datetime="2026-10-14T09:48:39.807737+00:00" data-local title="2026-10-14T09:48:39.807737+00:00 UTC">2026-10-14 09:48</time><div><a class="small" href="/ui/activity/_fe1ce76898/" title="every event about this notification">history</a></div></div>
       </div>
       
       
     </div>
-    <div class="more"><button type="button" id="more" style="display:none">Show older events</button></div>
+    <div class="more"><button type="button" id="more" style="display:none">Show older events</button>
+      
+      <a class="btn small" href="/ui/activity?page=2" title="the next 300 events from the server">older page →</a></div>
   </div>
   <div>
     <div class="panel">
       <h2>By category</h2>
       
       
-      <div class="hbar"><span>user</span><div class="bar"><i data-w="100"></i></div><b>94</b></div>
+      <div class="hbar"><span>user</span><div class="bar"><i data-w="100"></i></div><b>99</b></div>
       
-      <div class="hbar"><span>finding</span><div class="bar"><i data-w="60"></i></div><b>56</b></div>
+      <div class="hbar"><span>finding</span><div class="bar"><i data-w="54"></i></div><b>53</b></div>
       
-      <div class="hbar"><span>notification</span><div class="bar"><i data-w="33"></i></div><b>31</b></div>
+      <div class="hbar"><span>notification</span><div class="bar"><i data-w="29"></i></div><b>29</b></div>
       
-      <div class="hbar"><span>report</span><div class="bar"><i data-w="27"></i></div><b>25</b></div>
+      <div class="hbar"><span>intel</span><div class="bar"><i data-w="27"></i></div><b>27</b></div>
       
-      <div class="hbar"><span>intel</span><div class="bar"><i data-w="27"></i></div><b>25</b></div>
+      <div class="hbar"><span>report</span><div class="bar"><i data-w="25"></i></div><b>25</b></div>
       
-      <div class="hbar"><span>investigation</span><div class="bar"><i data-w="27"></i></div><b>25</b></div>
+      <div class="hbar"><span>investigation</span><div class="bar"><i data-w="25"></i></div><b>25</b></div>
       
-      <div class="hbar"><span>campaign</span><div class="bar"><i data-w="26"></i></div><b>24</b></div>
+      <div class="hbar"><span>campaign</span><div class="bar"><i data-w="24"></i></div><b>24</b></div>
       
-      <div class="hbar"><span>scan</span><div class="bar"><i data-w="11"></i></div><b>10</b></div>
+      <div class="hbar"><span>scan</span><div class="bar"><i data-w="9"></i></div><b>9</b></div>
       
     </div>
     <div class="panel" style="margin-top:14px">
       <h2>Activity · 14 days</h2>
-      <svg class="spark" data-spark='{"series": [{"color": "#35C7F2", "values": [0, 0, 0, 0, 0, 0, 0, 0, 0, 162, 0, 0, 0, 52]}]}'></svg>
+      <svg class="spark" data-spark='{"series": [{"color": "#35C7F2", "values": [0, 0, 0, 0, 0, 0, 0, 0, 0, 155, 0, 0, 0, 57]}]}'></svg>
     </div>
     <div class="panel" style="margin-top:14px">
       <h2>Most active</h2>
       
       <div style="display:grid;grid-template-columns:1fr 40px;gap:8px;align-items:center;margin:8px 0">
         <div><div class="small mono">admin</div><div class="bar" style="height:6px;margin-top:3px"><i data-w="100"></i></div></div>
-        <div class="mono small right">164</div>
+        <div class="mono small right">167</div>
       </div>
       
       <div style="display:grid;grid-template-columns:1fr 40px;gap:8px;align-items:center;margin:8px 0">
-        <div><div class="small mono">system</div><div class="bar" style="height:6px;margin-top:3px"><i data-w="83"></i></div></div>
-        <div class="mono small right">136</div>
+        <div><div class="small mono">system</div><div class="bar" style="height:6px;margin-top:3px"><i data-w="80"></i></div></div>
+        <div class="mono small right">133</div>
       </div>
       
     </div>
@@ -3715,7 +3707,7 @@ header nav{display:flex;align-items:center;min-width:0}
     more.style.display = total > shown ? '' : 'none';
     more.textContent = `Show older events (${total - shown} more)`;
   }
-  chips.forEach(ch => ch.addEventListener('click', () => { chips.forEach(c => c.classList.toggle('on', c === ch)); cat = ch.dataset.cat; limit = PAGE; render(); }));
+  chips.forEach(ch => ch.addEventListener('click', () => { chips.forEach(c => { c.classList.toggle('on', c === ch); c.setAttribute('aria-pressed', String(c === ch)); }); cat = ch.dataset.cat; limit = PAGE; render(); }));
   more.addEventListener('click', () => { limit += PAGE; render(); });
   render();
 })();
@@ -3735,6 +3727,16 @@ header nav{display:flex;align-items:center;min-width:0}
     setTimeout(() => { if (e.defaultPrevented) return; f.__sentAt = Date.now();
       if (f.hasAttribute('data-busy') && b && b.tagName === 'BUTTON') { b.disabled = true; b.dataset.was = b.textContent; b.textContent = f.getAttribute('data-busy') || 'Working…';
         setTimeout(() => { b.disabled = false; b.textContent = b.dataset.was; }, 30000); } }, 0); });
+  // "/" opens the search from any page (a page with its own search box — findings, watchlist — takes it first)
+  document.addEventListener('keydown', e => {
+    if (e.key !== '/' || e.defaultPrevented || e.ctrlKey || e.metaKey || e.altKey) return;
+    const a = document.activeElement; if (a && (/INPUT|SELECT|TEXTAREA/.test(a.tagName) || a.isContentEditable)) return;
+    const box = document.getElementById('hsearch'); if (!box || !box.offsetParent) { location.href = '/ui/search'; return; }
+    e.preventDefault(); box.focus();
+  });
+  // phones: a "rwd" table shows one card per row, each cell labelled with its column (see the CSS)
+  document.querySelectorAll('table.rwd').forEach(t => { const heads = [...t.querySelectorAll('thead th')].map(th => th.textContent.trim());
+    t.querySelectorAll('tbody tr').forEach(tr => [...tr.children].forEach((td, i) => { if (!td.hasAttribute('data-label')) td.dataset.label = heads[i] || ''; })); });
   // the sticky header's height, for anything that sticks under it
   const hdr = document.querySelector('header'); const setH = () => document.documentElement.style.setProperty('--hdr', (hdr ? hdr.offsetHeight : 56) + 'px');
   setH(); window.addEventListener('resize', setH);
@@ -3754,7 +3756,9 @@ header nav{display:flex;align-items:center;min-width:0}
   document.querySelectorAll('main table').forEach(t => { if (t.parentElement.classList.contains('tw')) return;
     const w = document.createElement('div'); w.className = 'tw'; t.parentNode.insertBefore(w, t); w.appendChild(t); });
   // keep the active tab visible in the scrollable mobile nav
-  const act = document.querySelector('header nav a.active'); if (act && act.scrollIntoView) act.scrollIntoView({block: 'nearest', inline: 'center'});
+  // (by scrolling the bar itself: scrollIntoView would also move where the first Tab press starts, past the skip links)
+  const act = document.querySelector('header nav a.active'), bar = act && act.parentElement;
+  if (act && bar.scrollWidth > bar.clientWidth) bar.scrollLeft = act.offsetLeft - (bar.clientWidth - act.offsetWidth) / 2;
   // stagger entrances
   document.querySelectorAll('.kpis').forEach(g => [...g.children].forEach((el, i) => el.style.setProperty('--i', i)));
   document.querySelectorAll('main .panel').forEach((el, i) => el.style.setProperty('--i', Math.min(i, 12)));
@@ -3910,6 +3914,9 @@ header nav{display:flex;align-items:center;min-width:0}
   document.addEventListener('keydown', ev => {
     if (modal.hidden) return;
     if (ev.key === 'Escape') { ev.preventDefault(); close(false); }
+    else if (ev.key === 'Tab') {  // the focus stays in the dialog
+      const f = [inp, cancel, ok].filter(x => !x.hidden); const i = f.indexOf(document.activeElement);
+      ev.preventDefault(); f[(i + (ev.shiftKey ? -1 : 1) + f.length) % f.length].focus(); }
     else if (ev.key === 'Enter' && document.activeElement !== cancel) { ev.preventDefault(); ok.click(); }
   });
   // forms and buttons that ask first
