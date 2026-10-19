@@ -1,0 +1,291 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-19T00:00:00Z",
+  "title": "Design System: BrandWatch",
+  "extensions": {
+    "colorMeta": {
+      "operations-black": {
+        "role": "neutral",
+        "displayName": "Operations Black",
+        "canonical": "#080B14",
+        "tonalRamp": ["#04060b", "#080B14", "#10161f", "#1E2A3D", "#3a4a63", "#65748c", "#9aa7ba", "#d6dde6"]
+      },
+      "panel": {
+        "role": "neutral",
+        "displayName": "Panel",
+        "canonical": "#0E1420",
+        "tonalRamp": ["#05080d", "#0A0F18", "#0E1420", "#141d2d", "#1E2A3D", "#2c3b52", "#51627c", "#8d9cb2"]
+      },
+      "panel-raised": {
+        "role": "neutral",
+        "displayName": "Panel Raised",
+        "canonical": "#121A2B",
+        "tonalRamp": ["#070a11", "#0d131f", "#121A2B", "#1a2439", "#273450", "#3b4d70", "#64789c", "#a2b0c8"]
+      },
+      "field": {
+        "role": "neutral",
+        "displayName": "Field",
+        "canonical": "#0b1220"
+      },
+      "console-black": {
+        "role": "neutral",
+        "displayName": "Console Black",
+        "canonical": "#060910"
+      },
+      "border": {
+        "role": "neutral",
+        "displayName": "Border",
+        "canonical": "#1E2A3D",
+        "tonalRamp": ["#090d13", "#101722", "#172031", "#1E2A3D", "#2b3c56", "#445c80", "#7187a8", "#b2c0d2"]
+      },
+      "instrument-cyan": {
+        "role": "primary",
+        "displayName": "Instrument Cyan",
+        "canonical": "#35C7F2",
+        "tonalRamp": ["#031820", "#06303f", "#08485f", "#0a6080", "#1b8fb8", "#35C7F2", "#76dbf8", "#bdeefc"]
+      },
+      "readout-cyan": {
+        "role": "primary",
+        "displayName": "Readout Cyan",
+        "canonical": "#5FE3FF",
+        "tonalRamp": ["#051c24", "#073646", "#095169", "#0c6c8c", "#1c9fc9", "#3fc8ef", "#5FE3FF", "#c4f3ff"]
+      },
+      "critical": {
+        "role": "secondary",
+        "displayName": "Critical Red",
+        "canonical": "#FF4D4D",
+        "tonalRamp": ["#2a0808", "#4d0f0f", "#751717", "#a32020", "#d13333", "#FF4D4D", "#ff8080", "#ffc0c0"]
+      },
+      "high": {
+        "role": "secondary",
+        "displayName": "High Orange",
+        "canonical": "#FF9F1C",
+        "tonalRamp": ["#2b1a02", "#4d2f04", "#754708", "#a3630c", "#d18214", "#FF9F1C", "#ffc166", "#ffe0b3"]
+      },
+      "medium": {
+        "role": "secondary",
+        "displayName": "Medium Amber",
+        "canonical": "#F5C518",
+        "tonalRamp": ["#291f02", "#4a3a05", "#705708", "#99760c", "#c69b12", "#F5C518", "#f8da66", "#fcecb3"]
+      },
+      "low": {
+        "role": "secondary",
+        "displayName": "Low Green",
+        "canonical": "#2ECC71",
+        "tonalRamp": ["#052114", "#0a3d26", "#0f5c38", "#15804d", "#1fa862", "#2ECC71", "#73dfa1", "#b8f0cf"]
+      },
+      "text": {
+        "role": "neutral",
+        "displayName": "Text",
+        "canonical": "#E6EDF5",
+        "tonalRamp": ["#0f1319", "#1b212b", "#2d3542", "#44505f", "#64717f", "#8A97A8", "#b4bfcc", "#E6EDF5"]
+      },
+      "muted": {
+        "role": "neutral",
+        "displayName": "Muted",
+        "canonical": "#8A97A8"
+      },
+      "label-dim": {
+        "role": "neutral",
+        "displayName": "Label Dim",
+        "canonical": "#6f7d90"
+      },
+      "group-dim": {
+        "role": "neutral",
+        "displayName": "Group Dim",
+        "canonical": "#5f6d80"
+      },
+      "daylight-paper": {
+        "role": "neutral",
+        "displayName": "Daylight Paper",
+        "canonical": "#ffffff",
+        "tonalRamp": ["#16202e", "#2f3d50", "#5d6b7e", "#9aa7b6", "#dfe5ec", "#e9eef3", "#f4f7fa", "#ffffff"]
+      },
+      "daylight-ink": {
+        "role": "neutral",
+        "displayName": "Daylight Ink",
+        "canonical": "#16202e"
+      },
+      "daylight-accent": {
+        "role": "primary",
+        "displayName": "Report Blue",
+        "canonical": "#0b6fbd",
+        "tonalRamp": ["#021524", "#042c4a", "#064270", "#085896", "#0a63a9", "#0b6fbd", "#4fa3dd", "#a8d2f0"]
+      }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "The one page title per screen, gradient-filled from Text to Readout Cyan." },
+      "readout": { "displayName": "Readout", "purpose": "KPI values, ring centers, operation statistics. The loudest element on a screen." },
+      "headline": { "displayName": "Headline", "purpose": "Chapter headings on the How-it-works narrative surface only." },
+      "title": { "displayName": "Title", "purpose": "Every section heading, preceded by its 6px cyan square marker." },
+      "body": { "displayName": "Body", "purpose": "All prose. Inter at 14px/1.45; the page intro at 13px/1.55 in Muted." },
+      "label": { "displayName": "Label", "purpose": "Form labels, breadcrumbs, state badges, pills. Uppercase mono." },
+      "column-head": { "displayName": "Column Head", "purpose": "Table headers, KPI captions, legends, chart ticks." }
+    },
+    "shadows": [
+      { "name": "panel-hover", "value": "0 0 0 1px rgba(53,199,242,0.08), 0 8px 30px rgba(0,0,0,0.35)", "purpose": "A panel under the cursor: a faint cyan ring plus black ambient depth." },
+      { "name": "tile-lift", "value": "0 6px 24px rgba(0,0,0,0.35)", "purpose": "KPI tiles on hover, paired with translateY(-2px)." },
+      { "name": "card-lift", "value": "0 0 0 1px #35C7F2, 0 14px 40px rgba(0,0,0,0.45)", "purpose": "Operation cards on hover — the one place that both lifts and lights, because the whole card is a link." },
+      { "name": "focus-field", "value": "0 0 0 3px rgba(53,199,242,0.15)", "purpose": "Focused inputs, selects and textareas." },
+      { "name": "focus-control", "value": "0 0 0 3px rgba(53,199,242,0.25)", "purpose": "Keyboard focus on links and buttons, alongside a 2px Readout Cyan outline at 2px offset." },
+      { "name": "button-hover", "value": "0 0 12px rgba(53,199,242,0.2)", "purpose": "A button under the cursor, with its border going cyan." },
+      { "name": "chip-on", "value": "0 0 10px rgba(53,199,242,0.18)", "purpose": "A selected filter chip." },
+      { "name": "active-marker", "value": "0 0 8px #35C7F2", "purpose": "The 3px nav rail and timeline dots — state, never depth." },
+      { "name": "drawer", "value": "12px 0 40px rgba(0,0,0,0.55)", "purpose": "The phone sidebar sliding over the page." },
+      { "name": "tooltip", "value": "0 10px 30px rgba(0,0,0,0.5)", "purpose": "Help bubbles and the 2.6x evidence thumbnail zoom." },
+      { "name": "daylight-page", "value": "0 10px 40px rgba(20,35,55,0.15)", "purpose": "The white operation-report page on its grey ground. The only shadow in the daylight world." }
+    ],
+    "motion": [
+      { "name": "ease-arrival", "value": "cubic-bezier(0.2, 0.8, 0.2, 1)", "purpose": "The system's one easing curve: entrances, bar and ring fills, tile lifts." },
+      { "name": "fade-up", "value": "fadeUp 0.6s cubic-bezier(0.2,0.8,0.2,1) both", "purpose": "Panels, flashes and cards arriving, 12px from below." },
+      { "name": "row-in", "value": "rowIn 0.45s ease both", "purpose": "Table rows and console lines arriving, 6px from the left." },
+      { "name": "stagger-panel", "value": "calc(var(--i, 0) * 70ms)", "purpose": "Delay per panel index; 55ms per KPI tile, 90ms per operation card." },
+      { "name": "stagger-row", "value": "calc(var(--r, 0) * 28ms)", "purpose": "Delay per table row or timeline entry." },
+      { "name": "meter-fill", "value": "width 1.3s cubic-bezier(0.2,0.8,0.2,1)", "purpose": "Bars, score bars and stacked meters filling from zero." },
+      { "name": "ring-fill", "value": "--p 1.4s cubic-bezier(0.2,0.8,0.2,1)", "purpose": "The conic score ring, animated through a registered @property." },
+      { "name": "state-change", "value": "0.2s", "purpose": "Buttons, inputs, links and chips responding to hover or focus." },
+      { "name": "surface-change", "value": "0.3s", "purpose": "Panels and cards changing border, shadow or transform." },
+      { "name": "pulse", "value": "pulse 1.6s infinite", "purpose": "The status dot's expanding ring — red for critical, cyan for live, green for ok." },
+      { "name": "beat", "value": "beat 2.2s ease-in-out infinite", "purpose": "The logo dot: the floor is staffed." },
+      { "name": "sweep", "value": "sweep 9s linear infinite", "purpose": "The slow cyan band crossing the page background. Ambient, never element-level." },
+      { "name": "radar-spin", "value": "spin 1.2s linear infinite", "purpose": "The conic radar sweep, shown only while work is actually running." },
+      { "name": "reduced-motion", "value": "@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important } }", "purpose": "Blanket kill switch at the end of base.html. Every new animation must fall under it." }
+    ],
+    "breakpoints": [
+      { "name": "wide", "value": "1100px" },
+      { "name": "shell", "value": "900px" },
+      { "name": "cards", "value": "800px" },
+      { "name": "tables", "value": "700px" },
+      { "name": "cta", "value": "640px" },
+      { "name": "tooltip", "value": "600px" },
+      { "name": "charts", "value": "520px" },
+      { "name": "stats", "value": "420px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The committed action on a form. A lit outline, never a solid fill.",
+      "html": "<button class=\"ds-btn ds-btn-primary\">START SCAN</button>",
+      "css": ".ds-btn { background: var(--panel2, #121A2B); color: var(--text, #E6EDF5); border: 1px solid var(--border, #1E2A3D); border-radius: 6px; padding: 7px 12px; font: 400 14px/1.45 Inter, system-ui, sans-serif; cursor: pointer; transition: all .2s } .ds-btn:hover { border-color: var(--accent, #35C7F2); box-shadow: 0 0 12px rgba(53,199,242,.2) } .ds-btn:focus-visible { outline: 2px solid var(--accent2, #5FE3FF); outline-offset: 2px; box-shadow: 0 0 0 3px rgba(53,199,242,.25) } .ds-btn-primary { background: rgba(53,199,242,.16); border-color: var(--accent, #35C7F2); color: var(--accent2, #5FE3FF); font-weight: 600 }"
+    },
+    {
+      "name": "Danger Button",
+      "kind": "button",
+      "refersTo": "button-danger",
+      "description": "A destructive or dismissing action. Intent lives in the stroke, so it never outshouts a real critical finding.",
+      "html": "<button class=\"ds-btn-danger\">Dismiss</button>",
+      "css": ".ds-btn-danger { background: var(--panel2, #121A2B); color: var(--crit, #FF4D4D); border: 1px solid var(--crit, #FF4D4D); border-radius: 6px; padding: 7px 12px; font: 400 14px/1.45 Inter, system-ui, sans-serif; cursor: pointer; transition: all .2s } .ds-btn-danger:hover { box-shadow: 0 0 12px rgba(255,77,77,.2) } .ds-btn-danger:focus-visible { outline: 2px solid var(--accent2, #5FE3FF); outline-offset: 2px } .ds-btn-danger[disabled] { opacity: .55; cursor: default; box-shadow: none }"
+    },
+    {
+      "name": "Severity Badge",
+      "kind": "chip",
+      "refersTo": "badge-critical",
+      "description": "The verdict of the scoring engine. The four severities are an enumeration, not a palette.",
+      "html": "<span class=\"ds-badge ds-badge-critical\">critical</span> <span class=\"ds-badge ds-badge-high\">high</span> <span class=\"ds-badge ds-badge-medium\">medium</span> <span class=\"ds-badge ds-badge-low\">low</span>",
+      "css": ".ds-badge { display: inline-block; padding: 2px 8px; border-radius: 999px; font: 600 11px JetBrains Mono, ui-monospace, Consolas, monospace; text-transform: uppercase; letter-spacing: .06em; white-space: nowrap; margin-right: 6px } .ds-badge-critical { background: rgba(255,77,77,.15); color: var(--crit, #FF4D4D); border: 1px solid var(--crit, #FF4D4D) } .ds-badge-high { background: rgba(255,159,28,.15); color: var(--high, #FF9F1C); border: 1px solid var(--high, #FF9F1C) } .ds-badge-medium { background: rgba(245,197,24,.15); color: var(--med, #F5C518); border: 1px solid var(--med, #F5C518) } .ds-badge-low { background: rgba(46,204,113,.15); color: var(--low, #2ECC71); border: 1px solid var(--low, #2ECC71) }"
+    },
+    {
+      "name": "Filter Chip",
+      "kind": "chip",
+      "refersTo": "chip",
+      "description": "A brand or stream filter. Selected is lit; unselected is dim. There is no third state.",
+      "html": "<span class=\"ds-chip\">ShopNova</span><span class=\"ds-chip ds-chip-on\">CoinPilot</span>",
+      "css": ".ds-chip { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; margin-right: 8px; border: 1px solid var(--border, #1E2A3D); border-radius: 999px; background: var(--panel2, #121A2B); color: var(--muted, #8A97A8); font: 400 11px JetBrains Mono, ui-monospace, Consolas, monospace; cursor: pointer; user-select: none; transition: all .2s } .ds-chip:hover { color: var(--text, #E6EDF5) } .ds-chip:focus-visible { outline: 2px solid var(--accent2, #5FE3FF); outline-offset: 2px } .ds-chip-on { color: var(--text, #E6EDF5); border-color: var(--accent, #35C7F2); box-shadow: 0 0 10px rgba(53,199,242,.18) }"
+    },
+    {
+      "name": "Labelled Field",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Every input carries a mono uppercase label above it. The field is darker than the surface it sits on, so it reads as a hole rather than a tile.",
+      "html": "<label class=\"ds-label\" for=\"ds-f1\">Domain</label><input class=\"ds-input\" id=\"ds-f1\" value=\"shopnova-giftcard.com\">",
+      "css": ".ds-label { display: block; margin: 8px 0 4px; color: var(--muted, #8A97A8); font: 400 12px JetBrains Mono, ui-monospace, Consolas, monospace; text-transform: uppercase; letter-spacing: .06em } .ds-input { width: 100%; background: #0b1220; color: var(--text, #E6EDF5); border: 1px solid var(--border, #1E2A3D); border-radius: 6px; padding: 7px 9px; font: 400 14px/1.45 Inter, system-ui, sans-serif; transition: border-color .2s, box-shadow .2s } .ds-input:focus { outline: none; border-color: var(--accent, #35C7F2); box-shadow: 0 0 0 3px rgba(53,199,242,.15) }"
+    },
+    {
+      "name": "Panel",
+      "kind": "card",
+      "refersTo": "panel",
+      "description": "The system's default surface. Flat at rest, lifting its border and shadow only under the cursor. Its h2 carries the 6px cyan section square.",
+      "html": "<section class=\"ds-panel\"><h2 class=\"ds-h2\">Discovery streams</h2><p class=\"ds-body\">Six streams ran. Certificate transparency found the kit 41 minutes before DNS did.</p></section>",
+      "css": ".ds-panel { background: linear-gradient(180deg, rgba(18,26,43,.92), rgba(14,20,32,.92)); border: 1px solid var(--border, #1E2A3D); border-radius: 10px; padding: 14px 16px; color: var(--text, #E6EDF5); transition: border-color .3s, box-shadow .3s, transform .3s } .ds-panel:hover { border-color: rgba(53,199,242,.35); box-shadow: 0 0 0 1px rgba(53,199,242,.08), 0 8px 30px rgba(0,0,0,.35) } .ds-h2 { margin: 0 0 10px; color: var(--muted, #8A97A8); font: 600 12px/1.5 JetBrains Mono, ui-monospace, Consolas, monospace; text-transform: uppercase; letter-spacing: .12em } .ds-h2::before { content: \"\"; display: inline-block; width: 6px; height: 6px; margin-right: 8px; vertical-align: 2px; background: var(--accent, #35C7F2) } .ds-body { margin: 0; font: 400 14px/1.45 Inter, system-ui, sans-serif }"
+    },
+    {
+      "name": "KPI Tile",
+      "kind": "card",
+      "refersTo": "kpi",
+      "description": "A single number in Rajdhani under a mono caption, with a cyan bloom bleeding off its top-right corner. Coloured only when the number is itself a severity count.",
+      "html": "<div class=\"ds-kpi ds-kpi-crit\"><div class=\"ds-kpi-v\">14</div><div class=\"ds-kpi-l\">Critical findings</div></div>",
+      "css": ".ds-kpi { position: relative; overflow: hidden; display: inline-block; min-width: 170px; background: linear-gradient(180deg, rgba(18,26,43,.95), rgba(14,20,32,.95)); border: 1px solid var(--border, #1E2A3D); border-radius: 10px; padding: 12px 14px; transition: transform .25s, border-color .25s, box-shadow .25s } .ds-kpi::after { content: \"\"; position: absolute; right: -28px; top: -28px; width: 86px; height: 86px; border-radius: 50%; background: radial-gradient(circle, rgba(53,199,242,.07), transparent 70%) } .ds-kpi:hover { transform: translateY(-2px); border-color: rgba(53,199,242,.4); box-shadow: 0 6px 24px rgba(0,0,0,.35) } .ds-kpi-v { font: 700 34px/1 Rajdhani, JetBrains Mono, monospace; letter-spacing: .02em; color: var(--text, #E6EDF5) } .ds-kpi-l { margin-top: 4px; font: 400 11px Inter, system-ui, sans-serif; text-transform: uppercase; letter-spacing: .08em; color: var(--muted, #8A97A8) } .ds-kpi-crit .ds-kpi-v { color: var(--crit, #FF4D4D) }"
+    },
+    {
+      "name": "Sidebar Nav Item",
+      "kind": "nav",
+      "refersTo": "nav-item",
+      "description": "A stroked 17px icon, a 13.5px label, and a count pill for work that is waiting. Active items take a glowing 3px rail off the left edge.",
+      "html": "<nav class=\"ds-nav\"><a class=\"ds-nav-a ds-nav-active\" href=\"#\"><svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M12 3l8 4v5c0 4.5-3.2 8.3-8 9-4.8-.7-8-4.5-8-9V7z\"/><path d=\"M12 8v5\"/><path d=\"M12 16.5h.01\"/></svg><span>Findings</span><span class=\"ds-nav-c\">14</span></a><a class=\"ds-nav-a\" href=\"#\"><svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><circle cx=\"12\" cy=\"12\" r=\"3\"/><path d=\"M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z\"/></svg><span>Watchlist</span></a></nav>",
+      "css": ".ds-nav { display: flex; flex-direction: column; gap: 1px; width: 216px; padding: 8px; background: linear-gradient(180deg, #0d1422, #0a101b) } .ds-nav-a { position: relative; display: flex; align-items: center; gap: 10px; padding: 8px 10px; border: 1px solid transparent; border-radius: 8px; color: var(--muted, #8A97A8); font: 400 13.5px Inter, system-ui, sans-serif; text-decoration: none; white-space: nowrap } .ds-nav-a svg { flex: none; width: 17px; height: 17px; stroke: currentColor; fill: none; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round } .ds-nav-a:hover { color: var(--text, #E6EDF5); background: rgba(53,199,242,.06) } .ds-nav-a:focus-visible { outline: 2px solid var(--accent2, #5FE3FF); outline-offset: 2px } .ds-nav-active { color: var(--text, #E6EDF5); background: rgba(53,199,242,.10); border-color: rgba(53,199,242,.28) } .ds-nav-active svg { stroke: var(--accent2, #5FE3FF) } .ds-nav-active::before { content: \"\"; position: absolute; left: -8px; top: 8px; bottom: 8px; width: 3px; border-radius: 2px; background: var(--accent, #35C7F2); box-shadow: 0 0 8px var(--accent, #35C7F2) } .ds-nav-c { margin-left: auto; min-width: 20px; padding: 0 6px; border-radius: 999px; background: rgba(53,199,242,.18); color: var(--accent2, #5FE3FF); font: 600 11px/18px JetBrains Mono, ui-monospace, monospace; text-align: center }"
+    },
+    {
+      "name": "Live Scan Console",
+      "kind": "custom",
+      "refersTo": null,
+      "description": "The SSE-fed narration of a running scan. Lines are coloured by the severity vocabulary; the radar spins only while work is actually running.",
+      "html": "<div class=\"ds-console\"><div><span class=\"ds-radar\"></span> <span class=\"ds-run\">dnstwist · 1,042 permutations resolved</span></div><div class=\"ds-done\">certificate transparency · 3 new certs</div><div class=\"ds-warn\">virustotal · unavailable, continuing with 3 feeds</div><div class=\"ds-err\">shopnova-giftcard.com · credential form on a cloaked kit</div></div>",
+      "css": ".ds-console { background: #060910; border: 1px solid var(--border, #1E2A3D); border-radius: 8px; padding: 12px; font: 400 12px/1.6 JetBrains Mono, ui-monospace, Consolas, monospace; color: var(--text, #E6EDF5); white-space: pre-wrap; height: 140px; overflow: auto } .ds-run { color: var(--accent, #35C7F2) } .ds-done { color: var(--low, #2ECC71) } .ds-warn { color: var(--high, #FF9F1C) } .ds-err { color: var(--crit, #FF4D4D) } .ds-radar { display: inline-block; position: relative; width: 14px; height: 14px; overflow: hidden; border: 1px solid var(--accent, #35C7F2); border-radius: 50%; vertical-align: middle } .ds-radar::after { content: \"\"; position: absolute; inset: 0; background: conic-gradient(rgba(53,199,242,.8), transparent 40%); animation: ds-spin 1.2s linear infinite } @keyframes ds-spin { to { transform: rotate(360deg) } } @media (prefers-reduced-motion: reduce) { .ds-radar::after { animation: none } }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Night Watch Floor",
+    "overview": "BrandWatch looks like a room that never closes. The ground is near-black, the air carries a faint CRT scanline and a slow cyan sweep, the logo dot beats like a heartbeat monitor, and a radar spins whenever the system is actually doing something. Nothing in that room is decoration for its own sake: the sweep says the floor is live, the pulse says a scan is running, the glow says this is where your attention goes. It is calm rather than alarmed — an operator sits here for eight hours, and a UI that shouts all day stops being heard by the second hour.\n\nThe personality is instrument-grade and quiet. Controls are small, hairline-bordered and monospace-labelled; they recede so the data leads. The one place the system raises its voice is a number that matters — a KPI set in 34px Rajdhani, a severity badge, a critical row with a red spine down its left edge. Density is deliberate: tables are compact, panels are tight, and the screen is allowed to be full, because the analyst's job is comparison and comparison needs things next to each other. Legibility for a first-time visitor is bought with structure and labelling, never by emptying the screen.\n\nThe system runs in two worlds. Night is the console — everything at /ui, where work is done. Daylight is the operation report: white paper, navy masthead, print type, a per-operation accent drawn from an eight-color cycle. Daylight is what leaves the app and goes to a registrar, an executive or a case file. The division is doctrine, not drift: dark is for working, light is for handing over.",
+    "keyCharacteristics": [
+      "Near-black ground (#080B14) with a single cyan light source; no second hue competes.",
+      "Three typographic voices with fixed jobs: Rajdhani counts, JetBrains Mono labels, Inter explains.",
+      "Flat at rest. Surfaces lift on hover; glow appears only as state.",
+      "Color is information: the severity ramp means severity and nothing else.",
+      "Compact by default — 14px body, 8px cell padding, 14px grid gutter, 1440px ceiling.",
+      "Motion is arrival and progress, staggered by index, and killed entirely under prefers-reduced-motion.",
+      "Every surface carries its own explanation affordance (the ? help dot, the intro line, the breadcrumb rail) because nothing here is allowed to be an unexplained number."
+    ],
+    "rules": [
+      { "name": "The Severity-Only Rule", "body": "Red, orange, amber and green mean severity and nothing else. Cyan means interactive-or-live and nothing else. Every other number, label, chart series and legend swatch is plain Text or Muted. There is no decorative color in this system — if a color appears, a reader is entitled to ask what it means, and there must be an answer.", "section": "colors" },
+      { "name": "The One Light Source Rule", "body": "Cyan is the only hue that glows. Every box-shadow spread that is not black is rgba(53,199,242,…). A second glowing hue would read as a second kind of alive, and there is only one.", "section": "colors" },
+      { "name": "The Plain Number Rule", "body": "A KPI's value is Text unless the number is a severity count (.kpi.crit, .kpi.hi, .kpi.med). Coloring a number for emphasis is forbidden; emphasis comes from size and position.", "section": "colors" },
+      { "name": "The Three-Voice Rule", "body": "Rajdhani counts, JetBrains Mono labels, Inter explains. A number in Inter looks like a sentence; a sentence in Rajdhani looks like a slogan. Never swap them.", "section": "typography" },
+      { "name": "The Uppercase-Is-Metadata Rule", "body": "Uppercase plus letter-spacing marks something about content — a column name, a state, a field label, a group heading. Content itself is never uppercased. A headline shouting in caps would claim to be a label.", "section": "typography" },
+      { "name": "The Lit Title Rule", "body": "The h1 gradient is the system's one typographic flourish and belongs to the page title alone. Gradient-filled text anywhere else cheapens it.", "section": "typography" },
+      { "name": "The Row-Becomes-A-Card Rule", "body": "Below 700px a table.rwd stops being a table: each row becomes a bordered card, the identity cell jumps to the top full-width, signals and actions span the card, every remaining cell is prefixed with its column name, and empty cells disappear entirely. A horizontally-scrolling data table on a phone is a failure, not a fallback.", "section": "layout" },
+      { "name": "The Min-Zero Rule", "body": "Any grid or flex child that can contain a table, a domain or a hash gets min-width: 0. Long attacker-supplied strings must wrap or scroll inside their box — never widen the page.", "section": "layout" },
+      { "name": "The Glow-Is-Signal Rule", "body": "Cyan glow means state — focused, active, running, selected, critical. It never means important and never means pretty. Ambient cyan exists only in the page background and chrome: the body scanline, the radial wash, the 9-second sweep and the logo pulse. Element-level glow is reserved for state. Nothing in between.", "section": "elevation" },
+      { "name": "The Flat-At-Rest Rule", "body": "A surface with a resting shadow is a bug. Lift is a response to the pointer; light is a response to the system.", "section": "elevation" },
+      { "name": "The Pill-Is-A-State Rule", "body": "A 999px radius means a value you read, never one you type into — a severity badge, a state chip, a filter toggle, a count. Anything you can edit or press has a 6px corner. Radius is a part of speech.", "section": "shapes" },
+      { "name": "The Hairline Rule", "body": "One border width (1px) and one border color (#1E2A3D) at rest. Emphasis changes the border's color to cyan or a severity hue; it never changes its thickness.", "section": "shapes" },
+      { "name": "The Stroke-Not-Fill Rule", "body": "State, severity and intent are expressed by changing a border color. Solid color fills are reserved for severity badges (at 15% alpha), bar fills, and the daylight report. A button filled with Critical Red would be louder than an actual critical finding.", "section": "components" },
+      { "name": "The Explain-Affordance Rule", "body": "Any component that displays a derived value — a score, a confidence, a count, a verdict, a grouping — ships with the route to its explanation: a help dot, a link to Explain Finding, or a breadcrumb side-link. A derived number with no way in is incomplete, not minimal.", "section": "components" }
+    ],
+    "dos": [
+      "Do reach for the existing :root tokens in base.html. The whole system is 23 custom properties; a new hex in a template is a fork of the design system.",
+      "Do color a number only when it is a severity (.kpi.crit, .kpi.hi, .kpi.med). Every other value is Text.",
+      "Do mark a new section with an h2 — JetBrains Mono 12px uppercase at .12em with its 6px cyan square.",
+      "Do give any new wide table class=\"rwd\" and real <th> text, so the 700px row-card transformation can label its cells.",
+      "Do stagger arriving collections with --i (70ms per panel, 55ms per tile) or --r (28ms per row) and let fadeUp / rowIn do the work.",
+      "Do state severity on a whole row with the 3px inset left spine (.sevrow.critical), not a background tint.",
+      "Do label every input with a block mono uppercase <label>, and give any block that can hold a brand name or attacker text unicode-bidi: plaintext.",
+      "Do keep every animation inside the blanket prefers-reduced-motion kill switch at the end of base.html — new keyframes outside a stylesheet it covers must opt in explicitly.",
+      "Do use the daylight world for anything that leaves the app as a document, and the night world for everything that stays in it."
+    ],
+    "donts": [
+      "Don't introduce a second accent hue. Violet and magenta exist as --violet: #5b9bb5 and --magenta: #c9d3df — both already desaturated to near-neutral precisely because the system rejected them as colors. Treat them as legacy neutrals, not an expansion slot.",
+      "Don't put a resting shadow on anything. Flat at rest; lift on hover; light on state.",
+      "Don't glow an element to say it matters. Glow says focused, active, running or selected.",
+      "Don't uppercase content. Uppercase is reserved for metadata.",
+      "Don't set prose in Rajdhani or numbers in Inter.",
+      "Don't fill a button with a severity color, or give a destructive action more visual weight than a critical finding has.",
+      "Don't let a table scroll the page sideways — wrap it in .tw or convert it to a row-card.",
+      "Don't emphasise by thickening a border. Change its color instead.",
+      "Don't ship a derived number without the path to its arithmetic.",
+      "Don't reach for the light palette inside /ui. There is exactly one light surface, and it is the thing you hand to someone else."
+    ]
+  }
+}
