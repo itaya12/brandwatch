@@ -119,9 +119,9 @@
   <div class="kpi cy"><div class="v" data-count="{{ cards|length }}">0</div><div class="l">brands</div></div>
   <div class="kpi"><div class="v" data-count="{{ cards|map(attribute='domains')|map('length')|sum }}">0</div><div class="l">official domains</div></div>
   <div class="kpi crit"><div class="v" data-count="{{ cards|map(attribute='sev')|map(attribute='critical')|sum }}">0</div><div class="l"><span class="pulse"></span> critical open</div></div>
-  <div class="kpi hi"><div class="v" data-count="{{ open_total }}">0</div><div class="l">open findings</div></div>
+  <div class="kpi"><div class="v" data-count="{{ open_total }}">0</div><div class="l">open findings</div></div>
   <div class="kpi vi"><div class="v" data-count="{{ cards|sum(attribute='candidates') }}">0</div><div class="l">domains examined</div></div>
-  <div class="kpi ok"><div class="v" data-count="{{ cards|sum(attribute='confirmed') }}">0</div><div class="l">confirmed phishing</div></div>
+  <div class="kpi"><div class="v" data-count="{{ cards|sum(attribute='confirmed') }}">0</div><div class="l">confirmed phishing</div></div>
   <div class="kpi"><div class="v" data-count="{{ cards|sum(attribute='scans') }}">0</div><div class="l">scans run</div></div>
   <div class="kpi mg"><div class="v" data-count="{{ cards|sum(attribute='scans_today') }}">0</div><div class="l">scans today</div></div>
 </div>{% endif %}

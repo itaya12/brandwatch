@@ -165,12 +165,12 @@
   <form method="post" action="/ui/campaigns/reassess-redirects"><input type="hidden" name="brand_id" value="{{ brand_id }}"><button type="submit" class="small" title="uses only the saved evidence: no scan, no provider call">Re-assess them from the saved evidence</button></form></div>{% endif %}
 <p class="intro" style="font-size:15px;color:var(--text);margin-top:12px">{{ m.headline }}</p>
 <div class="kpis">
-  <div class="kpi crit"><div class="v" data-count="{{ m.stats.sites }}">0</div><div class="l">confirmed sites</div></div>
-  <div class="kpi ok"><div class="v" data-count="{{ m.stats.groups }}">0</div><div class="l">connected groups</div></div>
-  <div class="kpi hi"><div class="v" data-count="{{ m.stats.linked_sites }}">0</div><div class="l">sites in a group</div></div>
+  <div class="kpi"><div class="v" data-count="{{ m.stats.sites }}">0</div><div class="l">confirmed sites</div></div>
+  <div class="kpi"><div class="v" data-count="{{ m.stats.groups }}">0</div><div class="l">connected groups</div></div>
+  <div class="kpi"><div class="v" data-count="{{ m.stats.linked_sites }}">0</div><div class="l">sites in a group</div></div>
   <div class="kpi"><div class="v" data-count="{{ m.stats.alone }}">0</div><div class="l">no strong link</div></div>
   <div class="kpi vi"><div class="v" data-count="{{ m.stats.strong_links }}">0</div><div class="l">strong links</div></div>
-  <div class="kpi med"><div class="v" data-count="{{ m.stats.weak_links }}">0</div><div class="l">hints &amp; common</div></div>
+  <div class="kpi"><div class="v" data-count="{{ m.stats.weak_links }}">0</div><div class="l">hints &amp; common</div></div>
 </div>
 
 {% macro xform(kind, value, on, label, brand_id, name='') -%}

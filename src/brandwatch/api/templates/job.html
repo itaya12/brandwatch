@@ -96,8 +96,8 @@
   <a class="kpi lnk hi" href="/ui/findings?state=&job_id={{ job.id }}" title="the findings this scan found or re-scored"><div class="v" id="k-findings">{{ summary.findings if summary and summary.findings is not none else "—" }}</div><div class="l">findings →</div></a>
   <div class="kpi crit"><div class="v" id="k-crit">{{ summary.criticals if summary and summary.criticals is not none else "—" }}</div><div class="l">critical</div></div>
   <div class="kpi vi"><div class="v" id="k-calls">{{ summary.api_calls if summary and summary.api_calls is not none else "—" }}</div><div class="l">API calls</div></div>
-  <div class="kpi ok"><div class="v" id="k-cost">{{ "%.4f"|format(summary.cost_usd) if summary and summary.cost_usd is not none else "—" }}</div><div class="l">cost (USD)</div></div>
-  <div class="kpi med"><div class="v" id="k-alerts">0</div><div class="l">provider alerts</div></div>
+  <div class="kpi"><div class="v" id="k-cost">{{ "%.4f"|format(summary.cost_usd) if summary and summary.cost_usd is not none else "—" }}</div><div class="l">cost (USD)</div></div>
+  <div class="kpi"><div class="v" id="k-alerts">0</div><div class="l">provider alerts</div></div>
 </div>
 
 <div class="grid" style="grid-template-columns:minmax(0,1.7fr) minmax(300px,1fr);margin-top:14px;align-items:start">

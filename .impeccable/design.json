@@ -599,7 +599,7 @@
       },
       {
         "name": "The Plain Number Rule",
-        "body": "A KPI's value is `Text` unless the number *is* a severity count (`.kpi.crit`, `.kpi.hi`, `.kpi.med`). Coloring a number for emphasis is forbidden; emphasis comes from size and position.",
+        "body": "A KPI's value is `Text` unless the number *is* a severity count — how many findings are critical, how many are high. A count of work (sites linked, IOCs, kit servers, takedowns not yet sent, sites confirmed) is not a severity, however much it wants attention, and it is plain. Colouring a number for emphasis is forbidden; emphasis comes from size and position. Two tiles in the whole app keep a severity hue, and both are literally labelled with the severity they count. Cyan is the exception the other rules already allow: it may mark a count that is genuinely live, like takedowns in flight.",
         "section": "colors"
       },
       {

@@ -17,11 +17,11 @@
 <p class="intro" style="font-size:15px;color:var(--text)">{{ c.headline }}</p>
 <div class="kpis">
   <div class="kpi cy"><div class="v" data-count="{{ c.stats.nodes }}">0</div><div class="l">nodes</div></div>
-  <div class="kpi ok"><div class="v" data-count="{{ c.stats.included }}">0</div><div class="l">included</div></div>
+  <div class="kpi"><div class="v" data-count="{{ c.stats.included }}">0</div><div class="l">included</div></div>
   <div class="kpi vi"><div class="v" data-count="{{ c.stats.edges }}">0</div><div class="l">pivot edges</div></div>
-  <div class="kpi crit"><div class="v" data-count="{{ c.findings|length }}">0</div><div class="l">findings linked</div></div>
-  <div class="kpi hi"><div class="v" data-count="{{ c.actor_profile.servers|length if c.actor_profile.servers else 0 }}">0</div><div class="l">servers</div></div>
-  <div class="kpi med"><div class="v" data-count="{{ iocs|length }}">0</div><div class="l">IOCs</div></div>
+  <div class="kpi"><div class="v" data-count="{{ c.findings|length }}">0</div><div class="l">findings linked</div></div>
+  <div class="kpi"><div class="v" data-count="{{ c.actor_profile.servers|length if c.actor_profile.servers else 0 }}">0</div><div class="l">servers</div></div>
+  <div class="kpi"><div class="v" data-count="{{ iocs|length }}">0</div><div class="l">IOCs</div></div>
   <div class="kpi mg"><div class="v" data-count="{{ (c.actor_profile.other_brands_hit or [])|length }}">0</div><div class="l">other brands hit</div></div>
 </div>
 <div class="cols" style="margin-top:14px">

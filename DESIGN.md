@@ -319,9 +319,13 @@ also glow, because a severity is a state: the status pulse expands in red or gre
 step's dot carries a green halo, an error panel sits in a red one. Nothing else glows — not a brand,
 not a category, not an operation's series colour, and never a surface at rest.
 
-**The Plain Number Rule.** A KPI's value is `Text` unless the number *is* a severity count
-(`.kpi.crit`, `.kpi.hi`, `.kpi.med`). Coloring a number for emphasis is forbidden; emphasis comes
-from size and position.
+**The Plain Number Rule.** A KPI's value is `Text` unless the number *is* a severity count — how
+many findings are critical, how many are high. A count of work (sites linked, IOCs, kit servers,
+takedowns not yet sent, sites confirmed) is not a severity, however much it wants attention, and it
+is plain. Colouring a number for emphasis is forbidden; emphasis comes from size and position. Two
+tiles in the whole app keep a severity hue, and both are literally labelled with the severity they
+count. Cyan is the exception the other rules already allow: it may mark a count that is genuinely
+live, like takedowns in flight.
 
 **The Series-Is-Identity Rule.** A series colour answers "which operation?" and nothing else. It is
 never severity, never a brand, never a tier, never an accent. An ordered scale — scan depth, tier,
@@ -487,6 +491,9 @@ changes the border's *color* to cyan or a severity hue; it never changes its thi
 - **Ghost:** transparent ground, everything else unchanged.
 - **Small:** 4px 9px, 12px, `white-space: nowrap`.
 - **Disabled:** 0.55 opacity, default cursor, no glow.
+- **Never danger-by-association:** the action a row offers is styled for what it *is*, not for how
+  bad the row is. Drafting a takedown is the work, so it is a primary button; the severity badge
+  beside it carries the alarm. A column of 38 red buttons reads as 38 failures.
 - **Busy:** a guarded form disables its submitter and swaps the label to "Working…" for up to 30s,
   so a double-press can never queue two scans.
 

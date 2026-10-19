@@ -14,7 +14,7 @@
   .qtiles a:hover{border-color:var(--accent)}.qtiles a.on{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
   .qtiles .v{font-family:var(--display);font-size:22px;font-weight:700;line-height:1}
   .qtiles .l{font-size:11.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;font-family:var(--mono)}
-  .qtiles .crit .v{color:var(--crit)}.qtiles .hi .v{color:var(--high)}.qtiles .med .v{color:var(--med)}.qtiles .ok .v{color:var(--low)}.qtiles .cy .v{color:var(--accent2)}
+  .qtiles .crit .v{color:var(--crit)}.qtiles .hi .v{color:var(--high)}.qtiles .med .v{color:var(--med)}.qtiles .cy .v{color:var(--accent2)}
   .filters{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px 10px;align-items:end;margin-bottom:8px}
   .filters label{display:block;font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:3px}
   .filters .wide{grid-column:span 2}
@@ -76,7 +76,7 @@
   <a class="hi {{ 'on' if filters.severity=='high' }}" href="?state=open&severity=high{{ bq }}"><span class="v" data-count="{{ s.open_sev.high }}">0</span><span class="l">high</span></a>
   <a class="med {{ 'on' if filters.severity=='medium' }}" href="?state=open&severity=medium{{ bq }}"><span class="v" data-count="{{ s.open_sev.medium }}">0</span><span class="l">medium</span></a>
   <a class="{{ 'on' if filters.since=='24h' }}" href="?state=open&since=24h{{ bq }}"><span class="v" data-count="{{ s.new_24h }}">0</span><span class="l">new in 24h</span></a>
-  <a class="ok {{ 'on' if filters.state=='confirmed' }}" href="?state=confirmed{{ bq }}"><span class="v" data-count="{{ s.by_state.get('confirmed', 0) }}">0</span><span class="l">confirmed</span></a>
+  <a class="{{ 'on' if filters.state=='confirmed' }}" href="?state=confirmed{{ bq }}"><span class="v" data-count="{{ s.by_state.get('confirmed', 0) }}">0</span><span class="l">confirmed</span></a>
   <a class="{{ 'on' if filters.state=='dismissed' }}" href="?state=dismissed{{ bq }}"><span class="v" data-count="{{ s.by_state.get('dismissed', 0) }}">0</span><span class="l">dismissed</span></a>
   {% if snoozed_n or filters.state == 'snoozed' %}<a class="{{ 'on' if filters.state=='snoozed' }}" href="?state=snoozed{{ bq }}" title="open findings put aside until a date; they come back by themselves"><span class="v" data-count="{{ snoozed_n }}">0</span><span class="l">snoozed</span></a>{% endif %}
 </div>

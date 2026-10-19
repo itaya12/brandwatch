@@ -28,12 +28,12 @@
 <div class="kpis">
   <a class="kpi lnk mg" href="#maps"><div class="v" data-count="{{ k.campaigns }}">0</div><div class="l">infrastructure maps</div></a>
   <div class="kpi cy"><div class="v" data-count="{{ k.nodes }}">0</div><div class="l">infrastructure nodes</div></div>
-  <div class="kpi ok"><div class="v" data-count="{{ k.included }}">0</div><div class="l">included after triage</div></div>
+  <div class="kpi"><div class="v" data-count="{{ k.included }}">0</div><div class="l">included after triage</div></div>
   <div class="kpi"><div class="v" data-count="{{ k.excluded }}">0</div><div class="l">excluded (noise)</div></div>
   <div class="kpi vi"><div class="v" data-count="{{ k.edges }}">0</div><div class="l">pivot edges</div></div>
-  <div class="kpi crit"><div class="v" data-count="{{ k.findings }}">0</div><div class="l">findings linked</div></div>
-  <div class="kpi hi"><div class="v" data-count="{{ k.servers|length }}">0</div><div class="l">kit servers</div></div>
-  <div class="kpi med"><div class="v" data-count="{{ k.iocs }}">0</div><div class="l">IOCs</div></div>
+  <div class="kpi"><div class="v" data-count="{{ k.findings }}">0</div><div class="l">findings linked</div></div>
+  <div class="kpi"><div class="v" data-count="{{ k.servers|length }}">0</div><div class="l">kit servers</div></div>
+  <div class="kpi"><div class="v" data-count="{{ k.iocs }}">0</div><div class="l">IOCs</div></div>
 </div>
 
 {% if k.other_brands %}

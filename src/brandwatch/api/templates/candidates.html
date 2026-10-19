@@ -43,7 +43,7 @@
     <div class="v" data-count="{{ n }}" style="color:{{ w.state_colors[st] if st != 'dismissed' else 'var(--muted)' }}">0</div><div class="l" title="{{ STATE_HELP.get(st, '') }}">{{ st|state_label }}</div></a>
   {% endfor %}
   <div class="kpi cy"><div class="v" data-count="{{ w.scans_total }}">0</div><div class="l">observations made</div></div>
-  <div class="kpi hi"><div class="v" data-count="{{ w.changed_24h }}">0</div><div class="l">content changed (24h)</div></div>
+  <div class="kpi"><div class="v" data-count="{{ w.changed_24h }}">0</div><div class="l">content changed (24h)</div></div>
 </div>
 
 <div class="panel" style="margin-top:14px">

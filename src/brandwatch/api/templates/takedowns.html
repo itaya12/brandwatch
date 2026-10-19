@@ -3,20 +3,21 @@
 {% block content %}
 <style>
   @media (max-width:700px){table.rwd td:nth-child(6),table.rwd td:nth-child(7){display:none}}  /* reference and abuse contact: on the request page */
-  .cta{display:inline-flex;align-items:center;gap:8px;padding:7px 12px;border-radius:9px;border:1px solid var(--crit);color:var(--crit);background:rgba(255,77,77,.08);font-weight:600;font-size:12px;cursor:pointer}
+  .cta{display:inline-flex;align-items:center;gap:8px;padding:7px 12px;border-radius:9px;border:1px solid var(--accent);color:var(--accent2);background:rgba(53,199,242,.16);font-weight:600;font-size:12px;cursor:pointer}
+  .cta:hover{box-shadow:0 0 12px rgba(53,199,242,.2)}
   .cta:hover{background:rgba(255,77,77,.18)}
 </style>
 <h1>TAKEDOWNS <span class="muted">· every confirmed phishing site, and whether a takedown was requested · {{ total }} site(s)</span></h1>
 <p class="intro">{{ PAGE_INTROS.takedowns }}</p>
 {# three tones only: needs action (red) · on its way (accent) · taken down (green); the rest is neutral #}
-{% set colors = {'none':'#FF4D4D','sent':'#35C7F2','acknowledged':'#35C7F2','in_progress':'#35C7F2','resolved':'#2ECC71'} %}
+{% set colors = {'none':INK.crit,'sent':INK.accent,'acknowledged':INK.accent,'in_progress':INK.accent,'resolved':INK.low} %}
 
 {% set groups = [
-  ('none', 'no takedown yet', 'confirmed phishing with no request — start here', ['none'], 'var(--crit)'),
+  ('none', 'no takedown yet', 'confirmed phishing with no request — start here', ['none'], 'var(--text)'),
   ('unsent', 'request being prepared', 'draft, in review, approved or reopened — not sent yet', ['draft', 'review', 'approved', 'reopened'], 'var(--text)'),
   ('inflight', 'sent, waiting for the host', 'sent, acknowledged or in progress', ['sent', 'acknowledged', 'in_progress'], 'var(--accent2)'),
-  ('stale', 'no answer for 7+ days', 'sent or acknowledged more than a week ago and still not resolved — chase it, or try another channel', ['stale'], 'var(--high)'),
-  ('resolved', 'taken down', 'the site is gone', ['resolved'], 'var(--low)'),
+  ('stale', 'no answer for 7+ days', 'sent or acknowledged more than a week ago and still not resolved — chase it, or try another channel', ['stale'], 'var(--text)'),
+  ('resolved', 'taken down', 'the site is gone', ['resolved'], 'var(--text)'),
 ] %}
 <div class="kpis">
   {% for key, label, tip, members, col in groups %}{% set ns = namespace(n=0) %}{% for st in members %}{% set ns.n = ns.n + counts.get(st, 0) %}{% endfor %}{% set n = ns.n %}
