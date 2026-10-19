@@ -425,8 +425,8 @@ window.BW = (function () {
 
 <div class="kpis">
   <div class="kpi"><div class="v" data-count="282">0</div><div class="l">events (latest)</div></div>
-  <div class="kpi"><div class="v" data-count="101">0</div><div class="l">analyst actions</div></div>
-  <div class="kpi"><div class="v" data-count="181">0</div><div class="l">system actions</div></div>
+  <div class="kpi"><div class="v" data-count="100">0</div><div class="l">analyst actions</div></div>
+  <div class="kpi"><div class="v" data-count="182">0</div><div class="l">system actions</div></div>
   <div class="kpi"><div class="v" data-count="33">0</div><div class="l">verdicts recorded</div></div>
   <div class="kpi"><div class="v" data-count="0">0</div><div class="l">logins (24h)</div></div>
 </div>
@@ -448,7 +448,7 @@ window.BW = (function () {
 
 <div class="grid actg" style="grid-template-columns:2.2fr 1fr;margin-top:14px">
   <div class="panel">
-    <div class="small muted" style="margin-bottom:6px">2847 events · page 2</div>
+    <div class="small muted" style="margin-bottom:6px">2848 events · page 2</div>
     <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px" id="chips">
       <button type="button" class="chip on" data-cat="notable" title="everything except sign-ins" aria-pressed="true">notable</button>
       <button type="button" class="chip" data-cat="*" aria-pressed="false">all</button>
@@ -458,7 +458,23 @@ window.BW = (function () {
       
       
       <div class="day" data-day="2026-10-14">2026-10-14</div>
-      <div class="ev t-crit" data-cat="finding" data-notable="1" style="--r:0">
+      <div class="ev " data-cat="investigation" data-notable="1" style="--r:0">
+        <div class="av sys" title="admin">SYS</div>
+        <div>
+          <div class="what"><span class="muted">admin</span> <b>investigation</b> · started
+            
+            <span class="muted small">finding <a href="/ui/findings/a93d4aa8-32cd-4819-a9eb-fd7a8ed9b320/" class="mono">shopnova-coupons.com ↗</a></span></div>
+          
+          
+          <div class="diff"><span class="new">auto: yes</span>
+            </div>
+          
+        </div>
+        <div class="when"><time datetime="2026-10-14T09:52:57.339023+00:00" data-local title="2026-10-14T09:52:57.339023+00:00 UTC">2026-10-14 09:52</time><div><a class="small" href="/ui/activity/_1399873f95/" title="every event about this finding">history</a></div></div>
+      </div>
+      
+      
+      <div class="ev t-crit" data-cat="finding" data-notable="1" style="--r:1">
         <div class="av " title="admin">AD</div>
         <div>
           <div class="what"><span class="muted">admin</span> <b>finding</b> · confirmed
@@ -474,7 +490,7 @@ window.BW = (function () {
       </div>
       
       
-      <div class="ev " data-cat="report" data-notable="1" style="--r:1">
+      <div class="ev " data-cat="report" data-notable="1" style="--r:2">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>report</b> · generated
@@ -490,7 +506,7 @@ window.BW = (function () {
       </div>
       
       
-      <div class="ev " data-cat="campaign" data-notable="1" style="--r:2">
+      <div class="ev " data-cat="campaign" data-notable="1" style="--r:3">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>campaign</b> · investigated
@@ -506,7 +522,7 @@ window.BW = (function () {
       </div>
       
       
-      <div class="ev " data-cat="intel" data-notable="1" style="--r:3">
+      <div class="ev " data-cat="intel" data-notable="1" style="--r:4">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>intel</b> · started
@@ -522,7 +538,7 @@ window.BW = (function () {
       </div>
       
       
-      <div class="ev " data-cat="investigation" data-notable="1" style="--r:4">
+      <div class="ev " data-cat="investigation" data-notable="1" style="--r:5">
         <div class="av sys" title="admin">SYS</div>
         <div>
           <div class="what"><span class="muted">admin</span> <b>investigation</b> · started
@@ -538,7 +554,7 @@ window.BW = (function () {
       </div>
       
       
-      <div class="ev t-crit" data-cat="finding" data-notable="1" style="--r:5">
+      <div class="ev t-crit" data-cat="finding" data-notable="1" style="--r:6">
         <div class="av " title="admin">AD</div>
         <div>
           <div class="what"><span class="muted">admin</span> <b>finding</b> · confirmed
@@ -554,7 +570,7 @@ window.BW = (function () {
       </div>
       
       
-      <div class="ev " data-cat="report" data-notable="1" style="--r:6">
+      <div class="ev " data-cat="report" data-notable="1" style="--r:7">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>report</b> · generated
@@ -570,7 +586,7 @@ window.BW = (function () {
       </div>
       
       
-      <div class="ev " data-cat="campaign" data-notable="1" style="--r:7">
+      <div class="ev " data-cat="campaign" data-notable="1" style="--r:8">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>campaign</b> · investigated
@@ -586,7 +602,7 @@ window.BW = (function () {
       </div>
       
       
-      <div class="ev " data-cat="intel" data-notable="1" style="--r:8">
+      <div class="ev " data-cat="intel" data-notable="1" style="--r:9">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>intel</b> · started
@@ -602,7 +618,7 @@ window.BW = (function () {
       </div>
       
       
-      <div class="ev " data-cat="investigation" data-notable="1" style="--r:9">
+      <div class="ev " data-cat="investigation" data-notable="1" style="--r:10">
         <div class="av sys" title="admin">SYS</div>
         <div>
           <div class="what"><span class="muted">admin</span> <b>investigation</b> · started
@@ -618,7 +634,7 @@ window.BW = (function () {
       </div>
       
       
-      <div class="ev t-crit" data-cat="finding" data-notable="1" style="--r:10">
+      <div class="ev t-crit" data-cat="finding" data-notable="1" style="--r:11">
         <div class="av " title="admin">AD</div>
         <div>
           <div class="what"><span class="muted">admin</span> <b>finding</b> · confirmed
@@ -634,7 +650,7 @@ window.BW = (function () {
       </div>
       
       
-      <div class="ev " data-cat="report" data-notable="1" style="--r:11">
+      <div class="ev " data-cat="report" data-notable="1" style="--r:12">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>report</b> · generated
@@ -650,7 +666,7 @@ window.BW = (function () {
       </div>
       
       
-      <div class="ev " data-cat="campaign" data-notable="1" style="--r:12">
+      <div class="ev " data-cat="campaign" data-notable="1" style="--r:13">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>campaign</b> · investigated
@@ -666,7 +682,7 @@ window.BW = (function () {
       </div>
       
       
-      <div class="ev " data-cat="intel" data-notable="1" style="--r:13">
+      <div class="ev " data-cat="intel" data-notable="1" style="--r:14">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>intel</b> · started
@@ -682,7 +698,7 @@ window.BW = (function () {
       </div>
       
       
-      <div class="ev " data-cat="investigation" data-notable="1" style="--r:14">
+      <div class="ev " data-cat="investigation" data-notable="1" style="--r:15">
         <div class="av sys" title="admin">SYS</div>
         <div>
           <div class="what"><span class="muted">admin</span> <b>investigation</b> · started
@@ -698,7 +714,7 @@ window.BW = (function () {
       </div>
       
       
-      <div class="ev t-crit" data-cat="finding" data-notable="1" style="--r:15">
+      <div class="ev t-crit" data-cat="finding" data-notable="1" style="--r:16">
         <div class="av " title="admin">AD</div>
         <div>
           <div class="what"><span class="muted">admin</span> <b>finding</b> · confirmed
@@ -714,7 +730,7 @@ window.BW = (function () {
       </div>
       
       
-      <div class="ev " data-cat="report" data-notable="1" style="--r:16">
+      <div class="ev " data-cat="report" data-notable="1" style="--r:17">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>report</b> · generated
@@ -730,7 +746,7 @@ window.BW = (function () {
       </div>
       
       
-      <div class="ev " data-cat="campaign" data-notable="1" style="--r:17">
+      <div class="ev " data-cat="campaign" data-notable="1" style="--r:18">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>campaign</b> · investigated
@@ -746,7 +762,7 @@ window.BW = (function () {
       </div>
       
       
-      <div class="ev " data-cat="intel" data-notable="1" style="--r:18">
+      <div class="ev " data-cat="intel" data-notable="1" style="--r:19">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>intel</b> · started
@@ -762,7 +778,7 @@ window.BW = (function () {
       </div>
       
       
-      <div class="ev " data-cat="investigation" data-notable="1" style="--r:19">
+      <div class="ev " data-cat="investigation" data-notable="1" style="--r:20">
         <div class="av sys" title="admin">SYS</div>
         <div>
           <div class="what"><span class="muted">admin</span> <b>investigation</b> · started
@@ -778,7 +794,7 @@ window.BW = (function () {
       </div>
       
       
-      <div class="ev t-crit" data-cat="finding" data-notable="1" style="--r:20">
+      <div class="ev t-crit" data-cat="finding" data-notable="1" style="--r:21">
         <div class="av " title="admin">AD</div>
         <div>
           <div class="what"><span class="muted">admin</span> <b>finding</b> · confirmed
@@ -794,7 +810,7 @@ window.BW = (function () {
       </div>
       
       
-      <div class="ev " data-cat="report" data-notable="1" style="--r:21">
+      <div class="ev " data-cat="report" data-notable="1" style="--r:22">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>report</b> · generated
@@ -810,7 +826,7 @@ window.BW = (function () {
       </div>
       
       
-      <div class="ev " data-cat="campaign" data-notable="1" style="--r:22">
+      <div class="ev " data-cat="campaign" data-notable="1" style="--r:23">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>campaign</b> · investigated
@@ -826,7 +842,7 @@ window.BW = (function () {
       </div>
       
       
-      <div class="ev " data-cat="intel" data-notable="1" style="--r:23">
+      <div class="ev " data-cat="intel" data-notable="1" style="--r:24">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>intel</b> · started
@@ -842,7 +858,7 @@ window.BW = (function () {
       </div>
       
       
-      <div class="ev " data-cat="investigation" data-notable="1" style="--r:24">
+      <div class="ev " data-cat="investigation" data-notable="1" style="--r:25">
         <div class="av sys" title="admin">SYS</div>
         <div>
           <div class="what"><span class="muted">admin</span> <b>investigation</b> · started
@@ -858,7 +874,7 @@ window.BW = (function () {
       </div>
       
       
-      <div class="ev t-crit" data-cat="finding" data-notable="1" style="--r:25">
+      <div class="ev t-crit" data-cat="finding" data-notable="1" style="--r:26">
         <div class="av " title="admin">AD</div>
         <div>
           <div class="what"><span class="muted">admin</span> <b>finding</b> · confirmed
@@ -874,7 +890,7 @@ window.BW = (function () {
       </div>
       
       
-      <div class="ev " data-cat="report" data-notable="1" style="--r:26">
+      <div class="ev " data-cat="report" data-notable="1" style="--r:27">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>report</b> · generated
@@ -890,7 +906,7 @@ window.BW = (function () {
       </div>
       
       
-      <div class="ev " data-cat="campaign" data-notable="1" style="--r:27">
+      <div class="ev " data-cat="campaign" data-notable="1" style="--r:28">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>campaign</b> · investigated
@@ -906,7 +922,7 @@ window.BW = (function () {
       </div>
       
       
-      <div class="ev " data-cat="intel" data-notable="1" style="--r:28">
+      <div class="ev " data-cat="intel" data-notable="1" style="--r:29">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>intel</b> · started
@@ -922,7 +938,7 @@ window.BW = (function () {
       </div>
       
       
-      <div class="ev " data-cat="investigation" data-notable="1" style="--r:29">
+      <div class="ev " data-cat="investigation" data-notable="1" style="--r:30">
         <div class="av sys" title="admin">SYS</div>
         <div>
           <div class="what"><span class="muted">admin</span> <b>investigation</b> · started
@@ -4906,22 +4922,6 @@ window.BW = (function () {
       </div>
       
       
-      <div class="ev " data-cat="brand" data-notable="1" style="--r:30">
-        <div class="av " title="admin">AD</div>
-        <div>
-          <div class="what"><span class="muted">admin</span> <b>brand</b> · created
-            
-            <span class="muted small">brand <span class="mono" title="this object no longer exists (e.g. its brand was deleted with Start over)">d1c73ba3 · deleted</span></span></div>
-          
-          
-          <div class="diff"><span class="new">{"custom": false, "domains": ["ironvale.com"], "kind": "service", "name": "Ironvale 2ac6", "preset": "standard"}</span>
-            </div>
-          
-        </div>
-        <div class="when"><time datetime="2026-10-12T07:33:47.063922+00:00" data-local title="2026-10-12T07:33:47.063922+00:00 UTC">2026-10-12 07:33</time><div><a class="small" href="/ui/activity?object_id=d1c73ba3-f58f-4a03-963c-4d37f379afcf" title="every event about this brand">history</a></div></div>
-      </div>
-      
-      
     </div>
     <div class="more"><button type="button" id="more" style="display:none">Show older events</button>
       <a class="btn small" href="/ui/activity?page=1">← newer</a>
@@ -4934,7 +4934,7 @@ window.BW = (function () {
       
       <div class="hbar"><span>finding</span><div class="bar"><i data-w="100"></i></div><b>64</b></div>
       
-      <div class="hbar"><span>Brand use</span><div class="bar"><i data-w="69"></i></div><b>44</b></div>
+      <div class="hbar"><span>Brand use</span><div class="bar"><i data-w="67"></i></div><b>43</b></div>
       
       <div class="hbar"><span>report</span><div class="bar"><i data-w="52"></i></div><b>33</b></div>
       
@@ -4946,12 +4946,12 @@ window.BW = (function () {
       
       <div class="hbar"><span>user</span><div class="bar"><i data-w="47"></i></div><b>30</b></div>
       
-      <div class="hbar"><span>investigation</span><div class="bar"><i data-w="38"></i></div><b>24</b></div>
+      <div class="hbar"><span>investigation</span><div class="bar"><i data-w="39"></i></div><b>25</b></div>
       
     </div>
     <div class="panel" style="margin-top:14px">
       <h2>Activity · 14 days</h2>
-      <svg class="spark" data-spark='{"series": [{"color": "#35C7F2", "values": [0, 0, 0, 0, 0, 0, 27, 30, 225, 0, 0, 0, 0, 0]}]}'></svg>
+      <svg class="spark" data-spark='{"series": [{"color": "#35C7F2", "values": [0, 0, 0, 0, 0, 0, 26, 30, 226, 0, 0, 0, 0, 0]}]}'></svg>
     </div>
     <div class="panel" style="margin-top:14px">
       <h2>Most active</h2>
