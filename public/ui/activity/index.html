@@ -406,10 +406,10 @@ window.BW = (function () {
 <p class="intro">The append-only audit trail: who did what, when, old → new, and why. The database itself refuses to edit or delete it.</p>
 
 <div class="kpis">
-  <div class="kpi"><div class="v" data-count="123">0</div><div class="l">events (latest)</div></div>
-  <div class="kpi"><div class="v" data-count="39">0</div><div class="l">analyst actions</div></div>
-  <div class="kpi"><div class="v" data-count="84">0</div><div class="l">system actions</div></div>
-  <div class="kpi"><div class="v" data-count="11">0</div><div class="l">verdicts recorded</div></div>
+  <div class="kpi"><div class="v" data-count="118">0</div><div class="l">events (latest)</div></div>
+  <div class="kpi"><div class="v" data-count="38">0</div><div class="l">analyst actions</div></div>
+  <div class="kpi"><div class="v" data-count="80">0</div><div class="l">system actions</div></div>
+  <div class="kpi"><div class="v" data-count="10">0</div><div class="l">verdicts recorded</div></div>
   <div class="kpi"><div class="v" data-count="5">0</div><div class="l">logins (24h)</div></div>
 </div>
 
@@ -430,7 +430,7 @@ window.BW = (function () {
 
 <div class="grid actg" style="grid-template-columns:2.2fr 1fr;margin-top:14px">
   <div class="panel">
-    <div class="small muted" style="margin-bottom:6px">2802 events</div>
+    <div class="small muted" style="margin-bottom:6px">2807 events</div>
     <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px" id="chips">
       <button type="button" class="chip on" data-cat="notable" title="everything except sign-ins" aria-pressed="true">notable</button>
       <button type="button" class="chip" data-cat="*" aria-pressed="false">all</button>
@@ -443,12 +443,12 @@ window.BW = (function () {
       <div class="ev " data-cat="user" data-notable="0" style="--r:0;display:none">
         <div class="av " title="admin">AD</div>
         <div>
-          <div class="what"><span class="muted">admin</span> <b>user</b> · login <span class="pill" title="41 consecutive events, first 2026-10-19 10:08">×41</span>
+          <div class="what"><span class="muted">admin</span> <b>user</b> · login <span class="pill" title="46 consecutive events, first 2026-10-19 10:08">×46</span>
             
             <span class="muted small">user bc089017</span></div>
           
         </div>
-        <div class="when"><time datetime="2026-10-19T14:17:07.997555+00:00" data-local title="2026-10-19T14:17:07.997555+00:00 UTC">2026-10-19 14:17</time><div><a class="small" href="/ui/activity/_d2793a420a/" title="every event about this user">history</a></div></div>
+        <div class="when"><time datetime="2026-10-19T15:16:06.122688+00:00" data-local title="2026-10-19T15:16:06.122688+00:00 UTC">2026-10-19 15:16</time><div><a class="small" href="/ui/activity/_d2793a420a/" title="every event about this user">history</a></div></div>
       </div>
       
       
@@ -2280,86 +2280,6 @@ window.BW = (function () {
       </div>
       
       
-      <div class="ev " data-cat="report" data-notable="1" style="--r:30">
-        <div class="av sys" title="system">SYS</div>
-        <div>
-          <div class="what"><span class="muted">system</span> <b>report</b> · generated
-            
-            <span class="muted small">finding <a href="/ui/findings/60292b11-724b-4b3f-bf1f-262976b5659f/" class="mono">shopnova-id-check.com ↗</a></span></div>
-          
-          
-          <div class="diff"><span class="new">{"reports": {"html": "1319446d-e6e8-4a56-b6d9-2f9302b9bc12", "json": "22f0a3e8-57b8-49c4-b20d-140b27090f51"}}</span>
-            </div>
-          
-        </div>
-        <div class="when"><time datetime="2026-10-14T09:52:10.169836+00:00" data-local title="2026-10-14T09:52:10.169836+00:00 UTC">2026-10-14 09:52</time><div><a class="small" href="/ui/activity/_18e2ee327b/" title="every event about this finding">history</a></div></div>
-      </div>
-      
-      
-      <div class="ev " data-cat="campaign" data-notable="1" style="--r:30">
-        <div class="av sys" title="system">SYS</div>
-        <div>
-          <div class="what"><span class="muted">system</span> <b>campaign</b> · investigated
-            
-            <span class="muted small">campaign <a href="/ui/campaigns/892f1586-8229-40cb-bd40-1d37816f98f4/" class="mono">ShopNova · Israel campaign 60292B11 ↗</a></span></div>
-          
-          
-          <div class="diff"><span class="new">{"api_calls": 2, "budget_exhausted": null, "edges": 1, "included": 2, "iocs": 4, "nodes": 2}</span>
-            </div>
-          
-        </div>
-        <div class="when"><time datetime="2026-10-14T09:52:09.521391+00:00" data-local title="2026-10-14T09:52:09.521391+00:00 UTC">2026-10-14 09:52</time><div><a class="small" href="/ui/activity?object_id=892f1586-8229-40cb-bd40-1d37816f98f4" title="every event about this campaign">history</a></div></div>
-      </div>
-      
-      
-      <div class="ev " data-cat="intel" data-notable="1" style="--r:30">
-        <div class="av sys" title="system">SYS</div>
-        <div>
-          <div class="what"><span class="muted">system</span> <b>intel</b> · started
-            
-            <span class="muted small">finding <a href="/ui/findings/60292b11-724b-4b3f-bf1f-262976b5659f/" class="mono">shopnova-id-check.com ↗</a></span></div>
-          
-          
-          <div class="diff"><span class="new">force: no · light: yes · package: yes · auto: yes</span>
-            </div>
-          
-        </div>
-        <div class="when"><time datetime="2026-10-14T09:52:09.385251+00:00" data-local title="2026-10-14T09:52:09.385251+00:00 UTC">2026-10-14 09:52</time><div><a class="small" href="/ui/activity/_18e2ee327b/" title="every event about this finding">history</a></div></div>
-      </div>
-      
-      
-      <div class="ev " data-cat="investigation" data-notable="1" style="--r:30">
-        <div class="av sys" title="admin">SYS</div>
-        <div>
-          <div class="what"><span class="muted">admin</span> <b>investigation</b> · started
-            
-            <span class="muted small">finding <a href="/ui/findings/60292b11-724b-4b3f-bf1f-262976b5659f/" class="mono">shopnova-id-check.com ↗</a></span></div>
-          
-          
-          <div class="diff"><span class="new">auto: yes</span>
-            </div>
-          
-        </div>
-        <div class="when"><time datetime="2026-10-14T09:52:09.385251+00:00" data-local title="2026-10-14T09:52:09.385251+00:00 UTC">2026-10-14 09:52</time><div><a class="small" href="/ui/activity/_18e2ee327b/" title="every event about this finding">history</a></div></div>
-      </div>
-      
-      
-      <div class="ev t-crit" data-cat="finding" data-notable="1" style="--r:30">
-        <div class="av " title="admin">AD</div>
-        <div>
-          <div class="what"><span class="muted">admin</span> <b>finding</b> · confirmed
-            
-            <span class="muted small">finding <a href="/ui/findings/60292b11-724b-4b3f-bf1f-262976b5659f/" class="mono">shopnova-id-check.com ↗</a></span></div>
-          
-          
-          <div class="diff"><span class="old">state: open</span> → <span class="new">state: confirmed · verdict: phishing</span>
-            </div>
-          
-        </div>
-        <div class="when"><time datetime="2026-10-14T09:52:09.370650+00:00" data-local title="2026-10-14T09:52:09.370650+00:00 UTC">2026-10-14 09:52</time><div><a class="small" href="/ui/activity/_18e2ee327b/" title="every event about this finding">history</a></div></div>
-      </div>
-      
-      
     </div>
     <div class="more"><button type="button" id="more" style="display:none">Show older events</button>
       
@@ -2370,38 +2290,38 @@ window.BW = (function () {
       <h2>By category</h2>
       
       
-      <div class="hbar"><span>user</span><div class="bar"><i data-w="100"></i></div><b>189</b></div>
+      <div class="hbar"><span>user</span><div class="bar"><i data-w="100"></i></div><b>194</b></div>
       
-      <div class="hbar"><span>finding</span><div class="bar"><i data-w="16"></i></div><b>30</b></div>
+      <div class="hbar"><span>finding</span><div class="bar"><i data-w="15"></i></div><b>29</b></div>
       
       <div class="hbar"><span>notification</span><div class="bar"><i data-w="10"></i></div><b>19</b></div>
       
-      <div class="hbar"><span>intel</span><div class="bar"><i data-w="7"></i></div><b>13</b></div>
+      <div class="hbar"><span>intel</span><div class="bar"><i data-w="6"></i></div><b>12</b></div>
       
-      <div class="hbar"><span>report</span><div class="bar"><i data-w="6"></i></div><b>11</b></div>
+      <div class="hbar"><span>report</span><div class="bar"><i data-w="5"></i></div><b>10</b></div>
       
-      <div class="hbar"><span>campaign</span><div class="bar"><i data-w="6"></i></div><b>11</b></div>
+      <div class="hbar"><span>campaign</span><div class="bar"><i data-w="5"></i></div><b>10</b></div>
       
-      <div class="hbar"><span>investigation</span><div class="bar"><i data-w="6"></i></div><b>11</b></div>
+      <div class="hbar"><span>investigation</span><div class="bar"><i data-w="5"></i></div><b>10</b></div>
       
       <div class="hbar"><span>Brand use</span><div class="bar"><i data-w="5"></i></div><b>9</b></div>
       
     </div>
     <div class="panel" style="margin-top:14px">
       <h2>Activity · 14 days</h2>
-      <svg class="spark" data-spark='{"series": [{"color": "#35C7F2", "values": [0, 0, 0, 0, 0, 0, 0, 0, 64, 0, 0, 0, 56, 3]}]}'></svg>
+      <svg class="spark" data-spark='{"series": [{"color": "#35C7F2", "values": [0, 0, 0, 0, 0, 0, 0, 0, 59, 0, 0, 0, 56, 3]}]}'></svg>
     </div>
     <div class="panel" style="margin-top:14px">
       <h2>Most active</h2>
       
       <div style="display:grid;grid-template-columns:1fr 40px;gap:8px;align-items:center;margin:8px 0">
         <div><div class="small mono">admin</div><div class="bar" style="height:6px;margin-top:3px"><i data-w="100"></i></div></div>
-        <div class="mono small right">227</div>
+        <div class="mono small right">230</div>
       </div>
       
       <div style="display:grid;grid-template-columns:1fr 40px;gap:8px;align-items:center;margin:8px 0">
-        <div><div class="small mono">system</div><div class="bar" style="height:6px;margin-top:3px"><i data-w="32"></i></div></div>
-        <div class="mono small right">73</div>
+        <div><div class="small mono">system</div><div class="bar" style="height:6px;margin-top:3px"><i data-w="30"></i></div></div>
+        <div class="mono small right">70</div>
       </div>
       
     </div>
