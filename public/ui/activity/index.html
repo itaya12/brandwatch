@@ -286,6 +286,38 @@ button:active,.btn:active,.chip:active{transform:translateY(1px)}
   .chip::after,button.small::after,.btn.small::after,.pill.cap::after,.help::before{
     content:"";position:absolute;inset:-9px;border-radius:inherit}
 }
+/* ---- the motion layer: bars, badges and controls ---------------------------------------- */
+/* Bars rise in the order their rows are in, so the eye reads the ranking instead of watching
+   everything arrive at once. --r is set per group by the script below. */
+.bar>i[data-w],.stack>i,.hist i,.vbar i,.scorebar>i{transition-delay:calc(var(--r,0)*60ms)}
+/* a bar answers the pointer in the one colour that means "alive" */
+.bar,.vbar{transition:box-shadow .2s}
+.bar:hover,.vbar:hover{box-shadow:0 0 10px rgba(53,199,242,.35)}
+.bar:hover>i,.vbar:hover i{filter:brightness(1.15)}
+.hist i{transition:height 1.2s cubic-bezier(.2,.8,.2,1),filter .2s}
+.hist i:hover{filter:brightness(1.3) drop-shadow(0 0 6px var(--accent))}
+/* A critical finding is a state, and a state may glow — but only where the screen is reporting a
+   level, not everywhere the word appears. The threat-level readout breathes; the nineteen other
+   critical badges on a dashboard do not, because a room that shouts all day stops being heard. */
+@keyframes sev-aura{0%,100%{box-shadow:0 0 0 0 rgba(255,77,77,0)}50%{box-shadow:0 0 11px 0 rgba(255,77,77,.5)}}
+.bars .row .badge.sev-critical{animation:sev-aura 2.4s ease-in-out infinite}
+td .badge.sev-critical,table .badge.sev-critical{animation:none}
+/* a control answers a press, and a light passes over it under the pointer */
+button:active,.btn:active,.chip:active{transform:translateY(1px) scale(.985)}
+button:not(.ghost):not(.fold):not(.menu):not(.chip),.btn:not(.ghost){position:relative;overflow:hidden}
+button:not(.ghost):not(.fold):not(.menu):not(.chip)::after,.btn:not(.ghost)::after{
+  content:"";position:absolute;inset:0;pointer-events:none;opacity:0;transform:translateX(-100%);
+  background:linear-gradient(100deg,transparent 22%,rgba(53,199,242,.20) 48%,transparent 72%)}
+button:not(.ghost):not(.fold):not(.menu):not(.chip):hover::after,.btn:not(.ghost):hover::after{
+  opacity:1;animation:shine .7s cubic-bezier(.2,.8,.2,1)}
+@keyframes shine{to{transform:translateX(100%)}}
+/* a value read off a line chart */
+.sparkwrap{position:relative}
+.sparktip{position:absolute;z-index:6;pointer-events:none;opacity:0;transform:translate(-50%,-116%);
+  padding:5px 9px;border-radius:7px;border:1px solid var(--accent);background:var(--field);
+  font:11px/1.4 var(--mono);color:var(--text);white-space:nowrap;
+  box-shadow:0 10px 30px rgba(0,0,0,.5);transition:opacity .12s}
+.sparktip.on{opacity:1}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
 </style>
 <script>
@@ -374,10 +406,10 @@ window.BW = (function () {
 <p class="intro">The append-only audit trail: who did what, when, old → new, and why. The database itself refuses to edit or delete it.</p>
 
 <div class="kpis">
-  <div class="kpi"><div class="v" data-count="153">0</div><div class="l">events (latest)</div></div>
-  <div class="kpi"><div class="v" data-count="46">0</div><div class="l">analyst actions</div></div>
-  <div class="kpi"><div class="v" data-count="107">0</div><div class="l">system actions</div></div>
-  <div class="kpi"><div class="v" data-count="17">0</div><div class="l">verdicts recorded</div></div>
+  <div class="kpi"><div class="v" data-count="144">0</div><div class="l">events (latest)</div></div>
+  <div class="kpi"><div class="v" data-count="44">0</div><div class="l">analyst actions</div></div>
+  <div class="kpi"><div class="v" data-count="100">0</div><div class="l">system actions</div></div>
+  <div class="kpi"><div class="v" data-count="15">0</div><div class="l">verdicts recorded</div></div>
   <div class="kpi"><div class="v" data-count="5">0</div><div class="l">logins (24h)</div></div>
 </div>
 
@@ -398,7 +430,7 @@ window.BW = (function () {
 
 <div class="grid actg" style="grid-template-columns:2.2fr 1fr;margin-top:14px">
   <div class="panel">
-    <div class="small muted" style="margin-bottom:6px">2772 events</div>
+    <div class="small muted" style="margin-bottom:6px">2781 events</div>
     <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px" id="chips">
       <button type="button" class="chip on" data-cat="notable" title="everything except sign-ins" aria-pressed="true">notable</button>
       <button type="button" class="chip" data-cat="*" aria-pressed="false">all</button>
@@ -411,12 +443,12 @@ window.BW = (function () {
       <div class="ev " data-cat="user" data-notable="0" style="--r:0;display:none">
         <div class="av " title="admin">AD</div>
         <div>
-          <div class="what"><span class="muted">admin</span> <b>user</b> · login <span class="pill" title="11 consecutive events, first 2026-10-19 10:08">×11</span>
+          <div class="what"><span class="muted">admin</span> <b>user</b> · login <span class="pill" title="20 consecutive events, first 2026-10-19 10:08">×20</span>
             
             <span class="muted small">user bc089017</span></div>
           
         </div>
-        <div class="when"><time datetime="2026-10-19T10:58:56.698284+00:00" data-local title="2026-10-19T10:58:56.698284+00:00 UTC">2026-10-19 10:58</time><div><a class="small" href="/ui/activity/_d2793a420a/" title="every event about this user">history</a></div></div>
+        <div class="when"><time datetime="2026-10-19T11:47:01.399033+00:00" data-local title="2026-10-19T11:47:01.399033+00:00 UTC">2026-10-19 11:47</time><div><a class="small" href="/ui/activity/_d2793a420a/" title="every event about this user">history</a></div></div>
       </div>
       
       
@@ -2660,150 +2692,6 @@ window.BW = (function () {
       </div>
       
       
-      <div class="ev " data-cat="report" data-notable="1" style="--r:30">
-        <div class="av sys" title="system">SYS</div>
-        <div>
-          <div class="what"><span class="muted">system</span> <b>report</b> · generated
-            
-            <span class="muted small">finding <a href="/ui/findings/2abe1b4c-5c19-475a-9809-bcfa3ca3146b/" class="mono">secure-shopnova.com ↗</a></span></div>
-          
-          
-          <div class="diff"><span class="new">{"reports": {"html": "677eafa2-1cd6-4a18-9ceb-b3b77dd431af", "json": "4891c564-7bdf-44be-9ef1-4445b1d69bff"}}</span>
-            </div>
-          
-        </div>
-        <div class="when"><time datetime="2026-10-14T09:50:46.020009+00:00" data-local title="2026-10-14T09:50:46.020009+00:00 UTC">2026-10-14 09:50</time><div><a class="small" href="/ui/activity?object_id=2abe1b4c-5c19-475a-9809-bcfa3ca3146b" title="every event about this finding">history</a></div></div>
-      </div>
-      
-      
-      <div class="ev " data-cat="intel" data-notable="1" style="--r:30">
-        <div class="av sys" title="system">SYS</div>
-        <div>
-          <div class="what"><span class="muted">system</span> <b>intel</b> · started
-            
-            <span class="muted small">finding <a href="/ui/findings/2abe1b4c-5c19-475a-9809-bcfa3ca3146b/" class="mono">secure-shopnova.com ↗</a></span></div>
-          
-          
-          <div class="diff"><span class="new">force: no · light: yes · package: yes · auto: yes</span>
-            </div>
-          
-        </div>
-        <div class="when"><time datetime="2026-10-14T09:50:45.601285+00:00" data-local title="2026-10-14T09:50:45.601285+00:00 UTC">2026-10-14 09:50</time><div><a class="small" href="/ui/activity?object_id=2abe1b4c-5c19-475a-9809-bcfa3ca3146b" title="every event about this finding">history</a></div></div>
-      </div>
-      
-      
-      <div class="ev " data-cat="investigation" data-notable="1" style="--r:30">
-        <div class="av sys" title="admin">SYS</div>
-        <div>
-          <div class="what"><span class="muted">admin</span> <b>investigation</b> · started
-            
-            <span class="muted small">finding <a href="/ui/findings/2abe1b4c-5c19-475a-9809-bcfa3ca3146b/" class="mono">secure-shopnova.com ↗</a></span></div>
-          
-          
-          <div class="diff"><span class="new">auto: yes</span>
-            </div>
-          
-        </div>
-        <div class="when"><time datetime="2026-10-14T09:50:45.598783+00:00" data-local title="2026-10-14T09:50:45.598783+00:00 UTC">2026-10-14 09:50</time><div><a class="small" href="/ui/activity?object_id=2abe1b4c-5c19-475a-9809-bcfa3ca3146b" title="every event about this finding">history</a></div></div>
-      </div>
-      
-      
-      <div class="ev t-crit" data-cat="finding" data-notable="1" style="--r:30">
-        <div class="av " title="admin">AD</div>
-        <div>
-          <div class="what"><span class="muted">admin</span> <b>finding</b> · confirmed
-            
-            <span class="muted small">finding <a href="/ui/findings/2abe1b4c-5c19-475a-9809-bcfa3ca3146b/" class="mono">secure-shopnova.com ↗</a></span></div>
-          
-          
-          <div class="diff"><span class="old">state: open</span> → <span class="new">state: confirmed · verdict: phishing</span>
-            </div>
-          
-        </div>
-        <div class="when"><time datetime="2026-10-14T09:50:45.584646+00:00" data-local title="2026-10-14T09:50:45.584646+00:00 UTC">2026-10-14 09:50</time><div><a class="small" href="/ui/activity?object_id=2abe1b4c-5c19-475a-9809-bcfa3ca3146b" title="every event about this finding">history</a></div></div>
-      </div>
-      
-      
-      <div class="ev " data-cat="report" data-notable="1" style="--r:30">
-        <div class="av sys" title="system">SYS</div>
-        <div>
-          <div class="what"><span class="muted">system</span> <b>report</b> · generated
-            
-            <span class="muted small">finding <a href="/ui/findings/754f17b6-3a8f-42d4-be90-10719b12b052/" class="mono">footstyle-il.com ↗</a></span></div>
-          
-          
-          <div class="diff"><span class="new">{"reports": {"html": "bd2a99c3-f2ce-4a3e-9a18-b77a1824fbc5", "json": "0f59ae52-8aa3-4a88-8d56-06f47149e419"}}</span>
-            </div>
-          
-        </div>
-        <div class="when"><time datetime="2026-10-14T09:50:41.815128+00:00" data-local title="2026-10-14T09:50:41.815128+00:00 UTC">2026-10-14 09:50</time><div><a class="small" href="/ui/activity?object_id=754f17b6-3a8f-42d4-be90-10719b12b052" title="every event about this finding">history</a></div></div>
-      </div>
-      
-      
-      <div class="ev " data-cat="campaign" data-notable="1" style="--r:30">
-        <div class="av sys" title="system">SYS</div>
-        <div>
-          <div class="what"><span class="muted">system</span> <b>campaign</b> · investigated
-            
-            <span class="muted small">campaign <a href="/ui/campaigns/60e93342-0bcb-442d-bc7b-9fc5c5e8ab1b/" class="mono">ShopNova campaign 754F17B6 ↗</a></span></div>
-          
-          
-          <div class="diff"><span class="new">{"api_calls": 3, "budget_exhausted": null, "edges": 1, "included": 2, "iocs": 5, "nodes": 2}</span>
-            </div>
-          
-        </div>
-        <div class="when"><time datetime="2026-10-14T09:50:41.449942+00:00" data-local title="2026-10-14T09:50:41.449942+00:00 UTC">2026-10-14 09:50</time><div><a class="small" href="/ui/activity?object_id=60e93342-0bcb-442d-bc7b-9fc5c5e8ab1b" title="every event about this campaign">history</a></div></div>
-      </div>
-      
-      
-      <div class="ev " data-cat="intel" data-notable="1" style="--r:30">
-        <div class="av sys" title="system">SYS</div>
-        <div>
-          <div class="what"><span class="muted">system</span> <b>intel</b> · started
-            
-            <span class="muted small">finding <a href="/ui/findings/754f17b6-3a8f-42d4-be90-10719b12b052/" class="mono">footstyle-il.com ↗</a></span></div>
-          
-          
-          <div class="diff"><span class="new">force: no · light: yes · package: yes · auto: yes</span>
-            </div>
-          
-        </div>
-        <div class="when"><time datetime="2026-10-14T09:50:40.888762+00:00" data-local title="2026-10-14T09:50:40.888762+00:00 UTC">2026-10-14 09:50</time><div><a class="small" href="/ui/activity?object_id=754f17b6-3a8f-42d4-be90-10719b12b052" title="every event about this finding">history</a></div></div>
-      </div>
-      
-      
-      <div class="ev " data-cat="investigation" data-notable="1" style="--r:30">
-        <div class="av sys" title="admin">SYS</div>
-        <div>
-          <div class="what"><span class="muted">admin</span> <b>investigation</b> · started
-            
-            <span class="muted small">finding <a href="/ui/findings/754f17b6-3a8f-42d4-be90-10719b12b052/" class="mono">footstyle-il.com ↗</a></span></div>
-          
-          
-          <div class="diff"><span class="new">auto: yes</span>
-            </div>
-          
-        </div>
-        <div class="when"><time datetime="2026-10-14T09:50:40.885357+00:00" data-local title="2026-10-14T09:50:40.885357+00:00 UTC">2026-10-14 09:50</time><div><a class="small" href="/ui/activity?object_id=754f17b6-3a8f-42d4-be90-10719b12b052" title="every event about this finding">history</a></div></div>
-      </div>
-      
-      
-      <div class="ev t-crit" data-cat="finding" data-notable="1" style="--r:30">
-        <div class="av " title="admin">AD</div>
-        <div>
-          <div class="what"><span class="muted">admin</span> <b>finding</b> · confirmed
-            
-            <span class="muted small">finding <a href="/ui/findings/754f17b6-3a8f-42d4-be90-10719b12b052/" class="mono">footstyle-il.com ↗</a></span></div>
-          
-          
-          <div class="diff"><span class="old">state: open</span> → <span class="new">{"conclusion": {"level": "likely_counterfeit", "proof": null, "system_level": "likely_counterfeit"}, "state": "confirmed", "verdict": "phishing"}</span>
-            </div>
-          
-        </div>
-        <div class="when"><time datetime="2026-10-14T09:50:40.869451+00:00" data-local title="2026-10-14T09:50:40.869451+00:00 UTC">2026-10-14 09:50</time><div><a class="small" href="/ui/activity?object_id=754f17b6-3a8f-42d4-be90-10719b12b052" title="every event about this finding">history</a></div></div>
-      </div>
-      
-      
     </div>
     <div class="more"><button type="button" id="more" style="display:none">Show older events</button>
       
@@ -2814,38 +2702,38 @@ window.BW = (function () {
       <h2>By category</h2>
       
       
-      <div class="hbar"><span>user</span><div class="bar"><i data-w="100"></i></div><b>160</b></div>
+      <div class="hbar"><span>user</span><div class="bar"><i data-w="100"></i></div><b>169</b></div>
       
-      <div class="hbar"><span>finding</span><div class="bar"><i data-w="22"></i></div><b>36</b></div>
+      <div class="hbar"><span>finding</span><div class="bar"><i data-w="20"></i></div><b>34</b></div>
       
-      <div class="hbar"><span>intel</span><div class="bar"><i data-w="12"></i></div><b>19</b></div>
+      <div class="hbar"><span>notification</span><div class="bar"><i data-w="11"></i></div><b>19</b></div>
       
-      <div class="hbar"><span>notification</span><div class="bar"><i data-w="12"></i></div><b>19</b></div>
+      <div class="hbar"><span>intel</span><div class="bar"><i data-w="10"></i></div><b>17</b></div>
       
-      <div class="hbar"><span>report</span><div class="bar"><i data-w="11"></i></div><b>17</b></div>
+      <div class="hbar"><span>report</span><div class="bar"><i data-w="9"></i></div><b>15</b></div>
       
-      <div class="hbar"><span>investigation</span><div class="bar"><i data-w="11"></i></div><b>17</b></div>
+      <div class="hbar"><span>campaign</span><div class="bar"><i data-w="9"></i></div><b>15</b></div>
       
-      <div class="hbar"><span>campaign</span><div class="bar"><i data-w="10"></i></div><b>16</b></div>
+      <div class="hbar"><span>investigation</span><div class="bar"><i data-w="9"></i></div><b>15</b></div>
       
-      <div class="hbar"><span>Brand use</span><div class="bar"><i data-w="6"></i></div><b>9</b></div>
+      <div class="hbar"><span>Brand use</span><div class="bar"><i data-w="5"></i></div><b>9</b></div>
       
     </div>
     <div class="panel" style="margin-top:14px">
       <h2>Activity · 14 days</h2>
-      <svg class="spark" data-spark='{"series": [{"color": "#35C7F2", "values": [0, 0, 0, 0, 0, 0, 0, 0, 94, 0, 0, 0, 56, 3]}]}'></svg>
+      <svg class="spark" data-spark='{"series": [{"color": "#35C7F2", "values": [0, 0, 0, 0, 0, 0, 0, 0, 85, 0, 0, 0, 56, 3]}]}'></svg>
     </div>
     <div class="panel" style="margin-top:14px">
       <h2>Most active</h2>
       
       <div style="display:grid;grid-template-columns:1fr 40px;gap:8px;align-items:center;margin:8px 0">
         <div><div class="small mono">admin</div><div class="bar" style="height:6px;margin-top:3px"><i data-w="100"></i></div></div>
-        <div class="mono small right">210</div>
+        <div class="mono small right">215</div>
       </div>
       
       <div style="display:grid;grid-template-columns:1fr 40px;gap:8px;align-items:center;margin:8px 0">
-        <div><div class="small mono">system</div><div class="bar" style="height:6px;margin-top:3px"><i data-w="43"></i></div></div>
-        <div class="mono small right">90</div>
+        <div><div class="small mono">system</div><div class="bar" style="height:6px;margin-top:3px"><i data-w="40"></i></div></div>
+        <div class="mono small right">85</div>
       </div>
       
     </div>
@@ -2957,6 +2845,13 @@ window.BW = (function () {
   document.querySelectorAll('main .panel').forEach((el, i) => el.style.setProperty('--i', Math.min(i, 12)));
   document.querySelectorAll('table').forEach(t => [...t.querySelectorAll('tr')].forEach((tr, i) => tr.style.setProperty('--r', Math.min(i, 30))));
   document.querySelectorAll('.timeline').forEach(t => [...t.children].forEach((li, i) => li.style.setProperty('--r', Math.min(i, 30))));
+  // bars rise in sequence: each one's place among the bars of its own panel
+  const barGroups = new Map();
+  document.querySelectorAll('[data-w],[data-h]').forEach(el => {
+    const key = el.closest('.panel, .card, .ipcard, table') || document.body;
+    (barGroups.get(key) || barGroups.set(key, []).get(key)).push(el);
+  });
+  barGroups.forEach(list => list.forEach((el, i) => el.style.setProperty('--r', Math.min(i, 14))));
   // count-up numbers
   const fmt = v => Number.isInteger(v) ? v.toLocaleString('en-US') : v.toFixed(1);
   document.querySelectorAll('[data-count]').forEach(el => {
@@ -3020,8 +2915,39 @@ window.BW = (function () {
       line.style.transition = `stroke-dashoffset 1.6s cubic-bezier(.2,.8,.2,1) ${si * 200}ms`;
       later(() => line.style.strokeDashoffset = 0);
       const last = pts[pts.length - 1]; if (last) { const dot = document.createElementNS(NS, 'circle'); dot.setAttribute('cx', last[0]); dot.setAttribute('cy', last[1]); dot.setAttribute('r', 3); dot.setAttribute('fill', s.color); svg.appendChild(dot); }
+      // every point is readable: an invisible target the pointer can actually hit, and a tip that
+      // is positioned in the wrapper rather than in the svg, so a 300-wide viewBox cannot squash it
+      if (si === 0) sparkTips(svg, pts, s, spec);
     });
   });
+  function sparkTips(svg, pts, s, spec){
+    const wrap = svg.parentElement;
+    if (!wrap) return;
+    if (getComputedStyle(wrap).position === 'static') wrap.classList.add('sparkwrap');
+    const tip = document.createElement('div'); tip.className = 'sparktip'; wrap.appendChild(tip);
+    const labels = spec.labels || [];
+    const W = 300, n = pts.length;
+    pts.forEach((pt, i) => {
+      const hit = document.createElementNS(NS, 'circle');
+      hit.setAttribute('cx', pt[0]); hit.setAttribute('cy', pt[1]); hit.setAttribute('r', 10);
+      hit.setAttribute('fill', 'transparent'); hit.style.cursor = 'crosshair';
+      const show = () => {
+        const v = s.values[i], when = labels[i] || (i === n - 1 ? 'today' : (n - 1 - i) + 'd ago');
+        tip.textContent = `${v} · ${when}`;
+        tip.style.left = (pt[0] / W * 100) + '%';
+        tip.style.top = (pt[1] / 64 * 100) + '%';
+        tip.classList.add('on');
+        mark.setAttribute('cx', pt[0]); mark.setAttribute('cy', pt[1]); mark.style.opacity = 1;
+      };
+      hit.addEventListener('pointerenter', show);
+      hit.addEventListener('pointerleave', () => { tip.classList.remove('on'); mark.style.opacity = 0; });
+      svg.appendChild(hit);
+    });
+    const mark = document.createElementNS(NS, 'circle');
+    mark.setAttribute('r', 3.5); mark.setAttribute('fill', s.color); mark.style.opacity = 0;
+    mark.style.transition = 'opacity .12s'; mark.style.filter = `drop-shadow(0 0 5px ${s.color})`;
+    svg.appendChild(mark);
+  }
   // '?' help tips open their glossary entry (a <span>, so it can sit inside a link or a card)
   const openHelp = e => { const h = e.target.closest && e.target.closest('.help[data-href]'); if (!h) return;
     if (e.type === 'keydown' && e.key !== 'Enter') return; e.preventDefault(); e.stopPropagation(); location.href = h.dataset.href; };

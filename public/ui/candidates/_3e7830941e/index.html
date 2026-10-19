@@ -286,6 +286,38 @@ button:active,.btn:active,.chip:active{transform:translateY(1px)}
   .chip::after,button.small::after,.btn.small::after,.pill.cap::after,.help::before{
     content:"";position:absolute;inset:-9px;border-radius:inherit}
 }
+/* ---- the motion layer: bars, badges and controls ---------------------------------------- */
+/* Bars rise in the order their rows are in, so the eye reads the ranking instead of watching
+   everything arrive at once. --r is set per group by the script below. */
+.bar>i[data-w],.stack>i,.hist i,.vbar i,.scorebar>i{transition-delay:calc(var(--r,0)*60ms)}
+/* a bar answers the pointer in the one colour that means "alive" */
+.bar,.vbar{transition:box-shadow .2s}
+.bar:hover,.vbar:hover{box-shadow:0 0 10px rgba(53,199,242,.35)}
+.bar:hover>i,.vbar:hover i{filter:brightness(1.15)}
+.hist i{transition:height 1.2s cubic-bezier(.2,.8,.2,1),filter .2s}
+.hist i:hover{filter:brightness(1.3) drop-shadow(0 0 6px var(--accent))}
+/* A critical finding is a state, and a state may glow — but only where the screen is reporting a
+   level, not everywhere the word appears. The threat-level readout breathes; the nineteen other
+   critical badges on a dashboard do not, because a room that shouts all day stops being heard. */
+@keyframes sev-aura{0%,100%{box-shadow:0 0 0 0 rgba(255,77,77,0)}50%{box-shadow:0 0 11px 0 rgba(255,77,77,.5)}}
+.bars .row .badge.sev-critical{animation:sev-aura 2.4s ease-in-out infinite}
+td .badge.sev-critical,table .badge.sev-critical{animation:none}
+/* a control answers a press, and a light passes over it under the pointer */
+button:active,.btn:active,.chip:active{transform:translateY(1px) scale(.985)}
+button:not(.ghost):not(.fold):not(.menu):not(.chip),.btn:not(.ghost){position:relative;overflow:hidden}
+button:not(.ghost):not(.fold):not(.menu):not(.chip)::after,.btn:not(.ghost)::after{
+  content:"";position:absolute;inset:0;pointer-events:none;opacity:0;transform:translateX(-100%);
+  background:linear-gradient(100deg,transparent 22%,rgba(53,199,242,.20) 48%,transparent 72%)}
+button:not(.ghost):not(.fold):not(.menu):not(.chip):hover::after,.btn:not(.ghost):hover::after{
+  opacity:1;animation:shine .7s cubic-bezier(.2,.8,.2,1)}
+@keyframes shine{to{transform:translateX(100%)}}
+/* a value read off a line chart */
+.sparkwrap{position:relative}
+.sparktip{position:absolute;z-index:6;pointer-events:none;opacity:0;transform:translate(-50%,-116%);
+  padding:5px 9px;border-radius:7px;border:1px solid var(--accent);background:var(--field);
+  font:11px/1.4 var(--mono);color:var(--text);white-space:nowrap;
+  box-shadow:0 10px 30px rgba(0,0,0,.5);transition:opacity .12s}
+.sparktip.on{opacity:1}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
 </style>
 <script>
@@ -941,6 +973,13 @@ window.BW = (function () {
   document.querySelectorAll('main .panel').forEach((el, i) => el.style.setProperty('--i', Math.min(i, 12)));
   document.querySelectorAll('table').forEach(t => [...t.querySelectorAll('tr')].forEach((tr, i) => tr.style.setProperty('--r', Math.min(i, 30))));
   document.querySelectorAll('.timeline').forEach(t => [...t.children].forEach((li, i) => li.style.setProperty('--r', Math.min(i, 30))));
+  // bars rise in sequence: each one's place among the bars of its own panel
+  const barGroups = new Map();
+  document.querySelectorAll('[data-w],[data-h]').forEach(el => {
+    const key = el.closest('.panel, .card, .ipcard, table') || document.body;
+    (barGroups.get(key) || barGroups.set(key, []).get(key)).push(el);
+  });
+  barGroups.forEach(list => list.forEach((el, i) => el.style.setProperty('--r', Math.min(i, 14))));
   // count-up numbers
   const fmt = v => Number.isInteger(v) ? v.toLocaleString('en-US') : v.toFixed(1);
   document.querySelectorAll('[data-count]').forEach(el => {
@@ -1004,8 +1043,39 @@ window.BW = (function () {
       line.style.transition = `stroke-dashoffset 1.6s cubic-bezier(.2,.8,.2,1) ${si * 200}ms`;
       later(() => line.style.strokeDashoffset = 0);
       const last = pts[pts.length - 1]; if (last) { const dot = document.createElementNS(NS, 'circle'); dot.setAttribute('cx', last[0]); dot.setAttribute('cy', last[1]); dot.setAttribute('r', 3); dot.setAttribute('fill', s.color); svg.appendChild(dot); }
+      // every point is readable: an invisible target the pointer can actually hit, and a tip that
+      // is positioned in the wrapper rather than in the svg, so a 300-wide viewBox cannot squash it
+      if (si === 0) sparkTips(svg, pts, s, spec);
     });
   });
+  function sparkTips(svg, pts, s, spec){
+    const wrap = svg.parentElement;
+    if (!wrap) return;
+    if (getComputedStyle(wrap).position === 'static') wrap.classList.add('sparkwrap');
+    const tip = document.createElement('div'); tip.className = 'sparktip'; wrap.appendChild(tip);
+    const labels = spec.labels || [];
+    const W = 300, n = pts.length;
+    pts.forEach((pt, i) => {
+      const hit = document.createElementNS(NS, 'circle');
+      hit.setAttribute('cx', pt[0]); hit.setAttribute('cy', pt[1]); hit.setAttribute('r', 10);
+      hit.setAttribute('fill', 'transparent'); hit.style.cursor = 'crosshair';
+      const show = () => {
+        const v = s.values[i], when = labels[i] || (i === n - 1 ? 'today' : (n - 1 - i) + 'd ago');
+        tip.textContent = `${v} · ${when}`;
+        tip.style.left = (pt[0] / W * 100) + '%';
+        tip.style.top = (pt[1] / 64 * 100) + '%';
+        tip.classList.add('on');
+        mark.setAttribute('cx', pt[0]); mark.setAttribute('cy', pt[1]); mark.style.opacity = 1;
+      };
+      hit.addEventListener('pointerenter', show);
+      hit.addEventListener('pointerleave', () => { tip.classList.remove('on'); mark.style.opacity = 0; });
+      svg.appendChild(hit);
+    });
+    const mark = document.createElementNS(NS, 'circle');
+    mark.setAttribute('r', 3.5); mark.setAttribute('fill', s.color); mark.style.opacity = 0;
+    mark.style.transition = 'opacity .12s'; mark.style.filter = `drop-shadow(0 0 5px ${s.color})`;
+    svg.appendChild(mark);
+  }
   // '?' help tips open their glossary entry (a <span>, so it can sit inside a link or a card)
   const openHelp = e => { const h = e.target.closest && e.target.closest('.help[data-href]'); if (!h) return;
     if (e.type === 'keydown' && e.key !== 'Enter') return; e.preventDefault(); e.stopPropagation(); location.href = h.dataset.href; };
