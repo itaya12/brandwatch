@@ -6,6 +6,7 @@ from __future__ import annotations
 from fastapi.testclient import TestClient
 from tests.test_demo_story import _api, _app, _ui
 from tests.test_findings_bulk import _brand
+from tests.test_pages_js import BROKEN, chromium  # noqa: F401 (the shared browser)
 
 from brandwatch.api import labels
 
@@ -37,3 +38,34 @@ def test_the_lists_show_where_each_site_was_found_and_the_watchlist_fits(engine,
         assert tabs.count('class="ic"><svg') == 2 and "where the fakes are hosted" in tabs and 'id="infra-n"' in tabs
         base = ui.get("/ui/brands").text
         assert "fmtShort" in base  # a narrow date column leaves this year's year out
+
+
+def test_the_four_map_views_become_cards_and_lists_on_a_phone(engine, tmp_path, chromium):  # noqa: F811
+    """At 390 px Connections, Matrix, Flow and Timeline are cards and lists (no shrunken drawing, no sideways scroll); a
+    long list shows its first cards and a Show all button. On a wide screen the drawings stay."""
+    app = _app(engine, tmp_path)
+    with TestClient(app):
+        c, ui = _api(app), _ui(app)
+        brand, rows = _brand(c, app)
+        for h in ("shopn0va.com", "shopnova-login.com", "shopnova-refund.net"):
+            if h in rows:
+                c.post(f"/api/findings/{rows[h]['id']}/confirm", json={"reason": "cloned login"})
+        html = ui.get("/ui/campaigns/all", params={"brand_id": brand["id"]}).text
+    errors: list[str] = []
+    for width, phone in ((390, True), (1280, False)):
+        ctx = chromium.new_context(viewport={"width": width, "height": 844}, is_mobile=phone)
+        page = ctx.new_page()
+        page.on("pageerror", lambda e: errors.append(str(e)))
+        page.set_content(html, wait_until="domcontentloaded")
+        page.wait_for_timeout(300)
+        for v in ("connections", "matrix", "flow", "timeline"):
+            if not page.evaluate(f"!!document.querySelector('#vsw button[data-v={v}]')"):
+                continue
+            page.evaluate(f"document.querySelector('#vsw button[data-v={v}]').click()")
+            page.wait_for_timeout(150)
+            has_list = page.evaluate(f"!!document.querySelector('#view-{v} .mv') || !!document.querySelector('#view-{v} p.muted')")
+            has_svg = page.evaluate(f"!!document.querySelector('#view-{v} .vbox svg')")
+            assert (has_list and not has_svg) if phone else not page.evaluate(f"!!document.querySelector('#view-{v} .mv')"), (width, v)
+            assert page.evaluate("document.documentElement.scrollWidth - innerWidth") <= 1, (width, v)
+        ctx.close()
+    assert [e for e in errors if BROKEN.search(e)] == []
