@@ -49,7 +49,7 @@
       <td><span class="badge sev-{{ x.severity }}">{{ x.severity }}</span></td>
       <td class="mono small muted">{{ x.confirmed_at|ts }}</td>
       <td>
-        {% if x.takedown %}<a href="/ui/takedowns/{{ x.takedown.id }}" class="badge state" style="border-color:{{ colors.get(x.takedown_state, '#8A97A8') }};color:{{ colors.get(x.takedown_state, '#8A97A8') }}">{{ x.takedown_state|state_label }} → open</a>
+        {% if x.takedown %}<a href="/ui/takedowns/{{ x.takedown.id }}" class="badge state" style="border-color:{{ colors.get(x.takedown_state, 'var(--muted)') }};color:{{ colors.get(x.takedown_state, 'var(--muted)') }}">{{ x.takedown_state|state_label }} → open</a>
         {% elif can_write %}<form method="post" action="/ui/findings/{{ x.id }}/takedown" style="display:inline"><button class="cta" type="submit">Draft takedown request →</button></form>
         {% else %}<span class="badge state" style="border-color:var(--crit);color:var(--crit)">no takedown yet</span>{% endif %}
       </td>

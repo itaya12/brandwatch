@@ -22,7 +22,7 @@
   .setup table.prod td{padding:4px 6px}.setup table.prod input{width:100%;min-width:0}
   .setup .setup-actions{margin-top:16px;padding:14px 18px;border:1px solid var(--accent);border-radius:14px;background:var(--panel2);
               display:flex;flex-wrap:wrap;gap:10px;align-items:center}
-  .setup .setup-actions .grow{flex:1 1 220px;font-size:12.5px;color:#c3cdd9}
+  .setup .setup-actions .grow{flex:1 1 220px;font-size:12.5px;color:var(--text2)}
   .setup .msg{font-size:12.5px;color:var(--accent2);margin-left:6px}
   @media (max-width:700px){ .setup .two{grid-template-columns:minmax(0,1fr)} .setup .setup-actions button{flex:1 1 100%} }
 </style>
@@ -40,7 +40,7 @@
   <div class="step" id="s-queries">
     <h2><span class="num">1</span> Google search queries</h2>
     <p class="small muted" style="margin:0 0 8px">What BrandWatch types into Google to find sites that use <bdi>{{ brand.name }}</bdi>'s name. Write your own, or let the AI propose a list — then edit it.
-      <br><span style="color:#c3cdd9">The list below: {% if sq.approved %}approved{% if sq.approved_by %} by {{ sq.approved_by }}{% endif %}{% else %}{{ sq.proposal_source or 'a proposal' }} — nothing runs until you approve it{% endif %}.</span></p>
+      <br><span style="color:var(--text2)">The list below: {% if sq.approved %}approved{% if sq.approved_by %} by {{ sq.approved_by }}{% endif %}{% else %}{{ sq.proposal_source or 'a proposal' }} — nothing runs until you approve it{% endif %}.</span></p>
     <div id="qlist">
       {% for q in rows %}<div class="qrow{{ ' over' if loop.index > qmax }}"><input name="q" value="{{ q }}" maxlength="100" dir="auto"><button type="button" class="ghost qdel" title="remove">✕</button></div>{% endfor %}
     </div>

@@ -5,10 +5,10 @@
 <style>
   .stepper{display:grid;grid-template-columns:repeat(var(--n),1fr);gap:0;position:relative;margin:4px 0 6px}
   .step{position:relative;text-align:center;padding-top:6px}
-  .step::before{content:"";position:absolute;top:24px;left:-50%;right:50%;height:2px;background:#1E2A3D;z-index:0}
+  .step::before{content:"";position:absolute;top:24px;left:-50%;right:50%;height:2px;background:var(--border);z-index:0}
   .step:first-child::before{display:none}
   .step.done::before,.step.running::before{background:linear-gradient(90deg,var(--low),var(--accent));box-shadow:0 0 8px rgba(53,199,242,.5)}
-  .dot{position:relative;z-index:1;width:38px;height:38px;margin:0 auto;border-radius:50%;display:grid;place-items:center;background:#0b1220;border:2px solid #1E2A3D;
+  .dot{position:relative;z-index:1;width:38px;height:38px;margin:0 auto;border-radius:50%;display:grid;place-items:center;background:var(--field);border:2px solid var(--border);
     font-family:var(--mono);font-size:13px;color:var(--muted);transition:all .4s}
   .step.running .dot{border-color:var(--accent);color:var(--accent2);box-shadow:0 0 18px rgba(53,199,242,.55);overflow:hidden}
   .step.running .dot::after{content:"";position:absolute;inset:-2px;border-radius:50%;background:conic-gradient(rgba(53,199,242,.55),transparent 35%);animation:spin 1.1s linear infinite}
@@ -18,7 +18,7 @@
   .step .nm{margin-top:6px;font-family:var(--mono);font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
   .step.running .nm,.step.done .nm{color:var(--text)}
   .step .ct{font-family:var(--mono);font-size:10px;color:var(--muted)}
-  .prog{height:6px;background:#1E2A3D;border-radius:3px;overflow:hidden;margin-top:10px}
+  .prog{height:6px;background:var(--border);border-radius:3px;overflow:hidden;margin-top:10px}
   .prog i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--accent2));box-shadow:0 0 10px var(--accent);transition:width .6s ease}
   @media (max-width:900px){.stepper{grid-template-columns:repeat(var(--n),92px);overflow-x:auto;scrollbar-width:none;padding-bottom:6px;scroll-behavior:smooth}
     .stepper::-webkit-scrollbar{display:none}.step .nm{font-size:9.5px;letter-spacing:.03em}}
@@ -46,14 +46,14 @@
   .now .dtl{color:var(--muted);font-size:13px;max-width:70ch;animation:fadeUp .5s .05s cubic-bezier(.2,.8,.2,1) both}
   .now .body{display:grid;grid-template-columns:1fr auto;gap:18px;align-items:start}
   .now img.peek{width:240px;max-width:38vw;border:1px solid var(--border);border-radius:8px;background:#000;animation:fadeUp .5s both;box-shadow:0 8px 30px rgba(0,0,0,.5)}
-  .now img.peek.favicon{width:96px;height:96px;object-fit:contain;image-rendering:pixelated;background:#0b1220;padding:10px;box-shadow:0 0 0 1px var(--border),0 8px 24px rgba(0,0,0,.4)}
+  .now img.peek.favicon{width:96px;height:96px;object-fit:contain;image-rendering:pixelated;background:var(--field);padding:10px;box-shadow:0 0 0 1px var(--border),0 8px 24px rgba(0,0,0,.4)}
   .items{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
   .items .it{display:inline-flex;align-items:center;gap:6px;max-width:100%;padding:4px 9px;border:1px solid var(--border);border-radius:8px;background:rgba(8,11,20,.6);
     font-family:var(--mono);font-size:11.5px;color:var(--text);animation:fadeUp .4s both;animation-delay:calc(var(--i)*45ms)}
   .items .it a{color:inherit;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:46ch}
   .items .it .tag{font-size:10px;color:var(--accent2);letter-spacing:.06em}
   .items .it.official{opacity:.55}.items .it.official .tag{color:var(--low)}
-  .items .it.signal .tag{color:var(--magenta)}
+  .items .it.signal .tag{color:var(--text2)}
   .items .more{font-family:var(--mono);font-size:11px;color:var(--muted);align-self:center}
 
   /* ---- ALERTS: provider problems and how to fix them ---- */
@@ -165,7 +165,7 @@
   <div class="console" id="console"></div>
   <p class="muted small">Durable, ordered feed (<span class="mono">scan_events.seq</span>); a refresh replays from the last sequence number.</p>
   <div class="actions" style="margin-top:8px">
-    <a class="btn" id="campaign-link" href="{{ '/ui/campaigns/' ~ job.campaign_id if job.campaign_id else '#' }}" style="border-color:var(--magenta);color:var(--magenta);{{ '' if job.campaign_id else 'display:none' }}">Open attack infrastructure map →</a>
+    <a class="btn" id="campaign-link" href="{{ '/ui/campaigns/' ~ job.campaign_id if job.campaign_id else '#' }}" style="{{ '' if job.campaign_id else 'display:none' }}">Open attack infrastructure map →</a>
     {% if job.brand_id %}<a class="btn" href="/ui/findings?state=&job_id={{ job.id }}">This scan's findings →</a><a class="btn" href="/ui/findings?brand_id={{ job.brand_id }}">Findings for this brand →</a>
     {% if can_write and job.state in ('failed', 'cancelled') %}<form method="post" action="/ui/jobs/{{ job.id }}/retry" style="display:inline" data-busy="Starting…"><button type="submit" title="run it again with the same parameters, as a new scan">↻ Retry this scan</button></form>{% endif %}
     <a class="btn" href="/ui/candidates?brand_id={{ job.brand_id }}">Watchlist →</a>

@@ -10,7 +10,7 @@
   .bcard::after{content:"";position:absolute;right:-60px;top:-60px;width:180px;height:180px;border-radius:50%;background:radial-gradient(circle,color-mix(in srgb,var(--tc) 22%,transparent),transparent 70%)}
   .bcard.critical{--tc:var(--crit)}.bcard.high{--tc:var(--high)}.bcard.medium{--tc:var(--med)}.bcard.low{--tc:var(--low)}
   .bcard .top{display:flex;align-items:center;gap:12px}
-  .bcard .fav{width:34px;height:34px;border-radius:8px;border:1px solid var(--border);background:#0b1220;image-rendering:pixelated;object-fit:cover}
+  .bcard .fav{width:34px;height:34px;border-radius:8px;border:1px solid var(--border);background:var(--field);image-rendering:pixelated;object-fit:cover}
   .bcard .name{font-family:var(--display);font-size:22px;font-weight:700;letter-spacing:.03em}
   .bcard .nums{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:14px 0 10px}
   .bcard .nums div{background:rgba(8,11,20,.55);border:1px solid var(--border);border-radius:8px;padding:8px;text-align:center}
@@ -144,8 +144,8 @@
     <div class="nums">
       <div><b data-count="{{ b.open_findings }}" style="color:var(--high)">0</b><span>open</span></div>
       <div><b data-count="{{ b.sev.critical }}" style="color:var(--crit)">0</b><span>critical</span></div>
-      <div><b data-count="{{ b.candidates }}" style="color:var(--accent2)">0</b><span>examined</span></div>
-      <div><b data-count="{{ b.campaigns }}" style="color:var(--magenta)">0</b><span>campaigns</span></div>
+      <div><b data-count="{{ b.candidates }}">0</b><span>examined</span></div>
+      <div><b data-count="{{ b.campaigns }}">0</b><span>campaigns</span></div>
     </div>
     <div class="stack" title="open findings by severity">
       {% for sv in ['critical','high','medium','low'] %}<i data-w="{{ b.sev_pct[sv] }}" style="background:var(--{{ {'critical':'crit','high':'high','medium':'med','low':'low'}[sv] }})"></i>{% endfor %}

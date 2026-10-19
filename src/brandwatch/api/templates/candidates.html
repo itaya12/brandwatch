@@ -4,7 +4,7 @@
 {% block content %}
 {% import "_macros.html" as m %}
 <style>
-  .funnel{display:flex;height:34px;border-radius:8px;overflow:hidden;border:1px solid var(--border);background:#0b1220}
+  .funnel{display:flex;height:34px;border-radius:8px;overflow:hidden;border:1px solid var(--border);background:var(--field)}
   .funnel a{display:flex;align-items:center;justify-content:center;gap:6px;width:0;min-width:0;font-family:var(--mono);font-size:11px;color:#06101c;font-weight:600;
     white-space:nowrap;overflow:hidden;transition:width 1.4s cubic-bezier(.2,.8,.2,1),filter .2s}
   .funnel a:hover{filter:brightness(1.25)}
@@ -75,7 +75,7 @@
     <thead><tr>{% if can_write %}<th class="selcol"><input type="checkbox" id="selall" aria-label="select every domain on this page"></th>{% endif %}<th>Domain</th><th>Brand</th><th>Why it is here</th><th>State</th><th>Finding</th><th>Priority</th><th>First seen</th><th>Last seen</th><th>Next scan</th><th class="right">Scans</th>{% if can_write %}<th>Actions</th>{% endif %}</tr></thead>
     <tbody>
     {% for c in candidates %}
-    <tr class="wrow" style="--sc:{{ w.state_colors.get(c.state, '#1E2A3D') }}" data-host="{{ c.hostname }}">
+    <tr class="wrow" style="--sc:{{ w.state_colors.get(c.state, 'var(--border)') }}" data-host="{{ c.hostname }}">
       {% if can_write %}<td class="selcol">{% if c.state != 'dismissed' %}<input type="checkbox" class="sel" name="ids" value="{{ c.id }}" form="bulkform" aria-label="select {{ c.hostname }}">{% endif %}</td>{% endif %}
       <td><a href="/ui/candidates/{{ c.id }}">{{ m.host(c.hostname, c.host_display, c.is_idn) }}</a><div class="small muted">{{ SURFACE_LABELS.get(c.surface, c.surface) }}</div></td>
       <td class="small"><a href="/ui/brands/{{ c.brand_id }}"><bdi>{{ c.brand_name or '—' }}</bdi></a></td>
@@ -141,7 +141,7 @@
     <h2>Priority</h2>
     {% for k, v in w.priority.items() %}
     <div style="display:grid;grid-template-columns:52px 1fr 40px;gap:10px;align-items:center;margin:9px 0">
-      <span class="mono small muted">{{ k }}</span><div class="bar"><i data-w="{{ (v / (w.priority_max or 1) * 100)|round|int }}" style="background:linear-gradient(90deg,var(--accent),{{ '#5FE3FF' if k == '20+' else ('#2386a6' if k == '10–19' else '#35C7F2') }})"></i></div><span class="mono small right">{{ v }}</span>
+      <span class="mono small muted">{{ k }}</span><div class="bar"><i data-w="{{ (v / (w.priority_max or 1) * 100)|round|int }}" style="background:linear-gradient(90deg,var(--accent),{{ 'var(--accent2)' if k == '20+' else ('#2386a6' if k == '10–19' else 'var(--accent)') }})"></i></div><span class="mono small right">{{ v }}</span>
     </div>
     {% endfor %}
     <p class="small muted">Triggers (a login form appeared, the site woke up, the favicon changed) raise priority so these are re-checked first.</p>

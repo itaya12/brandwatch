@@ -22,7 +22,7 @@
   .scanhero .onlybtns .btn{text-decoration:none}
   .scanhero .track{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:13px}
   .scanhero .track b{font-family:var(--display);font-size:22px;letter-spacing:.04em}
-  .tr-basic{color:var(--low)}.tr-standard{color:var(--accent2)}.tr-enterprise{color:var(--magenta)}
+  .tr-basic{color:color-mix(in srgb,var(--accent) 55%,var(--muted))}.tr-standard{color:var(--accent)}.tr-enterprise{color:var(--accent2)}
   .scanhero .what{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
   .startscan{position:relative;display:inline-flex;align-items:center;gap:14px;padding:18px 34px;border:0;border-radius:14px;cursor:pointer;text-align:left;
     font-family:var(--display);font-size:26px;font-weight:700;letter-spacing:.10em;text-transform:uppercase;color:#06101c;
@@ -44,7 +44,7 @@
   .track-card input{position:absolute;opacity:0;pointer-events:none;width:auto}
   .track-card::before{content:"";position:absolute;inset:0 auto 0 0;width:4px;background:var(--tc);box-shadow:0 0 14px var(--tc);opacity:.5;transition:opacity .25s}
   .track-card::after{content:"";position:absolute;right:-60px;top:-60px;width:170px;height:170px;border-radius:50%;background:radial-gradient(circle,color-mix(in srgb,var(--tc) 20%,transparent),transparent 70%)}
-  .track-card.basic{--tc:var(--low)}.track-card.standard{--tc:var(--accent2)}.track-card.enterprise{--tc:var(--magenta)}
+  .track-card.basic{--tc:color-mix(in srgb,var(--accent) 55%,var(--muted))}.track-card.standard{--tc:var(--accent)}.track-card.enterprise{--tc:var(--accent2)}
   .track-card:hover{transform:translateY(-3px);border-color:var(--tc)}
   .track-card.on{border-color:var(--tc);box-shadow:0 0 0 1px var(--tc),0 14px 40px rgba(0,0,0,.45),0 0 40px color-mix(in srgb,var(--tc) 22%,transparent)}
   .track-card.on::before{opacity:1}
@@ -61,7 +61,7 @@
   .customhd{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:14px}
   .toggle{display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border:1px solid var(--border);border-radius:999px;background:var(--panel2);cursor:pointer;font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);transition:all .2s}
   .toggle.on,.toggle:hover{color:var(--text);border-color:var(--accent);box-shadow:0 0 12px rgba(53,199,242,.2)}
-  .toggle .sw{width:30px;height:16px;border-radius:999px;background:#1E2A3D;position:relative;transition:background .2s}
+  .toggle .sw{width:30px;height:16px;border-radius:999px;background:var(--border);position:relative;transition:background .2s}
   .toggle .sw::after{content:"";position:absolute;top:2px;left:2px;width:12px;height:12px;border-radius:50%;background:var(--muted);transition:all .2s}
   .toggle.on .sw{background:rgba(53,199,242,.4)}.toggle.on .sw::after{left:16px;background:var(--accent2)}
   #custom{margin-top:14px;animation:fadeUp .4s both}#custom.hidden{display:none}
@@ -77,7 +77,7 @@
   .part .ph i{width:8px;height:8px;border-radius:50%;background:var(--muted);flex:none}
   .part .ph b{font-size:13px}
   .part .st{margin-left:auto;font:600 10px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
-  .part .pd{font-size:12px;color:#c3cdd9;line-height:1.45;overflow-wrap:anywhere}
+  .part .pd{font-size:12px;color:var(--text2);line-height:1.45;overflow-wrap:anywhere}
   .part .pa{margin-top:auto;padding-top:4px}
   .part .pa .pill{font-size:11px}
   .part.on{border-color:rgba(46,204,113,.35)}.part.on .ph i{background:var(--low);box-shadow:0 0 8px rgba(46,204,113,.6)}.part.on .st{color:var(--low)}
@@ -310,7 +310,7 @@
   <div class="panel">
     <h2>Activity · 14 days</h2>
     <svg class="spark" data-spark='{{ {"series": [{"values": pulse.scans_per_day|map(attribute="jobs")|list, "color": "#35C7F2"}, {"values": pulse.scans_per_day|map(attribute="findings")|list, "color": "#FF4D4D"}]}|tojson }}'></svg>
-    <div class="small muted" style="margin-top:6px"><span style="color:#35C7F2">■</span> scans &nbsp; <span style="color:#FF4D4D">■</span> new findings</div>
+    <div class="small muted" style="margin-top:6px"><span style="color:var(--accent)">■</span> scans &nbsp; <span style="color:var(--crit)">■</span> new findings</div>
   </div>
   <div class="panel">
     <h2>Which stream finds phishing</h2>
@@ -327,7 +327,7 @@
     {% set wtot = (pulse.watchlist.values()|sum) or 1 %}
     {% for st, n in pulse.watchlist.items() if n %}
     <div style="display:grid;grid-template-columns:82px 1fr 34px;gap:8px;align-items:center;margin:6px 0">
-      <span class="small" title="{{ STATE_HELP.get(st, '') }}">{{ st|state_label }}</span><div class="bar" style="height:6px"><i data-w="{{ (n / wtot * 100)|round|int }}" style="background:{{ {'new':'#8A97A8','watching':'#35C7F2','analyzing':'#5FE3FF','flagged':'#FF4D4D','long_watch':'#a78bfa','dismissed':'#3a4658'}[st] }}"></i></div><span class="mono small right">{{ n }}</span>
+      <span class="small" title="{{ STATE_HELP.get(st, '') }}">{{ st|state_label }}</span><div class="bar" style="height:6px"><i data-w="{{ (n / wtot * 100)|round|int }}" style="background:{{ {'new':'var(--muted)','watching':'var(--accent)','analyzing':'var(--accent2)','flagged':'var(--crit)','long_watch':'#a78bfa','dismissed':'#3a4658'}[st] }}"></i></div><span class="mono small right">{{ n }}</span>
     </div>
     {% endfor %}
   </div>

@@ -14,7 +14,7 @@
     <div><label for="r-shops" style="font-size:11px">Shops checked in full <span class="muted">(0–60)</span></label>
       <input id="r-shops" name="shops_checked_max" type="number" min="0" max="60" value="{{ pf.shops_checked_max if pf.shops_checked_max is not none else 15 }}" {{ '' if rd else 'disabled' }}></div>
   </div>
-  <p class="small reach-cost" style="margin:8px 0 0;color:#c3cdd9">
+  <p class="small reach-cost" style="margin:8px 0 0;color:var(--text2)">
     <span class="r-line">—</span><br>
     <span class="muted">Each page of the Ad Library is ~30 ads and one SearchApi request (~$0.004). A shop checked in full gets its
       company-registry lookup, two Google searches and the AI's opinion (~$0.02); the others get the free page checks only.</span></p>

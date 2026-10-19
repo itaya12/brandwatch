@@ -424,9 +424,7 @@ def test_settings_ui_admin_and_token_shown_once(env):
         "/ui/settings/tokens", data={"name": "ui token", "scope": "read", "expires_days": "7"}
     )
     assert r.status_code == 200 and "copy it now" in r.text
-    token = r.text.split(
-        'word-break:break-all;background:#060910;padding:10px;border-radius:6px">', 1
-    )[1].split("<", 1)[0]
+    token = r.text.split('id="new-token"', 1)[1].split(">", 1)[1].split("<", 1)[0]
     assert token.startswith("bw_") and token not in ui.get("/ui/settings").text  # never shown again
     assert (
         ui.post(

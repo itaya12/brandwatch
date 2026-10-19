@@ -5,7 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{{ g.name }} · operation report</title>
 <style>
-  :root{--ink:#16202e;--muted:#5d6b7e;--line:#dfe5ec;--soft:#f4f7fa;--paper:#ffffff;--accent:#0b6fbd;--crit:#c62828;--high:#e07b00;--med:#b88a00;--low:#2e7d32;--c:{{ ['#0b6fbd','#b88a00','#e07b00','#2e7d32','#7b4fd1','#d6336c','#00897b','#5d6b7e'][(g.index - 1) % 8] }}}
+  {# daylight: this report is a document, not a screen, so it declares its own ink-on-paper
+     tokens. Only the operation's own colour comes from api/palette.py (OPS_PRINT). #}
+  :root{--ink:#16202e;--muted:#5d6b7e;--line:#dfe5ec;--soft:#f4f7fa;--paper:#ffffff;--accent:#0b6fbd;--crit:#c62828;--high:#e07b00;--med:#b88a00;--low:#2e7d32;--c:{{ op_print_color(g.index) }}}
   *{box-sizing:border-box}
   body{margin:0;background:#e9eef3;color:var(--ink);font:14px/1.55 "Segoe UI",system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif}
   .page{max-width:1020px;margin:24px auto;background:var(--paper);border-radius:14px;box-shadow:0 10px 40px rgba(20,35,55,.15);overflow:hidden}

@@ -107,8 +107,10 @@ workspace budgets, multi-tenancy, classifier training.
 - Server-rendered Jinja2 templates in `src/brandwatch/api/templates`; **no front-end framework**.
   The graphs, the globe and the console are plain SVG/JS. A direction that needs React is out of
   bounds.
-- `base.html` carries a single inline `<style>` block as the de-facto design system; fonts come from
-  Google Fonts (Rajdhani, JetBrains Mono, Inter).
+- The design system is the `:root` block in `base.html` plus `api/palette.py`, which carries the
+  same values for everything the server draws itself (inline SVG, the operation report);
+  `tests/test_palette.py` fails if the two drift. Fonts come from Google Fonts (Rajdhani, JetBrains
+  Mono, Inter).
 - The static demo must survive export to flat files — anything that requires a live server degrades.
 - Phone support is real, not hypothetical: layouts are expected to hold at **390 px**.
 

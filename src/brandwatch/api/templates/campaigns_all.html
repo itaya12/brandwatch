@@ -6,12 +6,12 @@
   @keyframes flow{to{stroke-dashoffset:-24}}
   circle.halo{animation:halo 1.8s ease-out infinite;transform-box:fill-box;transform-origin:center}
   @keyframes halo{0%{opacity:.9;transform:scale(1)}100%{opacity:0;transform:scale(2.6)}}
-  #graph{background:radial-gradient(circle at 50% 45%,#0f1c30,#060910 70%)!important;cursor:grab;touch-action:none;display:block}
+  #graph{background:radial-gradient(circle at 50% 45%,color-mix(in srgb,var(--accent) 7%,var(--panel)),var(--console) 70%)!important;cursor:grab;touch-action:none;display:block}
   .legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:12px;margin:6px 0}
   .legend b{display:inline-block;width:22px;height:0;border-top:3px solid;margin-right:5px;vertical-align:3px}
   .gsel{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 8px;align-items:center}
   .gsel button, .tool button{padding:4px 11px;font-size:12px}
-  .gsel button.on{background:rgba(53,199,242,.18);border-color:var(--cyan,#35c7f2);color:#fff}
+  .gsel button.on{background:rgba(53,199,242,.18);border-color:var(--accent);color:var(--accent2)}
   .tool{display:flex;gap:6px;margin-left:auto;flex-wrap:wrap;align-items:center}
   .tool label{font-size:12px;display:flex;gap:5px;align-items:center;cursor:pointer;color:var(--muted);text-transform:none;letter-spacing:0;white-space:nowrap}
   .tool input[type=checkbox]{width:auto;margin:0}
@@ -25,14 +25,14 @@
   .vsw{display:flex;gap:0;border:1px solid var(--border);border-radius:8px;overflow:hidden}
   .vsw button{border:0;border-radius:0;padding:5px 13px;font-size:12.5px;background:transparent;border-right:1px solid var(--border)}
   .vsw button:last-child{border-right:0}
-  .vsw button.on{background:rgba(53,199,242,.2);color:#fff;font-weight:700}
+  .vsw button.on{background:rgba(53,199,242,.2);color:var(--accent2);font-weight:700}
   .vw[hidden]{display:none}
   details.sub{margin:6px 0 2px;border-left:2px solid var(--border);padding-left:10px}
   details.sub>summary{cursor:pointer;font-size:12.5px}
   .cnt{font-weight:400;font-size:11.5px;color:var(--muted);margin-left:6px;padding:0 7px;border:1px solid var(--border);border-radius:999px}
   .because{display:flex;flex-wrap:wrap;gap:4px 6px;align-items:center;margin:10px 0 0}
   .because .chip{margin:0;white-space:normal;max-width:100%;word-break:break-word}
-  .first{margin:12px 0 4px;padding:9px 12px;border-left:3px solid var(--c);background:color-mix(in srgb,var(--c,#35c7f2) 8%,transparent);border-radius:0 8px 8px 0;font-size:13.5px}
+  .first{margin:12px 0 4px;padding:9px 12px;border-left:3px solid var(--c);background:color-mix(in srgb,var(--c,var(--accent)) 8%,transparent);border-radius:0 8px 8px 0;font-size:13.5px}
   .first .fl{font:700 10.5px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--c);margin-right:4px}
   .opstats{display:grid;grid-template-columns:repeat(auto-fit,minmax(90px,1fr));gap:8px;margin:12px 0 2px}
   .opstats>div{border:1px solid var(--border);border-radius:10px;padding:8px 10px;background:rgba(8,11,20,.45)}
@@ -41,7 +41,7 @@
   .because{margin:12px 0 0;display:grid;gap:4px;max-width:720px}
   .because .bh{font:700 10.5px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:2px}
   .brow{display:grid;grid-template-columns:110px minmax(0,1fr) 70px 36px;gap:8px;align-items:center;font-size:12.5px;padding:3px 0}
-  .brow .bk{color:var(--text);font-weight:600}.brow .bk::first-letter{text-transform:uppercase}.brow .bv{color:#c3cdd9;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px}
+  .brow .bk{color:var(--text);font-weight:600}.brow .bk::first-letter{text-transform:uppercase}.brow .bv{color:var(--text2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px}
   .brow .bw{height:5px;border-radius:3px;background:rgba(255,255,255,.08);overflow:hidden}.brow .bw i{display:block;height:100%;background:var(--c)}
   .brow .bp{font:600 11px var(--mono);color:var(--muted);text-align:right}
   .brow.hint .bk{color:var(--muted)}.brow.hint .bw i{opacity:.5}
@@ -76,19 +76,18 @@
     .gcard{padding:12px}
   }
   .ops{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(560px,100%),1fr));gap:16px;align-items:start}
-  .gcard{border:1px solid var(--border);border-radius:14px;padding:16px 18px;background:linear-gradient(180deg,color-mix(in srgb,var(--c,#35c7f2) 5%,transparent),rgba(255,255,255,.012) 160px);border-top:3px solid var(--c,#35c7f2)}
+  .gcard{border:1px solid var(--border);border-radius:14px;padding:16px 18px;background:linear-gradient(180deg,color-mix(in srgb,var(--c,var(--accent)) 5%,transparent),rgba(255,255,255,.012) 160px);border-top:3px solid var(--c,var(--accent))}
   .ophead{display:flex;gap:12px;align-items:center}
-  .opicon{flex:none;width:42px;height:42px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:18px;background:color-mix(in srgb,var(--c,#35c7f2) 18%,transparent);color:var(--c,#35c7f2);border:1px solid color-mix(in srgb,var(--c,#35c7f2) 50%,transparent)}
+  .opicon{flex:none;width:42px;height:42px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:18px;background:color-mix(in srgb,var(--c,var(--accent)) 18%,transparent);color:var(--c,var(--accent));border:1px solid color-mix(in srgb,var(--c,var(--accent)) 50%,transparent)}
   .opname{min-width:0;flex:1}
   .opname .opt{font-weight:700;font-size:15px;word-break:break-word}
   .conf{flex:none;display:flex;flex-direction:column;align-items:center;gap:3px;min-width:64px}
   .conf .ring{width:50px;height:50px}.conf .ring>div{width:40px;height:40px;font-size:15px}
   .conf .bar{height:6px;border-radius:4px;background:rgba(255,255,255,.1);overflow:hidden;margin-bottom:3px}
-  .conf .bar i{display:block;height:100%;background:var(--c,#35c7f2)}
-  .story{font-size:13px;margin:10px 0 6px;line-height:1.55;color:#c3cdd9}
+  .conf .bar i{display:block;height:100%;background:var(--c,var(--accent))}
+  .story{font-size:13px;margin:10px 0 6px;line-height:1.55;color:var(--text2)}
   .chips{display:flex;flex-wrap:wrap;gap:5px;margin:6px 0}
-  .chip{font-size:11.5px;padding:2px 9px;border-radius:999px;border:1px solid var(--border);color:var(--muted);white-space:nowrap}
-  .chip b{color:var(--text);font-weight:600}
+  .chips .chip,.cl .chip,.because .chip{font-size:11.5px;padding:2px 9px}
   .opbtns{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}
   .opbtns button{padding:3px 10px;font-size:11.5px}
   details.sec{border-top:1px dashed var(--border);margin-top:8px;padding-top:6px}
@@ -101,17 +100,17 @@
   .link .dot{display:inline-block;width:22px;height:0;border-top:3px solid;margin-right:7px;vertical-align:3px}
   .link .val{font-family:var(--mono);word-break:break-all}
   .pct{font-size:11px;padding:0 6px;border-radius:5px;border:1px solid var(--border);color:var(--muted);margin-left:6px}
-  .nope{white-space:nowrap;padding:3px 10px;font-size:11.5px;border:1px solid rgba(255,77,77,.6);color:#ff8a8a;background:transparent;border-radius:6px;cursor:pointer}
+  .nope{white-space:nowrap;padding:3px 10px;font-size:11.5px;border:1px solid rgba(255,77,77,.6);color:var(--crit);background:transparent;border-radius:6px;cursor:pointer}
   .nope:hover{background:rgba(255,77,77,.12)}
   .back{white-space:nowrap;padding:3px 10px;font-size:11.5px}
-  .cl{border:1px solid var(--border);border-left:3px solid color-mix(in srgb,var(--c,#35c7f2) calc(var(--w) * 100%),transparent);border-radius:8px;padding:7px 10px;margin:6px 0}
+  .cl{border:1px solid var(--border);border-left:3px solid color-mix(in srgb,var(--c,var(--accent)) calc(var(--w) * 100%),transparent);border-radius:8px;padding:7px 10px;margin:6px 0}
   .cl .chip{margin:2px 4px 2px 0;display:inline-block;white-space:normal}
   .cl .chip.hint{border-style:dashed}
   table.grid{border-collapse:separate;border-spacing:2px;font-size:10.5px}
   table.grid th.h{text-align:right;font-family:var(--mono);font-weight:500;padding-right:6px;white-space:nowrap}
   table.grid th.v{height:96px;vertical-align:bottom}
   table.grid th.v div{writing-mode:vertical-rl;transform:rotate(180deg);font-family:var(--mono);font-weight:500;white-space:nowrap}
-  table.grid td{width:26px;height:26px;text-align:center;border-radius:4px;background:color-mix(in srgb,var(--c,#35c7f2) calc(var(--a) * 85%),rgba(255,255,255,.04));color:#06121d;font-weight:700}
+  table.grid td{width:26px;height:26px;text-align:center;border-radius:4px;background:color-mix(in srgb,var(--c,var(--accent)) calc(var(--a) * 85%),rgba(255,255,255,.04));color:var(--on-lit);font-weight:700}
   table.grid td.self{background:transparent}
   table.shares{width:100%;font-size:12.5px;border-collapse:collapse}
   table.shares td{padding:5px 8px;border-top:1px dashed var(--border);vertical-align:top}
@@ -123,22 +122,20 @@
   table.matrix td:first-child,table.matrix th:first-child{text-align:left;font-family:var(--mono)}
   .done{border:1px solid rgba(46,204,113,.5);background:rgba(46,204,113,.07);border-radius:12px;padding:12px 16px;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
   .done.wait{border-color:rgba(245,197,24,.5);background:rgba(245,197,24,.06)}
-  .done .tick{width:30px;height:30px;border-radius:50%;background:#2ecc71;color:#06210f;display:flex;align-items:center;justify-content:center;font-weight:900}
-  .done.wait .tick{background:#f5c518;color:#2a2105}
+  .done .tick{width:30px;height:30px;border-radius:50%;background:var(--low);color:var(--on-lit);display:flex;align-items:center;justify-content:center;font-weight:900}
+  .done.wait .tick{background:var(--med);color:var(--on-lit)}
   .lane{display:grid;grid-template-columns:230px 1fr;gap:10px;align-items:center;padding:5px 0;border-top:1px dashed var(--border);font-size:12px}
   .lane .track{position:relative;height:26px;border-radius:6px;background:rgba(255,255,255,.04)}
-  .lane .d{position:absolute;top:50%;width:11px;height:11px;margin:-5.5px 0 0 -5.5px;border-radius:50%;background:var(--c);border:2px solid #060910}
+  .lane .d{position:absolute;top:50%;width:11px;height:11px;margin:-5.5px 0 0 -5.5px;border-radius:50%;background:var(--c);border:2px solid var(--console)}
   .lane .d.wave{box-shadow:0 0 0 3px color-mix(in srgb,var(--c) 45%,transparent)}
   .ticks{position:relative;height:16px;margin-left:240px;font-size:10.5px;color:var(--muted)}
   .ticks span{position:absolute;transform:translateX(-50%)}
   @media(max-width:700px){.lane{grid-template-columns:1fr}.ticks{margin-left:0}.conf{min-width:70px}#drawer{position:static;width:auto;max-width:none;margin-top:8px}}
   #analysing{position:fixed;inset:0;background:rgba(5,8,14,.72);display:none;align-items:center;justify-content:center;z-index:50}
-  #analysing div{background:#0f1722;border:1px solid var(--border);border-radius:12px;padding:22px 30px;text-align:center;font-size:15px}
+  #analysing div{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:22px 30px;text-align:center;font-size:15px}
   #analysing small{display:block;margin-top:6px;color:var(--muted);font-size:12px}
 </style>
 {% set crumbs = [("Attack infrastructure", "/ui/campaigns" ~ ('?brand_id=' ~ brand_id if brand_id else '')), ("All confirmed sites", none)] %}
-{% set KC = {'ip':'#35C7F2','shared_ip':'#35C7F2','past_ip':'#35C7F2','certificate':'#F5C518','kit':'#F5C518','kit_look':'#F5C518','tracking_id':'#FF9F1C','registrant':'#FF4D4D','dns_token':'#FF4D4D','affiliate_id':'#FF4D4D','cf_ns_pair':'#8A97A8','tds_campaign':'#2ECC71','shared_tds':'#2ECC71','redirector':'#B388FF','data_sink':'#FF9F1C','favicon':'#2ECC71','registrar':'#8A97A8','nameserver':'#8A97A8','batch':'#8A97A8'} %}
-{% set GC = ['#35C7F2','#F5C518','#FF9F1C','#2ECC71','#B388FF','#FF6FA8','#4DD0C4','#9AA5B1'] %}
 {% include "_crumbs.html" %}
 <div id="analysing"><div><span class="radar"></span> <b>Analysing again…</b><small>leaving that link out and working out which sites are still connected</small></div></div>
 <h1>ALL CONFIRMED SITES <span class="muted">· one map: are they connected, and by what?</span></h1>
@@ -183,7 +180,7 @@
 
 {% macro linkrow(l) -%}
 <div class="link">
-  <div class="what"><span class="dot" style="border-color:{{ KC.get(l.kind, '#888') }};{{ 'border-top-style:dashed' if l.level != 'solid' }}"></span><b>{{ l.label }}</b><span class="pct" title="how likely two sites that share this are one operation">{{ (l.weight * 100)|round|int }}%{{ ' · hint' if l.level == 'possible' }}</span><br><span class="val">{{ l.value|truncate(70) }}</span> <span class="muted">· {{ l.sites|length }} sites{% if l.network %} · {{ l.network }}{% elif l.class == 'unknown' %} · network unknown{% endif %}</span>
+  <div class="what"><span class="dot" style="border-color:{{ kind_color(l.kind) }};{{ 'border-top-style:dashed' if l.level != 'solid' }}"></span><b>{{ l.label }}</b><span class="pct" title="how likely two sites that share this are one operation">{{ (l.weight * 100)|round|int }}%{{ ' · hint' if l.level == 'possible' }}</span><br><span class="val">{{ l.value|truncate(70) }}</span> <span class="muted">· {{ l.sites|length }} sites{% if l.network %} · {{ l.network }}{% elif l.class == 'unknown' %} · network unknown{% endif %}</span>
     {% if l.searchable %}{% if can_write %}<form method="post" action="/ui/campaigns/reverse-search" style="display:inline;margin-left:6px"><input type="hidden" name="kind" value="{{ l.kind }}"><input type="hidden" name="value" value="{{ l.value }}"><input type="hidden" name="brand_id" value="{{ brand_id }}"><button type="submit" class="small" style="padding:2px 8px;font-size:11px" title="search urlscan.io for other sites with the same {{ {'tds_campaign': 'campaign number', 'data_sink': 'data destination', 'affiliate_id': 'affiliate id', 'redirector': 'redirect host'}.get(l.kind, 'link') }} (one search, only when you press it)">search for more ▶</button></form>{% endif %}
       {% if l.found %}<div class="muted" style="margin:3px 0 4px"><b>{{ l.found.sites|length }}</b> other site(s) found{% if l.found.total and l.found.total > l.found.sites|length %} (of {{ l.found.total }} scans){% endif %} · {{ (l.found.fetched_at or '')[:10] }}{% if l.found.note %} · {{ l.found.note }}{% endif %}
         <div class="mono" style="word-break:break-all">{% for x in l.found.sites[:12] %}<span style="{{ 'color:var(--crit);font-weight:700' if x.brand_related }}">{{ x.domain }}</span>{{ ', ' if not loop.last }}{% endfor %}{% if l.found.sites|length > 12 %} …{% endif %}</div>
@@ -215,13 +212,13 @@
     <div class="mapwrap"><svg id="graph" width="100%" height="640" style="border:1px solid var(--border);border-radius:8px"></svg>
       <aside id="drawer" hidden></aside></div>
     <div class="legend">
-      <span><b style="border-color:#FF4D4D"></b>affiliate id · registrant · DNS token</span>
-      <span><b style="border-color:#35C7F2"></b>server</span>
-      <span><b style="border-color:#F5C518"></b>TLS certificate · page code</span>
-      <span><b style="border-color:#FF9F1C"></b>analytics ID · where the data goes</span>
-      <span><b style="border-color:#B388FF"></b>redirect host</span>
-      <span><b style="border-color:#2ECC71"></b>traffic campaign</span>
-      <span class="muted"><b style="border-color:#8A97A8;border-top-style:dashed"></b>dashed = a hint, not proof on its own</span>
+      <span><b style="border-color:var(--crit)"></b>affiliate id · registrant · DNS token</span>
+      <span><b style="border-color:var(--accent)"></b>server</span>
+      <span><b style="border-color:var(--med)"></b>TLS certificate · page code</span>
+      <span><b style="border-color:var(--high)"></b>analytics ID · where the data goes</span>
+      <span><b style="border-color:var(--op5)"></b>redirect host</span>
+      <span><b style="border-color:var(--low)"></b>traffic campaign</span>
+      <span class="muted"><b style="border-color:var(--muted);border-top-style:dashed"></b>dashed = a hint, not proof on its own</span>
     </div>
   </div>
   <div class="vw" id="view-connections" hidden></div><div class="vw" id="view-matrix" hidden></div><div class="vw" id="view-flow" hidden></div><div class="vw" id="view-timeline" hidden></div>
@@ -235,13 +232,13 @@
   {% if m.groups %}
   <div class="ops">
     {% for g in m.groups %}
-    <div class="gcard" id="group-{{ g.index }}" style="--c:{{ GC[(g.index - 1) % 8] }}">
+    <div class="gcard" id="group-{{ g.index }}" style="--c:{{ op_color(g.index) }}">
       <div class="ophead">
         <div class="opicon" title="{{ g.behaviour.label }}">{{ g.behaviour.icon }}</div>
         <div class="opname"><div class="opt">{{ g.name }}</div>
           <div class="small muted">Operation {{ g.index }} · {{ g.behaviour.label }}{% if g.behaviour.does %} — {{ g.behaviour.does }}{% endif %}</div></div>
         <div class="conf" title="how sure we are that these sites belong to one attacker: the weakest tie that holds the group together">
-          <div class="ring" style="--p:{{ (g.confidence * 100)|round|int }};--c:{{ GC[(g.index - 1) % 8] }}"><div>{{ (g.confidence * 100)|round|int }}</div></div>
+          <div class="ring" style="--p:{{ (g.confidence * 100)|round|int }};--c:{{ op_color(g.index) }}"><div>{{ (g.confidence * 100)|round|int }}</div></div>
           <span class="small"><b>{{ g.level }}</b></span></div>
       </div>
       <div class="opstats">
@@ -291,14 +288,14 @@
         <p class="small muted" style="margin:6px 0">Sites that share exactly the same things are shown together, so many links with the same sites read as one line.</p>
         {% for cl in g.clusters %}<div class="cl" style="--w:{{ cl.strength }}"><div class="clsites">{% for h in cl.sites %}<span class="badge" style="margin:1px 3px 1px 0">{{ h }}</span>{% endfor %}</div>
           <div class="small"><b>{{ cl.sites|length }} sites</b> share:
-            {% for k in cl.by_kind %}<span class="chip {{ 'hint' if k.level != 'solid' }}" title="{{ k.vals|join(', ') }}{{ ' · ' ~ k.network if k.network }}"><b>{{ k.label }}{{ ' ×' ~ k.vals|length if k.vals|length > 1 }}</b> {{ k.vals[:3]|map('truncate', 22)|join(', ') }}{{ ' +' ~ (k.vals|length - 3) ~ ' more' if k.vals|length > 3 }} <span class="muted">{{ (k.weight * 100)|round|int }}%</span></span>{% endfor %}</div></div>{% endfor %}
+            {% for k in cl.by_kind %}<span class="chip static {{ 'hint' if k.level != 'solid' }}" title="{{ k.vals|join(', ') }}{{ ' · ' ~ k.network if k.network }}"><b>{{ k.label }}{{ ' ×' ~ k.vals|length if k.vals|length > 1 }}</b> {{ k.vals[:3]|map('truncate', 22)|join(', ') }}{{ ' +' ~ (k.vals|length - 3) ~ ' more' if k.vals|length > 3 }} <span class="muted">{{ (k.weight * 100)|round|int }}%</span></span>{% endfor %}</div></div>{% endfor %}
         <div class="small" style="margin:12px 0 4px"><b>Who against whom</b> <span class="muted">· how sure we are that two sites are one operation (hover a cell for what ties them)</span></div>
         <div style="overflow:auto"><table class="grid"><tr><th></th>{% for h in g.grid.hosts %}<th class="v"><div>{{ h }}</div></th>{% endfor %}</tr>
           {% for row in g.grid.cells %}{% set ri = loop.index0 %}<tr><th class="h">{{ g.grid.hosts[ri] }}</th>{% for c in row %}{% if c is none %}<td class="self"></td>{% else %}<td style="--a:{{ c.conf }}" class="{{ 'sure' if c.conf >= 0.75 }}" title="{{ g.grid.hosts[ri] }} ↔ {{ g.grid.hosts[loop.index0] }} · {{ (c.conf * 100)|round|int }}%{{ ' · ' ~ c.kinds|join(', ') if c.kinds }}">{{ (c.conf * 100)|round|int if c.conf >= 0.75 }}</td>{% endif %}{% endfor %}</tr>{% endfor %}</table></div>
       </details>
       <details class="sec"><summary>Who shares what <span class="cnt">{{ g.detail.summary }}</span></summary>
         {% for sec in g.detail.sections %}<details class="sub"{{ ' open' if loop.first and sec.rows|length <= 8 }}><summary><b>{{ sec.title }}</b> <span class="cnt">{{ sec.rows|length }}</span></summary>
-          <table class="shares">{% for r in sec.rows %}<tr><td class="val"><span class="dot" style="border-color:{{ KC.get(sec.kind, '#888') }};{{ 'border-top-style:dashed' if r.level != 'solid' }}"></span>{{ r.value|truncate(48) }}{% if r.network %}<div class="muted" style="font-family:var(--font,inherit)">{{ r.network }}{{ ' · ' ~ r.class if r.class }}</div>{% endif %}</td>
+          <table class="shares">{% for r in sec.rows %}<tr><td class="val"><span class="dot" style="border-color:{{ kind_color(sec.kind) }};{{ 'border-top-style:dashed' if r.level != 'solid' }}"></span>{{ r.value|truncate(48) }}{% if r.network %}<div class="muted" style="font-family:var(--sans)">{{ r.network }}{{ ' · ' ~ r.class if r.class }}</div>{% endif %}</td>
             <td><span class="muted">{{ r.sites|length }} site{{ '' if r.sites|length == 1 else 's' }}</span><div class="mono" style="word-break:break-all">{{ r.sites|join(', ') }}</div></td></tr>{% endfor %}</table></details>
         {% endfor %}
       </details>
@@ -312,7 +309,7 @@
           {% if rows|length > 4 %}<details><summary class="small muted" style="cursor:pointer;padding:4px 0">+{{ rows|length - 4 }} more {{ rows[0].label }}</summary>{% for l in rows[4:] %}{{ linkrow(l) }}{% endfor %}</details>{% endif %}
         {% endfor %}
         {% if g.also %}<div class="small muted" style="margin:8px 0 2px">Also in common, but weak (they never group sites):</div>
-        {% for l in g.also %}<div class="link"><div class="what"><span class="dot" style="border-color:{{ KC.get(l.kind, '#888') }};border-top-style:dashed"></span>{{ l.label }}<br><span class="val muted">{{ l.value|truncate(60) }}</span></div>
+        {% for l in g.also %}<div class="link"><div class="what"><span class="dot" style="border-color:{{ kind_color(l.kind) }};border-top-style:dashed"></span>{{ l.label }}<br><span class="val muted">{{ l.value|truncate(60) }}</span></div>
           {% if can_write %}<div>{{ xform(l.kind, l.value, true, '✕ not evidence', brand_id, l.label) }}</div>{% endif %}</div>{% endfor %}{% endif %}
       </details>
       <details class="sec"><summary>Evidence per site <span class="cnt">{{ g.matrix.rows|length }}</span></summary>

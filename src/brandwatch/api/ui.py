@@ -72,8 +72,10 @@ templates.env.globals.update(
     }
 )
 from brandwatch.api import labels as _labels  # noqa: E402
+from brandwatch.api import palette as _palette  # noqa: E402
 
 _labels.register(templates)  # one vocabulary for every screen
+_palette.register(templates)  # one palette for every screen
 
 
 def ui_user(

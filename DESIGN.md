@@ -15,9 +15,14 @@ colors:
   medium: "#F5C518"
   low: "#2ECC71"
   text: "#E6EDF5"
+  text-secondary: "#C3CDD9"
   muted: "#8A97A8"
-  label-dim: "#6f7d90"
-  group-dim: "#5f6d80"
+  dim: "#7C8A9E"
+  on-lit: "#06121D"
+  op-5: "#B388FF"
+  op-6: "#FF6FA8"
+  op-7: "#4DD0C4"
+  op-8: "#9AA5B1"
   daylight-paper: "#ffffff"
   daylight-ground: "#e9eef3"
   daylight-soft: "#f4f7fa"
@@ -177,6 +182,12 @@ components:
     textColor: "{colors.text}"
     rounded: "{rounded.card}"
     padding: "14px"
+  chip-static:
+    backgroundColor: "{colors.panel-raised}"
+    textColor: "{colors.muted}"
+    typography: "{typography.column-head}"
+    rounded: "{rounded.pill}"
+    padding: "4px 10px"
   console:
     backgroundColor: "{colors.console-black}"
     textColor: "{colors.text}"
@@ -213,9 +224,15 @@ drawn from an eight-color cycle. Daylight is what **leaves** the app and goes to
 executive or a case file. The division is doctrine, not drift: dark is for working, light is for
 handing over.
 
+The tokens live in two places that cannot disagree: the `:root` block in `base.html` for everything
+CSS and the browser draw, and `api/palette.py` for everything the server draws itself — the SVG it
+writes into a page, and the daylight report. `tests/test_palette.py` fails if the two lists drift, if
+a page redeclares a token the system already owns, or if a page uses one nobody declares.
+
 **Key Characteristics:**
 
-- Near-black ground (`#080B14`) with a single cyan light source; no second hue competes.
+- Near-black ground (`#080B14`) with a single cyan light source. Only two other things may carry
+  colour: severity, and an operation's place in the series.
 - Three typographic voices with fixed jobs: Rajdhani counts, JetBrains Mono labels, Inter explains.
 - Flat at rest. Surfaces lift on hover; glow appears only as state.
 - Color is information: the severity ramp means severity and nothing else.
@@ -251,6 +268,20 @@ The severity ramp. These four are **not** a palette; they are an enumeration.
 - **Low Green** (`#2ECC71`): low severity, a completed step, a successful flash message, the "ok"
   button variant.
 
+### Tertiary
+
+**The operation series** (`--op1` … `--op8`): the eight colours one operation is drawn in, by its
+index, so a graph of eight operations has eight colours nobody can confuse. The first four are the
+system's own hues — Instrument Cyan, Medium Amber, High Orange, Low Green — and only the last four
+are new: **Series Violet** (`#B388FF`), **Series Pink** (`#FF6FA8`), **Series Teal** (`#4DD0C4`),
+**Series Grey** (`#9AA5B1`).
+
+A series colour identifies *which* operation, never *how bad* it is; the legend says which is which.
+It appears on the all-operations map, the infrastructure graph, the connections views, each operation
+card's rail and its confidence ring, and `--op5` is also the one place a redirect host is coloured.
+The daylight report runs the same eight positions in print-safe ink (`#0b6fbd`, `#b88a00`, `#e07b00`,
+`#2e7d32`, `#7b4fd1`, `#d6336c`, `#00897b`, `#5d6b7e`), because the night series washes out on paper.
+
 ### Neutral
 
 - **Operations Black** (`#080B14`): the page ground, and the only true background. The scanline and
@@ -266,9 +297,15 @@ The severity ramp. These four are **not** a palette; they are an enumeration.
 - **Border** (`#1E2A3D`): every hairline — panel edges, table rules, control strokes, the empty
   track behind bars, rings and stacks.
 - **Text** (`#E6EDF5`): body copy and primary values.
+- **Text Secondary** (`#C3CDD9`): prose that explains rather than states — chapter copy on *How it
+  works*, a diagram's labels, a sub-line under a value, an advisory note. Brighter than Muted,
+  because it is meant to be read rather than scanned past.
 - **Muted** (`#8A97A8`): secondary copy, labels, column heads, legends, axis ticks.
-- **Label Dim** (`#6f7d90`) and **Group Dim** (`#5f6d80`): the two quietest steps — phone cell
-  labels and sidebar group headings. They exist so a label never competes with the value it labels.
+- **Dim** (`#7C8A9E`): the quietest legible step — a sidebar group heading, a column's name inside a
+  phone row-card, an unplaced node. It is the floor, and it is a floor on purpose: it clears 4.5:1 on
+  every ground in the system (4.95:1 on Panel Raised, 5.60:1 on the page). Nothing is quieter.
+- **On Lit** (`#06121D`): ink on a lit surface — the solid cyan "go" cap, a filled severity tick, a
+  heat-map cell. One value for all of them, 7.1:1 or better on every hue it can land on.
 
 ### Named Rules
 
@@ -277,13 +314,24 @@ interactive-or-live and nothing else. Every other number, label, chart series an
 plain `Text` or `Muted`. There is no decorative color in this system — if a color appears, a reader
 is entitled to ask what it means, and there must be an answer.
 
-**The One Light Source Rule.** Cyan is the only hue that glows. Every `box-shadow` spread that is
-not black is `rgba(53,199,242,…)`. A second glowing hue would read as a second kind of alive, and
-there is only one.
+**The One Light Source Rule.** Cyan is the only hue that glows *on its own account*. A severity may
+also glow, because a severity is a state: the status pulse expands in red or green, a completed
+step's dot carries a green halo, an error panel sits in a red one. Nothing else glows — not a brand,
+not a category, not an operation's series colour, and never a surface at rest.
 
 **The Plain Number Rule.** A KPI's value is `Text` unless the number *is* a severity count
 (`.kpi.crit`, `.kpi.hi`, `.kpi.med`). Coloring a number for emphasis is forbidden; emphasis comes
 from size and position.
+
+**The Series-Is-Identity Rule.** A series colour answers "which operation?" and nothing else. It is
+never severity, never a brand, never a tier, never an accent. An ordered scale — scan depth, tier,
+confidence — is one hue getting brighter (a `color-mix` of the accent toward Muted, then the accent,
+then Readout Cyan), never three unrelated hues.
+
+**The Drawing's Own Materials Rule.** An illustration may mix grounds of its own: the globe's land
+and coastline, the flow diagram's four node fills, a graph box's radial floor. It may **not** invent
+a colour that carries meaning. Anything standing for severity, state, identity or an operation comes
+from the tokens — `var()` in CSS, `BW.ink()` in the browser, `api/palette.py` on the server.
 
 ## Typography
 
@@ -315,7 +363,7 @@ trade jobs, and the contrast between them is what makes a dense screen parse.
 - **Label** (JetBrains Mono 400, 12px, uppercase, `0.06em`, `Muted`): form labels, breadcrumbs,
   state badges, pills.
 - **Column Head** (JetBrains Mono 500, 11px, uppercase, `0.08em`, `Muted`): table `th`, KPI captions,
-  legend values, chart ticks. On a phone, the same role drops to 9.5px/600 in `Label Dim` as the
+  legend values, chart ticks. On a phone, the same role drops to 9.5px/600 in `Dim` as the
   per-cell label inside a row-card.
 
 ### Named Rules
@@ -382,6 +430,7 @@ is information.
 - **Focus ring** (`0 0 0 3px rgba(53,199,242,.15)` on fields, `.25` on links and buttons, plus a 2px
   `Readout Cyan` outline at 2px offset): keyboard focus only, via `:focus-visible`.
 - **Active marker** (`0 0 8px var(--accent)` on a 3px rail): the current nav item and timeline dots.
+- **Dialog** (`0 20px 60px rgba(0,0,0,.6)`): the confirm dialog, on a 1px cyan hairline.
 - **Drawer** (`12px 0 40px rgba(0,0,0,.55)`): the phone sidebar over the page.
 - **Tooltip** (`0 10px 30px rgba(0,0,0,.5)`): the help bubble and the 2.6× thumbnail zoom.
 
@@ -448,6 +497,12 @@ changes the border's *color* to cyan or a severity hue; it never changes its thi
 - **State:** `.on` promotes the label to `Text`, the border to `Instrument Cyan`, and adds a
   `0 0 10px rgba(53,199,242,.18)` glow. A selected filter is lit; an unselected one is dim. There is
   no third state.
+- **Read-only (`.chip.static`):** the same pill with `cursor: default` and no `.on` state, for a
+  value you read rather than press — a brand keyword, an approved query, a shared pivot. Use the
+  modifier; do not redefine `.chip`, which restyles every filter on the page as a side effect.
+- **Hint (`.chip.static.hint`):** a dashed border. On the connections views the hue says what kind
+  of evidence a tie is, and the dash says it is a hint rather than proof. Strength is never carried
+  by a dimmer shade of the hue.
 
 ### Cards / Containers
 
@@ -477,7 +532,7 @@ changes the border's *color* to cyan or a severity hue; it never changes its thi
 ### Navigation
 
 - **Sidebar:** a `180deg` `#0d1422 → #0a101b` gradient, 232px, hairline right border, grouped under
-  JetBrains Mono 10px uppercase headings in `Group Dim` (Work / Manage / Help). Items are 13.5px,
+  JetBrains Mono 11px uppercase headings in `Dim` (Work / Manage / Help). Items are 13.5px,
   8px 10px, 8px corners, `Muted` at rest, with a 17px 1.7-weight stroked SVG icon.
 - **Hover:** `Text` label over a `rgba(53,199,242,.06)` wash.
 - **Active:** `Text` label, `rgba(53,199,242,.10)` wash, cyan-tinted border, a `Readout Cyan` icon,
@@ -536,8 +591,11 @@ not minimal.
 
 ### Do:
 
-- **Do** reach for the existing `:root` tokens in `base.html`. The whole system is 23 custom
-  properties; a new hex in a template is a fork of the design system.
+- **Do** reach for the existing tokens: `var(--…)` in CSS, `BW.ink('name')` / `BW.sev` / `BW.op` /
+  `BW.kind` in the browser, and `INK` / `OPS` / `kind_color()` / `op_color()` / `op_print_color()`
+  from `api/palette.py` in a template. A new hex is a fork of the design system.
+- **Do** put a colour that must exist in more than one renderer in `api/palette.py` and mirror it on
+  `:root`. `tests/test_palette.py` is what keeps the two honest.
 - **Do** color a number only when it *is* a severity (`.kpi.crit`, `.kpi.hi`, `.kpi.med`). Every
   other value is `Text`.
 - **Do** mark a new section with an `h2` — JetBrains Mono 12px uppercase at `0.12em` with its 6px
@@ -557,9 +615,14 @@ not minimal.
 
 ### Don't:
 
-- **Don't** introduce a second accent hue. Violet and magenta exist as `--violet: #5b9bb5` and
-  `--magenta: #c9d3df` — both already desaturated to near-neutral precisely because the system
-  rejected them as colors. Treat them as legacy neutrals, not an expansion slot.
+- **Don't** introduce a second accent hue. `--violet` and `--magenta` used to exist and are now
+  deleted; `tests/test_demo_story.py::test_palette_is_calm` fails if either comes back. The series
+  tokens are not a substitute — see The Series-Is-Identity Rule.
+- **Don't** write a colour into SVG with `var()`. A presentation attribute (`fill="…"`,
+  `stroke="…"`, `stop-color="…"`) does not accept it: either move the colour into CSS
+  (`style="fill:var(--accent)"`, or a class) or render the concrete value from `api/palette.py`.
+- **Don't** redefine a global component (`.chip`, `.panel`, `.badge`, `.card`) inside a page to get
+  a variant. Add a modifier; a redefinition silently restyles every other use on that page.
 - **Don't** put a resting shadow on anything. Flat at rest; lift on hover; light on state.
 - **Don't** glow an element to say it matters. Glow says focused, active, running or selected.
 - **Don't** uppercase content. Uppercase is reserved for metadata.
@@ -569,5 +632,7 @@ not minimal.
 - **Don't** let a table scroll the page sideways — wrap it in `.tw` or convert it to a row-card.
 - **Don't** emphasise by thickening a border. Change its color instead.
 - **Don't** ship a derived number without the path to its arithmetic.
+- **Don't** take a colour below the Dim floor (`#7C8A9E`). If a label needs to be quieter than that,
+  it needs less weight, less size or less prominence — not less contrast.
 - **Don't** reach for the light palette inside `/ui`. There is exactly one light surface, and it is
   the thing you hand to someone else.

@@ -7,7 +7,7 @@
     background:linear-gradient(160deg,rgba(18,26,43,.96),rgba(10,15,26,.96));border:1px solid var(--border);border-radius:12px;padding:14px;
     animation:fadeUp .6s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(var(--i,0)*90ms);transition:transform .3s,border-color .3s,box-shadow .3s}
   .ccard:hover{transform:translateY(-3px);border-color:var(--accent);box-shadow:0 0 0 1px var(--accent),0 14px 40px rgba(0,0,0,.45);color:inherit}
-  .ccard canvas{width:220px;height:150px;border-radius:8px;background:radial-gradient(circle at 50% 50%,#101b2e,#070b13);border:1px solid var(--border)}
+  .ccard canvas{width:220px;height:150px;border-radius:8px;background:radial-gradient(circle at 50% 50%,color-mix(in srgb,var(--accent) 6%,var(--panel)),var(--bg));border:1px solid var(--border)}
   .ccard .title{font-family:var(--display);font-size:21px;font-weight:700;letter-spacing:.03em}
   .mini{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:10px 0}
   .mini div{background:rgba(8,11,20,.55);border:1px solid var(--border);border-radius:8px;padding:6px;text-align:center}
@@ -22,7 +22,7 @@
   </form>
 </div>
 <p class="intro">{{ PAGE_INTROS.campaigns }}</p>
-<p class="small" style="margin:-6px 0 12px;color:#c3cdd9;max-width:980px">Two views of the same thing: an <b>infrastructure map</b> starts from <em>one</em> confirmed site and follows what it shares (below);
+<p class="small" style="margin:-6px 0 12px;color:var(--text2);max-width:980px">Two views of the same thing: an <b>infrastructure map</b> starts from <em>one</em> confirmed site and follows what it shares (below);
   an <b>operation</b> groups <em>every</em> confirmed site that belongs to the same attacker — <a href="/ui/campaigns/all{{ '?brand_id=' ~ request.query_params.get('brand_id') if request.query_params.get('brand_id') }}">all sites on one map →</a>. Each map adds to the operations; an operation card drafts the takedowns of all its sites.</p>
 
 <div class="kpis">
@@ -39,7 +39,7 @@
 {% if k.other_brands %}
 <div class="panel" style="margin-top:14px;border-color:rgba(255,95,210,.35)">
   <h2>Actor intel · other brands hit by the same infrastructure</h2>
-  <div>{% for o in k.other_brands %}<span class="badge" style="border:1px solid var(--magenta);color:var(--magenta);margin-right:6px">{{ o }}</span>{% endfor %}
+  <div>{% for o in k.other_brands %}<span class="badge state" style="margin-right:6px">{{ o }}</span>{% endfor %}
     <span class="small muted">— found by AI triage of co-hosted pages; shared with those brands' teams, never acted on.</span></div>
 </div>
 {% endif %}
@@ -47,7 +47,7 @@
 <div id="batch">{% if batch and batch.state in ('queued', 'running') %}
   <div class="panel" style="margin-top:14px;border-color:rgba(53,199,242,.45)"><span class="radar"></span> <b>MAP ALL is running</b> — {{ batch.message or 'starting …' }}
     <div class="small muted" style="margin:6px 0">one site after the other: {{ batch.current }} of {{ batch.total }} done · <a href="/ui/jobs/{{ batch.id }}">console</a></div>
-    <div style="height:8px;border-radius:6px;background:var(--panel2,#0f1722);overflow:hidden"><i style="display:block;height:8px;width:{{ (batch.current / batch.total * 100)|round if batch.total else 0 }}%;background:var(--cyan,#35c7f2)"></i></div></div>
+    <div style="height:8px;border-radius:6px;background:var(--panel2);overflow:hidden"><i style="display:block;height:8px;width:{{ (batch.current / batch.total * 100)|round if batch.total else 0 }}%;background:var(--accent)"></i></div></div>
 {% endif %}</div>
 {% set note = request.query_params.get('note') or '' %}
 {% if note %}<div class="panel small" style="margin-top:14px;border-color:rgba(46,204,113,.45)">
@@ -66,7 +66,7 @@
   .allmap-cta .txt{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
   .allmap-cta .txt b{font-size:17px;letter-spacing:.02em;color:var(--accent2)}
   .allmap-cta .txt small{font-size:13px;color:var(--muted);line-height:1.4}
-  .allmap-cta .go{flex:0 0 auto;padding:10px 18px;border-radius:9px;background:var(--accent);color:#04121c;font-weight:700;font-size:14px;white-space:nowrap}
+  .allmap-cta .go{flex:0 0 auto;padding:10px 18px;border-radius:9px;background:var(--accent);color:var(--on-lit);font-weight:700;font-size:14px;white-space:nowrap}
   @keyframes allmap-glow{50%{box-shadow:0 0 0 1px rgba(53,199,242,.3),0 0 34px rgba(53,199,242,.35)}}
   @media (prefers-reduced-motion:reduce){.allmap-cta{animation:none}}
   @media (max-width:640px){.allmap-cta{flex-wrap:wrap}.allmap-cta .go{width:100%;text-align:center}}
@@ -103,10 +103,10 @@
       <td class="mono small muted" data-rel="{{ x.confirmed_at }}">{{ (x.confirmed_at or '')[:16].replace('T',' ') }}</td>
       <td>{% if x.map_status == 'mapped' %}<a href="/ui/campaigns/{{ x.campaign_id }}" class="badge state" style="border-color:var(--low);color:var(--low)">mapped → open</a>
           {% elif x.map_status == 'mapping' %}<span class="radar"></span> <a href="/ui/jobs/{{ x.map_job.id }}">mapping now…</a>{% if x.map_job.last %}<div class="small muted">{{ x.map_job.last }}</div>{% endif %}
-          {% elif x.batch_position %}<span class="badge state" style="border-color:var(--cyan,#35c7f2);color:var(--cyan,#35c7f2)">waiting · {{ x.batch_position }} of {{ batch.total }}</span>
+          {% elif x.batch_position %}<span class="badge state" style="border-color:var(--accent);color:var(--accent)">waiting · {{ x.batch_position }} of {{ batch.total }}</span>
           {% else %}<span class="badge state" style="border-color:var(--high);color:var(--high)">{{ 'mapping failed' if x.map_status == 'failed' else 'not mapped' }}</span>
             {% if can_write %}<form method="post" action="/ui/findings/{{ x.id }}/investigate" style="display:inline;margin-left:6px"><button type="submit" class="small" style="padding:4px 9px;font-size:12px">Map now ▶</button></form>{% endif %}{% endif %}</td>
-      <td class="small">{% if x.intel_job and x.intel_job.state == 'queued' %}<span class="badge state" style="border-color:var(--cyan,#35c7f2);color:var(--cyan,#35c7f2)">waiting for its turn</span>
+      <td class="small">{% if x.intel_job and x.intel_job.state == 'queued' %}<span class="badge state" style="border-color:var(--accent);color:var(--accent)">waiting for its turn</span>
           {% elif x.intel_job and x.intel_job.state == 'running' %}<span class="radar"></span> <a href="/ui/jobs/{{ x.intel_job.id }}">investigating…</a>{% if x.intel_job.last %}<div class="muted">{{ x.intel_job.last }}</div>{% endif %}
           {% elif x.intel_job and x.intel_job.state == 'done' %}<a href="/ui/findings/{{ x.id }}#reputation" class="badge state" style="border-color:var(--low);color:var(--low)" title="{{ 'a quick investigation: press Investigate on the finding for every lookup' if x.intel_job.light else 'the full investigation' }}">{{ 'quick' if x.intel_job.light else 'done' }} → open</a>
           {% elif x.intel_job %}<span class="badge state" style="border-color:var(--high);color:var(--high)">failed</span>
@@ -181,7 +181,7 @@
         <div><b data-count="{{ c.findings|length }}">0</b><span>findings</span></div>
         <div><b data-count="{{ c.iocs }}">0</b><span>IOCs</span></div>
       </div>
-      <div class="stack" title="included vs excluded by co-hosted triage"><i data-w="{{ c.included_pct }}" style="background:var(--low)"></i><i data-w="{{ 100 - c.included_pct }}" style="background:#3a4658"></i></div>
+      <div class="stack" title="included vs excluded by co-hosted triage"><i data-w="{{ c.included_pct }}" style="background:var(--low)"></i><i data-w="{{ 100 - c.included_pct }}" style="background:var(--border)"></i></div>
       <div class="small" style="margin-top:8px">
         {% for f in c.findings[:4] %}<span class="badge sev-{{ f.severity }}" style="margin:2px">{{ f.hostname }}</span>{% endfor %}{% if c.findings|length > 4 %}<span class="muted">+{{ c.findings|length - 4 }}</span>{% endif %}
       </div>
@@ -216,12 +216,12 @@
       });
       nodes.forEach(n => {
         ctx.beginPath(); ctx.arc(n.x, n.y, n.inc ? (n.red ? 5 : 3.6) : 2.4, 0, 6.28);
-        ctx.fillStyle = n.inc ? (n.red ? '#FF4D4D' : '#5FE3FF') : 'rgba(138,151,168,.35)';
+        ctx.fillStyle = n.inc ? (n.red ? BW.ink('crit') : BW.ink('accent2')) : 'rgba(138,151,168,.35)';
         ctx.shadowColor = ctx.fillStyle; ctx.shadowBlur = n.inc ? 12 : 0; ctx.fill(); ctx.shadowBlur = 0;
       });
       const pr = 9 + Math.sin(t * 0.06) * 2;
       ctx.beginPath(); ctx.arc(cx, cy, pr + 8, 0, 6.28); ctx.strokeStyle = 'rgba(255,95,210,.25)'; ctx.lineWidth = 1; ctx.stroke();
-      ctx.beginPath(); ctx.arc(cx, cy, pr, 0, 6.28); ctx.fillStyle = '#FF4D4D'; ctx.shadowColor = '#FF4D4D'; ctx.shadowBlur = 20; ctx.fill(); ctx.shadowBlur = 0;
+      ctx.beginPath(); ctx.arc(cx, cy, pr, 0, 6.28); ctx.fillStyle = BW.ink('crit'); ctx.shadowColor = BW.ink('crit'); ctx.shadowBlur = 20; ctx.fill(); ctx.shadowBlur = 0;
       requestAnimationFrame(frame);
     }
     setTimeout(frame, ci * 120);

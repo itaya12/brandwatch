@@ -5,7 +5,7 @@
   #add .customhd{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
   #add .toggle{display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border:1px solid var(--border);border-radius:999px;background:var(--panel2);cursor:pointer;font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);transition:all .2s}
   #add .toggle.on,#add .toggle:hover{color:var(--text);border-color:var(--accent);box-shadow:0 0 12px rgba(53,199,242,.2)}
-  #add .toggle .sw{width:30px;height:16px;border-radius:999px;background:#1E2A3D;position:relative;transition:background .2s}
+  #add .toggle .sw{width:30px;height:16px;border-radius:999px;background:var(--border);position:relative;transition:background .2s}
   #add .toggle .sw::after{content:"";position:absolute;top:2px;left:2px;width:12px;height:12px;border-radius:50%;background:var(--muted);transition:all .2s}
   #add .toggle.on .sw{background:rgba(53,199,242,.4)}#add .toggle.on .sw::after{left:16px;background:var(--accent2)}
   #add #nb-custom{margin-top:12px;animation:fadeUp .35s both}#add #nb-custom.hidden{display:none}
@@ -35,7 +35,7 @@
       <div class="small muted">one search = one ad keyword in one country</div></div>
   </div>
   <div class="chkrow" id="nb-pa" style="margin-top:6px"><label><input type="checkbox" name="phishing_ads"> Phishing ads — read the ads that use the brand's name and check the sites they send people to <span class="muted">(a brand nobody else sells: a bank, an app; a brand other shops sell always has its ads read, for scam shops)</span></label></div>
-  <p class="small" style="margin:6px 0 0;color:#c3cdd9" id="nb-reach-cost"></p>
+  <p class="small" style="margin:6px 0 0;color:var(--text2)" id="nb-reach-cost"></p>
 </div>
 <div style="grid-column:1/-1" class="cfgcard" id="nb-ai">
   <h3>AI answers <span style="text-transform:none;letter-spacing:0;color:var(--muted);font-family:var(--sans)">· optional, set now or later on the brand page</span></h3>

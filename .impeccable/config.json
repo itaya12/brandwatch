@@ -1,0 +1,41 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "dark-glow",
+        "value": "*",
+        "files": [
+          "src/brandwatch/api/templates/**"
+        ],
+        "createdAt": "2026-10-19T07:37:30.681Z",
+        "reason": "user confirmed: chose 'Glow is signal, never atmosphere' in the /impeccable document interview; cyan glow marks focus, active nav, running and selected state, recorded as The Glow-Is-Signal Rule in DESIGN.md"
+      },
+      {
+        "rule": "gradient-text",
+        "value": "*",
+        "files": [
+          "src/brandwatch/api/templates/base.html"
+        ],
+        "createdAt": "2026-10-19T07:37:31.029Z",
+        "reason": "incumbent before this session, on the h1 only; recorded by /impeccable document as The Lit Title Rule. Not user-confirmed - reported to the user as the one craft-floor conflict in the committed world"
+      },
+      {
+        "rule": "overused-font",
+        "value": "inter",
+        "createdAt": "2026-10-19T08:36:02.603Z",
+        "reason": "incumbent before this session and pinned by the committed world: DESIGN.md's Three-Voice Rule gives Inter one job (prose) against Rajdhani for numbers and JetBrains Mono for labels, so it is not the display voice"
+      },
+      {
+        "rule": "pulsing-dot",
+        "value": "*",
+        "files": [
+          "src/brandwatch/api/templates/base.html"
+        ],
+        "createdAt": "2026-10-19T08:36:03.005Z",
+        "reason": "two separate cases, both tied to real state: .pulse marks a live finding/scan/ok state from the data, and the logo beat is the North Star the user chose in the /impeccable document interview - The Night Watch Floor, where the heartbeat says the floor is staffed. Both stop under prefers-reduced-motion"
+      }
+    ]
+  }
+}

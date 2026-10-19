@@ -8,7 +8,7 @@
   .vtools button{padding:3px 10px;font-size:12px}
   .vlegend{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:11.5px;color:var(--muted);padding:0 2px 6px}
   .vlegend i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:5px;vertical-align:-2px}
-  .vbox{border:1px solid var(--border);border-radius:8px;background:radial-gradient(circle at 50% 30%,#0f1c30,#060910 75%);overflow:hidden}
+  .vbox{border:1px solid var(--border);border-radius:8px;background:radial-gradient(circle at 50% 30%,color-mix(in srgb,var(--accent) 7%,var(--panel)),var(--console) 75%);overflow:hidden}
   .vbox svg{display:block;width:100%;height:auto;cursor:grab;user-select:none}
   .vinfo{min-height:22px;padding:8px 4px 0;font-size:12.5px}
   .vinfo .mono{word-break:break-all}
@@ -22,12 +22,11 @@
 (function(){
   const V = window.BW_VIEWS, state = window.bwState;
   if (!V || !state) return;
-  const GC = ['#35C7F2', '#F5C518', '#FF9F1C', '#2ECC71', '#B388FF', '#FF6FA8', '#4DD0C4', '#9AA5B1'];
-  const SEV = {critical: '#FF4D4D', high: '#FF9F1C', medium: '#F5C518', low: '#2ECC71'};
-  const KC = {affiliate_id: '#FF4D4D', registrant: '#FF4D4D', dns_token: '#FF4D4D', tracking_id: '#FF9F1C', data_sink: '#FF9F1C', ip: '#35C7F2', past_ip: '#5aa9c9',
-              shared_ip: '#5aa9c9', certificate: '#F5C518', kit: '#F5C518', kit_look: '#d8b65a', redirector: '#B388FF', tds_campaign: '#2ECC71', shared_tds: '#2ECC71',
-              cf_ns_pair: '#8A97A8', batch: '#8A97A8', registrar: '#8A97A8', nameserver: '#8A97A8', favicon: '#6fbf8f'};
-  const col = op => op ? GC[(op - 1) % GC.length] : '#8499b0';
+  const ink = BW.ink;  // the palette comes from the stylesheet and palette.py, never from a hex here
+  const GC = BW.OPS;
+  const SEV = BW.SEV;
+  const KC = BW.KIND;
+  const col = BW.op;
   const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'}[c]));
   const cut = (s, n) => { s = String(s); return s.length > n ? s.slice(0, Math.max(1, n - 1)) + '…' : s; };
   const info = {}; V.sites.forEach(s => { info[s.host] = s; });
@@ -79,7 +78,7 @@
   }
   const tname = t => t.values.length > 1 ? `${t.short} ×${t.values.length}` : `${t.short}: ${t.values[0]}`;
   const tinfo = t => `<b>${esc(t.label)}</b> <span class="muted">· ${Math.round(t.weight * 100)}% · ${LVL[t.level] || ''}</span><div class="mono">${esc(t.values.join(', '))}${t.networks.size ? ' <span class="muted">(' + esc([...t.networks].join(', ')) + ')</span>' : ''}</div><div>shared by <b>${t.sites.length} sites</b>: <span class="mono">${esc(t.sites.join(', '))}</span></div>`;
-  const legend = T => '<div class="vlegend">' + [...new Map(T.map(t => [t.kind, t])).values()].map(t => `<span><i style="background:${KC[t.kind] || '#888'}"></i>${esc(t.short)}</span>`).join('') + '<span><i style="background:transparent;border:1px dashed #8A97A8"></i>dashed = a hint, not proof alone</span></div>';
+  const legend = T => '<div class="vlegend">' + [...new Map(T.map(t => [t.kind, t])).values()].map(t => `<span><i style="background:${KC[t.kind] || ink('muted')}"></i>${esc(t.short)}</span>`).join('') + `<span><i style="background:transparent;border:1px dashed ${ink('muted')}"></i>dashed = a hint, not proof alone</span></div>`;
 
   // put the sites in the order of their operation, and both lists in an order that crosses as few lines as possible
   function arrange(T, S){
@@ -119,15 +118,15 @@
     let s = `<svg viewBox="0 0 ${W} ${H}" font-family="JetBrains Mono, monospace">`;
     T.forEach((t, i) => t.sites.forEach(h => { if (!sy.has(h)) return;
       const x1 = xl + wl, y1 = ty.get(t) + dl + (row - 6) / 2, x2 = xr, y2 = sy.get(h) + dr + (row - 6) / 2, mx = (x1 + x2) / 2;
-      s += `<path class="ln" data-t="${i}" data-s="${esc(h)}" d="M${x1},${y1} C${mx},${y1} ${mx},${y2} ${x2},${y2}" fill="none" stroke="${KC[t.kind] || '#888'}" stroke-width="${(1 + t.weight * 2.2).toFixed(1)}" stroke-opacity=".6"${t.level === 'solid' ? '' : ' stroke-dasharray="5 4"'}/>`; }));
-    kindHeads.forEach(k => { s += `<text x="${xl + 2}" y="${k.y + dl + 15}" font-size="10.5" letter-spacing=".1em" fill="${KC[k.k.kind] || '#888'}">${esc(k.k.label.replace(/^the same |^a |^an /, '').toUpperCase())}</text>`; });
+      s += `<path class="ln" data-t="${i}" data-s="${esc(h)}" d="M${x1},${y1} C${mx},${y1} ${mx},${y2} ${x2},${y2}" fill="none" stroke="${KC[t.kind] || ink('muted')}" stroke-width="${(1 + t.weight * 2.2).toFixed(1)}" stroke-opacity=".6"${t.level === 'solid' ? '' : ' stroke-dasharray="5 4"'}/>`; }));
+    kindHeads.forEach(k => { s += `<text x="${xl + 2}" y="${k.y + dl + 15}" font-size="10.5" letter-spacing=".1em" fill="${KC[k.k.kind] || ink('muted')}">${esc(k.k.label.replace(/^the same |^a |^an /, '').toUpperCase())}</text>`; });
     opHeads.forEach(o => { s += `<text x="${xr + 2}" y="${o.y + dr + 15}" font-size="10.5" letter-spacing=".06em" fill="${col(o.op)}" font-weight="700">${esc(cut(opName(o.op), 40).toUpperCase())}</text>`; });
     const chars = Math.floor((wl - 84) / 6.6);
-    T.forEach((t, i) => { const yy = ty.get(t) + dl, c = KC[t.kind] || '#888';
+    T.forEach((t, i) => { const yy = ty.get(t) + dl, c = KC[t.kind] || ink('muted');
       s += `<g class="bx th" data-t="${i}"><rect x="${xl}" y="${yy}" width="${wl}" height="${row - 6}" rx="6" fill="rgba(14,22,34,.95)" stroke="${c}" stroke-opacity=".75"${t.level === 'solid' ? '' : ' stroke-dasharray="4 3"'}/><rect x="${xl}" y="${yy}" width="5" height="${row - 6}" rx="2" fill="${c}"/>`
-        + `<text x="${xl + 12}" y="${yy + 16}" font-size="11.5" fill="#e6edf5">${esc(cut(tname(t), chars))}</text><text x="${xl + wl - 8}" y="${yy + 16}" font-size="11" text-anchor="end" fill="#8fa6bf">${t.sites.length} sites</text><title>${esc(t.label)} · ${esc(t.values.join(', '))} · ${Math.round(t.weight * 100)}%</title></g>`; });
+        + `<text x="${xl + 12}" y="${yy + 16}" font-size="11.5" fill="${ink('text')}">${esc(cut(tname(t), chars))}</text><text x="${xl + wl - 8}" y="${yy + 16}" font-size="11" text-anchor="end" fill="${ink('muted')}">${t.sites.length} sites</text><title>${esc(t.label)} · ${esc(t.values.join(', '))} · ${Math.round(t.weight * 100)}%</title></g>`; });
     S.forEach(h => { const yy = sy.get(h) + dr;
-      s += `<g class="bx st" data-s="${esc(h)}"><rect x="${xr}" y="${yy}" width="${wr}" height="${row - 6}" rx="6" fill="rgba(14,22,34,.95)" stroke="${col(info[h].op)}" stroke-opacity=".6"/><circle cx="${xr + 12}" cy="${yy + 12}" r="4.5" fill="${SEV[info[h].severity] || '#aaa'}"/>`
+      s += `<g class="bx st" data-s="${esc(h)}"><rect x="${xr}" y="${yy}" width="${wr}" height="${row - 6}" rx="6" fill="rgba(14,22,34,.95)" stroke="${col(info[h].op)}" stroke-opacity=".6"/><circle cx="${xr + 12}" cy="${yy + 12}" r="4.5" fill="${SEV[info[h].severity] || ink('muted')}"/>`
         + `<text x="${xr + 24}" y="${yy + 16}" font-size="11.5" fill="${col(info[h].op)}">${esc(cut(h, Math.floor((wr - 34) / 6.6)))}</text><title>${esc(h)} · ${esc(opName(info[h].op))} · click to open the finding</title></g>`; });
     s += '</svg>';
     el.innerHTML = head('<b>What is shared</b> on the left, <b>the sites</b> on the right, a line = “this site has that”. Point at a box to follow its lines; click a shared thing for the details, a site to open its finding. Things shared by exactly the same sites are one box (“old server ×4”).')
@@ -159,17 +158,17 @@
     S.forEach(h => { if (info[h].op !== lastOp) { opHeads.push({op: info[h].op, y}); y += 20; lastOp = info[h].op; } rowY.set(h, y); y += cell; });
     const w = lw + n * cell + 70, H = y + 34;
     let s = `<svg viewBox="0 0 ${w} ${H}" font-family="JetBrains Mono, monospace"><rect id="mx-row" x="0" y="0" width="0" height="0" fill="rgba(53,199,242,.08)"/><rect id="mx-col" x="0" y="0" width="0" height="0" fill="rgba(53,199,242,.08)"/>`;
-    T.forEach((t, j) => { const x = lw + j * cell + cell / 2, c = KC[t.kind] || '#888';
+    T.forEach((t, j) => { const x = lw + j * cell + cell / 2, c = KC[t.kind] || ink('muted');
       s += `<text transform="translate(${x + 3},${th - 10}) rotate(-55)" font-size="11" fill="${c}">${esc(cut(tname(t), 24))}<title>${esc(t.label)} · ${esc(t.values.join(', '))}</title></text>`
         + `<rect x="${lw + j * cell + 2}" y="${th - 6}" width="${cell - 4}" height="3" rx="1" fill="${c}"${t.level === 'solid' ? '' : ' fill-opacity=".45"'}/>`
-        + `<text x="${x}" y="${H - 14}" font-size="10.5" text-anchor="middle" fill="#8fa6bf">${t.sites.length}</text>`; });
+        + `<text x="${x}" y="${H - 14}" font-size="10.5" text-anchor="middle" fill="${ink('muted')}">${t.sites.length}</text>`; });
     opHeads.forEach(o => { s += `<text x="6" y="${o.y + 14}" font-size="10.5" font-weight="700" letter-spacing=".06em" fill="${col(o.op)}">${esc(cut(opName(o.op), 44).toUpperCase())}</text><line x1="0" x2="${w}" y1="${o.y + 1}" y2="${o.y + 1}" stroke="${col(o.op)}" stroke-opacity=".35"/>`; });
     S.forEach(h => { const yy = rowY.get(h), mine = T.filter(t => t.sites.includes(h)).length;
-      s += `<g class="bx mrow" data-s="${esc(h)}"><circle cx="12" cy="${yy + cell / 2}" r="4" fill="${SEV[info[h].severity] || '#aaa'}"/><text x="22" y="${yy + cell / 2 + 4}" font-size="11.5" fill="${col(info[h].op)}">${esc(cut(h, 24))}</text><title>${esc(h)} · click to open the finding</title></g>`
-        + `<text x="${lw + n * cell + 10}" y="${yy + cell / 2 + 4}" font-size="10.5" fill="#8fa6bf">${mine}</text>`;
-      T.forEach((t, j) => { const has = t.sites.includes(h), c = KC[t.kind] || '#888';
+      s += `<g class="bx mrow" data-s="${esc(h)}"><circle cx="12" cy="${yy + cell / 2}" r="4" fill="${SEV[info[h].severity] || ink('muted')}"/><text x="22" y="${yy + cell / 2 + 4}" font-size="11.5" fill="${col(info[h].op)}">${esc(cut(h, 24))}</text><title>${esc(h)} · click to open the finding</title></g>`
+        + `<text x="${lw + n * cell + 10}" y="${yy + cell / 2 + 4}" font-size="10.5" fill="${ink('muted')}">${mine}</text>`;
+      T.forEach((t, j) => { const has = t.sites.includes(h), c = KC[t.kind] || ink('muted');
         s += `<rect class="mc" data-s="${esc(h)}" data-t="${j}" x="${lw + j * cell + 2}" y="${yy + 2}" width="${cell - 4}" height="${cell - 4}" rx="4" fill="${has ? c : 'rgba(255,255,255,.04)'}" fill-opacity="${has ? (0.35 + 0.65 * t.weight).toFixed(2) : 1}"${has && t.level !== 'solid' ? ` stroke="${c}" stroke-dasharray="3 2"` : ''}/>`; }); });
-    s += `<text x="${lw - 6}" y="${H - 14}" font-size="10.5" text-anchor="end" fill="#8fa6bf">sites sharing it</text><text x="${lw + n * cell + 10}" y="${th - 10}" font-size="10.5" fill="#8fa6bf">ties</text></svg>`;
+    s += `<text x="${lw - 6}" y="${H - 14}" font-size="10.5" text-anchor="end" fill="${ink('muted')}">sites sharing it</text><text x="${lw + n * cell + 10}" y="${th - 10}" font-size="10.5" fill="${ink('muted')}">ties</text></svg>`;
     el.innerHTML = head('<b>A row per site, a column per shared thing</b>: a filled square = the site has it. A long column = many sites share that one thing; rows that look alike = sites built the same way. Point at a square for what it is, click a site to open its finding.')
       + legend(T) + `<div class="vbox">${s}</div><div class="vinfo" id="mx-info"></div>`;
     const svg = el.querySelector('svg'), box = el.querySelector('#mx-info'), rr = svg.querySelector('#mx-row'), rc = svg.querySelector('#mx-col');
@@ -209,19 +208,19 @@
         const y0 = sN.y + (sN.h - sN.flow) / 2 + sN.out + hgt / 2, y1 = tN.y + (tN.h - tN.flow) / 2 + l.inOff + hgt / 2, x0 = xs[c] + bwOf(c), x1 = xs[c + 1], mx = (x0 + x1) / 2;
         sN.out += hgt;
         const one = l.ops.size === 1 ? [...l.ops][0] : 0;
-        s += `<path class="ln" data-sites="${esc(l.sites.join('|'))}" d="M${x0},${y0} C${mx},${y0} ${mx},${y1} ${x1},${y1}" fill="none" stroke="${one ? col(one) : '#6c86a3'}" stroke-opacity=".38" stroke-width="${Math.max(hgt - 2, 1.5)}"><title>${esc(l.a)} → ${esc(l.b)} · ${l.sites.length} site${l.sites.length === 1 ? '' : 's'}</title></path>`;
+        s += `<path class="ln" data-sites="${esc(l.sites.join('|'))}" d="M${x0},${y0} C${mx},${y0} ${mx},${y1} ${x1},${y1}" fill="none" stroke="${one ? col(one) : ink('muted')}" stroke-opacity=".38" stroke-width="${Math.max(hgt - 2, 1.5)}"><title>${esc(l.a)} → ${esc(l.b)} · ${l.sites.length} site${l.sites.length === 1 ? '' : 's'}</title></path>`;
       });
     }
     nodes.forEach((list, c) => {
-      s += `<text x="${xs[c] + 2}" y="18" font-size="11" fill="#8fa6bf" letter-spacing=".1em" font-family="JetBrains Mono, monospace">${esc(cols[c].toUpperCase())}</text>`;
+      s += `<text x="${xs[c] + 2}" y="18" font-size="11" fill="${ink('muted')}" letter-spacing=".1em" font-family="JetBrains Mono, monospace">${esc(cols[c].toUpperCase())}</text>`;
       const site = withSites && c === 0, last = c === nc - 1;
       list.forEach(nd => {
-        const one = nd.ops.size === 1 ? [...nd.ops][0] : 0, fill = last ? col(one) : 'rgba(18,30,48,.97)', ink = last ? '#06121d' : (site ? col(one) : '#e6edf5');
+        const one = nd.ops.size === 1 ? [...nd.ops][0] : 0, fill = last ? col(one) : 'rgba(18,30,48,.97)', label = last ? ink('bg') : (site ? col(one) : ink('text'));
         const w = bwOf(c), lim = Math.floor((w - (site ? 26 : 44)) / 6.6), ty = nd.y + nd.h / 2 + 4;
-        s += `<g class="bx fn" data-sites="${esc(nd.sites.join('|'))}"${site ? ` data-s="${esc(nd.name)}"` : ''}><rect x="${xs[c]}" y="${nd.y}" width="${w}" height="${nd.h}" rx="6" fill="${fill}" stroke="${last ? 'none' : (site ? col(one) : '#4f7cb3')}" stroke-opacity=".7"/>`
-          + (site ? `<circle cx="${xs[c] + 10}" cy="${nd.y + nd.h / 2}" r="4" fill="${SEV[info[nd.name].severity] || '#aaa'}"/>` : '')
-          + `<text x="${xs[c] + (site ? 20 : 9)}" y="${ty}" font-size="11.5" fill="${ink}" font-weight="${last ? 700 : 500}" font-family="JetBrains Mono, monospace">${esc(cut(nd.name, lim))}</text>`
-          + (site ? '' : `<text x="${xs[c] + w - 8}" y="${ty}" font-size="11" text-anchor="end" fill="${last ? '#06121d' : '#8fa6bf'}" font-family="JetBrains Mono, monospace">${nd.sites.length}</text>`)
+        s += `<g class="bx fn" data-sites="${esc(nd.sites.join('|'))}"${site ? ` data-s="${esc(nd.name)}"` : ''}><rect x="${xs[c]}" y="${nd.y}" width="${w}" height="${nd.h}" rx="6" fill="${fill}" stroke="${last ? 'none' : (site ? col(one) : ink('accent'))}" stroke-opacity=".7"/>`
+          + (site ? `<circle cx="${xs[c] + 10}" cy="${nd.y + nd.h / 2}" r="4" fill="${SEV[info[nd.name].severity] || ink('muted')}"/>` : '')
+          + `<text x="${xs[c] + (site ? 20 : 9)}" y="${ty}" font-size="11.5" fill="${label}" font-weight="${last ? 700 : 500}" font-family="JetBrains Mono, monospace">${esc(cut(nd.name, lim))}</text>`
+          + (site ? '' : `<text x="${xs[c] + w - 8}" y="${ty}" font-size="11" text-anchor="end" fill="${last ? ink('bg') : ink('muted')}" font-family="JetBrains Mono, monospace">${nd.sites.length}</text>`)
           + `<title>${esc(nd.name)} · ${nd.sites.length} site${nd.sites.length === 1 ? '' : 's'}: ${esc(nd.sites.join(', '))}</title></g>`;
       });
     });
@@ -278,8 +277,8 @@
         const levels = new Array(Math.max(0, ...placed.map(d => d.l + 1)) || 0).fill(0);
         const hgt = Math.max(46, 30 + levels.length * 13);
         body += `<rect x="${left}" y="${y}" width="${px}" height="${hgt - 6}" rx="6" fill="rgba(255,255,255,.025)"/>`;
-        if (!vis.length) body += `<text x="${left + 12}" y="${y + 24}" font-size="10.5" fill="#6f7b8a">none registered in this period</text>`;
-        body += `<text x="10" y="${y + 18}" font-size="12" font-weight="700" fill="${c}">${esc(cut(r.label, Math.floor((left - 20) / 7)))}</text><text x="10" y="${y + 33}" font-size="10.5" fill="#8fa6bf">${r.dots.length} domain${r.dots.length === 1 ? '' : 's'}</text>`;
+        if (!vis.length) body += `<text x="${left + 12}" y="${y + 24}" font-size="10.5" fill="${ink('dim')}">none registered in this period</text>`;
+        body += `<text x="10" y="${y + 18}" font-size="12" font-weight="700" fill="${c}">${esc(cut(r.label, Math.floor((left - 20) / 7)))}</text><text x="10" y="${y + 33}" font-size="10.5" fill="${ink('muted')}">${r.dots.length} domain${r.dots.length === 1 ? '' : 's'}</text>`;
         // purchase waves: dates within 3 days of the previous one
         let run = [];
         const flush = () => { if (run.length > 1) { const a = X(run[0].t) - 8, b = X(run[run.length - 1].t) + 8, days = Math.round((run[run.length - 1].t - run[0].t) / DAY) + 1;
@@ -290,18 +289,18 @@
         placed.forEach((d, i) => {
           const next = placed.slice(i + 1).find(o => o.l === d.l);
           const cy = y + 14 + d.l * 13;
-          body += `<circle class="bx tdot" data-h="${esc(d.host)}" cx="${d.x}" cy="${cy}" r="5.5" fill="${c}" stroke="#060910" stroke-width="1.5"><title>${esc(d.host)} · ${esc(d.date)}${d.wave ? ' · bought within days of another' : ''}</title></circle>`;
+          body += `<circle class="bx tdot" data-h="${esc(d.host)}" cx="${d.x}" cy="${cy}" r="5.5" fill="${c}" stroke="${ink('console')}" stroke-width="1.5"><title>${esc(d.host)} · ${esc(d.date)}${d.wave ? ' · bought within days of another' : ''}</title></circle>`;
           const wl = d.host.length * 6.4 + 10;
           const fits = named || ((lastLabel[d.l] === undefined || d.x - 8 > lastLabel[d.l]) && (!next || next.x - 8 > d.x + wl));
-          if (fits && d.x + wl < left + px + 4) { body += `<text x="${d.x + 8}" y="${cy + 4}" font-size="10.5" fill="#cfe0f2" pointer-events="none">${esc(d.host)}</text>`; lastLabel[d.l] = d.x + wl; }
-          else if (fits && d.x - wl > left && (!placed[i - 1] || placed.slice(0, i).filter(o => o.l === d.l).every(o => o.x < d.x - wl - 8))) { body += `<text x="${d.x - 8}" y="${cy + 4}" font-size="10.5" text-anchor="end" fill="#cfe0f2" pointer-events="none">${esc(d.host)}</text>`; }
+          if (fits && d.x + wl < left + px + 4) { body += `<text x="${d.x + 8}" y="${cy + 4}" font-size="10.5" fill="${ink('text2')}" pointer-events="none">${esc(d.host)}</text>`; lastLabel[d.l] = d.x + wl; }
+          else if (fits && d.x - wl > left && (!placed[i - 1] || placed.slice(0, i).filter(o => o.l === d.l).every(o => o.x < d.x - wl - 8))) { body += `<text x="${d.x - 8}" y="${cy + 4}" font-size="10.5" text-anchor="end" fill="${ink('text2')}" pointer-events="none">${esc(d.host)}</text>`; }
         });
         y += hgt;
       });
       const H = y + 10;
       let grid = '';
-      ticks.forEach(t => { const x = X(t.t); grid += `<line x1="${x}" x2="${x}" y1="24" y2="${H - 8}" stroke="rgba(255,255,255,.07)"/><text x="${x}" y="16" font-size="10.5" text-anchor="${x > left + px - 30 ? 'end' : x < left + 30 ? 'start' : 'middle'}" fill="#8fa6bf">${esc(t.label)}</text>`; });
-      const now = Date.now(); if (now >= d0 && now <= d1) grid += `<line x1="${X(now)}" x2="${X(now)}" y1="20" y2="${H - 8}" stroke="#FF4D4D" stroke-dasharray="4 4" stroke-opacity=".6"/><text x="${X(now) - 4}" y="${H - 12}" font-size="10" text-anchor="end" fill="#FF4D4D">today</text>`;
+      ticks.forEach(t => { const x = X(t.t); grid += `<line x1="${x}" x2="${x}" y1="24" y2="${H - 8}" stroke="rgba(255,255,255,.07)"/><text x="${x}" y="16" font-size="10.5" text-anchor="${x > left + px - 30 ? 'end' : x < left + 30 ? 'start' : 'middle'}" fill="${ink('muted')}">${esc(t.label)}</text>`; });
+      const now = Date.now(); if (now >= d0 && now <= d1) grid += `<line x1="${X(now)}" x2="${X(now)}" y1="20" y2="${H - 8}" stroke="${ink('crit')}" stroke-dasharray="4 4" stroke-opacity=".6"/><text x="${X(now) - 4}" y="${H - 12}" font-size="10" text-anchor="end" fill="${ink('crit')}">today</text>`;
       svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
       svg.innerHTML = `<defs><clipPath id="tl-clip"><rect x="${left - 6}" y="0" width="${px + 12}" height="${H}"/></clipPath></defs><g clip-path="url(#tl-clip)">${grid}</g>` + body;
       svg.querySelectorAll('circle.tdot').forEach(cn => { cn.addEventListener('click', () => openFinding(svg, cn.dataset.h)); cn.addEventListener('mouseenter', () => { el.querySelector('#tl-info').innerHTML = `<b class="mono">${esc(cn.dataset.h)}</b> · ${esc(cn.querySelector('title').textContent.split(' · ').slice(1).join(' · '))}`; }); });

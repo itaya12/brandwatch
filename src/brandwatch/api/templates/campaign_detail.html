@@ -7,7 +7,7 @@
   @keyframes flow{to{stroke-dashoffset:-24}}
   circle.halo{animation:halo 1.8s ease-out infinite;transform-box:fill-box;transform-origin:center}
   @keyframes halo{0%{opacity:.9;transform:scale(1)}100%{opacity:0;transform:scale(2.6)}}
-  #graph{background:radial-gradient(circle at 50% 45%,#0f1c30,#060910 70%)!important}
+  #graph{background:radial-gradient(circle at 50% 45%,#0f1c30,var(--console) 70%)!important}
 </style>
 {% set crumbs = [("Brands & Scans", "/ui/brands")] + ([(brand_name, "/ui/brands/" ~ c.brand_id)] if brand_name else []) + [("Attack infrastructure", "/ui/campaigns?brand_id=" ~ c.brand_id), (c.name, none)] %}
 {% set crumb_links = ([("Scan console", "/ui/jobs/" ~ job_id)] if job_id else []) + ([("Seed finding " ~ seed.hostname, "/ui/findings/" ~ seed.id)] if seed else ([("Finding " ~ c.findings[0].hostname, "/ui/findings/" ~ c.findings[0].id)] if c.findings else [])) %}
@@ -28,8 +28,8 @@
   <div class="panel">
     <h2>Infrastructure graph <span class="muted">· drag nodes · solid = included, dashed = excluded by triage</span> {{ cap('g-attack-infrastructure', 'budgeted pivot · ≤2 hops · ≤100 nodes', 'breadth-first pivot with depth, node, edge, API-call and cost budgets; shared-hosting neighbours are triaged, not trusted') }}</h2>
     <div class="small" style="margin:-2px 0 8px">{% for e in c.edge_counts %}<span class="pill">{{ e.label }} · {{ e.count }}</span> {% endfor %}</div>
-    <svg id="graph" width="100%" height="520" style="background:#060910;border:1px solid var(--border);border-radius:8px"></svg>
-    <p class="small muted">Dashed nodes were excluded by triage (reverse-IP noise, or the brand's own / whitelisted sites shown only for context). Edges: <span style="color:#35C7F2">passive_dns</span> · <span style="color:#F5C518">cert</span> · <span style="color:#2ECC71">favicon</span> · <span style="color:#FF9F1C">tracking_id</span> · <span style="color:#FF4D4D">reverse_whois</span></p>
+    <svg id="graph" width="100%" height="520" style="background:var(--console);border:1px solid var(--border);border-radius:8px"></svg>
+    <p class="small muted">Dashed nodes were excluded by triage (reverse-IP noise, or the brand's own / whitelisted sites shown only for context). Edges: <span style="color:var(--accent)">passive_dns</span> · <span style="color:var(--med)">cert</span> · <span style="color:var(--low)">favicon</span> · <span style="color:var(--high)">tracking_id</span> · <span style="color:var(--crit)">reverse_whois</span></p>
   </div>
   <div class="panel">
     <h2>Actor profile <span class="muted">· what ties the operation together</span></h2>
@@ -40,7 +40,7 @@
       <tr><th>Tracking ids</th><td class="mono">{{ c.actor_profile.tracking_ids|join(', ') if c.actor_profile.tracking_ids else 'none observed' }}</td></tr>
       <tr><th>Investigated</th><td class="mono">{{ (c.actor_profile.investigated_at or '')[:19].replace('T',' ') }}</td></tr>
     </table>
-    {% if c.actor_profile.other_brands_hit %}<p class="small" style="color:var(--magenta)">Other brands hit by the same operator: <b>{{ c.actor_profile.other_brands_hit|join(', ') }}</b> (found by AI triage — shared with those brands' teams, never acted on).</p>{% endif %}
+    {% if c.actor_profile.other_brands_hit %}<p class="small" style="color:var(--text2)">Other brands hit by the same operator: <b>{{ c.actor_profile.other_brands_hit|join(', ') }}</b> (found by AI triage — shared with those brands' teams, never acted on).</p>{% endif %}
     <h2>Export <span class="muted">· indicators your firewall or SIEM can block</span></h2>
     <p class="small muted" style="margin:0 0 8px">Domains, IPs, certificate hashes and tracking IDs, each with first_seen and the evidence row it came from. STIX 2.1 imports directly into MISP, OpenCTI or Splunk ES. Mapped indicators also feed the Infrastructure signals of later scans.</p>
     <div class="small" style="margin-bottom:8px">{% for t, rows in iocs|groupby('type') %}<span class="pill">{{ t }} · {{ rows|length }}</span> {% endfor %}</div>

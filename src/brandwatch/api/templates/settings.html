@@ -47,7 +47,7 @@
 {% if new_token %}
 <div class="panel" style="border-color:var(--low);margin-bottom:14px">
   <h2 style="margin-top:0;color:var(--low)">New access token — copy it now, it is not shown again</h2>
-  <div class="mono" style="font-size:13px;word-break:break-all;background:#060910;padding:10px;border-radius:6px">{{ new_token }}</div>
+  <div class="mono" id="new-token" style="font-size:13px;word-break:break-all;background:var(--console);padding:10px;border-radius:6px">{{ new_token }}</div>
   <p class="small muted">Use it as <span class="mono">Authorization: Bearer {{ new_token[:10] }}…</span> against the API (<a href="/docs" target="_blank">/docs</a>).</p>
 </div>
 {% endif %}

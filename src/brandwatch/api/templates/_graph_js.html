@@ -12,10 +12,11 @@
   svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
   svg.style.touchAction = 'none';
   const ns = 'http://www.w3.org/2000/svg';
-  const colors = {passive_dns:'#35C7F2', cert:'#F5C518', favicon:'#2ECC71', tracking_id:'#FF9F1C', reverse_whois:'#FF4D4D', reverse_ns:'#8A97A8'};
-  const typeColor = {domain:'#E6EDF5', ip:'#35C7F2', certificate:'#F5C518', tracking_id:'#FF9F1C', registrant:'#FF4D4D', hostname:'#E6EDF5'};
-  const sevColor = {critical:'#FF4D4D', high:'#FF9F1C', medium:'#F5C518', low:'#2ECC71'};
-  const palette = ['#35C7F2', '#F5C518', '#FF9F1C', '#2ECC71', '#B388FF', '#FF6FA8', '#4DD0C4', '#9AA5B1'];
+  const ink = BW.ink;  // the palette comes from the stylesheet, never from a hex written here
+  const colors = {passive_dns: ink('accent'), cert: ink('med'), favicon: ink('low'), tracking_id: ink('high'), reverse_whois: ink('crit'), reverse_ns: ink('muted')};
+  const typeColor = {domain: ink('text'), ip: ink('accent'), certificate: ink('med'), tracking_id: ink('high'), registrant: ink('crit'), hostname: ink('text')};
+  const sevColor = BW.SEV;
+  const palette = BW.OPS;
   const glyph = {ip:'S', past_ip:'S', shared_ip:'S', certificate:'C', tracking_id:'A', registrant:'@', affiliate_id:'$', redirector:'↪', cf_ns_pair:'CF', dns_token:'D',
                  tds_campaign:'T', shared_tds:'T', data_sink:'⇩', batch:'B', kit:'K', kit_look:'K', favicon:'F', registrar:'R', nameserver:'N'};
   const view = {k: 1, tx: 0, ty: 0};
@@ -25,7 +26,7 @@
   const g = document.createElementNS(ns, 'g'); root.appendChild(g);
   let nodes = [], edges = [], byId = {}, lines = [], circles = [], hulls = {}, centers = {}, adj = {}, picked = null;
   const small = W < 600;
-  const gcolor = i => i ? palette[(i - 1) % palette.length] : '#9AA5B1';
+  const gcolor = BW.op;
   const apply = () => root.setAttribute('transform', `translate(${view.tx},${view.ty}) scale(${view.k})`);
   const toWorld = ev => { const r = svg.getBoundingClientRect(); const x = (ev.clientX - r.left) * W / r.width, y = (ev.clientY - r.top) * H / r.height; return [(x - view.tx) / view.k, (y - view.ty) / view.k]; };
   const toScreen = ev => { const r = svg.getBoundingClientRect(); return [(ev.clientX - r.left) * W / r.width, (ev.clientY - r.top) * H / r.height]; };
@@ -64,7 +65,7 @@
         const p = document.createElementNS(ns, 'path'); const c = gcolor(Number(k));
         p.setAttribute('fill', c); p.setAttribute('fill-opacity', '0.09'); p.setAttribute('stroke', c); p.setAttribute('stroke-opacity', '0.16'); p.setAttribute('stroke-width', small ? 34 : 54); p.setAttribute('stroke-linejoin', 'round');
         const t = document.createElementNS(ns, 'text'); t.setAttribute('fill', c); t.setAttribute('font-size', small ? '10' : '12'); t.setAttribute('font-weight', '700'); t.setAttribute('text-anchor', 'middle'); t.setAttribute('font-family', 'JetBrains Mono, monospace');
-        t.setAttribute('paint-order', 'stroke'); t.setAttribute('stroke', '#060910'); t.setAttribute('stroke-width', '3'); t.style.pointerEvents = 'none';
+        t.setAttribute('paint-order', 'stroke'); t.setAttribute('stroke', ink('console')); t.setAttribute('stroke-width', '3'); t.style.pointerEvents = 'none';
         const nm = (opts.names || {})[k]; t.textContent = `Group ${k}${nm ? ' · ' + (nm.length > 34 ? nm.slice(0, 32) + '…' : nm) : ''}`;
         hullLayer.appendChild(p); hullLayer.appendChild(t); hulls[k] = {p, t, members: bySite[k]};
       });
@@ -81,17 +82,17 @@
       const site = n.type === 'domain';
       const icon = opts.clusters && !site ? (glyph[n.kind] || '') : '';
       const c = document.createElementNS(ns,'circle'); c.setAttribute('r', site ? (n.finding ? 12 : 9) : (icon ? 9 : 6));
-      c.setAttribute('fill', n.included ? (n.finding ? (sevColor[n.finding.severity] || '#FF4D4D') : '#0E1420') : '#0E1420');
+      c.setAttribute('fill', n.included ? (n.finding ? BW.sev(n.finding.severity) : ink('panel')) : ink('panel'));
       c.setAttribute('stroke', typeColor[n.type]||'#aaa'); c.setAttribute('stroke-width', n.included ? '2' : '1'); if (!n.included) c.setAttribute('stroke-dasharray','3 3');
       if (n.level === 'weak') c.setAttribute('opacity', '0.55');
       const text = n.label || n.value;
       const t = document.createElementNS(ns,'text'); const lim = small ? 18 : (site ? 34 : 30); t.textContent = text.length > lim ? text.slice(0, lim - 2) + '…' : text;
       if ((small && !n.finding) || (opts.clusters && !site && n.level !== 'solid')) t.style.display = 'none';  // hints and common things are named when you point at them
-      t.setAttribute('fill', site ? '#FFFFFF' : (n.included ? '#B9C6D6' : '#6F7B8A')); t.setAttribute('font-size', site ? (small ? '11' : '12.5') : (small ? '9' : '10')); t.setAttribute('font-weight', site ? '600' : '400');
+      t.setAttribute('fill', site ? ink('text') : (n.included ? ink('text2') : ink('dim'))); t.setAttribute('font-size', site ? (small ? '11' : '12.5') : (small ? '9' : '10')); t.setAttribute('font-weight', site ? '600' : '400');
       t.setAttribute('font-family','JetBrains Mono, monospace'); t.setAttribute('dx', site ? '16' : (icon ? '13' : '10')); t.setAttribute('dy','4');
-      t.setAttribute('paint-order','stroke'); t.setAttribute('stroke','#060910'); t.setAttribute('stroke-width','3'); t.style.pointerEvents = 'none';
+      t.setAttribute('paint-order','stroke'); t.setAttribute('stroke', ink('console')); t.setAttribute('stroke-width','3'); t.style.pointerEvents = 'none';
       const title = document.createElementNS(ns,'title'); title.textContent = `${n.type}: ${n.value}\n${n.included ? 'included' : 'excluded'} — ${n.triage_reason}`;
-      if (n.included && n.finding && n.finding.severity === 'critical') { const halo = document.createElementNS(ns,'circle'); halo.setAttribute('r', 12); halo.setAttribute('fill','none'); halo.setAttribute('stroke','#FF4D4D'); halo.setAttribute('class','halo'); grp.appendChild(halo); }
+      if (n.included && n.finding && n.finding.severity === 'critical') { const halo = document.createElementNS(ns,'circle'); halo.setAttribute('r', 12); halo.setAttribute('fill','none'); halo.setAttribute('stroke', ink('crit')); halo.setAttribute('class','halo'); grp.appendChild(halo); }
       if (n.included) c.style.filter = `drop-shadow(0 0 5px ${typeColor[n.type]||'#aaa'})`;
       grp.appendChild(c);
       if (icon) { const gl = document.createElementNS(ns,'text'); gl.textContent = icon; gl.setAttribute('text-anchor','middle'); gl.setAttribute('dy','3.5'); gl.setAttribute('font-size', icon.length > 1 ? '7' : '10'); gl.setAttribute('font-weight','700'); gl.setAttribute('fill', typeColor[n.type]||'#aaa'); gl.style.pointerEvents = 'none'; grp.appendChild(gl); }

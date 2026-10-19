@@ -36,7 +36,7 @@
   .maptog button{padding:5px 10px;font-size:11.5px;background:rgba(6,10,18,.8)}
   .nomap .geo #globe{display:none}
   .nomap .map-kpis{position:static;margin:0 0 4px}.nomap .maptog{position:static;display:flex;justify-content:flex-end;margin-bottom:6px}
-  .globe-wrap{position:relative;background:radial-gradient(ellipse at center,#0b1626 0%,#060910 70%);border:1px solid var(--border);border-radius:14px;overflow:hidden;height:580px;min-height:0}
+  .globe-wrap{position:relative;background:radial-gradient(ellipse at center,#0b1626 0%,var(--console) 70%);border:1px solid var(--border);border-radius:14px;overflow:hidden;height:580px;min-height:0}
   .globe-wrap canvas{display:block}
   .globe-legend{z-index:2;pointer-events:none}
   .globe-legend{position:absolute;right:14px;bottom:12px;font-family:var(--mono);font-size:11px;color:var(--muted);text-align:right}
@@ -115,7 +115,7 @@
   .feed{font-family:var(--mono);font-size:11.5px;height:300px;overflow:hidden;position:relative;mask-image:linear-gradient(180deg,#000 85%,transparent)}
   .feed div{padding:5px 0;border-bottom:1px solid rgba(30,42,61,.6);animation:slidein .4s ease}
   @keyframes slidein{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
-  .feed .t{color:var(--muted)}.feed .s{color:var(--accent)}.feed .warn{color:var(--high)}.feed .error{color:var(--crit)}.feed .done,.feed .running{color:#c9d3df}
+  .feed .t{color:var(--muted)}.feed .s{color:var(--accent)}.feed .warn{color:var(--high)}.feed .error{color:var(--crit)}.feed .done{color:var(--low)}.feed .running{color:var(--accent)}
   .runs{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 8px}
   .runs a{display:inline-flex;gap:6px;align-items:center;padding:3px 10px;border:1px solid rgba(46,204,113,.45);border-radius:999px;font-size:12px;color:var(--text);text-decoration:none}
   /* the status bar */
@@ -123,7 +123,7 @@
   .statusbar .sc{display:inline-flex;gap:6px;align-items:center;white-space:nowrap}
   .statusbar .sc b{color:var(--text);font-weight:600}
   .statusbar .sep{width:1px;height:14px;background:var(--border)}
-  .statusbar .meter{display:inline-block;width:60px;height:6px;border-radius:3px;background:#1E2A3D;overflow:hidden}.statusbar .meter>i{display:block;height:100%;background:linear-gradient(90deg,var(--low),var(--med),var(--crit))}
+  .statusbar .meter{display:inline-block;width:60px;height:6px;border-radius:3px;background:var(--border);overflow:hidden}.statusbar .meter>i{display:block;height:100%;background:linear-gradient(90deg,var(--low),var(--med),var(--crit))}
   .status-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--low);box-shadow:0 0 8px var(--low)}
   .status-dot.off{background:var(--muted);box-shadow:none}
   @media (max-width:900px){
@@ -233,7 +233,7 @@
       <span class="n"><b>{{ b.open_findings }}</b><span>open</span></span>
       <span class="n"><b>{{ b.watching }}</b><span>watching</span></span>
       <span class="when">{% if b.running %}<span class="live-dot"></span> scanning now{% elif b.last_scan %}last scan <span data-rel="{{ b.last_scan }}"></span>{% else %}never scanned{% endif %}<br>{{ 'auto: ' ~ b.schedule if b.schedule else 'automatic scans off' }}</span>
-      <svg class="spark" data-spark='{{ {"series": [{"values": b.per_day, "color": "#FF4D4D" if b.threat == "critical" else "#35C7F2"}]}|tojson }}'></svg>
+      <svg class="spark" data-spark='{{ {"series": [{"values": b.per_day, "color": INK.crit if b.threat == "critical" else INK.accent}]}|tojson }}'></svg>
     </a>
     {% endfor %}
   </div>
@@ -260,7 +260,7 @@
   <div class="panel">
     <h2>Activity · 14 days</h2>
     <svg class="spark" viewBox="0 0 280 70" preserveAspectRatio="none" id="spark"></svg>
-    <div class="legend2"><span><i style="background:#35C7F2"></i>scans {{ k.scans_today }} today</span><span><i style="background:#FF4D4D"></i>new findings</span><span>{{ k.candidates_scanned_today }} domains checked today</span></div>
+    <div class="legend2"><span><i style="background:var(--accent)"></i>scans {{ k.scans_today }} today</span><span><i style="background:var(--crit)"></i>new findings</span><span>{{ k.candidates_scanned_today }} domains checked today</span></div>
   </div>
   <div class="panel">
     <h2>Discovery sources <span class="muted">· findings / domains</span></h2>
@@ -359,8 +359,8 @@
 (function(){
   const data = {{ d.geo|tojson }};
   const brandId = {{ (d.brand.id if d.brand else '')|tojson }};
-  const sevColor = {critical:'#FF4D4D', high:'#FF9F1C', medium:'#F5C518', low:'#2ECC71'};
-  const color = p => p.state === 'confirmed' ? '#5FE3FF' : (sevColor[p.severity] || '#35C7F2');
+  const ink = BW.ink;  // the palette comes from the stylesheet, never from a hex written here
+  const color = p => p.state === 'confirmed' ? ink('accent2') : BW.sev(p.severity);
 
   // count-up KPIs are handled by the shared motion layer in base.html
 
@@ -369,8 +369,8 @@
   const svg = document.getElementById('spark');
   const mx = Math.max(1, ...days.map(x => Math.max(x.jobs, x.findings)));
   const pts = key => days.map((x, i) => `${(i / (days.length - 1)) * 280},${68 - (x[key] / mx) * 60}`).join(' ');
-  svg.innerHTML = `<polyline fill="none" stroke="#35C7F2" stroke-width="2" points="${pts('jobs')}"/><polyline fill="none" stroke="#FF4D4D" stroke-width="2" points="${pts('findings')}"/>` +
-    days.map((x, i) => `<circle cx="${(i / (days.length - 1)) * 280}" cy="${68 - (x.jobs / mx) * 60}" r="2" fill="#5FE3FF"><title>${x.date}: ${x.jobs} scans, ${x.findings} findings</title></circle>`).join('');
+  svg.innerHTML = `<polyline fill="none" stroke="${ink('accent')}" stroke-width="2" points="${pts('jobs')}"/><polyline fill="none" stroke="${ink('crit')}" stroke-width="2" points="${pts('findings')}"/>` +
+    days.map((x, i) => `<circle cx="${(i / (days.length - 1)) * 280}" cy="${68 - (x.jobs / mx) * 60}" r="2" fill="${ink('accent2')}"><title>${x.date}: ${x.jobs} scans, ${x.findings} findings</title></circle>`).join('');
 
   // ---- live feed
   const feed = document.getElementById('feed'); let lastKey = '';
@@ -444,7 +444,7 @@
     } else {
       const where = [p.city, p.country].filter(Boolean).join(', ') || 'location unknown';
       tip.innerHTML = `<div class="gt-h"><span class="dot" style="background:${color(p)}"></span><b>${h(p.hostname)}</b></div>
-        <div class="gt-r">${sevTag(p.severity)} ${h(KIND[p.kind] || KIND.phishing)} · score ${h(p.score ?? '–')}${p.state === 'confirmed' ? ' · <span style="color:#5FE3FF">confirmed</span>' : ''}</div>
+        <div class="gt-r">${sevTag(p.severity)} ${h(KIND[p.kind] || KIND.phishing)} · score ${h(p.score ?? '–')}${p.state === 'confirmed' ? ' · <span style="color:var(--accent2)">confirmed</span>' : ''}</div>
         <div class="gt-m">${h(where)} · <span class="mono">${h(p.ip)}</span></div>${p.org ? `<div class="gt-m">hosted by ${h(p.org)}</div>` : ''}
         ${p.finding_id ? `<a class="gt-go" href="/ui/findings/${h(p.finding_id)}">${touch ? 'open the finding →' : 'click to open the finding →'}</a>` : ''}`;
       el.style.cursor = p.finding_id ? 'pointer' : '';
@@ -492,20 +492,20 @@
       {startLat: home.lat, startLng: home.lon, endLat: p.lat, endLng: p.lon, p, trace: 'pulse', phase: (i * 0.53) % 1.6},
     ]) : [];
     const arcColor = d => d.trace === 'pulse'
-      ? [rgba(color(d.p), dim(d.p) ? 0.05 : 0.55), rgba('#FFFFFF', dim(d.p) ? 0.1 : 1)]
-      : [rgba('#5FE3FF', dim(d.p) ? 0.04 : 0.28), rgba(color(d.p), dim(d.p) ? 0.08 : (hovered === d.p ? 1 : 0.7))];
+      ? [rgba(color(d.p), dim(d.p) ? 0.05 : 0.55), rgba(ink('text'), dim(d.p) ? 0.1 : 1)]
+      : [rgba(ink('accent2'), dim(d.p) ? 0.04 : 0.28), rgba(color(d.p), dim(d.p) ? 0.08 : (hovered === d.p ? 1 : 0.7))];
     const arcStroke = d => d.trace === 'pulse' ? 0.95 : 0.36;
-    const pointColor = d => d.p && dim(d.p) ? rgba(d.color, 0.3) : (d.p && hovered === d.p ? '#FFFFFF' : d.color);
+    const pointColor = d => d.p && dim(d.p) ? rgba(d.color, 0.3) : (d.p && hovered === d.p ? ink('text') : d.color);
     const labelColor = d => dim(d.p) ? rgba(d.color, 0.25) : d.color;
     const g = Globe()(view3d).width(W).height(H)
       .globeImageUrl('https://unpkg.com/three-globe/example/img/earth-night.jpg')
       .bumpImageUrl('https://unpkg.com/three-globe/example/img/earth-topology.png')
-      .backgroundColor('rgba(0,0,0,0)').showAtmosphere(true).atmosphereColor('#35C7F2').atmosphereAltitude(0.2)
+      .backgroundColor('rgba(0,0,0,0)').showAtmosphere(true).atmosphereColor(ink('accent')).atmosphereAltitude(0.2)
       .arcsData(arcs).arcColor(arcColor).arcStroke(arcStroke).arcAltitudeAutoScale(0.42)
       .arcDashLength(d => d.trace === 'pulse' ? 0.1 : 1).arcDashGap(d => d.trace === 'pulse' ? 1.5 : 0)
       .arcDashInitialGap(d => d.trace === 'pulse' ? d.phase : 0).arcDashAnimateTime(d => d.trace === 'pulse' ? 2800 : 0)
       .arcLabel(() => '').onArcHover(d => { arcHover = d ? d.p : null; syncHover(); })
-      .pointsData([...(home ? [{lat: home.lat, lng: home.lon, color: '#5FE3FF', r: 0.55, p: null}] : []),
+      .pointsData([...(home ? [{lat: home.lat, lng: home.lon, color: ink('accent2'), r: 0.55, p: null}] : []),
                    ...points.map(p => ({lat: p.lat, lng: p.lon, color: color(p), r: p.severity === 'critical' ? 0.5 : 0.36, p}))])
       .pointColor(pointColor).pointAltitude(0.012).pointRadius('r').pointLabel(() => '')
       // where an attack lands: a ring in its severity colour (critical ones faster and wider)
@@ -581,9 +581,9 @@
       if (!(hovered && !hovered.cluster)) rot += 0.25;  // turns on its own, except while an attack is pointed at
       const RR = R();
       ctx.clearRect(0, 0, W, H); hits.length = 0;
-      const grd = ctx.createRadialGradient(cx - RR*0.3, cy - RR*0.3, RR*0.2, cx, cy, RR*1.15); grd.addColorStop(0, '#0f2238'); grd.addColorStop(1, '#060910');
+      const grd = ctx.createRadialGradient(cx - RR*0.3, cy - RR*0.3, RR*0.2, cx, cy, RR*1.15); grd.addColorStop(0, '#0f2238'); grd.addColorStop(1, ink('console'));
       ctx.fillStyle = grd; ctx.beginPath(); ctx.arc(cx, cy, RR, 0, Math.PI*2); ctx.fill();
-      ctx.strokeStyle = 'rgba(53,199,242,.9)'; ctx.lineWidth = 1.2; ctx.shadowColor = '#35C7F2'; ctx.shadowBlur = 18; ctx.stroke(); ctx.shadowBlur = 0;
+      ctx.strokeStyle = 'rgba(53,199,242,.9)'; ctx.lineWidth = 1.2; ctx.shadowColor = ink('accent'); ctx.shadowBlur = 18; ctx.stroke(); ctx.shadowBlur = 0;
       ctx.strokeStyle = 'rgba(53,199,242,.18)'; ctx.lineWidth = 1;
       for (let lat = -60; lat <= 60; lat += 30) { ctx.beginPath(); for (let lon = -180; lon <= 180; lon += 4) { const p = proj(lat, lon); if (p.z < 0) { ctx.moveTo(p.x, p.y); continue; } ctx.lineTo(p.x, p.y); } ctx.stroke(); }
       for (let lon = -180; lon < 180; lon += 30) { ctx.beginPath(); for (let lat = -90; lat <= 90; lat += 4) { const p = proj(lat, lon); if (p.z < 0) { ctx.moveTo(p.x, p.y); continue; } ctx.lineTo(p.x, p.y); } ctx.stroke(); }
@@ -597,7 +597,7 @@
           ctx.strokeStyle = lg; ctx.lineWidth = hovered === p ? 2.4 : 1.3;
           ctx.beginPath(); ctx.moveTo(hp.x, hp.y); ctx.quadraticCurveTo(m.x, m.y, t.x, t.y); ctx.stroke();
           const s = ((now || 0) / 2800 + i * 0.53) % 1.6;
-          if (s <= 1) { const q = at(hp, m, t, s); ctx.fillStyle = '#fff'; ctx.shadowColor = col; ctx.shadowBlur = 12; ctx.beginPath(); ctx.arc(q.x, q.y, 2.4, 0, Math.PI*2); ctx.fill(); ctx.shadowBlur = 0; }
+          if (s <= 1) { const q = at(hp, m, t, s); ctx.fillStyle = ink('text'); ctx.shadowColor = col; ctx.shadowBlur = 12; ctx.beginPath(); ctx.arc(q.x, q.y, 2.4, 0, Math.PI*2); ctx.fill(); ctx.shadowBlur = 0; }
         }
         if (t.z >= 0) {
           const ring = ((now || 0) / (p.severity === 'critical' ? 1100 : 2400) + i * 0.3) % 1;
@@ -608,7 +608,7 @@
         }
         ctx.globalAlpha = 1;
       });
-      if (hp && hp.z >= 0) { ctx.fillStyle = '#5FE3FF'; ctx.beginPath(); ctx.arc(hp.x, hp.y, 5, 0, Math.PI*2); ctx.fill(); ctx.font = '11px JetBrains Mono, monospace'; ctx.fillText(home.label, hp.x + 8, hp.y - 6); }
+      if (hp && hp.z >= 0) { ctx.fillStyle = ink('accent2'); ctx.beginPath(); ctx.arc(hp.x, hp.y, 5, 0, Math.PI*2); ctx.fill(); ctx.font = '11px JetBrains Mono, monospace'; ctx.fillText(home.label, hp.x + 8, hp.y - 6); }
       requestAnimationFrame(frame);
     }
     requestAnimationFrame(frame);
@@ -618,6 +618,9 @@
   function flatMap(box){
     const c = document.createElement('canvas'); box.appendChild(c);
     const ctx = c.getContext('2d'), base = document.createElement('canvas'), bctx = base.getContext('2d');
+    // the globe is drawn, not styled: these four are its own materials (land, coastline, the
+    // traffic arcs and their head) and carry no meaning the palette owns. Everything with a
+    // meaning — severity, confirmed, the brand's home — comes from BW.
     const GREEN = '#2EE6A6', LAT_TOP = 78, LAT_BOT = -56, KMAX = 8, MERGE = 24;
     const miller = lat => 1.25 * Math.log(Math.tan(Math.PI / 4 + 0.4 * lat * Math.PI / 180));
     let w = 0, hgt = 0, dpr = 1, proj = null, rings = null, coast = null, nodes = [], hqB = null, area = null;
@@ -817,10 +820,10 @@
         ctx.fillStyle = gl; ctx.beginPath(); ctx.arc(g.x, g.y, g.r * 2.3, 0, Math.PI * 2); ctx.fill();
         if (g.crit) { const q = ((t / 1800) + g.ph) % 1; ctx.strokeStyle = rgba(g.col, (1 - q) * 0.5); ctx.lineWidth = 1; hex(g.x, g.y, g.r * (1 + q * 1.1), Math.PI / 6); ctx.stroke(); }
         ctx.shadowColor = g.col; ctx.shadowBlur = on ? 12 : 6;
-        ctx.fillStyle = g.cluster ? 'rgba(8,12,22,.88)' : rgba(g.col, 0.18); ctx.strokeStyle = on ? '#FFFFFF' : g.col; ctx.lineWidth = on ? 1.8 : 1.3;
+        ctx.fillStyle = g.cluster ? 'rgba(8,12,22,.88)' : rgba(g.col, 0.18); ctx.strokeStyle = on ? ink('text') : g.col; ctx.lineWidth = on ? 1.8 : 1.3;
         hex(g.x, g.y, g.r * (on ? 1.15 : 1), g.cluster ? Math.PI / 6 : t / 6000 + g.ph * 6); ctx.fill(); ctx.stroke(); ctx.shadowBlur = 0;
-        if (g.cluster) { ctx.font = '700 11px JetBrains Mono, monospace'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillStyle = '#FFFFFF'; ctx.fillText(String(g.members.length), g.x, g.y + 0.5); ctx.textAlign = 'start'; ctx.textBaseline = 'alphabetic'; }
-        else { ctx.fillStyle = on ? '#FFFFFF' : g.col; ctx.beginPath(); ctx.arc(g.x, g.y, 2.1, 0, Math.PI * 2); ctx.fill(); }
+        if (g.cluster) { ctx.font = '700 11px JetBrains Mono, monospace'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillStyle = ink('text'); ctx.fillText(String(g.members.length), g.x, g.y + 0.5); ctx.textAlign = 'start'; ctx.textBaseline = 'alphabetic'; }
+        else { ctx.fillStyle = on ? ink('text') : g.col; ctx.beginPath(); ctx.arc(g.x, g.y, 2.1, 0, Math.PI * 2); ctx.fill(); }
         ctx.globalAlpha = 1;
       }
       if (hq) {  // the brand's home
@@ -836,7 +839,7 @@
         ctx.strokeStyle = rgba(g.col, 0.55); ctx.lineWidth = 0.8; ctx.beginPath(); ctx.moveTo(g.x, g.y); ctx.lineTo(ax, ay); ctx.stroke();
         ctx.fillStyle = 'rgba(6,10,18,.9)'; ctx.fillRect(b.x, b.y, b.w, b.h); ctx.strokeRect(b.x + 0.5, b.y + 0.5, b.w - 1, b.h - 1);
         ctx.fillStyle = rgba(g.col, 0.9); ctx.fillRect(b.x, b.y, 2, b.h);
-        ctx.font = '600 10px JetBrains Mono, monospace'; ctx.fillStyle = '#E6EDF5'; ctx.fillText(t1, b.x + 8, b.y + 13);
+        ctx.font = '600 10px JetBrains Mono, monospace'; ctx.fillStyle = ink('text'); ctx.fillText(t1, b.x + 8, b.y + 13);
         ctx.font = '600 9px JetBrains Mono, monospace'; ctx.fillStyle = g.col; ctx.fillText(t2, b.x + 8, b.y + 24);
         ctx.globalAlpha = 1;
       }
