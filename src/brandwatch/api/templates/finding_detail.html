@@ -94,7 +94,7 @@
   .qnav{display:flex;gap:8px;align-items:center;margin:0 0 10px;font-size:12.5px;color:var(--muted)}
   .qnav .btn{padding:4px 10px;font-size:12px}.qnav .off{opacity:.4;pointer-events:none}
 </style>
-{% set crumbs = [("Brands & Scans", "/ui/brands"), (d.brand.name, "/ui/brands/" ~ d.brand.id), ("Findings", "/ui/findings?brand_id=" ~ d.brand.id), (d.candidate.hostname, none)] %}
+{% set crumbs = [("Findings", "/ui/findings"), (d.brand.name, "/ui/findings?brand_id=" ~ d.brand.id), (d.candidate.hostname, none)] %}
 {% set crumb_links = [("Domain timeline", "/ui/candidates/" ~ d.candidate.id)] + ([("Attack infrastructure map", "/ui/campaigns/" ~ d.campaign_id)] if d.campaign_id else []) %}
 {% include "_crumbs.html" %}
 {% if nb and (nb.open_count or d.finding.state == 'open') %}
@@ -315,22 +315,6 @@
   </form>
   {% endif %}
 </div>
-
-{# ================================================================ working notes #}
-<div class="panel" id="notes" style="margin-top:12px">
-  <h2 style="margin-top:0">Notes <span class="muted">· for you and the next analyst — kept with the finding, never edited, also in Activity</span></h2>
-  {% if can_write %}<form method="post" action="/ui/findings/{{ d.finding.id }}/note" class="notef">
-    <textarea name="text" rows="2" maxlength="4000" placeholder="e.g. mailed the registrar on Monday, waiting · the same kit as shopn0va.com" dir="auto" aria-label="a new note"></textarea>
-    <button type="submit" class="small">Add note</button></form>{% endif %}
-  {% for n in notes %}<div class="note"><div class="small muted">{{ n.by }} · {{ n.at|ts }}</div><div dir="auto" style="white-space:pre-wrap">{{ n.text }}</div></div>{% endfor %}
-  {% if not notes %}<p class="muted small" style="margin:6px 0 0">No notes yet.</p>{% endif %}
-</div>
-<style>
-  .snooze{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:12px;padding-top:10px;border-top:1px dashed var(--border)}
-  .notef{display:flex;gap:8px;align-items:flex-start;margin-bottom:8px}.notef textarea{flex:1;min-width:0}
-  .note{padding:8px 0;border-top:1px solid var(--border);font-size:13.5px}
-  @media (max-width:700px){.notef{flex-direction:column}.snooze input[name=reason]{width:100%!important}}
-</style>
 
 {# ================================================================ details, in tabs #}
 {% set dt = v.detections %}{% set ipbad = v.ips|selectattr('positives')|list %}
@@ -566,6 +550,49 @@
 </section>
 {% endif %}
 
+{# ================================================================ working notes #}
+<div class="panel" id="notes" style="margin-top:12px">
+  <h2 style="margin-top:0">Notes <span class="muted">· for you and the next analyst — kept with the finding, never edited, also in Activity</span></h2>
+  {% if can_write %}<form method="post" action="/ui/findings/{{ d.finding.id }}/note" class="notef">
+    <textarea name="text" rows="2" maxlength="4000" placeholder="e.g. mailed the registrar on Monday, waiting · the same kit as shopn0va.com" dir="auto" aria-label="a new note"></textarea>
+    <button type="submit" class="small">Add note</button></form>{% endif %}
+  {% for n in notes %}<div class="note"><div class="small muted">{{ n.by }} · {{ n.at|ts }}</div><div dir="auto" style="white-space:pre-wrap">{{ n.text }}</div></div>{% endfor %}
+  {% if not notes %}<p class="muted small" style="margin:6px 0 0">No notes yet.</p>{% endif %}
+</div>
+<style>
+  .snooze{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:12px;padding-top:10px;border-top:1px dashed var(--border)}
+  .notef{display:flex;gap:8px;align-items:flex-start;margin-bottom:8px}.notef textarea{flex:1;min-width:0}
+  .note{padding:8px 0;border-top:1px solid var(--border);font-size:13.5px}
+  @media (max-width:700px){.notef{flex-direction:column}.snooze input[name=reason]{width:100%!important}}
+</style>
+
+{# ================================================================ phones: the verdict always within reach #}
+{% if d.finding.state == 'open' and can_write %}
+<div class="vbar" id="vbar" hidden><button type="button" class="ok" id="vb-ok">✓ Confirm</button><button type="button" class="danger" id="vb-no">Dismiss…</button><a href="#verdict" class="btn" id="vb-go">Verdict ↑</a></div>
+<style>
+  .vbar{display:none}
+  @media (max-width:700px){
+    .vbar:not([hidden]){position:fixed;left:0;right:0;bottom:0;z-index:45;display:grid;grid-template-columns:1fr 1fr auto;gap:8px;padding:10px 12px calc(10px + env(safe-area-inset-bottom));
+      background:linear-gradient(180deg,rgba(6,10,18,.75),rgba(6,10,18,.97));border-top:1px solid var(--border);backdrop-filter:blur(6px)}
+    .vbar button,.vbar .btn{min-height:44px;font-weight:600}
+    body:has(.vbar:not([hidden])) main{padding-bottom:84px}
+    body:has(.vbar:not([hidden])) #totop{bottom:96px}
+  }
+</style>
+<script>
+(function(){
+  // on a phone the verdict panel is far down a long page: a bar at the bottom confirms in one press, or takes you
+  // to the verdict panel to dismiss (a dismissal needs its reason); it steps aside while the panel is on screen
+  const bar = document.getElementById('vbar'), panel = document.getElementById('verdict'); if (!bar || !panel) return;
+  const ok = panel.querySelector('button[value="confirm"]'); const ob = document.getElementById('vb-ok');
+  if (ok) ob.textContent = '✓ ' + ok.textContent.trim().replace(/^✓\s*/, ''); else ob.remove();
+  ob.addEventListener('click', () => ok && ok.click());
+  document.getElementById('vb-no').addEventListener('click', () => { panel.scrollIntoView({behavior: 'smooth', block: 'center'}); const k = document.getElementById('verdict-kind'); if (k) setTimeout(() => k.focus(), 450); });
+  bar.hidden = false;
+  if ('IntersectionObserver' in window) new IntersectionObserver(es => es.forEach(e => { bar.style.display = e.isIntersecting ? 'none' : ''; })).observe(panel);
+})();
+</script>
+{% endif %}
 <script>
 (function(){
   const $ = id => document.getElementById(id);

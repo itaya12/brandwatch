@@ -628,8 +628,8 @@
       .bumpImageUrl('https://unpkg.com/three-globe/example/img/earth-topology.png')
       .backgroundColor('rgba(0,0,0,0)').showAtmosphere(true).atmosphereColor(ink('accent')).atmosphereAltitude(0.2)
       .arcsData(arcs).arcColor(arcColor).arcStroke(arcStroke).arcAltitudeAutoScale(0.42)
-      .arcDashLength(d => d.trace === 'pulse' ? 0.1 : 1).arcDashGap(d => d.trace === 'pulse' ? 1.5 : 0)
-      .arcDashInitialGap(d => d.trace === 'pulse' ? d.phase : 0).arcDashAnimateTime(d => d.trace === 'pulse' ? 2800 : 0)
+      .arcDashLength(d => d.trace === 'pulse' ? 0.1 : 0.035).arcDashGap(d => d.trace === 'pulse' ? 1.5 : 0.025)
+      .arcDashInitialGap(d => d.trace === 'pulse' ? d.phase : 0).arcDashAnimateTime(d => d.trace === 'pulse' ? 2800 : 3600)
       .arcLabel(() => '').onArcHover(d => { arcHover = d ? d.p : null; syncHover(); })
       .pointsData([...(home ? [{lat: home.lat, lng: home.lon, color: ink('accent2'), r: 0.55, p: null}] : []),
                    ...points.map(p => ({lat: p.lat, lng: p.lon, color: color(p), r: p.severity === 'critical' ? 0.5 : 0.36, p}))])
@@ -734,8 +734,10 @@
         if (hp && !(hp.z < 0 && t.z < 0)) {
           const m = {x: (hp.x + t.x) / 2 + (cy - (hp.y + t.y) / 2) * 0.35, y: (hp.y + t.y) / 2 - RR * 0.45};
           const lg = ctx.createLinearGradient(hp.x, hp.y, t.x, t.y); lg.addColorStop(0, 'rgba(95,227,255,.25)'); lg.addColorStop(1, rgba(col, hovered === p ? 1 : 0.75));
-          ctx.strokeStyle = lg; ctx.lineWidth = hovered === p ? 2.4 : 1.3;
-          ctx.beginPath(); ctx.moveTo(hp.x, hp.y); ctx.quadraticCurveTo(m.x, m.y, t.x, t.y); ctx.stroke();
+          const arcPath = () => { ctx.beginPath(); ctx.moveTo(hp.x, hp.y); ctx.quadraticCurveTo(m.x, m.y, t.x, t.y); ctx.stroke(); };
+          ctx.strokeStyle = lg; ctx.globalAlpha = (faded ? 0.18 : 1) * 0.25; ctx.lineWidth = 1; arcPath();
+          ctx.globalAlpha = faded ? 0.18 : 1; ctx.lineWidth = hovered === p ? 2.4 : 1.5;
+          ctx.setLineDash([7, 9]); ctx.lineDashOffset = -((now || 0) / 45 + i * 7) % 16; arcPath(); ctx.setLineDash([]); ctx.lineDashOffset = 0;
           const s = ((now || 0) / 2800 + i * 0.53) % 1.6;
           if (s <= 1) { const q = at(hp, m, t, s); ctx.fillStyle = ink('text'); ctx.shadowColor = col; ctx.shadowBlur = 12; ctx.beginPath(); ctx.arc(q.x, q.y, 2.4, 0, Math.PI*2); ctx.fill(); ctx.shadowBlur = 0; }
         }
@@ -950,8 +952,11 @@
         lg.addColorStop(0, rgba(GREEN, faded ? 0.04 : 0.5)); lg.addColorStop(1, rgba(g.col, faded ? 0.07 : (on ? 1 : 0.88)));
         const route = () => { ctx.beginPath(); ctx.moveTo(hq[0], hq[1]); ctx.quadraticCurveTo(m[0], m[1], b[0], b[1]); ctx.stroke(); };
         ctx.strokeStyle = lg;
-        ctx.globalAlpha = faded ? 0.1 : 0.22; ctx.lineWidth = on ? 5.5 : 3.6; route();  // lifts it off the map
-        ctx.globalAlpha = 1; ctx.lineWidth = on ? 2.4 : 1.5; route();
+        ctx.globalAlpha = faded ? 0.06 : 0.14; ctx.lineWidth = on ? 5.5 : 3.6; route();  // a faint track lifts it off the map
+        // the route reads as movement from the brand's home to the attack: dashes that flow along it, A → B
+        ctx.globalAlpha = 1; ctx.lineWidth = on ? 2.6 : 1.7; ctx.lineCap = 'round';
+        ctx.setLineDash([8, 9]); ctx.lineDashOffset = calm ? 0 : -((t / 40) + g.ph * 17) % 17; route();
+        ctx.setLineDash([]); ctx.lineDashOffset = 0; ctx.lineCap = 'butt';
         const s = calm ? 2 : ((t / 3400) + g.ph) % 1.5;
         if (s <= 1 && !faded) {
           for (let i = 8; i >= 1; i--) { const q = qp(hq, m, b, Math.max(0, s - i * 0.012)); ctx.fillStyle = rgba(GREEN, (1 - i / 9) * 0.45); ctx.beginPath(); ctx.arc(q[0], q[1], 2 - i * 0.15, 0, Math.PI * 2); ctx.fill(); }

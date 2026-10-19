@@ -244,7 +244,7 @@ def test_console_links_to_the_infrastructure_map_and_takedowns_list(engine, tmp_
         )
         assert f"/ui/takedowns/{tid}" not in ui.get("/ui/takedowns?state=resolved").text
         tpage = ui.get(f"/ui/takedowns/{tid}").text
-        assert "Takedown request" in tpage and 'href="/ui/takedowns"' in tpage
+        assert "TAKEDOWN REQUEST" in tpage and 'href="/ui/takedowns"' in tpage
         page = ui.get(f"/ui/findings/{f['id']}/intel").text  # redirects to the finding page
         assert "Map attack infrastructure" in page and "Site &amp; network investigation" in page
         assert 'data-tab="investigation"' in page and 'id="tab-network"' in page and 'id="invbar"' in page

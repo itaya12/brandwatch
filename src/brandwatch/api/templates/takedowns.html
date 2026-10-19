@@ -2,7 +2,13 @@
 {% block title %}Takedowns{% endblock %}
 {% block content %}
 <style>
-  @media (max-width:700px){table.rwd td:nth-child(6),table.rwd td:nth-child(7){display:none}}  /* reference and abuse contact: on the request page */
+  @media (max-width:700px){table.rwd td.rq{display:none}}  /* the reference and the abuse contact: on the request page */
+  .rwd .rq,.rwd .sentc{white-space:nowrap}
+  .rwd td:first-child{max-width:240px;overflow-wrap:anywhere}
+  .rwd .rq{max-width:170px;overflow:hidden;text-overflow:ellipsis}
+  .rwd .cta{white-space:nowrap}
+  .drafall{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin:0 0 10px;padding:10px 14px;border:1px solid rgba(255,77,77,.45);border-radius:12px;background:rgba(255,77,77,.06)}
+  .drafall b{color:var(--crit)}
   .cta{display:inline-flex;align-items:center;gap:8px;padding:7px 12px;border-radius:9px;border:1px solid var(--accent);color:var(--accent2);background:rgba(53,199,242,.16);font-weight:600;font-size:12px;cursor:pointer}
   .cta:hover{background:rgba(53,199,242,.24);box-shadow:0 0 12px rgba(53,199,242,.2)}
   .cta:active{transform:translateY(1px)}
@@ -33,33 +39,35 @@
     {% for b in brand_chips %}<a class="btn" style="padding:4px 12px;font-size:12.5px;{{ 'border-color:var(--accent);color:var(--accent2)' if filters.brand_id == b.id }}" href="/ui/takedowns?state={{ filters.state }}&brand_id={{ b.id }}">{{ b.name }} <b>{{ b.count }}</b></a>{% endfor %}
   </div>{% endif %}
   <form method="get" action="/ui/takedowns" class="actions mfoldable" style="margin-bottom:8px">
-    <div><label for="t-brand">Brand</label><select id="t-brand" name="brand_id" onchange="this.form.submit()"><option value="">all</option>{% for b in brands %}<option value="{{ b.id }}" {{ 'selected' if filters.brand_id==b.id }}>{{ b.name }}</option>{% endfor %}</select></div>
-    <div><label for="t-state">Takedown state</label><select id="t-state" name="state" onchange="this.form.submit()"><option value="">all</option>{% for st in ['none'] + TakedownStates %}<option value="{{ st }}" {{ 'selected' if filters.state==st }}>{{ st|state_label }}</option>{% endfor %}<option value="stale" {{ 'selected' if filters.state=='stale' }}>no answer for 7+ days</option></select></div>
+    <input type="hidden" name="brand_id" value="{{ filters.brand_id }}">
+    <div><label for="t-state">Takedown state</label><select id="t-state" name="state"><option value="">all</option>{% for st in ['none'] + TakedownStates %}<option value="{{ st }}" {{ 'selected' if filters.state==st }}>{{ st|state_label }}</option>{% endfor %}<option value="stale" {{ 'selected' if filters.state=='stale' }}>no answer for 7+ days</option></select></div>
     <div><button type="submit">Apply</button></div>
     {% if filters.state or filters.brand_id %}<div><a class="btn" href="/ui/takedowns">clear</a></div>{% endif %}
   </form>
   {% set bulk = request.query_params.get('bulk') or '' %}
   {% if bulk.startswith('drafted:') %}{% set bp = bulk.split(':') %}<div class="panel small" style="border-color:rgba(46,204,113,.5);margin-bottom:8px"><b>{{ bp[1] }} takedown request{{ '' if bp[1] == '1' else 's' }} drafted.</b> {% if bp|length > 2 and bp[2] != '0' %}{{ bp[2] }} skipped (not confirmed, or a contact rather than a site).{% endif %} Open each one, send it from your own mailbox and press ✓ sent.</div>{% endif %}
+  {% set nodraft = sites|rejectattr('takedown')|list %}
+  {% if can_write and nodraft|length > 1 %}<form method="post" action="/ui/campaigns/draft-takedowns" class="drafall" data-confirm="Draft one takedown request for each of these {{ nodraft|length }} confirmed site(s)? You review and send each one yourself; nothing is sent now." data-confirm-title="Draft all" data-confirm-ok="Draft {{ nodraft|length }} request(s)">
+    {% for x in nodraft %}<input type="hidden" name="ids" value="{{ x.id }}">{% endfor %}
+    <span><b>{{ nodraft|length }}</b> confirmed site{{ 's' if nodraft|length != 1 }} in this list {{ 'have' if nodraft|length != 1 else 'has' }} no takedown request yet.</span>
+    <button type="submit" class="primary" style="margin-left:auto">✉ Draft all {{ nodraft|length }}</button></form>{% endif %}
   {% if sites %}
   <table class="rwd">
-    <thead><tr><th>Phishing site</th><th>Brand</th><th>Severity</th><th>Confirmed</th><th>Takedown</th><th>Reference</th><th>Abuse contact</th><th>Sent</th><th>Waiting</th><th>Reported</th><th>Infrastructure</th></tr></thead>
+    <thead><tr><th>Phishing site</th><th>Brand</th><th>Severity</th><th>Confirmed</th><th>Takedown</th><th>Request</th><th>Sent</th><th>Reported · map</th></tr></thead>
     {% for x in sites %}
     <tr>
       <td><a class="mono" href="/ui/findings/{{ x.id }}">{{ x.hostname }}</a></td>
       <td class="small"><a href="/ui/brands/{{ x.brand_id }}"><bdi>{{ x.brand_name or '—' }}</bdi></a></td>
       <td><span class="badge sev-{{ x.severity }}">{{ x.severity }}</span></td>
-      <td class="mono small muted">{{ x.confirmed_at|ts }}</td>
+      <td class="mono small muted ts-short" style="white-space:nowrap">{{ x.confirmed_at|ts }}</td>
       <td>
         {% if x.takedown %}<a href="/ui/takedowns/{{ x.takedown.id }}" class="badge state" style="border-color:{{ colors.get(x.takedown_state, 'var(--muted)') }};color:{{ colors.get(x.takedown_state, 'var(--muted)') }}">{{ x.takedown_state|state_label }} → open</a>
-        {% elif can_write %}<form method="post" action="/ui/findings/{{ x.id }}/takedown" style="display:inline"><button class="cta" type="submit">Draft takedown request →</button></form>
+        {% elif can_write %}<form method="post" action="/ui/findings/{{ x.id }}/takedown" style="display:inline"><button class="cta" type="submit" title="draft the takedown request for {{ x.hostname }}: you review it before anything is sent">✉ Draft request</button></form>
         {% else %}<span class="badge state" style="border-color:var(--crit);color:var(--crit)">no takedown yet</span>{% endif %}
       </td>
-      <td class="mono small">{{ x.takedown.reference if x.takedown else '—' }}</td>
-      <td class="mono small">{{ (x.takedown.abuse_contact if x.takedown else none) or '—' }}</td>
-      <td class="mono small muted">{{ x.takedown.sent_at|ts if x.takedown and x.takedown.sent_at else '—' }}</td>
-      <td class="mono small" style="white-space:nowrap">{% if x.waiting_days is not none %}<span style="{{ 'color:var(--high);font-weight:600' if x.waiting_days >= 7 }}" title="since it was sent, with no resolution">{{ x.waiting_days }} day{{ 's' if x.waiting_days != 1 }}</span>{% else %}—{% endif %}</td>
-      <td class="small">{% if x.takedown %}<a href="/ui/takedowns/{{ x.takedown.id }}#report" title="report the site to blocklists, security vendors and national services">{{ x.takedown.reported_count }} of {{ REPORT_PORTAL_COUNT }} portal(s)</a>{% if x.takedown.channels_sent %} · {{ x.takedown.channels_sent|length }} channel(s){% endif %}{% else %}—{% endif %}</td>
-      <td class="small">{% if x.map_status == 'mapped' %}<a href="/ui/campaigns/{{ x.campaign_id }}">mapped → open</a>{% elif x.map_status == 'mapping' %}<span class="radar"></span> <a href="/ui/jobs/{{ x.map_job.id }}">mapping…</a>{% else %}<span class="muted">not mapped</span>{% endif %}</td>
+      <td class="mono small rq">{% if x.takedown %}{{ x.takedown.reference }}{% if x.takedown.abuse_contact %}<div class="muted">{{ x.takedown.abuse_contact }}</div>{% endif %}{% else %}—{% endif %}</td>
+      <td class="mono small sentc ts-short">{% if x.takedown and x.takedown.sent_at %}{{ x.takedown.sent_at|ts }}{% if x.waiting_days is not none %}<div style="{{ 'color:var(--high);font-weight:600' if x.waiting_days >= 7 }}" title="since it was sent, with no resolution">waiting {{ x.waiting_days }} day{{ 's' if x.waiting_days != 1 }}</div>{% endif %}{% else %}—{% endif %}</td>
+      <td class="small">{% if x.takedown %}<a href="/ui/takedowns/{{ x.takedown.id }}#report" title="report the site to blocklists, security vendors and national services">{{ x.takedown.reported_count }} of {{ REPORT_PORTAL_COUNT }} portal(s)</a>{% if x.takedown.channels_sent %} · {{ x.takedown.channels_sent|length }} channel(s){% endif %}{% else %}—{% endif %}<div style="margin-top:3px">{% if x.map_status == 'mapped' %}<a href="/ui/campaigns/{{ x.campaign_id }}">mapped → open</a>{% elif x.map_status == 'mapping' %}<span class="radar"></span> <a href="/ui/jobs/{{ x.map_job.id }}">mapping…</a>{% else %}<span class="muted">not mapped</span>{% endif %}</div></td>
     </tr>
     {% endfor %}
   </table>

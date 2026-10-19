@@ -6,6 +6,9 @@
 {% block content %}
 {% import "_macros.html" as m %}
 <style>
+  /* one call to action on this page, START SCAN: a form's Save is an outlined button, so twelve forms do not shout at once */
+  main form button.primary:not([name=action]){background:transparent;border-color:color-mix(in srgb,var(--accent) 55%,var(--border));color:var(--text)}
+  main form button.primary:not([name=action]):hover{background:rgba(53,199,242,.10);border-color:var(--accent);color:var(--accent2)}
   details.adv{margin-top:18px;border:1px solid var(--border);border-radius:10px;padding:10px 14px;background:var(--panel)}
   details.adv > summary{cursor:pointer;font-size:13px}
   details.adv[open] > summary{margin-bottom:6px}

@@ -90,3 +90,41 @@ def test_every_page_plays_its_charts_when_seen_and_keeps_them_alive(engine, tmp_
     assert page.evaluate("document.querySelectorAll('svg.spark[data-spark]').length") == page.evaluate("document.querySelectorAll('.bw-run').length")
     ctx.close()
     assert [e for e in errors if BROKEN.search(e)] == []
+
+
+def test_the_review_fixes_hold_across_the_app(engine, tmp_path, chromium):  # noqa: F811
+    """The UX review: titles alike, trails that start at the active section, "About this page", a section bar and a way back
+    up on long pages, a search button on the phone bar, sliding number tiles, a verdict bar on a phone, the How it works
+    label style kept off the sidebar, and one call to action on a brand page."""
+    app = _app(engine, tmp_path)
+    with TestClient(app):
+        c, ui = _api(app), _ui(app)
+        brand, rows = _brand(c, app)
+        fid = rows["shopnova-login.com"]["id"]
+        settings = ui.get("/ui/settings").text
+        assert "<h1>SETTINGS " in settings
+        finding = ui.get(f"/ui/findings/{fid}").text
+        trail = finding.split('aria-label="Breadcrumb"')[1].split("</nav>")[0]
+        assert trail.index('href="/ui/findings"') < trail.index(brand["name"])  # Findings first, as the sidebar shows
+        assert finding.index('id="tab-ai"') < finding.index('id="notes"') if 'id="tab-ai"' in finding else finding.index('id="tab-timeline"') < finding.index('id="notes"')
+        assert 'id="vbar"' in finding
+        how = ui.get("/ui/how-it-works").text
+        assert "main .lbl{" in how and "\n  .lbl{font" not in how
+        brand_page = ui.get(f"/ui/brands/{brand['id']}").text
+        assert "main form button.primary:not([name=action])" in brand_page
+        watch = ui.get("/ui/candidates").text
+    assert 'class="tsearch"' in watch
+    errors: list[str] = []
+    ctx = chromium.new_context(viewport={"width": 390, "height": 844}, is_mobile=True)
+    page = ctx.new_page()
+    page.on("pageerror", lambda e: errors.append(str(e)))
+    page.set_content(watch, wait_until="domcontentloaded")
+    page.wait_for_timeout(300)
+    assert page.evaluate("getComputedStyle(document.querySelector('main .kpis')).display") == "flex"  # one sliding row
+    assert page.evaluate("!!document.querySelector('details.about .intro')")  # the explanation folds under About this page
+    assert page.evaluate("!!document.getElementById('totop')")
+    assert page.evaluate("getComputedStyle(document.querySelector('header.topbar .tsearch')).display") != "none"
+    # the subtitle's leading dot is its own span, hidden when the subtitle sits under the title
+    assert page.evaluate("getComputedStyle(document.querySelector('main h1 .hsep')).display") == "none"
+    ctx.close()
+    assert [e for e in errors if BROKEN.search(e)] == []

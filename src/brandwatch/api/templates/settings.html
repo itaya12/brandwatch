@@ -41,7 +41,7 @@
   }
 </style>
 
-<h1>Settings <span class="muted small">· {{ ws.name }} · signed in as {{ user.email }} ({{ user.role.value }})</span></h1>
+<h1>SETTINGS <span class="muted small">· {{ ws.name }} · signed in as {{ user.email }} ({{ user.role.value }})</span></h1>
 <p class="intro">Everything that changes how BrandWatch runs, in one place: the data sources it calls, the money and limits it may spend, who can use it, and how good its detection is. Every change is written to the Activity log.</p>
 {% if error %}<div class="error">{{ error }}</div>{% endif %}
 {% if new_token %}

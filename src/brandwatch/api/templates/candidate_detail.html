@@ -2,7 +2,7 @@
 {% set c = d.candidate %}
 {% block title %}{{ c.hostname }} timeline{% endblock %}
 {% block content %}
-{% set crumbs = [("Brands & Scans", "/ui/brands"), (c.brand_name, "/ui/brands/" ~ c.brand_id), ("Watchlist", "/ui/candidates?brand_id=" ~ c.brand_id), (c.hostname, none)] %}
+{% set crumbs = [("Watchlist", "/ui/candidates"), (c.brand_name, "/ui/candidates?brand_id=" ~ c.brand_id), (c.hostname, none)] %}
 {% include "_crumbs.html" %}
 <div class="panel" style="display:flex;gap:18px;align-items:center;flex-wrap:wrap">
   <div style="flex:1;min-width:min(280px,100%)">

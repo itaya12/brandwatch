@@ -42,7 +42,9 @@ def test_the_takedowns_page_filters_by_brand_with_a_chip_per_brand(engine, tmp_p
         assert c.post("/api/findings/bulk", json={"ids": ids, "action": "confirm"}).json()["changed"] == len(ids) > 0
         every = ui.get("/ui/takedowns").text
         assert "All brands <b>" in every and f"{brand['name']} <b>{len(ids)}</b>" in every and f"{other['name']} <b>0</b>" in every
-        assert every.count('onchange="this.form.submit()"') == 2
+        # the brand is picked by the chips only (no second brand select); the state filter applies on change, from base.html
+        assert 'id="t-brand"' not in every and 'id="t-state"' in every and 'class="actions mfoldable"' in every
+        assert "Draft all" in every and 'action="/ui/campaigns/draft-takedowns"' in every
         none = ui.get(f"/ui/takedowns?brand_id={other['id']}").text
         assert "shopn0va.com" not in none and "shopn0va.com" in every
         total = re.search(r"All brands <b>(\d+)</b>", every).group(1)

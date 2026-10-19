@@ -8,7 +8,7 @@
   td form{margin:0}
   @media (max-width:700px){ #jtable th:nth-child(4),#jtable td:nth-child(4){display:none}}
 </style>
-{% set crumbs = [("Brands & Scans", "/ui/brands"), ("Every scan", none)] %}
+{% set crumbs = [] %}
 {% include "_crumbs.html" %}
 <h1>SCANS <span class="muted">· every scan, map and investigation of the workspace · {{ total }} in all</span></h1>
 <form method="get" action="/ui/scans" class="filters">

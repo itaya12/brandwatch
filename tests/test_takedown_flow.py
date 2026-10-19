@@ -85,7 +85,7 @@ def test_confirm_auto_maps_and_cta_and_dashboard_panel(engine, tmp_path):
         )
         # takedowns page lists the confirmed site with "no takedown yet" + the CTA button
         td = ui.get("/ui/takedowns?state=none").text
-        assert "shopn0va.com" in td and "Draft takedown request" in td
+        assert "shopn0va.com" in td and "Draft request" in td
         # draft it from there → row shows the state, action panel item goes away
         r = ui.post(f"/ui/findings/{f['id']}/takedown", follow_redirects=False)
         tid = r.headers["location"].rsplit("/", 1)[-1]

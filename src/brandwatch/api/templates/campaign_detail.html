@@ -9,8 +9,9 @@
   @keyframes halo{0%{opacity:.9;transform:scale(1)}100%{opacity:0;transform:scale(2.6)}}
   #graph{background:radial-gradient(circle at 50% 45%,#0f1c30,var(--console) 70%)!important}
 </style>
-{% set crumbs = [("Brands & Scans", "/ui/brands")] + ([(brand_name, "/ui/brands/" ~ c.brand_id)] if brand_name else []) + [("Attack infrastructure", "/ui/campaigns?brand_id=" ~ c.brand_id), (c.name, none)] %}
+{% set crumbs = [("Attack infrastructure", "/ui/campaigns")] + ([(brand_name, "/ui/campaigns?brand_id=" ~ c.brand_id)] if brand_name else []) + [(c.name, none)] %}
 {% set crumb_links = ([("Scan console", "/ui/jobs/" ~ job_id)] if job_id else []) + ([("Seed finding " ~ seed.hostname, "/ui/findings/" ~ seed.id)] if seed else ([("Finding " ~ c.findings[0].hostname, "/ui/findings/" ~ c.findings[0].id)] if c.findings else [])) %}
+{% set crumb_links = crumb_links + ([("brand page", "/ui/brands/" ~ c.brand_id)] if c.brand_id else []) %}
 {% include "_crumbs.html" %}
 <h1>{{ c.title }} <span class="muted small">· {{ c.servers }} server{{ 's' if c.servers != 1 }} · {{ c.findings_total }} finding{{ 's' if c.findings_total != 1 }}</span></h1>
 <div class="mono muted small" style="margin:-4px 0 6px">{{ c.name }} · {{ c.id }}</div>

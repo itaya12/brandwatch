@@ -30,7 +30,7 @@
 </style>
 {% set crumbs = [("Takedowns", "/ui/takedowns")] + ([(brand_name, "/ui/brands/" ~ brand_id)] if brand_name else []) + [("Finding " ~ t.hostname, "/ui/findings/" ~ t.finding_id), (t.reference, none)] %}
 {% include "_crumbs.html" %}
-<h1>Takedown request <span class="mono">{{ t.reference }}</span> <span class="muted small">· <a href="/ui/findings/{{ t.finding_id }}" class="mono">{{ t.hostname }}</a></span></h1>
+<h1>TAKEDOWN REQUEST <span class="mono">{{ t.reference }}</span> <span class="muted small">· <a href="/ui/findings/{{ t.finding_id }}" class="mono">{{ t.hostname }}</a></span></h1>
 <p class="intro" style="margin-top:-6px">Two jobs on this page: <a href="#channels">send the request</a> to the registrar, the hosting provider and the CDN, and <a href="#report">report the site to {{ portals|length }} blocklists, security vendors and national services ↓</a> ({{ portals|selectattr('key', 'in', reports)|list|length }} done so far).</p>
 <div class="kpis">
   <div class="kpi"><div class="v" style="font-size:18px">{{ t.state|state_label }}</div><div class="l">state</div></div>

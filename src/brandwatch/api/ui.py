@@ -546,7 +546,7 @@ def job_page(
     from brandwatch.detection.runner import ISSUE_HELP
 
     return _render(
-        request, "job.html", user, job=job, summary=summary, issue_help=ISSUE_HELP, active="brands"
+        request, "job.html", user, job=job, summary=summary, issue_help=ISSUE_HELP, active="scans"
     )
 
 
