@@ -14,8 +14,15 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=JetBrains+Mono:wght@400;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#080B14;--panel:#0E1420;--panel2:#121A2B;--border:#1E2A3D;--accent:#35C7F2;--accent2:#5FE3FF;
---crit:#FF4D4D;--high:#FF9F1C;--med:#F5C518;--low:#2ECC71;--violet:#5b9bb5;--magenta:#c9d3df;--text:#E6EDF5;--muted:#8A97A8;
+/* The design system's tokens. ``api/palette.py`` carries the same values for everything the server
+   draws itself (SVG, the report) and ``tests/test_palette.py`` fails if the two lists disagree. */
+:root{--bg:#080B14;--panel:#0E1420;--panel2:#121A2B;--field:#0b1220;--console:#060910;--border:#1E2A3D;--accent:#35C7F2;--accent2:#5FE3FF;
+--crit:#FF4D4D;--high:#FF9F1C;--med:#F5C518;--low:#2ECC71;--text:#E6EDF5;--text2:#C3CDD9;--muted:#8A97A8;--dim:#7C8A9E;--on-lit:#06121D;
+/* the panel's own fill: the two stops of the gradient every surface is cut from */
+--panel-fill:rgba(18,26,43,.92);--panel-fill2:rgba(14,20,32,.92);
+/* the eight colours one operation is drawn in, by its index: four of our own, then four that exist
+   only because a graph of eight operations needs eight colours nobody can confuse */
+--op1:var(--accent);--op2:var(--med);--op3:var(--high);--op4:var(--low);--op5:#B388FF;--op6:#FF6FA8;--op7:#4DD0C4;--op8:#9AA5B1;
 --mono:"JetBrains Mono",ui-monospace,Consolas,monospace;--sans:Inter,system-ui,Segoe UI,Roboto,sans-serif;--display:Rajdhani,var(--mono)}
 @property --p{syntax:'<number>';inherits:false;initial-value:0}
 *{box-sizing:border-box}
@@ -40,9 +47,9 @@ body.has-side{padding-left:var(--side-w)}
 .side .fold{margin-left:auto;padding:3px 7px;font-size:12px;line-height:1;border-color:transparent;background:transparent;color:var(--muted)}
 .side .fold:hover{color:var(--text);border-color:var(--border)}
 .side .hsearch{padding:0 12px 8px}
-.side .hsearch input{padding:7px 10px;font-size:12.5px;border-radius:8px;background:#0b1220}
+.side .hsearch input{padding:7px 10px;font-size:12.5px;border-radius:8px;background:var(--field)}
 .side nav{display:flex;flex-direction:column;gap:1px;padding:0 8px}
-.side .grp{font:600 10px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:#5f6d80;padding:14px 10px 5px;white-space:nowrap}
+.side .grp{font:600 11px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--dim);padding:14px 10px 5px;white-space:nowrap}
 .side nav a{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;color:var(--muted);font-size:13.5px;white-space:nowrap;position:relative;border:1px solid transparent}
 .side nav a:hover{color:var(--text);background:rgba(53,199,242,.06)}
 .side nav a.active{color:var(--text);background:rgba(53,199,242,.10);border-color:rgba(53,199,242,.28)}
@@ -69,7 +76,7 @@ header.topbar.plain .logo{font-family:var(--mono);font-weight:700;letter-spacing
 @media (max-width:900px){
   body.has-side{padding-left:0}
   html.side-mini{--side-w:232px}
-  header.topbar{display:flex;position:sticky;top:0;z-index:25;align-items:center;gap:12px;padding:9px 12px;background:#0e1420;border-bottom:1px solid var(--border)}
+  header.topbar{display:flex;position:sticky;top:0;z-index:25;align-items:center;gap:12px;padding:9px 12px;background:var(--panel);border-bottom:1px solid var(--border)}
   header.topbar .logo{font-family:var(--mono);font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-size:13px}
   header.topbar .menu{padding:6px 10px;font-size:16px;line-height:1}
   header.topbar .cnt{margin-left:auto;display:flex;gap:8px}
@@ -84,12 +91,12 @@ header.topbar.plain .logo{font-family:var(--mono);font-weight:700;letter-spacing
 }
 main{position:relative;z-index:1;padding:20px;max-width:1440px;margin:0 auto}
 h1{font-family:var(--display);font-size:26px;letter-spacing:.04em;margin:0 0 14px;font-weight:700;
-  background:linear-gradient(90deg,#E6EDF5 0%,#E6EDF5 55%,var(--accent2) 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+  background:linear-gradient(90deg,var(--text) 0%,var(--text) 55%,var(--accent2) 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
 h1 .muted,h1 .small{-webkit-text-fill-color:var(--muted);font-family:var(--sans);font-size:13px;letter-spacing:0;font-weight:400}
 h2{font-size:12px;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);font-family:var(--mono);margin:22px 0 10px;line-height:1.5}
 h2::before{content:"";width:6px;height:6px;background:var(--accent);display:inline-block;margin-right:8px;vertical-align:2px}
 h2 .muted{text-transform:none;letter-spacing:.02em;font-family:var(--sans);font-size:12px;opacity:.85}
-.panel{position:relative;background:linear-gradient(180deg,rgba(18,26,43,.92),rgba(14,20,32,.92));border:1px solid var(--border);border-radius:10px;padding:14px 16px;
+.panel{position:relative;background:linear-gradient(180deg,var(--panel-fill),var(--panel-fill2));border:1px solid var(--border);border-radius:10px;padding:14px 16px;
   transition:border-color .3s,box-shadow .3s,transform .3s;animation:fadeUp .6s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(var(--i,0)*70ms)}
 .panel:hover{border-color:rgba(53,199,242,.35);box-shadow:0 0 0 1px rgba(53,199,242,.08),0 8px 30px rgba(0,0,0,.35)}
 .panel > h2:first-child{margin-top:0}
@@ -111,11 +118,11 @@ tr:hover td{background:rgba(53,199,242,.05)}
 .st-dismissed{color:var(--muted)}.st-watching{color:var(--accent);border-color:rgba(53,199,242,.4)}.st-long_watch{color:var(--muted)}
 .pill{background:var(--panel2);border:1px solid var(--border);border-radius:6px;padding:1px 6px;font-family:var(--mono);font-size:11px;color:var(--text);white-space:nowrap}
 /* signal pills: one neutral style for every group (the group is in the tooltip and the Explain table) */
-.pill[class*="g-"]{border-color:var(--border);color:#c9d3df}
+.pill[class*="g-"]{border-color:var(--border);color:var(--text2)}
 button,.btn{background:var(--panel2);color:var(--text);border:1px solid var(--border);border-radius:6px;padding:7px 12px;font:inherit;cursor:pointer;transition:all .2s}
 button:hover,.btn:hover{border-color:var(--accent);box-shadow:0 0 12px rgba(53,199,242,.2)}button.primary{background:rgba(53,199,242,.15);border-color:var(--accent);color:var(--accent2)}
 button.danger{border-color:var(--crit);color:var(--crit)}button.ok{border-color:var(--low);color:var(--low)}
-input,select,textarea{background:#0b1220;color:var(--text);border:1px solid var(--border);border-radius:6px;padding:7px 9px;font:inherit;width:100%;transition:border-color .2s,box-shadow .2s}
+input,select,textarea{background:var(--field);color:var(--text);border:1px solid var(--border);border-radius:6px;padding:7px 9px;font:inherit;width:100%;transition:border-color .2s,box-shadow .2s}
 input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(53,199,242,.15)}
 /* a paragraph that may be Hebrew or Arabic (a brand name, an ad, a reason) takes its direction from its own first letter */
 .lead,.summary,.story,.say,.reason,.ev .diff{unicode-bidi:plaintext}
@@ -131,7 +138,7 @@ button.chip{font:inherit;font-family:var(--mono);font-size:11px;box-shadow:none}
   table.rwd td.rwd-main{grid-column:1 / -1;font-size:14px;padding-right:34px}
   table.rwd td.rwd-empty,table.rwd td:empty{display:none}
   table.rwd td.selcol{position:absolute;top:10px;right:10px;width:auto}
-  table.rwd td[data-label]:not([data-label=""]):not(.rwd-main)::before{content:attr(data-label);display:block;font:600 9.5px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:#6f7d90;margin-bottom:1px}
+  table.rwd td[data-label]:not([data-label=""]):not(.rwd-main)::before{content:attr(data-label);display:block;font:600 9.5px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--dim);margin-bottom:1px}
   table.rwd tr:hover td{background:transparent}
   table.rwd .badge{font-size:10px;padding:1px 7px;white-space:normal;max-width:100%}
   table.rwd td.rwd-main{order:-1}  /* the site first, whatever the column order */
@@ -178,14 +185,14 @@ label{display:block;font-size:12px;color:var(--muted);margin:8px 0 4px;font-fami
 .kpi.crit .v{color:var(--crit)}.kpi.hi .v{color:var(--high)}.kpi.med .v{color:var(--med)}
 .kpi.ok .v,.kpi.cy .v,.kpi.vi .v,.kpi.mg .v{color:var(--text)}
 a.kpi{color:inherit;display:block}a.kpi.on{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent) inset}
-.ring{--c:var(--accent);width:96px;height:96px;border-radius:50%;background:conic-gradient(var(--c) calc(var(--p)*1%),#1E2A3D 0);display:grid;place-items:center;transition:--p 1.4s cubic-bezier(.2,.8,.2,1)}
+.ring{--c:var(--accent);width:96px;height:96px;border-radius:50%;background:conic-gradient(var(--c) calc(var(--p)*1%),var(--border) 0);display:grid;place-items:center;transition:--p 1.4s cubic-bezier(.2,.8,.2,1)}
 .ring>div{width:76px;height:76px;border-radius:50%;background:var(--panel);display:grid;place-items:center;font-family:var(--display);font-size:28px;font-weight:700}
 .ring.sm{width:38px;height:38px}.ring.sm>div{width:28px;height:28px;font-size:11px;font-family:var(--mono)}
-.bar{height:8px;background:#1E2A3D;border-radius:4px;overflow:hidden}.bar>i{display:block;height:100%;background:var(--accent);transition:width 1.3s cubic-bezier(.2,.8,.2,1)}
+.bar{height:8px;background:var(--border);border-radius:4px;overflow:hidden}.bar>i{display:block;height:100%;background:var(--accent);transition:width 1.3s cubic-bezier(.2,.8,.2,1)}
 .bar>i[data-w]{width:0}
-.scorebar{height:6px;width:90px;background:#1E2A3D;border-radius:3px;overflow:hidden;display:inline-block;vertical-align:middle;margin-left:8px}
+.scorebar{height:6px;width:90px;background:var(--border);border-radius:3px;overflow:hidden;display:inline-block;vertical-align:middle;margin-left:8px}
 .scorebar>i{display:block;height:100%;width:0;border-radius:3px;background:rgba(230,237,245,.55);transition:width 1.3s cubic-bezier(.2,.8,.2,1)}
-.stack{display:flex;height:10px;border-radius:5px;overflow:hidden;background:#1E2A3D}.stack>i{display:block;height:100%;width:0;transition:width 1.3s cubic-bezier(.2,.8,.2,1)}
+.stack{display:flex;height:10px;border-radius:5px;overflow:hidden;background:var(--border)}.stack>i{display:block;height:100%;width:0;transition:width 1.3s cubic-bezier(.2,.8,.2,1)}
 .hist{display:flex;align-items:flex-end;gap:5px;height:110px;padding-bottom:18px}
 .hist i{flex:1;position:relative;border-radius:4px 4px 0 0;min-height:2px;height:0;transition:height 1.2s cubic-bezier(.2,.8,.2,1);background:linear-gradient(180deg,var(--c,var(--accent2)),rgba(53,199,242,.15))}
 .hist i span{position:absolute;bottom:-17px;left:0;right:0;text-align:center;font-size:10px;color:var(--muted);font-family:var(--mono)}
@@ -202,11 +209,16 @@ svg.donut{width:150px;height:150px;flex:none}svg.spark{width:100%;height:64px;di
 .sevrow.critical{--sc:var(--crit)}.sevrow.high{--sc:var(--high)}.sevrow.medium{--sc:var(--med)}.sevrow.low{--sc:var(--low)}
 .chip{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border:1px solid var(--border);border-radius:999px;font-family:var(--mono);font-size:11px;color:var(--muted);cursor:pointer;background:var(--panel2);transition:all .2s;user-select:none}
 .chip i{display:none}.chip.on{color:var(--text);border-color:var(--accent);box-shadow:0 0 10px rgba(53,199,242,.18)}
+/* the same pill, read-only: no pointer, no .on state. Two pages had each redefined .chip to
+   get this, which quietly restyled the filter chips they also used. */
+.chip.static{cursor:default}
+.chip.static b{color:var(--text);font-weight:600}
+.chip.static.hint{border-style:dashed}
 .radar{width:14px;height:14px;border-radius:50%;border:1px solid var(--accent);position:relative;display:inline-block;vertical-align:middle;overflow:hidden}
 .radar::after{content:"";position:absolute;inset:0;background:conic-gradient(rgba(53,199,242,.8),transparent 40%);animation:spin 1.2s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 .error{color:var(--crit);border:1px solid var(--crit);background:rgba(255,77,77,.08);padding:8px 10px;border-radius:6px;margin-bottom:12px}
-.console{font-family:var(--mono);font-size:12px;background:#060910;border:1px solid var(--border);border-radius:8px;padding:12px;height:420px;overflow:auto;white-space:pre-wrap}
+.console{font-family:var(--mono);font-size:12px;background:var(--console);border:1px solid var(--border);border-radius:8px;padding:12px;height:420px;overflow:auto;white-space:pre-wrap}
 .console .running{color:var(--accent)}.console .done{color:var(--low)}.console .error{color:var(--crit);border:0;background:none;padding:0;margin:0}.console .warn{color:var(--high)}
 .console div{animation:rowIn .3s ease both}
 .timeline{list-style:none;padding:0;margin:0}.timeline li{padding:6px 0 6px 14px;border-left:2px solid var(--border);position:relative;animation:fadeUp .5s ease both;animation-delay:calc(var(--r,0)*40ms)}
@@ -243,7 +255,7 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
 }
 .help{display:inline-grid;place-items:center;width:15px;height:15px;margin-left:4px;border-radius:50%;border:1px solid var(--border);color:var(--muted);font:600 10px/1 var(--mono);text-decoration:none;cursor:help;position:relative;vertical-align:1px;text-transform:none;letter-spacing:0}
 .help:hover,.help:focus-visible{color:var(--accent2);border-color:var(--accent);outline:none}
-.help::after{content:attr(data-tip);display:none;position:absolute;left:50%;bottom:calc(100% + 8px);transform:translateX(-50%);width:max-content;max-width:min(320px,80vw);padding:8px 10px;border-radius:8px;background:#0b1220;border:1px solid var(--accent);color:var(--text);font:400 12px/1.45 var(--sans);text-align:left;white-space:normal;box-shadow:0 10px 30px rgba(0,0,0,.5);opacity:0;pointer-events:none;transition:opacity .15s;z-index:50}
+.help::after{content:attr(data-tip);display:none;position:absolute;left:50%;bottom:calc(100% + 8px);transform:translateX(-50%);width:max-content;max-width:min(320px,80vw);padding:8px 10px;border-radius:8px;background:var(--field);border:1px solid var(--accent);color:var(--text);font:400 12px/1.45 var(--sans);text-align:left;white-space:normal;box-shadow:0 10px 30px rgba(0,0,0,.5);opacity:0;pointer-events:none;transition:opacity .15s;z-index:50}
 .help:hover::after,.help:focus-visible::after{display:block;opacity:1}
 .help[data-href]{cursor:pointer}
 @media (max-width:600px){.help::after{left:auto;right:-8px;transform:none}}
@@ -255,8 +267,50 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
 .crumbs .side{margin-left:auto;display:flex;flex-wrap:wrap;gap:4px 12px}.crumbs .side a::before{content:"→ ";opacity:.6}
 .kpi.lnk{text-decoration:none;color:inherit;display:block}.kpi.lnk:hover{border-color:var(--accent)}
 @media (max-width:700px){.crumbs .side{margin-left:0;width:100%}}
+/* a link inside a section heading is an action, not metadata, so it steps out of the heading's
+   uppercase mono voice. Fifteen places used to carry this as an inline style. */
+h2 a{font:400 12px var(--sans);text-transform:none;letter-spacing:0}
+/* An entrance below the fold used to play while nobody was looking: by the time you scrolled
+   down, it had finished. .reveal holds the panel until it actually arrives (see the observer in
+   the script below), and keeps the same --i stagger the rest of the system uses. */
+.panel.reveal,.kpi.reveal,.fade.reveal{animation:none}
+.reveal{opacity:0;transform:translateY(14px)}
+.reveal.in{opacity:1;transform:none;
+  transition:opacity .55s cubic-bezier(.2,.8,.2,1),transform .55s cubic-bezier(.2,.8,.2,1);
+  transition-delay:calc(var(--i,0)*70ms)}
+/* a press answers back */
+button:active,.btn:active,.chip:active{transform:translateY(1px)}
+/* a finger is wider than a cursor: the small controls keep their size and grow their hit area */
+@media (pointer:coarse){
+  .chip,button.small,.btn.small,.pill.cap,.help{position:relative}
+  .chip::after,button.small::after,.btn.small::after,.pill.cap::after,.help::before{
+    content:"";position:absolute;inset:-9px;border-radius:inherit}
+}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
 </style>
+<script>
+/* One palette, three readers: the stylesheet above owns the values, ``api/palette.py`` carries the
+   same list for everything the server draws itself, and anything that paints a canvas or builds an
+   SVG in the browser asks BW rather than writing a hex of its own. A kind map has no CSS token to
+   read, so it comes from the one in palette.py. */
+window.BW = (function () {
+  const cs = getComputedStyle(document.documentElement);
+  const ink = name => {  // a token whose value is another token resolves to a colour, not to "var(…)"
+    let v = cs.getPropertyValue('--' + name).trim();
+    for (let i = 0; i < 4 && v.startsWith('var('); i++) v = cs.getPropertyValue(v.slice(4, v.indexOf(')')).trim()).trim();
+    return v;
+  };
+  const OPS = [1, 2, 3, 4, 5, 6, 7, 8].map(i => ink('op' + i));
+  const SEV = {critical: ink('crit'), high: ink('high'), medium: ink('med'), low: ink('low')};
+  const KIND = {"affiliate_id": "#FF4D4D", "batch": "#8A97A8", "certificate": "#F5C518", "cf_ns_pair": "#8A97A8", "data_sink": "#FF9F1C", "dns_token": "#FF4D4D", "favicon": "#2ECC71", "ip": "#35C7F2", "kit": "#F5C518", "kit_look": "#F5C518", "nameserver": "#8A97A8", "past_ip": "#35C7F2", "redirector": "#B388FF", "registrant": "#FF4D4D", "registrar": "#8A97A8", "shared_ip": "#35C7F2", "shared_tds": "#2ECC71", "tds_campaign": "#2ECC71", "tracking_id": "#FF9F1C"};
+  return {
+    ink, OPS, SEV, KIND,
+    op: i => i ? OPS[(i - 1) % OPS.length] : ink('muted'),
+    sev: s => SEV[s] || ink('muted'),
+    kind: k => KIND[k] || ink('muted'),
+  };
+})();
+</script>
 </head>
 <body class="has-side">
 <script>try { if (localStorage.getItem('bw-side') === 'mini') document.documentElement.classList.add('side-mini'); } catch (e) { /* private window */ }</script>
@@ -308,7 +362,7 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
   .ev .what{font-size:13px}.ev .what b{color:var(--text);font-family:var(--mono);font-weight:600}
   .ev.t-crit .what b{color:var(--crit)}.ev.t-ok .what b{color:var(--low)}
   .ev .diff{margin-top:4px;font-family:var(--mono);font-size:11px;color:var(--muted);word-break:break-word}
-  .ev .diff .old{text-decoration:line-through;opacity:.6}.ev .diff .new{color:#c9d3df}
+  .ev .diff .old{text-decoration:line-through;opacity:.6}.ev .diff .new{color:var(--text2)}
   .day{position:relative;z-index:1;margin:14px 0 4px 44px;font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
   .more{margin:10px 0 0 44px}
   .hbar{display:grid;grid-template-columns:110px 1fr 34px;gap:8px;align-items:center;margin:7px 0;font-size:12px}
@@ -320,11 +374,11 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
 <p class="intro">The append-only audit trail: who did what, when, old → new, and why. The database itself refuses to edit or delete it.</p>
 
 <div class="kpis">
-  <div class="kpi"><div class="v" data-count="191">0</div><div class="l">events (latest)</div></div>
-  <div class="kpi"><div class="v" data-count="52">0</div><div class="l">analyst actions</div></div>
-  <div class="kpi"><div class="v" data-count="139">0</div><div class="l">system actions</div></div>
-  <div class="kpi"><div class="v" data-count="25">0</div><div class="l">verdicts recorded</div></div>
-  <div class="kpi"><div class="v" data-count="6">0</div><div class="l">logins (24h)</div></div>
+  <div class="kpi"><div class="v" data-count="153">0</div><div class="l">events (latest)</div></div>
+  <div class="kpi"><div class="v" data-count="46">0</div><div class="l">analyst actions</div></div>
+  <div class="kpi"><div class="v" data-count="107">0</div><div class="l">system actions</div></div>
+  <div class="kpi"><div class="v" data-count="17">0</div><div class="l">verdicts recorded</div></div>
+  <div class="kpi"><div class="v" data-count="5">0</div><div class="l">logins (24h)</div></div>
 </div>
 
 <form method="get" action="/ui/activity/" class="afilters" style="margin-top:14px">
@@ -344,7 +398,7 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
 
 <div class="grid actg" style="grid-template-columns:2.2fr 1fr;margin-top:14px">
   <div class="panel">
-    <div class="small muted" style="margin-bottom:6px">2732 events</div>
+    <div class="small muted" style="margin-bottom:6px">2772 events</div>
     <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px" id="chips">
       <button type="button" class="chip on" data-cat="notable" title="everything except sign-ins" aria-pressed="true">notable</button>
       <button type="button" class="chip" data-cat="*" aria-pressed="false">all</button>
@@ -357,16 +411,40 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
       <div class="ev " data-cat="user" data-notable="0" style="--r:0;display:none">
         <div class="av " title="admin">AD</div>
         <div>
-          <div class="what"><span class="muted">admin</span> <b>user</b> · login <span class="pill" title="24 consecutive events, first 2026-10-18 21:18">×24</span>
+          <div class="what"><span class="muted">admin</span> <b>user</b> · login <span class="pill" title="11 consecutive events, first 2026-10-19 10:08">×11</span>
             
             <span class="muted small">user bc089017</span></div>
           
         </div>
-        <div class="when"><time datetime="2026-10-19T06:58:20.070742+00:00" data-local title="2026-10-19T06:58:20.070742+00:00 UTC">2026-10-19 06:58</time><div><a class="small" href="/ui/activity/_d2793a420a/" title="every event about this user">history</a></div></div>
+        <div class="when"><time datetime="2026-10-19T10:58:56.698284+00:00" data-local title="2026-10-19T10:58:56.698284+00:00 UTC">2026-10-19 10:58</time><div><a class="small" href="/ui/activity/_d2793a420a/" title="every event about this user">history</a></div></div>
+      </div>
+      
+      
+      <div class="ev " data-cat="user" data-notable="0" style="--r:1;display:none">
+        <div class="av " title="admin">AD</div>
+        <div>
+          <div class="what"><span class="muted">admin</span> <b>user</b> · login failed
+            
+            <span class="muted small">user bc089017</span></div>
+          
+        </div>
+        <div class="when"><time datetime="2026-10-19T10:08:43.648806+00:00" data-local title="2026-10-19T10:08:43.648806+00:00 UTC">2026-10-19 10:08</time><div><a class="small" href="/ui/activity/_d2793a420a/" title="every event about this user">history</a></div></div>
+      </div>
+      
+      
+      <div class="ev " data-cat="user" data-notable="0" style="--r:2;display:none">
+        <div class="av " title="admin">AD</div>
+        <div>
+          <div class="what"><span class="muted">admin</span> <b>user</b> · login <span class="pill" title="52 consecutive events, first 2026-10-18 21:18">×52</span>
+            
+            <span class="muted small">user bc089017</span></div>
+          
+        </div>
+        <div class="when"><time datetime="2026-10-19T10:05:16.103494+00:00" data-local title="2026-10-19T10:05:16.103494+00:00 UTC">2026-10-19 10:05</time><div><a class="small" href="/ui/activity/_d2793a420a/" title="every event about this user">history</a></div></div>
       </div>
       
       <div class="day" data-day="2026-10-18">2026-10-18</div>
-      <div class="ev " data-cat="user" data-notable="0" style="--r:1;display:none">
+      <div class="ev " data-cat="user" data-notable="0" style="--r:3;display:none">
         <div class="av " title="admin">AD</div>
         <div>
           <div class="what"><span class="muted">admin</span> <b>user</b> · login failed
@@ -378,7 +456,7 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
       </div>
       
       
-      <div class="ev " data-cat="user" data-notable="0" style="--r:2;display:none">
+      <div class="ev " data-cat="user" data-notable="0" style="--r:4;display:none">
         <div class="av " title="admin">AD</div>
         <div>
           <div class="what"><span class="muted">admin</span> <b>user</b> · login
@@ -390,7 +468,7 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
       </div>
       
       
-      <div class="ev " data-cat="intel" data-notable="1" style="--r:3">
+      <div class="ev " data-cat="intel" data-notable="1" style="--r:5">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>intel</b> · started
@@ -406,7 +484,7 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
       </div>
       
       
-      <div class="ev " data-cat="intel" data-notable="1" style="--r:4">
+      <div class="ev " data-cat="intel" data-notable="1" style="--r:6">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>intel</b> · started
@@ -422,7 +500,7 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
       </div>
       
       
-      <div class="ev " data-cat="user" data-notable="0" style="--r:5;display:none">
+      <div class="ev " data-cat="user" data-notable="0" style="--r:7;display:none">
         <div class="av " title="admin">AD</div>
         <div>
           <div class="what"><span class="muted">admin</span> <b>user</b> · login <span class="pill" title="31 consecutive events, first 2026-10-18 17:10">×31</span>
@@ -434,7 +512,7 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
       </div>
       
       
-      <div class="ev " data-cat="notification" data-notable="1" style="--r:6">
+      <div class="ev " data-cat="notification" data-notable="1" style="--r:8">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>notification</b> · sent
@@ -450,7 +528,7 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
       </div>
       
       
-      <div class="ev " data-cat="finding" data-notable="1" style="--r:7">
+      <div class="ev " data-cat="finding" data-notable="1" style="--r:9">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>finding</b> · created
@@ -466,7 +544,7 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
       </div>
       
       
-      <div class="ev " data-cat="scan" data-notable="1" style="--r:8">
+      <div class="ev " data-cat="scan" data-notable="1" style="--r:10">
         <div class="av " title="admin">AD</div>
         <div>
           <div class="what"><span class="muted">admin</span> <b>scan</b> · started
@@ -482,7 +560,7 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
       </div>
       
       
-      <div class="ev " data-cat="brand" data-notable="1" style="--r:9">
+      <div class="ev " data-cat="brand" data-notable="1" style="--r:11">
         <div class="av " title="admin">AD</div>
         <div>
           <div class="what"><span class="muted">admin</span> <b>brand</b> · config updated
@@ -498,7 +576,7 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
       </div>
       
       
-      <div class="ev " data-cat="user" data-notable="0" style="--r:10;display:none">
+      <div class="ev " data-cat="user" data-notable="0" style="--r:12;display:none">
         <div class="av " title="admin">AD</div>
         <div>
           <div class="what"><span class="muted">admin</span> <b>user</b> · login <span class="pill" title="36 consecutive events, first 2026-10-18 07:32">×36</span>
@@ -510,7 +588,7 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
       </div>
       
       
-      <div class="ev " data-cat="notification" data-notable="1" style="--r:11">
+      <div class="ev " data-cat="notification" data-notable="1" style="--r:13">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>notification</b> · sent
@@ -526,7 +604,7 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
       </div>
       
       
-      <div class="ev " data-cat="finding" data-notable="1" style="--r:12">
+      <div class="ev " data-cat="finding" data-notable="1" style="--r:14">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>finding</b> · rescored
@@ -542,7 +620,7 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
       </div>
       
       
-      <div class="ev " data-cat="notification" data-notable="1" style="--r:13">
+      <div class="ev " data-cat="notification" data-notable="1" style="--r:15">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>notification</b> · sent
@@ -558,7 +636,7 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
       </div>
       
       
-      <div class="ev " data-cat="finding" data-notable="1" style="--r:14">
+      <div class="ev " data-cat="finding" data-notable="1" style="--r:16">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>finding</b> · rescored
@@ -574,7 +652,7 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
       </div>
       
       
-      <div class="ev " data-cat="notification" data-notable="1" style="--r:15">
+      <div class="ev " data-cat="notification" data-notable="1" style="--r:17">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>notification</b> · sent
@@ -590,7 +668,7 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
       </div>
       
       
-      <div class="ev " data-cat="finding" data-notable="1" style="--r:16">
+      <div class="ev " data-cat="finding" data-notable="1" style="--r:18">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>finding</b> · rescored
@@ -606,7 +684,7 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
       </div>
       
       
-      <div class="ev " data-cat="notification" data-notable="1" style="--r:17">
+      <div class="ev " data-cat="notification" data-notable="1" style="--r:19">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>notification</b> · sent
@@ -622,7 +700,7 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
       </div>
       
       
-      <div class="ev " data-cat="finding" data-notable="1" style="--r:18">
+      <div class="ev " data-cat="finding" data-notable="1" style="--r:20">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>finding</b> · rescored
@@ -638,7 +716,7 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
       </div>
       
       
-      <div class="ev " data-cat="notification" data-notable="1" style="--r:19">
+      <div class="ev " data-cat="notification" data-notable="1" style="--r:21">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>notification</b> · sent
@@ -654,7 +732,7 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
       </div>
       
       
-      <div class="ev " data-cat="finding" data-notable="1" style="--r:20">
+      <div class="ev " data-cat="finding" data-notable="1" style="--r:22">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>finding</b> · rescored
@@ -670,7 +748,7 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
       </div>
       
       
-      <div class="ev " data-cat="scan" data-notable="1" style="--r:21">
+      <div class="ev " data-cat="scan" data-notable="1" style="--r:23">
         <div class="av " title="admin">AD</div>
         <div>
           <div class="what"><span class="muted">admin</span> <b>scan</b> · started
@@ -686,7 +764,7 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
       </div>
       
       
-      <div class="ev " data-cat="brand" data-notable="1" style="--r:22">
+      <div class="ev " data-cat="brand" data-notable="1" style="--r:24">
         <div class="av " title="admin">AD</div>
         <div>
           <div class="what"><span class="muted">admin</span> <b>brand</b> · ai prompts approved
@@ -702,7 +780,7 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
       </div>
       
       
-      <div class="ev " data-cat="scan" data-notable="1" style="--r:23">
+      <div class="ev " data-cat="scan" data-notable="1" style="--r:25">
         <div class="av " title="admin">AD</div>
         <div>
           <div class="what"><span class="muted">admin</span> <b>scan</b> · started
@@ -718,7 +796,7 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
       </div>
       
       
-      <div class="ev " data-cat="user" data-notable="0" style="--r:24;display:none">
+      <div class="ev " data-cat="user" data-notable="0" style="--r:26;display:none">
         <div class="av " title="admin">AD</div>
         <div>
           <div class="what"><span class="muted">admin</span> <b>user</b> · login <span class="pill" title="2 consecutive events, first 2026-10-18 07:29">×2</span>
@@ -730,7 +808,7 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
       </div>
       
       
-      <div class="ev " data-cat="notification" data-notable="1" style="--r:25">
+      <div class="ev " data-cat="notification" data-notable="1" style="--r:27">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>notification</b> · sent
@@ -746,7 +824,7 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
       </div>
       
       
-      <div class="ev " data-cat="finding" data-notable="1" style="--r:26">
+      <div class="ev " data-cat="finding" data-notable="1" style="--r:28">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>finding</b> · rescored
@@ -762,7 +840,7 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
       </div>
       
       
-      <div class="ev " data-cat="notification" data-notable="1" style="--r:27">
+      <div class="ev " data-cat="notification" data-notable="1" style="--r:29">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>notification</b> · sent
@@ -778,7 +856,7 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
       </div>
       
       
-      <div class="ev " data-cat="finding" data-notable="1" style="--r:28">
+      <div class="ev " data-cat="finding" data-notable="1" style="--r:30">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>finding</b> · rescored
@@ -794,7 +872,7 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
       </div>
       
       
-      <div class="ev " data-cat="notification" data-notable="1" style="--r:29">
+      <div class="ev " data-cat="notification" data-notable="1" style="--r:30">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>notification</b> · sent
@@ -2726,646 +2804,6 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
       </div>
       
       
-      <div class="ev " data-cat="report" data-notable="1" style="--r:30">
-        <div class="av sys" title="system">SYS</div>
-        <div>
-          <div class="what"><span class="muted">system</span> <b>report</b> · generated
-            
-            <span class="muted small">finding <a href="/ui/findings/393fd129-3312-45a5-aa49-769f1043e156/" class="mono">shopnova-press.com ↗</a></span></div>
-          
-          
-          <div class="diff"><span class="new">{"reports": {"html": "d0fd4ff3-0bf7-4f21-89e3-7a7a980b145a", "json": "86eda130-6564-48ce-8056-b34afa59cfcd"}}</span>
-            </div>
-          
-        </div>
-        <div class="when"><time datetime="2026-10-14T09:50:26.769644+00:00" data-local title="2026-10-14T09:50:26.769644+00:00 UTC">2026-10-14 09:50</time><div><a class="small" href="/ui/activity?object_id=393fd129-3312-45a5-aa49-769f1043e156" title="every event about this finding">history</a></div></div>
-      </div>
-      
-      
-      <div class="ev " data-cat="campaign" data-notable="1" style="--r:30">
-        <div class="av sys" title="system">SYS</div>
-        <div>
-          <div class="what"><span class="muted">system</span> <b>campaign</b> · investigated
-            
-            <span class="muted small">campaign <a href="/ui/campaigns/f353eefc-a77a-4a21-8a8a-d3f210ec83bb/" class="mono">ShopNova campaign 393FD129 ↗</a></span></div>
-          
-          
-          <div class="diff"><span class="new">{"api_calls": 3, "budget_exhausted": null, "edges": 3, "included": 4, "iocs": 5, "nodes": 4}</span>
-            </div>
-          
-        </div>
-        <div class="when"><time datetime="2026-10-14T09:50:26.455370+00:00" data-local title="2026-10-14T09:50:26.455370+00:00 UTC">2026-10-14 09:50</time><div><a class="small" href="/ui/activity/_9172e9b9d3/" title="every event about this campaign">history</a></div></div>
-      </div>
-      
-      
-      <div class="ev " data-cat="intel" data-notable="1" style="--r:30">
-        <div class="av sys" title="system">SYS</div>
-        <div>
-          <div class="what"><span class="muted">system</span> <b>intel</b> · started
-            
-            <span class="muted small">finding <a href="/ui/findings/393fd129-3312-45a5-aa49-769f1043e156/" class="mono">shopnova-press.com ↗</a></span></div>
-          
-          
-          <div class="diff"><span class="new">force: no · light: yes · package: yes · auto: yes</span>
-            </div>
-          
-        </div>
-        <div class="when"><time datetime="2026-10-14T09:50:26.286139+00:00" data-local title="2026-10-14T09:50:26.286139+00:00 UTC">2026-10-14 09:50</time><div><a class="small" href="/ui/activity?object_id=393fd129-3312-45a5-aa49-769f1043e156" title="every event about this finding">history</a></div></div>
-      </div>
-      
-      
-      <div class="ev " data-cat="investigation" data-notable="1" style="--r:30">
-        <div class="av sys" title="admin">SYS</div>
-        <div>
-          <div class="what"><span class="muted">admin</span> <b>investigation</b> · started
-            
-            <span class="muted small">finding <a href="/ui/findings/393fd129-3312-45a5-aa49-769f1043e156/" class="mono">shopnova-press.com ↗</a></span></div>
-          
-          
-          <div class="diff"><span class="new">auto: yes</span>
-            </div>
-          
-        </div>
-        <div class="when"><time datetime="2026-10-14T09:50:26.286139+00:00" data-local title="2026-10-14T09:50:26.286139+00:00 UTC">2026-10-14 09:50</time><div><a class="small" href="/ui/activity?object_id=393fd129-3312-45a5-aa49-769f1043e156" title="every event about this finding">history</a></div></div>
-      </div>
-      
-      
-      <div class="ev t-crit" data-cat="finding" data-notable="1" style="--r:30">
-        <div class="av " title="admin">AD</div>
-        <div>
-          <div class="what"><span class="muted">admin</span> <b>finding</b> · confirmed
-            
-            <span class="muted small">finding <a href="/ui/findings/393fd129-3312-45a5-aa49-769f1043e156/" class="mono">shopnova-press.com ↗</a></span></div>
-          
-          
-          <div class="diff"><span class="old">state: open</span> → <span class="new">state: confirmed · verdict: phishing</span>
-            </div>
-          
-        </div>
-        <div class="when"><time datetime="2026-10-14T09:50:26.286139+00:00" data-local title="2026-10-14T09:50:26.286139+00:00 UTC">2026-10-14 09:50</time><div><a class="small" href="/ui/activity?object_id=393fd129-3312-45a5-aa49-769f1043e156" title="every event about this finding">history</a></div></div>
-      </div>
-      
-      
-      <div class="ev " data-cat="report" data-notable="1" style="--r:30">
-        <div class="av sys" title="system">SYS</div>
-        <div>
-          <div class="what"><span class="muted">system</span> <b>report</b> · generated
-            
-            <span class="muted small">finding <a href="/ui/findings/e8f52988-e497-493a-99c5-545b054ae118/" class="mono">shopnova-status.com ↗</a></span></div>
-          
-          
-          <div class="diff"><span class="new">{"reports": {"html": "39abcfe2-2179-4a3e-be96-e2327e7b1aaf", "json": "a838bea1-df6d-4587-b1f0-344705d6bf4c"}}</span>
-            </div>
-          
-        </div>
-        <div class="when"><time datetime="2026-10-14T09:50:23.650637+00:00" data-local title="2026-10-14T09:50:23.650637+00:00 UTC">2026-10-14 09:50</time><div><a class="small" href="/ui/activity?object_id=e8f52988-e497-493a-99c5-545b054ae118" title="every event about this finding">history</a></div></div>
-      </div>
-      
-      
-      <div class="ev " data-cat="campaign" data-notable="1" style="--r:30">
-        <div class="av sys" title="system">SYS</div>
-        <div>
-          <div class="what"><span class="muted">system</span> <b>campaign</b> · investigated
-            
-            <span class="muted small">campaign <a href="/ui/campaigns/d841997a-9584-4c6d-b47e-3b5659a3bdd2/" class="mono">ShopNova campaign E8F52988 ↗</a></span></div>
-          
-          
-          <div class="diff"><span class="new">{"api_calls": 3, "budget_exhausted": null, "edges": 1, "included": 2, "iocs": 5, "nodes": 2}</span>
-            </div>
-          
-        </div>
-        <div class="when"><time datetime="2026-10-14T09:50:23.411643+00:00" data-local title="2026-10-14T09:50:23.411643+00:00 UTC">2026-10-14 09:50</time><div><a class="small" href="/ui/activity?object_id=d841997a-9584-4c6d-b47e-3b5659a3bdd2" title="every event about this campaign">history</a></div></div>
-      </div>
-      
-      
-      <div class="ev " data-cat="intel" data-notable="1" style="--r:30">
-        <div class="av sys" title="system">SYS</div>
-        <div>
-          <div class="what"><span class="muted">system</span> <b>intel</b> · started
-            
-            <span class="muted small">finding <a href="/ui/findings/e8f52988-e497-493a-99c5-545b054ae118/" class="mono">shopnova-status.com ↗</a></span></div>
-          
-          
-          <div class="diff"><span class="new">force: no · light: yes · package: yes · auto: yes</span>
-            </div>
-          
-        </div>
-        <div class="when"><time datetime="2026-10-14T09:50:23.207945+00:00" data-local title="2026-10-14T09:50:23.207945+00:00 UTC">2026-10-14 09:50</time><div><a class="small" href="/ui/activity?object_id=e8f52988-e497-493a-99c5-545b054ae118" title="every event about this finding">history</a></div></div>
-      </div>
-      
-      
-      <div class="ev " data-cat="investigation" data-notable="1" style="--r:30">
-        <div class="av sys" title="admin">SYS</div>
-        <div>
-          <div class="what"><span class="muted">admin</span> <b>investigation</b> · started
-            
-            <span class="muted small">finding <a href="/ui/findings/e8f52988-e497-493a-99c5-545b054ae118/" class="mono">shopnova-status.com ↗</a></span></div>
-          
-          
-          <div class="diff"><span class="new">auto: yes</span>
-            </div>
-          
-        </div>
-        <div class="when"><time datetime="2026-10-14T09:50:23.205936+00:00" data-local title="2026-10-14T09:50:23.205936+00:00 UTC">2026-10-14 09:50</time><div><a class="small" href="/ui/activity?object_id=e8f52988-e497-493a-99c5-545b054ae118" title="every event about this finding">history</a></div></div>
-      </div>
-      
-      
-      <div class="ev t-crit" data-cat="finding" data-notable="1" style="--r:30">
-        <div class="av " title="admin">AD</div>
-        <div>
-          <div class="what"><span class="muted">admin</span> <b>finding</b> · confirmed
-            
-            <span class="muted small">finding <a href="/ui/findings/e8f52988-e497-493a-99c5-545b054ae118/" class="mono">shopnova-status.com ↗</a></span></div>
-          
-          
-          <div class="diff"><span class="old">state: open</span> → <span class="new">state: confirmed · verdict: phishing</span>
-            </div>
-          
-        </div>
-        <div class="when"><time datetime="2026-10-14T09:50:23.199889+00:00" data-local title="2026-10-14T09:50:23.199889+00:00 UTC">2026-10-14 09:50</time><div><a class="small" href="/ui/activity?object_id=e8f52988-e497-493a-99c5-545b054ae118" title="every event about this finding">history</a></div></div>
-      </div>
-      
-      
-      <div class="ev " data-cat="report" data-notable="1" style="--r:30">
-        <div class="av sys" title="system">SYS</div>
-        <div>
-          <div class="what"><span class="muted">system</span> <b>report</b> · generated
-            
-            <span class="muted small">finding <a href="/ui/findings/c54ccea1-1a4d-4c1e-aabf-876d9c8e5cb4/" class="mono">shopnova--sneakers.com ↗</a></span></div>
-          
-          
-          <div class="diff"><span class="new">{"reports": {"html": "6bbbe25d-7396-47a2-b625-761165ffd41f", "json": "47ef3b55-05b5-4165-82fd-3c0890551669"}}</span>
-            </div>
-          
-        </div>
-        <div class="when"><time datetime="2026-10-14T09:50:19.756073+00:00" data-local title="2026-10-14T09:50:19.756073+00:00 UTC">2026-10-14 09:50</time><div><a class="small" href="/ui/activity?object_id=c54ccea1-1a4d-4c1e-aabf-876d9c8e5cb4" title="every event about this finding">history</a></div></div>
-      </div>
-      
-      
-      <div class="ev " data-cat="campaign" data-notable="1" style="--r:30">
-        <div class="av sys" title="system">SYS</div>
-        <div>
-          <div class="what"><span class="muted">system</span> <b>campaign</b> · investigated
-            
-            <span class="muted small">campaign <a href="/ui/campaigns/2b943239-66aa-4627-9816-088b16b4c6e3/" class="mono">ShopNova campaign C54CCEA1 ↗</a></span></div>
-          
-          
-          <div class="diff"><span class="new">{"api_calls": 3, "budget_exhausted": null, "edges": 1, "included": 2, "iocs": 5, "nodes": 2}</span>
-            </div>
-          
-        </div>
-        <div class="when"><time datetime="2026-10-14T09:50:19.418105+00:00" data-local title="2026-10-14T09:50:19.418105+00:00 UTC">2026-10-14 09:50</time><div><a class="small" href="/ui/activity?object_id=2b943239-66aa-4627-9816-088b16b4c6e3" title="every event about this campaign">history</a></div></div>
-      </div>
-      
-      
-      <div class="ev " data-cat="intel" data-notable="1" style="--r:30">
-        <div class="av sys" title="system">SYS</div>
-        <div>
-          <div class="what"><span class="muted">system</span> <b>intel</b> · started
-            
-            <span class="muted small">finding <a href="/ui/findings/c54ccea1-1a4d-4c1e-aabf-876d9c8e5cb4/" class="mono">shopnova--sneakers.com ↗</a></span></div>
-          
-          
-          <div class="diff"><span class="new">force: no · light: yes · package: yes · auto: yes</span>
-            </div>
-          
-        </div>
-        <div class="when"><time datetime="2026-10-14T09:50:19.331035+00:00" data-local title="2026-10-14T09:50:19.331035+00:00 UTC">2026-10-14 09:50</time><div><a class="small" href="/ui/activity?object_id=c54ccea1-1a4d-4c1e-aabf-876d9c8e5cb4" title="every event about this finding">history</a></div></div>
-      </div>
-      
-      
-      <div class="ev " data-cat="investigation" data-notable="1" style="--r:30">
-        <div class="av sys" title="admin">SYS</div>
-        <div>
-          <div class="what"><span class="muted">admin</span> <b>investigation</b> · started
-            
-            <span class="muted small">finding <a href="/ui/findings/c54ccea1-1a4d-4c1e-aabf-876d9c8e5cb4/" class="mono">shopnova--sneakers.com ↗</a></span></div>
-          
-          
-          <div class="diff"><span class="new">auto: yes</span>
-            </div>
-          
-        </div>
-        <div class="when"><time datetime="2026-10-14T09:50:19.331035+00:00" data-local title="2026-10-14T09:50:19.331035+00:00 UTC">2026-10-14 09:50</time><div><a class="small" href="/ui/activity?object_id=c54ccea1-1a4d-4c1e-aabf-876d9c8e5cb4" title="every event about this finding">history</a></div></div>
-      </div>
-      
-      
-      <div class="ev t-crit" data-cat="finding" data-notable="1" style="--r:30">
-        <div class="av " title="admin">AD</div>
-        <div>
-          <div class="what"><span class="muted">admin</span> <b>finding</b> · confirmed
-            
-            <span class="muted small">finding <a href="/ui/findings/c54ccea1-1a4d-4c1e-aabf-876d9c8e5cb4/" class="mono">shopnova--sneakers.com ↗</a></span></div>
-          
-          
-          <div class="diff"><span class="old">state: open</span> → <span class="new">state: confirmed · verdict: phishing</span>
-            </div>
-          
-        </div>
-        <div class="when"><time datetime="2026-10-14T09:50:19.330320+00:00" data-local title="2026-10-14T09:50:19.330320+00:00 UTC">2026-10-14 09:50</time><div><a class="small" href="/ui/activity?object_id=c54ccea1-1a4d-4c1e-aabf-876d9c8e5cb4" title="every event about this finding">history</a></div></div>
-      </div>
-      
-      
-      <div class="ev " data-cat="report" data-notable="1" style="--r:30">
-        <div class="av sys" title="system">SYS</div>
-        <div>
-          <div class="what"><span class="muted">system</span> <b>report</b> · generated
-            
-            <span class="muted small">finding <a href="/ui/findings/3f10d506-29e2-4c08-bfce-bfb343c7d5f1/" class="mono">onestyle-shopping.com ↗</a></span></div>
-          
-          
-          <div class="diff"><span class="new">{"reports": {"html": "f16f89c8-386b-4d7b-9cc5-7ac5d9c26d4f", "json": "9e94e65e-47fe-4b32-9431-87a1546e60fa"}}</span>
-            </div>
-          
-        </div>
-        <div class="when"><time datetime="2026-10-14T09:50:10.942010+00:00" data-local title="2026-10-14T09:50:10.942010+00:00 UTC">2026-10-14 09:50</time><div><a class="small" href="/ui/activity/_a95e11a78f/" title="every event about this finding">history</a></div></div>
-      </div>
-      
-      
-      <div class="ev " data-cat="campaign" data-notable="1" style="--r:30">
-        <div class="av sys" title="system">SYS</div>
-        <div>
-          <div class="what"><span class="muted">system</span> <b>campaign</b> · investigated
-            
-            <span class="muted small">campaign <a href="/ui/campaigns/a86f2fe1-0ed5-4975-bdcd-ec2f03b5bc69/" class="mono">ShopNova campaign 3F10D506 ↗</a></span></div>
-          
-          
-          <div class="diff"><span class="new">{"api_calls": 3, "budget_exhausted": null, "edges": 1, "included": 2, "iocs": 5, "nodes": 2}</span>
-            </div>
-          
-        </div>
-        <div class="when"><time datetime="2026-10-14T09:50:10.708513+00:00" data-local title="2026-10-14T09:50:10.708513+00:00 UTC">2026-10-14 09:50</time><div><a class="small" href="/ui/activity?object_id=a86f2fe1-0ed5-4975-bdcd-ec2f03b5bc69" title="every event about this campaign">history</a></div></div>
-      </div>
-      
-      
-      <div class="ev " data-cat="intel" data-notable="1" style="--r:30">
-        <div class="av sys" title="system">SYS</div>
-        <div>
-          <div class="what"><span class="muted">system</span> <b>intel</b> · started
-            
-            <span class="muted small">finding <a href="/ui/findings/3f10d506-29e2-4c08-bfce-bfb343c7d5f1/" class="mono">onestyle-shopping.com ↗</a></span></div>
-          
-          
-          <div class="diff"><span class="new">force: no · light: yes · package: yes · auto: yes</span>
-            </div>
-          
-        </div>
-        <div class="when"><time datetime="2026-10-14T09:50:10.506173+00:00" data-local title="2026-10-14T09:50:10.506173+00:00 UTC">2026-10-14 09:50</time><div><a class="small" href="/ui/activity/_a95e11a78f/" title="every event about this finding">history</a></div></div>
-      </div>
-      
-      
-      <div class="ev " data-cat="investigation" data-notable="1" style="--r:30">
-        <div class="av sys" title="admin">SYS</div>
-        <div>
-          <div class="what"><span class="muted">admin</span> <b>investigation</b> · started
-            
-            <span class="muted small">finding <a href="/ui/findings/3f10d506-29e2-4c08-bfce-bfb343c7d5f1/" class="mono">onestyle-shopping.com ↗</a></span></div>
-          
-          
-          <div class="diff"><span class="new">auto: yes</span>
-            </div>
-          
-        </div>
-        <div class="when"><time datetime="2026-10-14T09:50:10.506173+00:00" data-local title="2026-10-14T09:50:10.506173+00:00 UTC">2026-10-14 09:50</time><div><a class="small" href="/ui/activity/_a95e11a78f/" title="every event about this finding">history</a></div></div>
-      </div>
-      
-      
-      <div class="ev t-crit" data-cat="finding" data-notable="1" style="--r:30">
-        <div class="av " title="admin">AD</div>
-        <div>
-          <div class="what"><span class="muted">admin</span> <b>finding</b> · confirmed
-            
-            <span class="muted small">finding <a href="/ui/findings/3f10d506-29e2-4c08-bfce-bfb343c7d5f1/" class="mono">onestyle-shopping.com ↗</a></span></div>
-          
-          
-          <div class="diff"><span class="old">state: open</span> → <span class="new">{"conclusion": {"level": "likely_counterfeit", "proof": null, "system_level": "likely_counterfeit"}, "state": "confirmed", "verdict": "phishing"}</span>
-            </div>
-          
-        </div>
-        <div class="when"><time datetime="2026-10-14T09:50:10.506173+00:00" data-local title="2026-10-14T09:50:10.506173+00:00 UTC">2026-10-14 09:50</time><div><a class="small" href="/ui/activity/_a95e11a78f/" title="every event about this finding">history</a></div></div>
-      </div>
-      
-      
-      <div class="ev " data-cat="report" data-notable="1" style="--r:30">
-        <div class="av sys" title="system">SYS</div>
-        <div>
-          <div class="what"><span class="muted">system</span> <b>report</b> · generated
-            
-            <span class="muted small">finding <a href="/ui/findings/3ef032cc-e0af-4d14-a4b1-f1bde6e033e9/" class="mono">instagram.com/shopnova.israel.official ↗</a></span></div>
-          
-          
-          <div class="diff"><span class="new">{"reports": {"html": "d4d36ed4-a29c-4245-8519-417e1f63d1b3", "json": "b33086c3-d47a-49f6-a845-7b1071070717"}}</span>
-            </div>
-          
-        </div>
-        <div class="when"><time datetime="2026-10-14T09:50:07.072160+00:00" data-local title="2026-10-14T09:50:07.072160+00:00 UTC">2026-10-14 09:50</time><div><a class="small" href="/ui/activity?object_id=3ef032cc-e0af-4d14-a4b1-f1bde6e033e9" title="every event about this finding">history</a></div></div>
-      </div>
-      
-      
-      <div class="ev " data-cat="campaign" data-notable="1" style="--r:30">
-        <div class="av sys" title="system">SYS</div>
-        <div>
-          <div class="what"><span class="muted">system</span> <b>campaign</b> · investigated
-            
-            <span class="muted small">campaign <a href="/ui/campaigns/906abc19-5643-40c3-a257-30430dd4db0a/" class="mono">ShopNova · Israel campaign 3EF032CC ↗</a></span></div>
-          
-          
-          <div class="diff"><span class="new">{"api_calls": 0, "budget_exhausted": null, "edges": 0, "included": 1, "iocs": 3, "nodes": 1}</span>
-            </div>
-          
-        </div>
-        <div class="when"><time datetime="2026-10-14T09:50:06.783654+00:00" data-local title="2026-10-14T09:50:06.783654+00:00 UTC">2026-10-14 09:50</time><div><a class="small" href="/ui/activity?object_id=906abc19-5643-40c3-a257-30430dd4db0a" title="every event about this campaign">history</a></div></div>
-      </div>
-      
-      
-      <div class="ev " data-cat="intel" data-notable="1" style="--r:30">
-        <div class="av sys" title="system">SYS</div>
-        <div>
-          <div class="what"><span class="muted">system</span> <b>intel</b> · started
-            
-            <span class="muted small">finding <a href="/ui/findings/3ef032cc-e0af-4d14-a4b1-f1bde6e033e9/" class="mono">instagram.com/shopnova.israel.official ↗</a></span></div>
-          
-          
-          <div class="diff"><span class="new">force: no · light: yes · package: yes · auto: yes</span>
-            </div>
-          
-        </div>
-        <div class="when"><time datetime="2026-10-14T09:50:06.718336+00:00" data-local title="2026-10-14T09:50:06.718336+00:00 UTC">2026-10-14 09:50</time><div><a class="small" href="/ui/activity?object_id=3ef032cc-e0af-4d14-a4b1-f1bde6e033e9" title="every event about this finding">history</a></div></div>
-      </div>
-      
-      
-      <div class="ev " data-cat="investigation" data-notable="1" style="--r:30">
-        <div class="av sys" title="admin">SYS</div>
-        <div>
-          <div class="what"><span class="muted">admin</span> <b>investigation</b> · started
-            
-            <span class="muted small">finding <a href="/ui/findings/3ef032cc-e0af-4d14-a4b1-f1bde6e033e9/" class="mono">instagram.com/shopnova.israel.official ↗</a></span></div>
-          
-          
-          <div class="diff"><span class="new">auto: yes</span>
-            </div>
-          
-        </div>
-        <div class="when"><time datetime="2026-10-14T09:50:06.718336+00:00" data-local title="2026-10-14T09:50:06.718336+00:00 UTC">2026-10-14 09:50</time><div><a class="small" href="/ui/activity?object_id=3ef032cc-e0af-4d14-a4b1-f1bde6e033e9" title="every event about this finding">history</a></div></div>
-      </div>
-      
-      
-      <div class="ev t-crit" data-cat="finding" data-notable="1" style="--r:30">
-        <div class="av " title="admin">AD</div>
-        <div>
-          <div class="what"><span class="muted">admin</span> <b>finding</b> · confirmed
-            
-            <span class="muted small">finding <a href="/ui/findings/3ef032cc-e0af-4d14-a4b1-f1bde6e033e9/" class="mono">instagram.com/shopnova.israel.official ↗</a></span></div>
-          
-          
-          <div class="diff"><span class="old">state: open</span> → <span class="new">state: confirmed · verdict: phishing</span>
-            </div>
-          
-        </div>
-        <div class="when"><time datetime="2026-10-14T09:50:06.706146+00:00" data-local title="2026-10-14T09:50:06.706146+00:00 UTC">2026-10-14 09:50</time><div><a class="small" href="/ui/activity?object_id=3ef032cc-e0af-4d14-a4b1-f1bde6e033e9" title="every event about this finding">history</a></div></div>
-      </div>
-      
-      
-      <div class="ev " data-cat="report" data-notable="1" style="--r:30">
-        <div class="av sys" title="system">SYS</div>
-        <div>
-          <div class="what"><span class="muted">system</span> <b>report</b> · generated
-            
-            <span class="muted small">finding <a href="/ui/findings/b50eb843-fe14-4db8-92ed-7cb9a6a6ddb6/" class="mono">runnerhub-sale.com ↗</a></span></div>
-          
-          
-          <div class="diff"><span class="new">{"reports": {"html": "e3a9a494-fa15-42cc-a02f-683e3dfa7e77", "json": "086ccc00-eeb9-40c2-9954-5438ee294f67"}}</span>
-            </div>
-          
-        </div>
-        <div class="when"><time datetime="2026-10-14T09:50:03.679965+00:00" data-local title="2026-10-14T09:50:03.679965+00:00 UTC">2026-10-14 09:50</time><div><a class="small" href="/ui/activity?object_id=b50eb843-fe14-4db8-92ed-7cb9a6a6ddb6" title="every event about this finding">history</a></div></div>
-      </div>
-      
-      
-      <div class="ev " data-cat="campaign" data-notable="1" style="--r:30">
-        <div class="av sys" title="system">SYS</div>
-        <div>
-          <div class="what"><span class="muted">system</span> <b>campaign</b> · investigated
-            
-            <span class="muted small">campaign <a href="/ui/campaigns/7c222219-60a9-4aa6-9e12-28b5bc104fad/" class="mono">ShopNova campaign B50EB843 ↗</a></span></div>
-          
-          
-          <div class="diff"><span class="new">{"api_calls": 3, "budget_exhausted": null, "edges": 1, "included": 2, "iocs": 5, "nodes": 2}</span>
-            </div>
-          
-        </div>
-        <div class="when"><time datetime="2026-10-14T09:50:03.253967+00:00" data-local title="2026-10-14T09:50:03.253967+00:00 UTC">2026-10-14 09:50</time><div><a class="small" href="/ui/activity?object_id=7c222219-60a9-4aa6-9e12-28b5bc104fad" title="every event about this campaign">history</a></div></div>
-      </div>
-      
-      
-      <div class="ev " data-cat="intel" data-notable="1" style="--r:30">
-        <div class="av sys" title="system">SYS</div>
-        <div>
-          <div class="what"><span class="muted">system</span> <b>intel</b> · started
-            
-            <span class="muted small">finding <a href="/ui/findings/b50eb843-fe14-4db8-92ed-7cb9a6a6ddb6/" class="mono">runnerhub-sale.com ↗</a></span></div>
-          
-          
-          <div class="diff"><span class="new">force: no · light: yes · package: yes · auto: yes</span>
-            </div>
-          
-        </div>
-        <div class="when"><time datetime="2026-10-14T09:50:03.065576+00:00" data-local title="2026-10-14T09:50:03.065576+00:00 UTC">2026-10-14 09:50</time><div><a class="small" href="/ui/activity?object_id=b50eb843-fe14-4db8-92ed-7cb9a6a6ddb6" title="every event about this finding">history</a></div></div>
-      </div>
-      
-      
-      <div class="ev " data-cat="investigation" data-notable="1" style="--r:30">
-        <div class="av sys" title="admin">SYS</div>
-        <div>
-          <div class="what"><span class="muted">admin</span> <b>investigation</b> · started
-            
-            <span class="muted small">finding <a href="/ui/findings/b50eb843-fe14-4db8-92ed-7cb9a6a6ddb6/" class="mono">runnerhub-sale.com ↗</a></span></div>
-          
-          
-          <div class="diff"><span class="new">auto: yes</span>
-            </div>
-          
-        </div>
-        <div class="when"><time datetime="2026-10-14T09:50:03.065576+00:00" data-local title="2026-10-14T09:50:03.065576+00:00 UTC">2026-10-14 09:50</time><div><a class="small" href="/ui/activity?object_id=b50eb843-fe14-4db8-92ed-7cb9a6a6ddb6" title="every event about this finding">history</a></div></div>
-      </div>
-      
-      
-      <div class="ev t-crit" data-cat="finding" data-notable="1" style="--r:30">
-        <div class="av " title="admin">AD</div>
-        <div>
-          <div class="what"><span class="muted">admin</span> <b>finding</b> · confirmed
-            
-            <span class="muted small">finding <a href="/ui/findings/b50eb843-fe14-4db8-92ed-7cb9a6a6ddb6/" class="mono">runnerhub-sale.com ↗</a></span></div>
-          
-          
-          <div class="diff"><span class="old">state: open</span> → <span class="new">{"conclusion": {"level": "likely_counterfeit", "proof": null, "system_level": "likely_counterfeit"}, "state": "confirmed", "verdict": "phishing"}</span>
-            </div>
-          
-        </div>
-        <div class="when"><time datetime="2026-10-14T09:50:03.054067+00:00" data-local title="2026-10-14T09:50:03.054067+00:00 UTC">2026-10-14 09:50</time><div><a class="small" href="/ui/activity?object_id=b50eb843-fe14-4db8-92ed-7cb9a6a6ddb6" title="every event about this finding">history</a></div></div>
-      </div>
-      
-      
-      <div class="ev " data-cat="report" data-notable="1" style="--r:30">
-        <div class="av sys" title="system">SYS</div>
-        <div>
-          <div class="what"><span class="muted">system</span> <b>report</b> · generated
-            
-            <span class="muted small">finding <a href="/ui/findings/1bcfbce5-b1c6-44d8-b534-f678beefe1d5/" class="mono">shopnova-giftcard.com ↗</a></span></div>
-          
-          
-          <div class="diff"><span class="new">{"reports": {"html": "2f94412b-ad00-4e67-b093-c470c1cee0e2", "json": "acaf7ef3-3d9e-4ec3-8a7e-46ff089d531f"}}</span>
-            </div>
-          
-        </div>
-        <div class="when"><time datetime="2026-10-14T09:49:58.749431+00:00" data-local title="2026-10-14T09:49:58.749431+00:00 UTC">2026-10-14 09:49</time><div><a class="small" href="/ui/activity?object_id=1bcfbce5-b1c6-44d8-b534-f678beefe1d5" title="every event about this finding">history</a></div></div>
-      </div>
-      
-      
-      <div class="ev " data-cat="campaign" data-notable="1" style="--r:30">
-        <div class="av sys" title="system">SYS</div>
-        <div>
-          <div class="what"><span class="muted">system</span> <b>campaign</b> · investigated
-            
-            <span class="muted small">campaign <a href="/ui/campaigns/b56e4db3-4913-4fef-96a4-43dba7c153d2/" class="mono">ShopNova campaign 1BCFBCE5 ↗</a></span></div>
-          
-          
-          <div class="diff"><span class="new">{"api_calls": 3, "budget_exhausted": null, "edges": 1, "included": 2, "iocs": 5, "nodes": 2}</span>
-            </div>
-          
-        </div>
-        <div class="when"><time datetime="2026-10-14T09:49:58.445951+00:00" data-local title="2026-10-14T09:49:58.445951+00:00 UTC">2026-10-14 09:49</time><div><a class="small" href="/ui/activity?object_id=b56e4db3-4913-4fef-96a4-43dba7c153d2" title="every event about this campaign">history</a></div></div>
-      </div>
-      
-      
-      <div class="ev " data-cat="intel" data-notable="1" style="--r:30">
-        <div class="av sys" title="system">SYS</div>
-        <div>
-          <div class="what"><span class="muted">system</span> <b>intel</b> · started
-            
-            <span class="muted small">finding <a href="/ui/findings/1bcfbce5-b1c6-44d8-b534-f678beefe1d5/" class="mono">shopnova-giftcard.com ↗</a></span></div>
-          
-          
-          <div class="diff"><span class="new">force: no · light: yes · package: yes · auto: yes</span>
-            </div>
-          
-        </div>
-        <div class="when"><time datetime="2026-10-14T09:49:58.048437+00:00" data-local title="2026-10-14T09:49:58.048437+00:00 UTC">2026-10-14 09:49</time><div><a class="small" href="/ui/activity?object_id=1bcfbce5-b1c6-44d8-b534-f678beefe1d5" title="every event about this finding">history</a></div></div>
-      </div>
-      
-      
-      <div class="ev " data-cat="investigation" data-notable="1" style="--r:30">
-        <div class="av sys" title="admin">SYS</div>
-        <div>
-          <div class="what"><span class="muted">admin</span> <b>investigation</b> · started
-            
-            <span class="muted small">finding <a href="/ui/findings/1bcfbce5-b1c6-44d8-b534-f678beefe1d5/" class="mono">shopnova-giftcard.com ↗</a></span></div>
-          
-          
-          <div class="diff"><span class="new">auto: yes</span>
-            </div>
-          
-        </div>
-        <div class="when"><time datetime="2026-10-14T09:49:58.048437+00:00" data-local title="2026-10-14T09:49:58.048437+00:00 UTC">2026-10-14 09:49</time><div><a class="small" href="/ui/activity?object_id=1bcfbce5-b1c6-44d8-b534-f678beefe1d5" title="every event about this finding">history</a></div></div>
-      </div>
-      
-      
-      <div class="ev t-crit" data-cat="finding" data-notable="1" style="--r:30">
-        <div class="av " title="admin">AD</div>
-        <div>
-          <div class="what"><span class="muted">admin</span> <b>finding</b> · confirmed
-            
-            <span class="muted small">finding <a href="/ui/findings/1bcfbce5-b1c6-44d8-b534-f678beefe1d5/" class="mono">shopnova-giftcard.com ↗</a></span></div>
-          
-          
-          <div class="diff"><span class="old">state: open</span> → <span class="new">state: confirmed · verdict: phishing</span>
-            </div>
-          
-        </div>
-        <div class="when"><time datetime="2026-10-14T09:49:58.043702+00:00" data-local title="2026-10-14T09:49:58.043702+00:00 UTC">2026-10-14 09:49</time><div><a class="small" href="/ui/activity?object_id=1bcfbce5-b1c6-44d8-b534-f678beefe1d5" title="every event about this finding">history</a></div></div>
-      </div>
-      
-      
-      <div class="ev " data-cat="report" data-notable="1" style="--r:30">
-        <div class="av sys" title="system">SYS</div>
-        <div>
-          <div class="what"><span class="muted">system</span> <b>report</b> · generated
-            
-            <span class="muted small">finding <a href="/ui/findings/d3cddf21-a088-4189-9f17-2cf8dba61ab0/" class="mono">shopnova-verification.com ↗</a></span></div>
-          
-          
-          <div class="diff"><span class="new">{"reports": {"html": "48faab34-3fd8-46da-9752-54e5243bfb2c", "json": "fb3acaee-165c-45eb-bd8d-e9a5cec76c6a"}}</span>
-            </div>
-          
-        </div>
-        <div class="when"><time datetime="2026-10-14T09:49:54.177118+00:00" data-local title="2026-10-14T09:49:54.177118+00:00 UTC">2026-10-14 09:49</time><div><a class="small" href="/ui/activity?object_id=d3cddf21-a088-4189-9f17-2cf8dba61ab0" title="every event about this finding">history</a></div></div>
-      </div>
-      
-      
-      <div class="ev " data-cat="campaign" data-notable="1" style="--r:30">
-        <div class="av sys" title="system">SYS</div>
-        <div>
-          <div class="what"><span class="muted">system</span> <b>campaign</b> · investigated
-            
-            <span class="muted small">campaign <a href="/ui/campaigns/c61fe42d-7d36-4b94-93c6-ae7bcf1e2554/" class="mono">ShopNova campaign D3CDDF21 ↗</a></span></div>
-          
-          
-          <div class="diff"><span class="new">{"api_calls": 3, "budget_exhausted": null, "edges": 2, "included": 3, "iocs": 5, "nodes": 3}</span>
-            </div>
-          
-        </div>
-        <div class="when"><time datetime="2026-10-14T09:49:53.806632+00:00" data-local title="2026-10-14T09:49:53.806632+00:00 UTC">2026-10-14 09:49</time><div><a class="small" href="/ui/activity/_93fd19fa39/" title="every event about this campaign">history</a></div></div>
-      </div>
-      
-      
-      <div class="ev " data-cat="intel" data-notable="1" style="--r:30">
-        <div class="av sys" title="system">SYS</div>
-        <div>
-          <div class="what"><span class="muted">system</span> <b>intel</b> · started
-            
-            <span class="muted small">finding <a href="/ui/findings/d3cddf21-a088-4189-9f17-2cf8dba61ab0/" class="mono">shopnova-verification.com ↗</a></span></div>
-          
-          
-          <div class="diff"><span class="new">force: no · light: yes · package: yes · auto: yes</span>
-            </div>
-          
-        </div>
-        <div class="when"><time datetime="2026-10-14T09:49:53.508016+00:00" data-local title="2026-10-14T09:49:53.508016+00:00 UTC">2026-10-14 09:49</time><div><a class="small" href="/ui/activity?object_id=d3cddf21-a088-4189-9f17-2cf8dba61ab0" title="every event about this finding">history</a></div></div>
-      </div>
-      
-      
-      <div class="ev " data-cat="investigation" data-notable="1" style="--r:30">
-        <div class="av sys" title="admin">SYS</div>
-        <div>
-          <div class="what"><span class="muted">admin</span> <b>investigation</b> · started
-            
-            <span class="muted small">finding <a href="/ui/findings/d3cddf21-a088-4189-9f17-2cf8dba61ab0/" class="mono">shopnova-verification.com ↗</a></span></div>
-          
-          
-          <div class="diff"><span class="new">auto: yes</span>
-            </div>
-          
-        </div>
-        <div class="when"><time datetime="2026-10-14T09:49:53.508016+00:00" data-local title="2026-10-14T09:49:53.508016+00:00 UTC">2026-10-14 09:49</time><div><a class="small" href="/ui/activity?object_id=d3cddf21-a088-4189-9f17-2cf8dba61ab0" title="every event about this finding">history</a></div></div>
-      </div>
-      
-      
-      <div class="ev t-crit" data-cat="finding" data-notable="1" style="--r:30">
-        <div class="av " title="admin">AD</div>
-        <div>
-          <div class="what"><span class="muted">admin</span> <b>finding</b> · confirmed
-            
-            <span class="muted small">finding <a href="/ui/findings/d3cddf21-a088-4189-9f17-2cf8dba61ab0/" class="mono">shopnova-verification.com ↗</a></span></div>
-          
-          
-          <div class="diff"><span class="old">state: open</span> → <span class="new">state: confirmed · verdict: phishing</span>
-            </div>
-          
-        </div>
-        <div class="when"><time datetime="2026-10-14T09:49:53.508016+00:00" data-local title="2026-10-14T09:49:53.508016+00:00 UTC">2026-10-14 09:49</time><div><a class="small" href="/ui/activity?object_id=d3cddf21-a088-4189-9f17-2cf8dba61ab0" title="every event about this finding">history</a></div></div>
-      </div>
-      
-      
     </div>
     <div class="more"><button type="button" id="more" style="display:none">Show older events</button>
       
@@ -3376,38 +2814,38 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
       <h2>By category</h2>
       
       
-      <div class="hbar"><span>user</span><div class="bar"><i data-w="100"></i></div><b>120</b></div>
+      <div class="hbar"><span>user</span><div class="bar"><i data-w="100"></i></div><b>160</b></div>
       
-      <div class="hbar"><span>finding</span><div class="bar"><i data-w="37"></i></div><b>44</b></div>
+      <div class="hbar"><span>finding</span><div class="bar"><i data-w="22"></i></div><b>36</b></div>
       
-      <div class="hbar"><span>intel</span><div class="bar"><i data-w="22"></i></div><b>27</b></div>
+      <div class="hbar"><span>intel</span><div class="bar"><i data-w="12"></i></div><b>19</b></div>
       
-      <div class="hbar"><span>report</span><div class="bar"><i data-w="21"></i></div><b>25</b></div>
+      <div class="hbar"><span>notification</span><div class="bar"><i data-w="12"></i></div><b>19</b></div>
       
-      <div class="hbar"><span>investigation</span><div class="bar"><i data-w="21"></i></div><b>25</b></div>
+      <div class="hbar"><span>report</span><div class="bar"><i data-w="11"></i></div><b>17</b></div>
       
-      <div class="hbar"><span>campaign</span><div class="bar"><i data-w="20"></i></div><b>24</b></div>
+      <div class="hbar"><span>investigation</span><div class="bar"><i data-w="11"></i></div><b>17</b></div>
       
-      <div class="hbar"><span>notification</span><div class="bar"><i data-w="16"></i></div><b>19</b></div>
+      <div class="hbar"><span>campaign</span><div class="bar"><i data-w="10"></i></div><b>16</b></div>
       
-      <div class="hbar"><span>Brand use</span><div class="bar"><i data-w="8"></i></div><b>9</b></div>
+      <div class="hbar"><span>Brand use</span><div class="bar"><i data-w="6"></i></div><b>9</b></div>
       
     </div>
     <div class="panel" style="margin-top:14px">
       <h2>Activity · 14 days</h2>
-      <svg class="spark" data-spark='{"series": [{"color": "#35C7F2", "values": [0, 0, 0, 0, 0, 0, 0, 0, 134, 0, 0, 0, 56, 1]}]}'></svg>
+      <svg class="spark" data-spark='{"series": [{"color": "#35C7F2", "values": [0, 0, 0, 0, 0, 0, 0, 0, 94, 0, 0, 0, 56, 3]}]}'></svg>
     </div>
     <div class="panel" style="margin-top:14px">
       <h2>Most active</h2>
       
       <div style="display:grid;grid-template-columns:1fr 40px;gap:8px;align-items:center;margin:8px 0">
         <div><div class="small mono">admin</div><div class="bar" style="height:6px;margin-top:3px"><i data-w="100"></i></div></div>
-        <div class="mono small right">186</div>
+        <div class="mono small right">210</div>
       </div>
       
       <div style="display:grid;grid-template-columns:1fr 40px;gap:8px;align-items:center;margin:8px 0">
-        <div><div class="small mono">system</div><div class="bar" style="height:6px;margin-top:3px"><i data-w="61"></i></div></div>
-        <div class="mono small right">114</div>
+        <div><div class="small mono">system</div><div class="bar" style="height:6px;margin-top:3px"><i data-w="43"></i></div></div>
+        <div class="mono small right">90</div>
       </div>
       
     </div>
@@ -3546,7 +2984,7 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
     svg.setAttribute('viewBox', '0 0 120 120');
     const r = 46, C = 2 * Math.PI * r; let off = 0;
     const bg = document.createElementNS(NS, 'circle'); bg.setAttribute('cx', 60); bg.setAttribute('cy', 60); bg.setAttribute('r', r);
-    bg.setAttribute('fill', 'none'); bg.setAttribute('stroke', '#1E2A3D'); bg.setAttribute('stroke-width', 13); svg.appendChild(bg);
+    bg.setAttribute('fill', 'none'); bg.setAttribute('stroke', BW.ink('border')); bg.setAttribute('stroke-width', 13); svg.appendChild(bg);
     segs.forEach((s, i) => {
       const len = total ? s.value / total * C : 0, c = document.createElementNS(NS, 'circle');
       c.setAttribute('cx', 60); c.setAttribute('cy', 60); c.setAttribute('r', r); c.setAttribute('fill', 'none');
@@ -3558,9 +2996,9 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
       later(() => c.setAttribute('stroke-dasharray', `${Math.max(0, len - 1.5)} ${C}`));
     });
     const t1 = document.createElementNS(NS, 'text'); t1.setAttribute('x', 60); t1.setAttribute('y', 62); t1.setAttribute('text-anchor', 'middle');
-    t1.setAttribute('fill', '#E6EDF5'); t1.setAttribute('font-family', 'Rajdhani, monospace'); t1.setAttribute('font-size', 26); t1.setAttribute('font-weight', 700); t1.textContent = total;
+    t1.setAttribute('fill', BW.ink('text')); t1.setAttribute('font-family', 'Rajdhani, monospace'); t1.setAttribute('font-size', 26); t1.setAttribute('font-weight', 700); t1.textContent = total;
     const t2 = document.createElementNS(NS, 'text'); t2.setAttribute('x', 60); t2.setAttribute('y', 78); t2.setAttribute('text-anchor', 'middle');
-    t2.setAttribute('fill', '#8A97A8'); t2.setAttribute('font-family', 'JetBrains Mono, monospace'); t2.setAttribute('font-size', 7.5); t2.textContent = (svg.dataset.center || 'total').toUpperCase();
+    t2.setAttribute('fill', BW.ink('muted')); t2.setAttribute('font-family', 'JetBrains Mono, monospace'); t2.setAttribute('font-size', 7.5); t2.textContent = (svg.dataset.center || 'total').toUpperCase();
     svg.appendChild(t1); svg.appendChild(t2);
   });
   // sparklines: <svg class="spark" data-spark='{"series":[{"values":[...],"color":"#..."}]}'>
@@ -3601,6 +3039,20 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
     if (el.dataset.due && new Date(utc(el.dataset.rel)) <= Date.now()) { el.textContent = 'due now'; return; }
     const r = rel(el.dataset.rel); if (r) el.textContent = r; });
   tickRel(); setInterval(tickRel, 15000);
+  // Entrances wait for the viewport. The trigger fires when an element's top reaches 80% down
+  // the screen, which gives it a moment of anticipation before it is fully in view. Anything
+  // already on screen at load is revealed immediately, so the first paint is not held back.
+  const reveal = document.querySelectorAll('.reveal');
+  if (reveal.length) {
+    if (!('IntersectionObserver' in window) || matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      reveal.forEach(el => el.classList.add('in'));
+    } else {
+      const io = new IntersectionObserver((entries, obs) => {
+        entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); obs.unobserve(e.target); } });
+      }, {rootMargin: '0px 0px -20% 0px', threshold: 0.01});
+      reveal.forEach(el => io.observe(el));
+    }
+  }
 })();
 </script>
 <div id="bw-modal" hidden>
@@ -3620,7 +3072,7 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
   #bw-modal[hidden]{display:none}
   @keyframes bwfade{from{opacity:0}to{opacity:1}}
   @keyframes bwpop{from{transform:translateY(8px) scale(.98);opacity:0}to{transform:none;opacity:1}}
-  .bw-dlg{width:min(480px,100%);background:linear-gradient(180deg,#121c2b,#0c131e);border:1px solid var(--border);border-top:3px solid var(--accent);border-radius:14px;box-shadow:0 20px 60px rgba(0,0,0,.6);padding:20px 22px 16px;display:grid;grid-template-columns:auto 1fr;gap:4px 14px;animation:bwpop .18s ease-out}
+  .bw-dlg{width:min(480px,100%);background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--accent);border-radius:14px;box-shadow:0 20px 60px rgba(0,0,0,.6);padding:20px 22px 16px;display:grid;grid-template-columns:auto 1fr;gap:4px 14px;animation:bwpop .18s ease-out}
   .bw-dlg.danger{border-top-color:var(--crit)}
   .bw-dlg-icon{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;background:rgba(53,199,242,.15);color:var(--accent)}
   .bw-dlg.danger .bw-dlg-icon{background:rgba(255,77,77,.15);color:var(--crit)}

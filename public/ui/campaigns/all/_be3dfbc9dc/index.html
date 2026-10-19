@@ -14,8 +14,15 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=JetBrains+Mono:wght@400;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#080B14;--panel:#0E1420;--panel2:#121A2B;--border:#1E2A3D;--accent:#35C7F2;--accent2:#5FE3FF;
---crit:#FF4D4D;--high:#FF9F1C;--med:#F5C518;--low:#2ECC71;--violet:#5b9bb5;--magenta:#c9d3df;--text:#E6EDF5;--muted:#8A97A8;
+/* The design system's tokens. ``api/palette.py`` carries the same values for everything the server
+   draws itself (SVG, the report) and ``tests/test_palette.py`` fails if the two lists disagree. */
+:root{--bg:#080B14;--panel:#0E1420;--panel2:#121A2B;--field:#0b1220;--console:#060910;--border:#1E2A3D;--accent:#35C7F2;--accent2:#5FE3FF;
+--crit:#FF4D4D;--high:#FF9F1C;--med:#F5C518;--low:#2ECC71;--text:#E6EDF5;--text2:#C3CDD9;--muted:#8A97A8;--dim:#7C8A9E;--on-lit:#06121D;
+/* the panel's own fill: the two stops of the gradient every surface is cut from */
+--panel-fill:rgba(18,26,43,.92);--panel-fill2:rgba(14,20,32,.92);
+/* the eight colours one operation is drawn in, by its index: four of our own, then four that exist
+   only because a graph of eight operations needs eight colours nobody can confuse */
+--op1:var(--accent);--op2:var(--med);--op3:var(--high);--op4:var(--low);--op5:#B388FF;--op6:#FF6FA8;--op7:#4DD0C4;--op8:#9AA5B1;
 --mono:"JetBrains Mono",ui-monospace,Consolas,monospace;--sans:Inter,system-ui,Segoe UI,Roboto,sans-serif;--display:Rajdhani,var(--mono)}
 @property --p{syntax:'<number>';inherits:false;initial-value:0}
 *{box-sizing:border-box}
@@ -40,9 +47,9 @@ body.has-side{padding-left:var(--side-w)}
 .side .fold{margin-left:auto;padding:3px 7px;font-size:12px;line-height:1;border-color:transparent;background:transparent;color:var(--muted)}
 .side .fold:hover{color:var(--text);border-color:var(--border)}
 .side .hsearch{padding:0 12px 8px}
-.side .hsearch input{padding:7px 10px;font-size:12.5px;border-radius:8px;background:#0b1220}
+.side .hsearch input{padding:7px 10px;font-size:12.5px;border-radius:8px;background:var(--field)}
 .side nav{display:flex;flex-direction:column;gap:1px;padding:0 8px}
-.side .grp{font:600 10px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:#5f6d80;padding:14px 10px 5px;white-space:nowrap}
+.side .grp{font:600 11px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--dim);padding:14px 10px 5px;white-space:nowrap}
 .side nav a{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;color:var(--muted);font-size:13.5px;white-space:nowrap;position:relative;border:1px solid transparent}
 .side nav a:hover{color:var(--text);background:rgba(53,199,242,.06)}
 .side nav a.active{color:var(--text);background:rgba(53,199,242,.10);border-color:rgba(53,199,242,.28)}
@@ -69,7 +76,7 @@ header.topbar.plain .logo{font-family:var(--mono);font-weight:700;letter-spacing
 @media (max-width:900px){
   body.has-side{padding-left:0}
   html.side-mini{--side-w:232px}
-  header.topbar{display:flex;position:sticky;top:0;z-index:25;align-items:center;gap:12px;padding:9px 12px;background:#0e1420;border-bottom:1px solid var(--border)}
+  header.topbar{display:flex;position:sticky;top:0;z-index:25;align-items:center;gap:12px;padding:9px 12px;background:var(--panel);border-bottom:1px solid var(--border)}
   header.topbar .logo{font-family:var(--mono);font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-size:13px}
   header.topbar .menu{padding:6px 10px;font-size:16px;line-height:1}
   header.topbar .cnt{margin-left:auto;display:flex;gap:8px}
@@ -84,12 +91,12 @@ header.topbar.plain .logo{font-family:var(--mono);font-weight:700;letter-spacing
 }
 main{position:relative;z-index:1;padding:20px;max-width:1440px;margin:0 auto}
 h1{font-family:var(--display);font-size:26px;letter-spacing:.04em;margin:0 0 14px;font-weight:700;
-  background:linear-gradient(90deg,#E6EDF5 0%,#E6EDF5 55%,var(--accent2) 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+  background:linear-gradient(90deg,var(--text) 0%,var(--text) 55%,var(--accent2) 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
 h1 .muted,h1 .small{-webkit-text-fill-color:var(--muted);font-family:var(--sans);font-size:13px;letter-spacing:0;font-weight:400}
 h2{font-size:12px;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);font-family:var(--mono);margin:22px 0 10px;line-height:1.5}
 h2::before{content:"";width:6px;height:6px;background:var(--accent);display:inline-block;margin-right:8px;vertical-align:2px}
 h2 .muted{text-transform:none;letter-spacing:.02em;font-family:var(--sans);font-size:12px;opacity:.85}
-.panel{position:relative;background:linear-gradient(180deg,rgba(18,26,43,.92),rgba(14,20,32,.92));border:1px solid var(--border);border-radius:10px;padding:14px 16px;
+.panel{position:relative;background:linear-gradient(180deg,var(--panel-fill),var(--panel-fill2));border:1px solid var(--border);border-radius:10px;padding:14px 16px;
   transition:border-color .3s,box-shadow .3s,transform .3s;animation:fadeUp .6s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(var(--i,0)*70ms)}
 .panel:hover{border-color:rgba(53,199,242,.35);box-shadow:0 0 0 1px rgba(53,199,242,.08),0 8px 30px rgba(0,0,0,.35)}
 .panel > h2:first-child{margin-top:0}
@@ -111,11 +118,11 @@ tr:hover td{background:rgba(53,199,242,.05)}
 .st-dismissed{color:var(--muted)}.st-watching{color:var(--accent);border-color:rgba(53,199,242,.4)}.st-long_watch{color:var(--muted)}
 .pill{background:var(--panel2);border:1px solid var(--border);border-radius:6px;padding:1px 6px;font-family:var(--mono);font-size:11px;color:var(--text);white-space:nowrap}
 /* signal pills: one neutral style for every group (the group is in the tooltip and the Explain table) */
-.pill[class*="g-"]{border-color:var(--border);color:#c9d3df}
+.pill[class*="g-"]{border-color:var(--border);color:var(--text2)}
 button,.btn{background:var(--panel2);color:var(--text);border:1px solid var(--border);border-radius:6px;padding:7px 12px;font:inherit;cursor:pointer;transition:all .2s}
 button:hover,.btn:hover{border-color:var(--accent);box-shadow:0 0 12px rgba(53,199,242,.2)}button.primary{background:rgba(53,199,242,.15);border-color:var(--accent);color:var(--accent2)}
 button.danger{border-color:var(--crit);color:var(--crit)}button.ok{border-color:var(--low);color:var(--low)}
-input,select,textarea{background:#0b1220;color:var(--text);border:1px solid var(--border);border-radius:6px;padding:7px 9px;font:inherit;width:100%;transition:border-color .2s,box-shadow .2s}
+input,select,textarea{background:var(--field);color:var(--text);border:1px solid var(--border);border-radius:6px;padding:7px 9px;font:inherit;width:100%;transition:border-color .2s,box-shadow .2s}
 input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(53,199,242,.15)}
 /* a paragraph that may be Hebrew or Arabic (a brand name, an ad, a reason) takes its direction from its own first letter */
 .lead,.summary,.story,.say,.reason,.ev .diff{unicode-bidi:plaintext}
@@ -131,7 +138,7 @@ button.chip{font:inherit;font-family:var(--mono);font-size:11px;box-shadow:none}
   table.rwd td.rwd-main{grid-column:1 / -1;font-size:14px;padding-right:34px}
   table.rwd td.rwd-empty,table.rwd td:empty{display:none}
   table.rwd td.selcol{position:absolute;top:10px;right:10px;width:auto}
-  table.rwd td[data-label]:not([data-label=""]):not(.rwd-main)::before{content:attr(data-label);display:block;font:600 9.5px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:#6f7d90;margin-bottom:1px}
+  table.rwd td[data-label]:not([data-label=""]):not(.rwd-main)::before{content:attr(data-label);display:block;font:600 9.5px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--dim);margin-bottom:1px}
   table.rwd tr:hover td{background:transparent}
   table.rwd .badge{font-size:10px;padding:1px 7px;white-space:normal;max-width:100%}
   table.rwd td.rwd-main{order:-1}  /* the site first, whatever the column order */
@@ -178,14 +185,14 @@ label{display:block;font-size:12px;color:var(--muted);margin:8px 0 4px;font-fami
 .kpi.crit .v{color:var(--crit)}.kpi.hi .v{color:var(--high)}.kpi.med .v{color:var(--med)}
 .kpi.ok .v,.kpi.cy .v,.kpi.vi .v,.kpi.mg .v{color:var(--text)}
 a.kpi{color:inherit;display:block}a.kpi.on{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent) inset}
-.ring{--c:var(--accent);width:96px;height:96px;border-radius:50%;background:conic-gradient(var(--c) calc(var(--p)*1%),#1E2A3D 0);display:grid;place-items:center;transition:--p 1.4s cubic-bezier(.2,.8,.2,1)}
+.ring{--c:var(--accent);width:96px;height:96px;border-radius:50%;background:conic-gradient(var(--c) calc(var(--p)*1%),var(--border) 0);display:grid;place-items:center;transition:--p 1.4s cubic-bezier(.2,.8,.2,1)}
 .ring>div{width:76px;height:76px;border-radius:50%;background:var(--panel);display:grid;place-items:center;font-family:var(--display);font-size:28px;font-weight:700}
 .ring.sm{width:38px;height:38px}.ring.sm>div{width:28px;height:28px;font-size:11px;font-family:var(--mono)}
-.bar{height:8px;background:#1E2A3D;border-radius:4px;overflow:hidden}.bar>i{display:block;height:100%;background:var(--accent);transition:width 1.3s cubic-bezier(.2,.8,.2,1)}
+.bar{height:8px;background:var(--border);border-radius:4px;overflow:hidden}.bar>i{display:block;height:100%;background:var(--accent);transition:width 1.3s cubic-bezier(.2,.8,.2,1)}
 .bar>i[data-w]{width:0}
-.scorebar{height:6px;width:90px;background:#1E2A3D;border-radius:3px;overflow:hidden;display:inline-block;vertical-align:middle;margin-left:8px}
+.scorebar{height:6px;width:90px;background:var(--border);border-radius:3px;overflow:hidden;display:inline-block;vertical-align:middle;margin-left:8px}
 .scorebar>i{display:block;height:100%;width:0;border-radius:3px;background:rgba(230,237,245,.55);transition:width 1.3s cubic-bezier(.2,.8,.2,1)}
-.stack{display:flex;height:10px;border-radius:5px;overflow:hidden;background:#1E2A3D}.stack>i{display:block;height:100%;width:0;transition:width 1.3s cubic-bezier(.2,.8,.2,1)}
+.stack{display:flex;height:10px;border-radius:5px;overflow:hidden;background:var(--border)}.stack>i{display:block;height:100%;width:0;transition:width 1.3s cubic-bezier(.2,.8,.2,1)}
 .hist{display:flex;align-items:flex-end;gap:5px;height:110px;padding-bottom:18px}
 .hist i{flex:1;position:relative;border-radius:4px 4px 0 0;min-height:2px;height:0;transition:height 1.2s cubic-bezier(.2,.8,.2,1);background:linear-gradient(180deg,var(--c,var(--accent2)),rgba(53,199,242,.15))}
 .hist i span{position:absolute;bottom:-17px;left:0;right:0;text-align:center;font-size:10px;color:var(--muted);font-family:var(--mono)}
@@ -202,11 +209,16 @@ svg.donut{width:150px;height:150px;flex:none}svg.spark{width:100%;height:64px;di
 .sevrow.critical{--sc:var(--crit)}.sevrow.high{--sc:var(--high)}.sevrow.medium{--sc:var(--med)}.sevrow.low{--sc:var(--low)}
 .chip{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border:1px solid var(--border);border-radius:999px;font-family:var(--mono);font-size:11px;color:var(--muted);cursor:pointer;background:var(--panel2);transition:all .2s;user-select:none}
 .chip i{display:none}.chip.on{color:var(--text);border-color:var(--accent);box-shadow:0 0 10px rgba(53,199,242,.18)}
+/* the same pill, read-only: no pointer, no .on state. Two pages had each redefined .chip to
+   get this, which quietly restyled the filter chips they also used. */
+.chip.static{cursor:default}
+.chip.static b{color:var(--text);font-weight:600}
+.chip.static.hint{border-style:dashed}
 .radar{width:14px;height:14px;border-radius:50%;border:1px solid var(--accent);position:relative;display:inline-block;vertical-align:middle;overflow:hidden}
 .radar::after{content:"";position:absolute;inset:0;background:conic-gradient(rgba(53,199,242,.8),transparent 40%);animation:spin 1.2s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 .error{color:var(--crit);border:1px solid var(--crit);background:rgba(255,77,77,.08);padding:8px 10px;border-radius:6px;margin-bottom:12px}
-.console{font-family:var(--mono);font-size:12px;background:#060910;border:1px solid var(--border);border-radius:8px;padding:12px;height:420px;overflow:auto;white-space:pre-wrap}
+.console{font-family:var(--mono);font-size:12px;background:var(--console);border:1px solid var(--border);border-radius:8px;padding:12px;height:420px;overflow:auto;white-space:pre-wrap}
 .console .running{color:var(--accent)}.console .done{color:var(--low)}.console .error{color:var(--crit);border:0;background:none;padding:0;margin:0}.console .warn{color:var(--high)}
 .console div{animation:rowIn .3s ease both}
 .timeline{list-style:none;padding:0;margin:0}.timeline li{padding:6px 0 6px 14px;border-left:2px solid var(--border);position:relative;animation:fadeUp .5s ease both;animation-delay:calc(var(--r,0)*40ms)}
@@ -243,7 +255,7 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
 }
 .help{display:inline-grid;place-items:center;width:15px;height:15px;margin-left:4px;border-radius:50%;border:1px solid var(--border);color:var(--muted);font:600 10px/1 var(--mono);text-decoration:none;cursor:help;position:relative;vertical-align:1px;text-transform:none;letter-spacing:0}
 .help:hover,.help:focus-visible{color:var(--accent2);border-color:var(--accent);outline:none}
-.help::after{content:attr(data-tip);display:none;position:absolute;left:50%;bottom:calc(100% + 8px);transform:translateX(-50%);width:max-content;max-width:min(320px,80vw);padding:8px 10px;border-radius:8px;background:#0b1220;border:1px solid var(--accent);color:var(--text);font:400 12px/1.45 var(--sans);text-align:left;white-space:normal;box-shadow:0 10px 30px rgba(0,0,0,.5);opacity:0;pointer-events:none;transition:opacity .15s;z-index:50}
+.help::after{content:attr(data-tip);display:none;position:absolute;left:50%;bottom:calc(100% + 8px);transform:translateX(-50%);width:max-content;max-width:min(320px,80vw);padding:8px 10px;border-radius:8px;background:var(--field);border:1px solid var(--accent);color:var(--text);font:400 12px/1.45 var(--sans);text-align:left;white-space:normal;box-shadow:0 10px 30px rgba(0,0,0,.5);opacity:0;pointer-events:none;transition:opacity .15s;z-index:50}
 .help:hover::after,.help:focus-visible::after{display:block;opacity:1}
 .help[data-href]{cursor:pointer}
 @media (max-width:600px){.help::after{left:auto;right:-8px;transform:none}}
@@ -255,8 +267,50 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
 .crumbs .side{margin-left:auto;display:flex;flex-wrap:wrap;gap:4px 12px}.crumbs .side a::before{content:"→ ";opacity:.6}
 .kpi.lnk{text-decoration:none;color:inherit;display:block}.kpi.lnk:hover{border-color:var(--accent)}
 @media (max-width:700px){.crumbs .side{margin-left:0;width:100%}}
+/* a link inside a section heading is an action, not metadata, so it steps out of the heading's
+   uppercase mono voice. Fifteen places used to carry this as an inline style. */
+h2 a{font:400 12px var(--sans);text-transform:none;letter-spacing:0}
+/* An entrance below the fold used to play while nobody was looking: by the time you scrolled
+   down, it had finished. .reveal holds the panel until it actually arrives (see the observer in
+   the script below), and keeps the same --i stagger the rest of the system uses. */
+.panel.reveal,.kpi.reveal,.fade.reveal{animation:none}
+.reveal{opacity:0;transform:translateY(14px)}
+.reveal.in{opacity:1;transform:none;
+  transition:opacity .55s cubic-bezier(.2,.8,.2,1),transform .55s cubic-bezier(.2,.8,.2,1);
+  transition-delay:calc(var(--i,0)*70ms)}
+/* a press answers back */
+button:active,.btn:active,.chip:active{transform:translateY(1px)}
+/* a finger is wider than a cursor: the small controls keep their size and grow their hit area */
+@media (pointer:coarse){
+  .chip,button.small,.btn.small,.pill.cap,.help{position:relative}
+  .chip::after,button.small::after,.btn.small::after,.pill.cap::after,.help::before{
+    content:"";position:absolute;inset:-9px;border-radius:inherit}
+}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
 </style>
+<script>
+/* One palette, three readers: the stylesheet above owns the values, ``api/palette.py`` carries the
+   same list for everything the server draws itself, and anything that paints a canvas or builds an
+   SVG in the browser asks BW rather than writing a hex of its own. A kind map has no CSS token to
+   read, so it comes from the one in palette.py. */
+window.BW = (function () {
+  const cs = getComputedStyle(document.documentElement);
+  const ink = name => {  // a token whose value is another token resolves to a colour, not to "var(…)"
+    let v = cs.getPropertyValue('--' + name).trim();
+    for (let i = 0; i < 4 && v.startsWith('var('); i++) v = cs.getPropertyValue(v.slice(4, v.indexOf(')')).trim()).trim();
+    return v;
+  };
+  const OPS = [1, 2, 3, 4, 5, 6, 7, 8].map(i => ink('op' + i));
+  const SEV = {critical: ink('crit'), high: ink('high'), medium: ink('med'), low: ink('low')};
+  const KIND = {"affiliate_id": "#FF4D4D", "batch": "#8A97A8", "certificate": "#F5C518", "cf_ns_pair": "#8A97A8", "data_sink": "#FF9F1C", "dns_token": "#FF4D4D", "favicon": "#2ECC71", "ip": "#35C7F2", "kit": "#F5C518", "kit_look": "#F5C518", "nameserver": "#8A97A8", "past_ip": "#35C7F2", "redirector": "#B388FF", "registrant": "#FF4D4D", "registrar": "#8A97A8", "shared_ip": "#35C7F2", "shared_tds": "#2ECC71", "tds_campaign": "#2ECC71", "tracking_id": "#FF9F1C"};
+  return {
+    ink, OPS, SEV, KIND,
+    op: i => i ? OPS[(i - 1) % OPS.length] : ink('muted'),
+    sev: s => SEV[s] || ink('muted'),
+    kind: k => KIND[k] || ink('muted'),
+  };
+})();
+</script>
 </head>
 <body class="has-side">
 <script>try { if (localStorage.getItem('bw-side') === 'mini') document.documentElement.classList.add('side-mini'); } catch (e) { /* private window */ }</script>
@@ -303,12 +357,12 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
   @keyframes flow{to{stroke-dashoffset:-24}}
   circle.halo{animation:halo 1.8s ease-out infinite;transform-box:fill-box;transform-origin:center}
   @keyframes halo{0%{opacity:.9;transform:scale(1)}100%{opacity:0;transform:scale(2.6)}}
-  #graph{background:radial-gradient(circle at 50% 45%,#0f1c30,#060910 70%)!important;cursor:grab;touch-action:none;display:block}
+  #graph{background:radial-gradient(circle at 50% 45%,color-mix(in srgb,var(--accent) 7%,var(--panel)),var(--console) 70%)!important;cursor:grab;touch-action:none;display:block}
   .legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:12px;margin:6px 0}
   .legend b{display:inline-block;width:22px;height:0;border-top:3px solid;margin-right:5px;vertical-align:3px}
   .gsel{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 8px;align-items:center}
   .gsel button, .tool button{padding:4px 11px;font-size:12px}
-  .gsel button.on{background:rgba(53,199,242,.18);border-color:var(--cyan,#35c7f2);color:#fff}
+  .gsel button.on{background:rgba(53,199,242,.18);border-color:var(--accent);color:var(--accent2)}
   .tool{display:flex;gap:6px;margin-left:auto;flex-wrap:wrap;align-items:center}
   .tool label{font-size:12px;display:flex;gap:5px;align-items:center;cursor:pointer;color:var(--muted);text-transform:none;letter-spacing:0;white-space:nowrap}
   .tool input[type=checkbox]{width:auto;margin:0}
@@ -322,14 +376,14 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
   .vsw{display:flex;gap:0;border:1px solid var(--border);border-radius:8px;overflow:hidden}
   .vsw button{border:0;border-radius:0;padding:5px 13px;font-size:12.5px;background:transparent;border-right:1px solid var(--border)}
   .vsw button:last-child{border-right:0}
-  .vsw button.on{background:rgba(53,199,242,.2);color:#fff;font-weight:700}
+  .vsw button.on{background:rgba(53,199,242,.2);color:var(--accent2);font-weight:700}
   .vw[hidden]{display:none}
   details.sub{margin:6px 0 2px;border-left:2px solid var(--border);padding-left:10px}
   details.sub>summary{cursor:pointer;font-size:12.5px}
   .cnt{font-weight:400;font-size:11.5px;color:var(--muted);margin-left:6px;padding:0 7px;border:1px solid var(--border);border-radius:999px}
   .because{display:flex;flex-wrap:wrap;gap:4px 6px;align-items:center;margin:10px 0 0}
   .because .chip{margin:0;white-space:normal;max-width:100%;word-break:break-word}
-  .first{margin:12px 0 4px;padding:9px 12px;border-left:3px solid var(--c);background:color-mix(in srgb,var(--c,#35c7f2) 8%,transparent);border-radius:0 8px 8px 0;font-size:13.5px}
+  .first{margin:12px 0 4px;padding:9px 12px;border-left:3px solid var(--c);background:color-mix(in srgb,var(--c,var(--accent)) 8%,transparent);border-radius:0 8px 8px 0;font-size:13.5px}
   .first .fl{font:700 10.5px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--c);margin-right:4px}
   .opstats{display:grid;grid-template-columns:repeat(auto-fit,minmax(90px,1fr));gap:8px;margin:12px 0 2px}
   .opstats>div{border:1px solid var(--border);border-radius:10px;padding:8px 10px;background:rgba(8,11,20,.45)}
@@ -338,7 +392,7 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
   .because{margin:12px 0 0;display:grid;gap:4px;max-width:720px}
   .because .bh{font:700 10.5px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:2px}
   .brow{display:grid;grid-template-columns:110px minmax(0,1fr) 70px 36px;gap:8px;align-items:center;font-size:12.5px;padding:3px 0}
-  .brow .bk{color:var(--text);font-weight:600}.brow .bk::first-letter{text-transform:uppercase}.brow .bv{color:#c3cdd9;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px}
+  .brow .bk{color:var(--text);font-weight:600}.brow .bk::first-letter{text-transform:uppercase}.brow .bv{color:var(--text2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px}
   .brow .bw{height:5px;border-radius:3px;background:rgba(255,255,255,.08);overflow:hidden}.brow .bw i{display:block;height:100%;background:var(--c)}
   .brow .bp{font:600 11px var(--mono);color:var(--muted);text-align:right}
   .brow.hint .bk{color:var(--muted)}.brow.hint .bw i{opacity:.5}
@@ -373,19 +427,18 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
     .gcard{padding:12px}
   }
   .ops{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(560px,100%),1fr));gap:16px;align-items:start}
-  .gcard{border:1px solid var(--border);border-radius:14px;padding:16px 18px;background:linear-gradient(180deg,color-mix(in srgb,var(--c,#35c7f2) 5%,transparent),rgba(255,255,255,.012) 160px);border-top:3px solid var(--c,#35c7f2)}
+  .gcard{border:1px solid var(--border);border-radius:14px;padding:16px 18px;background:linear-gradient(180deg,color-mix(in srgb,var(--c,var(--accent)) 5%,transparent),rgba(255,255,255,.012) 160px);border-top:3px solid var(--c,var(--accent))}
   .ophead{display:flex;gap:12px;align-items:center}
-  .opicon{flex:none;width:42px;height:42px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:18px;background:color-mix(in srgb,var(--c,#35c7f2) 18%,transparent);color:var(--c,#35c7f2);border:1px solid color-mix(in srgb,var(--c,#35c7f2) 50%,transparent)}
+  .opicon{flex:none;width:42px;height:42px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:18px;background:color-mix(in srgb,var(--c,var(--accent)) 18%,transparent);color:var(--c,var(--accent));border:1px solid color-mix(in srgb,var(--c,var(--accent)) 50%,transparent)}
   .opname{min-width:0;flex:1}
   .opname .opt{font-weight:700;font-size:15px;word-break:break-word}
   .conf{flex:none;display:flex;flex-direction:column;align-items:center;gap:3px;min-width:64px}
   .conf .ring{width:50px;height:50px}.conf .ring>div{width:40px;height:40px;font-size:15px}
   .conf .bar{height:6px;border-radius:4px;background:rgba(255,255,255,.1);overflow:hidden;margin-bottom:3px}
-  .conf .bar i{display:block;height:100%;background:var(--c,#35c7f2)}
-  .story{font-size:13px;margin:10px 0 6px;line-height:1.55;color:#c3cdd9}
+  .conf .bar i{display:block;height:100%;background:var(--c,var(--accent))}
+  .story{font-size:13px;margin:10px 0 6px;line-height:1.55;color:var(--text2)}
   .chips{display:flex;flex-wrap:wrap;gap:5px;margin:6px 0}
-  .chip{font-size:11.5px;padding:2px 9px;border-radius:999px;border:1px solid var(--border);color:var(--muted);white-space:nowrap}
-  .chip b{color:var(--text);font-weight:600}
+  .chips .chip,.cl .chip,.because .chip{font-size:11.5px;padding:2px 9px}
   .opbtns{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}
   .opbtns button{padding:3px 10px;font-size:11.5px}
   details.sec{border-top:1px dashed var(--border);margin-top:8px;padding-top:6px}
@@ -398,17 +451,17 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
   .link .dot{display:inline-block;width:22px;height:0;border-top:3px solid;margin-right:7px;vertical-align:3px}
   .link .val{font-family:var(--mono);word-break:break-all}
   .pct{font-size:11px;padding:0 6px;border-radius:5px;border:1px solid var(--border);color:var(--muted);margin-left:6px}
-  .nope{white-space:nowrap;padding:3px 10px;font-size:11.5px;border:1px solid rgba(255,77,77,.6);color:#ff8a8a;background:transparent;border-radius:6px;cursor:pointer}
+  .nope{white-space:nowrap;padding:3px 10px;font-size:11.5px;border:1px solid rgba(255,77,77,.6);color:var(--crit);background:transparent;border-radius:6px;cursor:pointer}
   .nope:hover{background:rgba(255,77,77,.12)}
   .back{white-space:nowrap;padding:3px 10px;font-size:11.5px}
-  .cl{border:1px solid var(--border);border-left:3px solid color-mix(in srgb,var(--c,#35c7f2) calc(var(--w) * 100%),transparent);border-radius:8px;padding:7px 10px;margin:6px 0}
+  .cl{border:1px solid var(--border);border-left:3px solid color-mix(in srgb,var(--c,var(--accent)) calc(var(--w) * 100%),transparent);border-radius:8px;padding:7px 10px;margin:6px 0}
   .cl .chip{margin:2px 4px 2px 0;display:inline-block;white-space:normal}
   .cl .chip.hint{border-style:dashed}
   table.grid{border-collapse:separate;border-spacing:2px;font-size:10.5px}
   table.grid th.h{text-align:right;font-family:var(--mono);font-weight:500;padding-right:6px;white-space:nowrap}
   table.grid th.v{height:96px;vertical-align:bottom}
   table.grid th.v div{writing-mode:vertical-rl;transform:rotate(180deg);font-family:var(--mono);font-weight:500;white-space:nowrap}
-  table.grid td{width:26px;height:26px;text-align:center;border-radius:4px;background:color-mix(in srgb,var(--c,#35c7f2) calc(var(--a) * 85%),rgba(255,255,255,.04));color:#06121d;font-weight:700}
+  table.grid td{width:26px;height:26px;text-align:center;border-radius:4px;background:color-mix(in srgb,var(--c,var(--accent)) calc(var(--a) * 85%),rgba(255,255,255,.04));color:var(--on-lit);font-weight:700}
   table.grid td.self{background:transparent}
   table.shares{width:100%;font-size:12.5px;border-collapse:collapse}
   table.shares td{padding:5px 8px;border-top:1px dashed var(--border);vertical-align:top}
@@ -420,21 +473,19 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
   table.matrix td:first-child,table.matrix th:first-child{text-align:left;font-family:var(--mono)}
   .done{border:1px solid rgba(46,204,113,.5);background:rgba(46,204,113,.07);border-radius:12px;padding:12px 16px;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
   .done.wait{border-color:rgba(245,197,24,.5);background:rgba(245,197,24,.06)}
-  .done .tick{width:30px;height:30px;border-radius:50%;background:#2ecc71;color:#06210f;display:flex;align-items:center;justify-content:center;font-weight:900}
-  .done.wait .tick{background:#f5c518;color:#2a2105}
+  .done .tick{width:30px;height:30px;border-radius:50%;background:var(--low);color:var(--on-lit);display:flex;align-items:center;justify-content:center;font-weight:900}
+  .done.wait .tick{background:var(--med);color:var(--on-lit)}
   .lane{display:grid;grid-template-columns:230px 1fr;gap:10px;align-items:center;padding:5px 0;border-top:1px dashed var(--border);font-size:12px}
   .lane .track{position:relative;height:26px;border-radius:6px;background:rgba(255,255,255,.04)}
-  .lane .d{position:absolute;top:50%;width:11px;height:11px;margin:-5.5px 0 0 -5.5px;border-radius:50%;background:var(--c);border:2px solid #060910}
+  .lane .d{position:absolute;top:50%;width:11px;height:11px;margin:-5.5px 0 0 -5.5px;border-radius:50%;background:var(--c);border:2px solid var(--console)}
   .lane .d.wave{box-shadow:0 0 0 3px color-mix(in srgb,var(--c) 45%,transparent)}
   .ticks{position:relative;height:16px;margin-left:240px;font-size:10.5px;color:var(--muted)}
   .ticks span{position:absolute;transform:translateX(-50%)}
   @media(max-width:700px){.lane{grid-template-columns:1fr}.ticks{margin-left:0}.conf{min-width:70px}#drawer{position:static;width:auto;max-width:none;margin-top:8px}}
   #analysing{position:fixed;inset:0;background:rgba(5,8,14,.72);display:none;align-items:center;justify-content:center;z-index:50}
-  #analysing div{background:#0f1722;border:1px solid var(--border);border-radius:12px;padding:22px 30px;text-align:center;font-size:15px}
+  #analysing div{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:22px 30px;text-align:center;font-size:15px}
   #analysing small{display:block;margin-top:6px;color:var(--muted);font-size:12px}
 </style>
-
-
 
 
 <nav class="crumbs" aria-label="Breadcrumb"><a href="/ui/campaigns/_be3dfbc9dc/"><bdi>Attack infrastructure</bdi></a><span class="sep">›</span><span class="cur" aria-current="page"><bdi>All confirmed sites</bdi></span></nav>
@@ -462,12 +513,12 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
 
 <p class="intro" style="font-size:15px;color:var(--text);margin-top:12px">1 confirmed site, and nothing strong ties any two of them together: no shared server, certificate, analytics ID or registrant.</p>
 <div class="kpis">
-  <div class="kpi crit"><div class="v" data-count="1">0</div><div class="l">confirmed sites</div></div>
-  <div class="kpi ok"><div class="v" data-count="0">0</div><div class="l">connected groups</div></div>
-  <div class="kpi hi"><div class="v" data-count="0">0</div><div class="l">sites in a group</div></div>
+  <div class="kpi"><div class="v" data-count="1">0</div><div class="l">confirmed sites</div></div>
+  <div class="kpi"><div class="v" data-count="0">0</div><div class="l">connected groups</div></div>
+  <div class="kpi"><div class="v" data-count="0">0</div><div class="l">sites in a group</div></div>
   <div class="kpi"><div class="v" data-count="1">0</div><div class="l">no strong link</div></div>
   <div class="kpi vi"><div class="v" data-count="0">0</div><div class="l">strong links</div></div>
-  <div class="kpi med"><div class="v" data-count="0">0</div><div class="l">hints &amp; common</div></div>
+  <div class="kpi"><div class="v" data-count="0">0</div><div class="l">hints &amp; common</div></div>
 </div>
 
 
@@ -491,13 +542,13 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
     <div class="mapwrap"><svg id="graph" width="100%" height="640" style="border:1px solid var(--border);border-radius:8px"></svg>
       <aside id="drawer" hidden></aside></div>
     <div class="legend">
-      <span><b style="border-color:#FF4D4D"></b>affiliate id · registrant · DNS token</span>
-      <span><b style="border-color:#35C7F2"></b>server</span>
-      <span><b style="border-color:#F5C518"></b>TLS certificate · page code</span>
-      <span><b style="border-color:#FF9F1C"></b>analytics ID · where the data goes</span>
-      <span><b style="border-color:#B388FF"></b>redirect host</span>
-      <span><b style="border-color:#2ECC71"></b>traffic campaign</span>
-      <span class="muted"><b style="border-color:#8A97A8;border-top-style:dashed"></b>dashed = a hint, not proof on its own</span>
+      <span><b style="border-color:var(--crit)"></b>affiliate id · registrant · DNS token</span>
+      <span><b style="border-color:var(--accent)"></b>server</span>
+      <span><b style="border-color:var(--med)"></b>TLS certificate · page code</span>
+      <span><b style="border-color:var(--high)"></b>analytics ID · where the data goes</span>
+      <span><b style="border-color:var(--op5)"></b>redirect host</span>
+      <span><b style="border-color:var(--low)"></b>traffic campaign</span>
+      <span class="muted"><b style="border-color:var(--muted);border-top-style:dashed"></b>dashed = a hint, not proof on its own</span>
     </div>
   </div>
   <div class="vw" id="view-connections" hidden></div><div class="vw" id="view-matrix" hidden></div><div class="vw" id="view-flow" hidden></div><div class="vw" id="view-timeline" hidden></div>
@@ -613,10 +664,11 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
   svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
   svg.style.touchAction = 'none';
   const ns = 'http://www.w3.org/2000/svg';
-  const colors = {passive_dns:'#35C7F2', cert:'#F5C518', favicon:'#2ECC71', tracking_id:'#FF9F1C', reverse_whois:'#FF4D4D', reverse_ns:'#8A97A8'};
-  const typeColor = {domain:'#E6EDF5', ip:'#35C7F2', certificate:'#F5C518', tracking_id:'#FF9F1C', registrant:'#FF4D4D', hostname:'#E6EDF5'};
-  const sevColor = {critical:'#FF4D4D', high:'#FF9F1C', medium:'#F5C518', low:'#2ECC71'};
-  const palette = ['#35C7F2', '#F5C518', '#FF9F1C', '#2ECC71', '#B388FF', '#FF6FA8', '#4DD0C4', '#9AA5B1'];
+  const ink = BW.ink;  // the palette comes from the stylesheet, never from a hex written here
+  const colors = {passive_dns: ink('accent'), cert: ink('med'), favicon: ink('low'), tracking_id: ink('high'), reverse_whois: ink('crit'), reverse_ns: ink('muted')};
+  const typeColor = {domain: ink('text'), ip: ink('accent'), certificate: ink('med'), tracking_id: ink('high'), registrant: ink('crit'), hostname: ink('text')};
+  const sevColor = BW.SEV;
+  const palette = BW.OPS;
   const glyph = {ip:'S', past_ip:'S', shared_ip:'S', certificate:'C', tracking_id:'A', registrant:'@', affiliate_id:'$', redirector:'↪', cf_ns_pair:'CF', dns_token:'D',
                  tds_campaign:'T', shared_tds:'T', data_sink:'⇩', batch:'B', kit:'K', kit_look:'K', favicon:'F', registrar:'R', nameserver:'N'};
   const view = {k: 1, tx: 0, ty: 0};
@@ -626,7 +678,7 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
   const g = document.createElementNS(ns, 'g'); root.appendChild(g);
   let nodes = [], edges = [], byId = {}, lines = [], circles = [], hulls = {}, centers = {}, adj = {}, picked = null;
   const small = W < 600;
-  const gcolor = i => i ? palette[(i - 1) % palette.length] : '#9AA5B1';
+  const gcolor = BW.op;
   const apply = () => root.setAttribute('transform', `translate(${view.tx},${view.ty}) scale(${view.k})`);
   const toWorld = ev => { const r = svg.getBoundingClientRect(); const x = (ev.clientX - r.left) * W / r.width, y = (ev.clientY - r.top) * H / r.height; return [(x - view.tx) / view.k, (y - view.ty) / view.k]; };
   const toScreen = ev => { const r = svg.getBoundingClientRect(); return [(ev.clientX - r.left) * W / r.width, (ev.clientY - r.top) * H / r.height]; };
@@ -665,7 +717,7 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
         const p = document.createElementNS(ns, 'path'); const c = gcolor(Number(k));
         p.setAttribute('fill', c); p.setAttribute('fill-opacity', '0.09'); p.setAttribute('stroke', c); p.setAttribute('stroke-opacity', '0.16'); p.setAttribute('stroke-width', small ? 34 : 54); p.setAttribute('stroke-linejoin', 'round');
         const t = document.createElementNS(ns, 'text'); t.setAttribute('fill', c); t.setAttribute('font-size', small ? '10' : '12'); t.setAttribute('font-weight', '700'); t.setAttribute('text-anchor', 'middle'); t.setAttribute('font-family', 'JetBrains Mono, monospace');
-        t.setAttribute('paint-order', 'stroke'); t.setAttribute('stroke', '#060910'); t.setAttribute('stroke-width', '3'); t.style.pointerEvents = 'none';
+        t.setAttribute('paint-order', 'stroke'); t.setAttribute('stroke', ink('console')); t.setAttribute('stroke-width', '3'); t.style.pointerEvents = 'none';
         const nm = (opts.names || {})[k]; t.textContent = `Group ${k}${nm ? ' · ' + (nm.length > 34 ? nm.slice(0, 32) + '…' : nm) : ''}`;
         hullLayer.appendChild(p); hullLayer.appendChild(t); hulls[k] = {p, t, members: bySite[k]};
       });
@@ -682,17 +734,17 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
       const site = n.type === 'domain';
       const icon = opts.clusters && !site ? (glyph[n.kind] || '') : '';
       const c = document.createElementNS(ns,'circle'); c.setAttribute('r', site ? (n.finding ? 12 : 9) : (icon ? 9 : 6));
-      c.setAttribute('fill', n.included ? (n.finding ? (sevColor[n.finding.severity] || '#FF4D4D') : '#0E1420') : '#0E1420');
+      c.setAttribute('fill', n.included ? (n.finding ? BW.sev(n.finding.severity) : ink('panel')) : ink('panel'));
       c.setAttribute('stroke', typeColor[n.type]||'#aaa'); c.setAttribute('stroke-width', n.included ? '2' : '1'); if (!n.included) c.setAttribute('stroke-dasharray','3 3');
       if (n.level === 'weak') c.setAttribute('opacity', '0.55');
       const text = n.label || n.value;
       const t = document.createElementNS(ns,'text'); const lim = small ? 18 : (site ? 34 : 30); t.textContent = text.length > lim ? text.slice(0, lim - 2) + '…' : text;
       if ((small && !n.finding) || (opts.clusters && !site && n.level !== 'solid')) t.style.display = 'none';  // hints and common things are named when you point at them
-      t.setAttribute('fill', site ? '#FFFFFF' : (n.included ? '#B9C6D6' : '#6F7B8A')); t.setAttribute('font-size', site ? (small ? '11' : '12.5') : (small ? '9' : '10')); t.setAttribute('font-weight', site ? '600' : '400');
+      t.setAttribute('fill', site ? ink('text') : (n.included ? ink('text2') : ink('dim'))); t.setAttribute('font-size', site ? (small ? '11' : '12.5') : (small ? '9' : '10')); t.setAttribute('font-weight', site ? '600' : '400');
       t.setAttribute('font-family','JetBrains Mono, monospace'); t.setAttribute('dx', site ? '16' : (icon ? '13' : '10')); t.setAttribute('dy','4');
-      t.setAttribute('paint-order','stroke'); t.setAttribute('stroke','#060910'); t.setAttribute('stroke-width','3'); t.style.pointerEvents = 'none';
+      t.setAttribute('paint-order','stroke'); t.setAttribute('stroke', ink('console')); t.setAttribute('stroke-width','3'); t.style.pointerEvents = 'none';
       const title = document.createElementNS(ns,'title'); title.textContent = `${n.type}: ${n.value}\n${n.included ? 'included' : 'excluded'} — ${n.triage_reason}`;
-      if (n.included && n.finding && n.finding.severity === 'critical') { const halo = document.createElementNS(ns,'circle'); halo.setAttribute('r', 12); halo.setAttribute('fill','none'); halo.setAttribute('stroke','#FF4D4D'); halo.setAttribute('class','halo'); grp.appendChild(halo); }
+      if (n.included && n.finding && n.finding.severity === 'critical') { const halo = document.createElementNS(ns,'circle'); halo.setAttribute('r', 12); halo.setAttribute('fill','none'); halo.setAttribute('stroke', ink('crit')); halo.setAttribute('class','halo'); grp.appendChild(halo); }
       if (n.included) c.style.filter = `drop-shadow(0 0 5px ${typeColor[n.type]||'#aaa'})`;
       grp.appendChild(c);
       if (icon) { const gl = document.createElementNS(ns,'text'); gl.textContent = icon; gl.setAttribute('text-anchor','middle'); gl.setAttribute('dy','3.5'); gl.setAttribute('font-size', icon.length > 1 ? '7' : '10'); gl.setAttribute('font-weight','700'); gl.setAttribute('fill', typeColor[n.type]||'#aaa'); gl.style.pointerEvents = 'none'; grp.appendChild(gl); }
@@ -795,7 +847,7 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
   .vtools button{padding:3px 10px;font-size:12px}
   .vlegend{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:11.5px;color:var(--muted);padding:0 2px 6px}
   .vlegend i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:5px;vertical-align:-2px}
-  .vbox{border:1px solid var(--border);border-radius:8px;background:radial-gradient(circle at 50% 30%,#0f1c30,#060910 75%);overflow:hidden}
+  .vbox{border:1px solid var(--border);border-radius:8px;background:radial-gradient(circle at 50% 30%,color-mix(in srgb,var(--accent) 7%,var(--panel)),var(--console) 75%);overflow:hidden}
   .vbox svg{display:block;width:100%;height:auto;cursor:grab;user-select:none}
   .vinfo{min-height:22px;padding:8px 4px 0;font-size:12.5px}
   .vinfo .mono{word-break:break-all}
@@ -809,12 +861,11 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
 (function(){
   const V = window.BW_VIEWS, state = window.bwState;
   if (!V || !state) return;
-  const GC = ['#35C7F2', '#F5C518', '#FF9F1C', '#2ECC71', '#B388FF', '#FF6FA8', '#4DD0C4', '#9AA5B1'];
-  const SEV = {critical: '#FF4D4D', high: '#FF9F1C', medium: '#F5C518', low: '#2ECC71'};
-  const KC = {affiliate_id: '#FF4D4D', registrant: '#FF4D4D', dns_token: '#FF4D4D', tracking_id: '#FF9F1C', data_sink: '#FF9F1C', ip: '#35C7F2', past_ip: '#5aa9c9',
-              shared_ip: '#5aa9c9', certificate: '#F5C518', kit: '#F5C518', kit_look: '#d8b65a', redirector: '#B388FF', tds_campaign: '#2ECC71', shared_tds: '#2ECC71',
-              cf_ns_pair: '#8A97A8', batch: '#8A97A8', registrar: '#8A97A8', nameserver: '#8A97A8', favicon: '#6fbf8f'};
-  const col = op => op ? GC[(op - 1) % GC.length] : '#8499b0';
+  const ink = BW.ink;  // the palette comes from the stylesheet and palette.py, never from a hex here
+  const GC = BW.OPS;
+  const SEV = BW.SEV;
+  const KC = BW.KIND;
+  const col = BW.op;
   const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'}[c]));
   const cut = (s, n) => { s = String(s); return s.length > n ? s.slice(0, Math.max(1, n - 1)) + '…' : s; };
   const info = {}; V.sites.forEach(s => { info[s.host] = s; });
@@ -866,7 +917,7 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
   }
   const tname = t => t.values.length > 1 ? `${t.short} ×${t.values.length}` : `${t.short}: ${t.values[0]}`;
   const tinfo = t => `<b>${esc(t.label)}</b> <span class="muted">· ${Math.round(t.weight * 100)}% · ${LVL[t.level] || ''}</span><div class="mono">${esc(t.values.join(', '))}${t.networks.size ? ' <span class="muted">(' + esc([...t.networks].join(', ')) + ')</span>' : ''}</div><div>shared by <b>${t.sites.length} sites</b>: <span class="mono">${esc(t.sites.join(', '))}</span></div>`;
-  const legend = T => '<div class="vlegend">' + [...new Map(T.map(t => [t.kind, t])).values()].map(t => `<span><i style="background:${KC[t.kind] || '#888'}"></i>${esc(t.short)}</span>`).join('') + '<span><i style="background:transparent;border:1px dashed #8A97A8"></i>dashed = a hint, not proof alone</span></div>';
+  const legend = T => '<div class="vlegend">' + [...new Map(T.map(t => [t.kind, t])).values()].map(t => `<span><i style="background:${KC[t.kind] || ink('muted')}"></i>${esc(t.short)}</span>`).join('') + `<span><i style="background:transparent;border:1px dashed ${ink('muted')}"></i>dashed = a hint, not proof alone</span></div>`;
 
   // put the sites in the order of their operation, and both lists in an order that crosses as few lines as possible
   function arrange(T, S){
@@ -906,15 +957,15 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
     let s = `<svg viewBox="0 0 ${W} ${H}" font-family="JetBrains Mono, monospace">`;
     T.forEach((t, i) => t.sites.forEach(h => { if (!sy.has(h)) return;
       const x1 = xl + wl, y1 = ty.get(t) + dl + (row - 6) / 2, x2 = xr, y2 = sy.get(h) + dr + (row - 6) / 2, mx = (x1 + x2) / 2;
-      s += `<path class="ln" data-t="${i}" data-s="${esc(h)}" d="M${x1},${y1} C${mx},${y1} ${mx},${y2} ${x2},${y2}" fill="none" stroke="${KC[t.kind] || '#888'}" stroke-width="${(1 + t.weight * 2.2).toFixed(1)}" stroke-opacity=".6"${t.level === 'solid' ? '' : ' stroke-dasharray="5 4"'}/>`; }));
-    kindHeads.forEach(k => { s += `<text x="${xl + 2}" y="${k.y + dl + 15}" font-size="10.5" letter-spacing=".1em" fill="${KC[k.k.kind] || '#888'}">${esc(k.k.label.replace(/^the same |^a |^an /, '').toUpperCase())}</text>`; });
+      s += `<path class="ln" data-t="${i}" data-s="${esc(h)}" d="M${x1},${y1} C${mx},${y1} ${mx},${y2} ${x2},${y2}" fill="none" stroke="${KC[t.kind] || ink('muted')}" stroke-width="${(1 + t.weight * 2.2).toFixed(1)}" stroke-opacity=".6"${t.level === 'solid' ? '' : ' stroke-dasharray="5 4"'}/>`; }));
+    kindHeads.forEach(k => { s += `<text x="${xl + 2}" y="${k.y + dl + 15}" font-size="10.5" letter-spacing=".1em" fill="${KC[k.k.kind] || ink('muted')}">${esc(k.k.label.replace(/^the same |^a |^an /, '').toUpperCase())}</text>`; });
     opHeads.forEach(o => { s += `<text x="${xr + 2}" y="${o.y + dr + 15}" font-size="10.5" letter-spacing=".06em" fill="${col(o.op)}" font-weight="700">${esc(cut(opName(o.op), 40).toUpperCase())}</text>`; });
     const chars = Math.floor((wl - 84) / 6.6);
-    T.forEach((t, i) => { const yy = ty.get(t) + dl, c = KC[t.kind] || '#888';
+    T.forEach((t, i) => { const yy = ty.get(t) + dl, c = KC[t.kind] || ink('muted');
       s += `<g class="bx th" data-t="${i}"><rect x="${xl}" y="${yy}" width="${wl}" height="${row - 6}" rx="6" fill="rgba(14,22,34,.95)" stroke="${c}" stroke-opacity=".75"${t.level === 'solid' ? '' : ' stroke-dasharray="4 3"'}/><rect x="${xl}" y="${yy}" width="5" height="${row - 6}" rx="2" fill="${c}"/>`
-        + `<text x="${xl + 12}" y="${yy + 16}" font-size="11.5" fill="#e6edf5">${esc(cut(tname(t), chars))}</text><text x="${xl + wl - 8}" y="${yy + 16}" font-size="11" text-anchor="end" fill="#8fa6bf">${t.sites.length} sites</text><title>${esc(t.label)} · ${esc(t.values.join(', '))} · ${Math.round(t.weight * 100)}%</title></g>`; });
+        + `<text x="${xl + 12}" y="${yy + 16}" font-size="11.5" fill="${ink('text')}">${esc(cut(tname(t), chars))}</text><text x="${xl + wl - 8}" y="${yy + 16}" font-size="11" text-anchor="end" fill="${ink('muted')}">${t.sites.length} sites</text><title>${esc(t.label)} · ${esc(t.values.join(', '))} · ${Math.round(t.weight * 100)}%</title></g>`; });
     S.forEach(h => { const yy = sy.get(h) + dr;
-      s += `<g class="bx st" data-s="${esc(h)}"><rect x="${xr}" y="${yy}" width="${wr}" height="${row - 6}" rx="6" fill="rgba(14,22,34,.95)" stroke="${col(info[h].op)}" stroke-opacity=".6"/><circle cx="${xr + 12}" cy="${yy + 12}" r="4.5" fill="${SEV[info[h].severity] || '#aaa'}"/>`
+      s += `<g class="bx st" data-s="${esc(h)}"><rect x="${xr}" y="${yy}" width="${wr}" height="${row - 6}" rx="6" fill="rgba(14,22,34,.95)" stroke="${col(info[h].op)}" stroke-opacity=".6"/><circle cx="${xr + 12}" cy="${yy + 12}" r="4.5" fill="${SEV[info[h].severity] || ink('muted')}"/>`
         + `<text x="${xr + 24}" y="${yy + 16}" font-size="11.5" fill="${col(info[h].op)}">${esc(cut(h, Math.floor((wr - 34) / 6.6)))}</text><title>${esc(h)} · ${esc(opName(info[h].op))} · click to open the finding</title></g>`; });
     s += '</svg>';
     el.innerHTML = head('<b>What is shared</b> on the left, <b>the sites</b> on the right, a line = “this site has that”. Point at a box to follow its lines; click a shared thing for the details, a site to open its finding. Things shared by exactly the same sites are one box (“old server ×4”).')
@@ -946,17 +997,17 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
     S.forEach(h => { if (info[h].op !== lastOp) { opHeads.push({op: info[h].op, y}); y += 20; lastOp = info[h].op; } rowY.set(h, y); y += cell; });
     const w = lw + n * cell + 70, H = y + 34;
     let s = `<svg viewBox="0 0 ${w} ${H}" font-family="JetBrains Mono, monospace"><rect id="mx-row" x="0" y="0" width="0" height="0" fill="rgba(53,199,242,.08)"/><rect id="mx-col" x="0" y="0" width="0" height="0" fill="rgba(53,199,242,.08)"/>`;
-    T.forEach((t, j) => { const x = lw + j * cell + cell / 2, c = KC[t.kind] || '#888';
+    T.forEach((t, j) => { const x = lw + j * cell + cell / 2, c = KC[t.kind] || ink('muted');
       s += `<text transform="translate(${x + 3},${th - 10}) rotate(-55)" font-size="11" fill="${c}">${esc(cut(tname(t), 24))}<title>${esc(t.label)} · ${esc(t.values.join(', '))}</title></text>`
         + `<rect x="${lw + j * cell + 2}" y="${th - 6}" width="${cell - 4}" height="3" rx="1" fill="${c}"${t.level === 'solid' ? '' : ' fill-opacity=".45"'}/>`
-        + `<text x="${x}" y="${H - 14}" font-size="10.5" text-anchor="middle" fill="#8fa6bf">${t.sites.length}</text>`; });
+        + `<text x="${x}" y="${H - 14}" font-size="10.5" text-anchor="middle" fill="${ink('muted')}">${t.sites.length}</text>`; });
     opHeads.forEach(o => { s += `<text x="6" y="${o.y + 14}" font-size="10.5" font-weight="700" letter-spacing=".06em" fill="${col(o.op)}">${esc(cut(opName(o.op), 44).toUpperCase())}</text><line x1="0" x2="${w}" y1="${o.y + 1}" y2="${o.y + 1}" stroke="${col(o.op)}" stroke-opacity=".35"/>`; });
     S.forEach(h => { const yy = rowY.get(h), mine = T.filter(t => t.sites.includes(h)).length;
-      s += `<g class="bx mrow" data-s="${esc(h)}"><circle cx="12" cy="${yy + cell / 2}" r="4" fill="${SEV[info[h].severity] || '#aaa'}"/><text x="22" y="${yy + cell / 2 + 4}" font-size="11.5" fill="${col(info[h].op)}">${esc(cut(h, 24))}</text><title>${esc(h)} · click to open the finding</title></g>`
-        + `<text x="${lw + n * cell + 10}" y="${yy + cell / 2 + 4}" font-size="10.5" fill="#8fa6bf">${mine}</text>`;
-      T.forEach((t, j) => { const has = t.sites.includes(h), c = KC[t.kind] || '#888';
+      s += `<g class="bx mrow" data-s="${esc(h)}"><circle cx="12" cy="${yy + cell / 2}" r="4" fill="${SEV[info[h].severity] || ink('muted')}"/><text x="22" y="${yy + cell / 2 + 4}" font-size="11.5" fill="${col(info[h].op)}">${esc(cut(h, 24))}</text><title>${esc(h)} · click to open the finding</title></g>`
+        + `<text x="${lw + n * cell + 10}" y="${yy + cell / 2 + 4}" font-size="10.5" fill="${ink('muted')}">${mine}</text>`;
+      T.forEach((t, j) => { const has = t.sites.includes(h), c = KC[t.kind] || ink('muted');
         s += `<rect class="mc" data-s="${esc(h)}" data-t="${j}" x="${lw + j * cell + 2}" y="${yy + 2}" width="${cell - 4}" height="${cell - 4}" rx="4" fill="${has ? c : 'rgba(255,255,255,.04)'}" fill-opacity="${has ? (0.35 + 0.65 * t.weight).toFixed(2) : 1}"${has && t.level !== 'solid' ? ` stroke="${c}" stroke-dasharray="3 2"` : ''}/>`; }); });
-    s += `<text x="${lw - 6}" y="${H - 14}" font-size="10.5" text-anchor="end" fill="#8fa6bf">sites sharing it</text><text x="${lw + n * cell + 10}" y="${th - 10}" font-size="10.5" fill="#8fa6bf">ties</text></svg>`;
+    s += `<text x="${lw - 6}" y="${H - 14}" font-size="10.5" text-anchor="end" fill="${ink('muted')}">sites sharing it</text><text x="${lw + n * cell + 10}" y="${th - 10}" font-size="10.5" fill="${ink('muted')}">ties</text></svg>`;
     el.innerHTML = head('<b>A row per site, a column per shared thing</b>: a filled square = the site has it. A long column = many sites share that one thing; rows that look alike = sites built the same way. Point at a square for what it is, click a site to open its finding.')
       + legend(T) + `<div class="vbox">${s}</div><div class="vinfo" id="mx-info"></div>`;
     const svg = el.querySelector('svg'), box = el.querySelector('#mx-info'), rr = svg.querySelector('#mx-row'), rc = svg.querySelector('#mx-col');
@@ -996,19 +1047,19 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
         const y0 = sN.y + (sN.h - sN.flow) / 2 + sN.out + hgt / 2, y1 = tN.y + (tN.h - tN.flow) / 2 + l.inOff + hgt / 2, x0 = xs[c] + bwOf(c), x1 = xs[c + 1], mx = (x0 + x1) / 2;
         sN.out += hgt;
         const one = l.ops.size === 1 ? [...l.ops][0] : 0;
-        s += `<path class="ln" data-sites="${esc(l.sites.join('|'))}" d="M${x0},${y0} C${mx},${y0} ${mx},${y1} ${x1},${y1}" fill="none" stroke="${one ? col(one) : '#6c86a3'}" stroke-opacity=".38" stroke-width="${Math.max(hgt - 2, 1.5)}"><title>${esc(l.a)} → ${esc(l.b)} · ${l.sites.length} site${l.sites.length === 1 ? '' : 's'}</title></path>`;
+        s += `<path class="ln" data-sites="${esc(l.sites.join('|'))}" d="M${x0},${y0} C${mx},${y0} ${mx},${y1} ${x1},${y1}" fill="none" stroke="${one ? col(one) : ink('muted')}" stroke-opacity=".38" stroke-width="${Math.max(hgt - 2, 1.5)}"><title>${esc(l.a)} → ${esc(l.b)} · ${l.sites.length} site${l.sites.length === 1 ? '' : 's'}</title></path>`;
       });
     }
     nodes.forEach((list, c) => {
-      s += `<text x="${xs[c] + 2}" y="18" font-size="11" fill="#8fa6bf" letter-spacing=".1em" font-family="JetBrains Mono, monospace">${esc(cols[c].toUpperCase())}</text>`;
+      s += `<text x="${xs[c] + 2}" y="18" font-size="11" fill="${ink('muted')}" letter-spacing=".1em" font-family="JetBrains Mono, monospace">${esc(cols[c].toUpperCase())}</text>`;
       const site = withSites && c === 0, last = c === nc - 1;
       list.forEach(nd => {
-        const one = nd.ops.size === 1 ? [...nd.ops][0] : 0, fill = last ? col(one) : 'rgba(18,30,48,.97)', ink = last ? '#06121d' : (site ? col(one) : '#e6edf5');
+        const one = nd.ops.size === 1 ? [...nd.ops][0] : 0, fill = last ? col(one) : 'rgba(18,30,48,.97)', label = last ? ink('bg') : (site ? col(one) : ink('text'));
         const w = bwOf(c), lim = Math.floor((w - (site ? 26 : 44)) / 6.6), ty = nd.y + nd.h / 2 + 4;
-        s += `<g class="bx fn" data-sites="${esc(nd.sites.join('|'))}"${site ? ` data-s="${esc(nd.name)}"` : ''}><rect x="${xs[c]}" y="${nd.y}" width="${w}" height="${nd.h}" rx="6" fill="${fill}" stroke="${last ? 'none' : (site ? col(one) : '#4f7cb3')}" stroke-opacity=".7"/>`
-          + (site ? `<circle cx="${xs[c] + 10}" cy="${nd.y + nd.h / 2}" r="4" fill="${SEV[info[nd.name].severity] || '#aaa'}"/>` : '')
-          + `<text x="${xs[c] + (site ? 20 : 9)}" y="${ty}" font-size="11.5" fill="${ink}" font-weight="${last ? 700 : 500}" font-family="JetBrains Mono, monospace">${esc(cut(nd.name, lim))}</text>`
-          + (site ? '' : `<text x="${xs[c] + w - 8}" y="${ty}" font-size="11" text-anchor="end" fill="${last ? '#06121d' : '#8fa6bf'}" font-family="JetBrains Mono, monospace">${nd.sites.length}</text>`)
+        s += `<g class="bx fn" data-sites="${esc(nd.sites.join('|'))}"${site ? ` data-s="${esc(nd.name)}"` : ''}><rect x="${xs[c]}" y="${nd.y}" width="${w}" height="${nd.h}" rx="6" fill="${fill}" stroke="${last ? 'none' : (site ? col(one) : ink('accent'))}" stroke-opacity=".7"/>`
+          + (site ? `<circle cx="${xs[c] + 10}" cy="${nd.y + nd.h / 2}" r="4" fill="${SEV[info[nd.name].severity] || ink('muted')}"/>` : '')
+          + `<text x="${xs[c] + (site ? 20 : 9)}" y="${ty}" font-size="11.5" fill="${label}" font-weight="${last ? 700 : 500}" font-family="JetBrains Mono, monospace">${esc(cut(nd.name, lim))}</text>`
+          + (site ? '' : `<text x="${xs[c] + w - 8}" y="${ty}" font-size="11" text-anchor="end" fill="${last ? ink('bg') : ink('muted')}" font-family="JetBrains Mono, monospace">${nd.sites.length}</text>`)
           + `<title>${esc(nd.name)} · ${nd.sites.length} site${nd.sites.length === 1 ? '' : 's'}: ${esc(nd.sites.join(', '))}</title></g>`;
       });
     });
@@ -1065,8 +1116,8 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
         const levels = new Array(Math.max(0, ...placed.map(d => d.l + 1)) || 0).fill(0);
         const hgt = Math.max(46, 30 + levels.length * 13);
         body += `<rect x="${left}" y="${y}" width="${px}" height="${hgt - 6}" rx="6" fill="rgba(255,255,255,.025)"/>`;
-        if (!vis.length) body += `<text x="${left + 12}" y="${y + 24}" font-size="10.5" fill="#6f7b8a">none registered in this period</text>`;
-        body += `<text x="10" y="${y + 18}" font-size="12" font-weight="700" fill="${c}">${esc(cut(r.label, Math.floor((left - 20) / 7)))}</text><text x="10" y="${y + 33}" font-size="10.5" fill="#8fa6bf">${r.dots.length} domain${r.dots.length === 1 ? '' : 's'}</text>`;
+        if (!vis.length) body += `<text x="${left + 12}" y="${y + 24}" font-size="10.5" fill="${ink('dim')}">none registered in this period</text>`;
+        body += `<text x="10" y="${y + 18}" font-size="12" font-weight="700" fill="${c}">${esc(cut(r.label, Math.floor((left - 20) / 7)))}</text><text x="10" y="${y + 33}" font-size="10.5" fill="${ink('muted')}">${r.dots.length} domain${r.dots.length === 1 ? '' : 's'}</text>`;
         // purchase waves: dates within 3 days of the previous one
         let run = [];
         const flush = () => { if (run.length > 1) { const a = X(run[0].t) - 8, b = X(run[run.length - 1].t) + 8, days = Math.round((run[run.length - 1].t - run[0].t) / DAY) + 1;
@@ -1077,18 +1128,18 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
         placed.forEach((d, i) => {
           const next = placed.slice(i + 1).find(o => o.l === d.l);
           const cy = y + 14 + d.l * 13;
-          body += `<circle class="bx tdot" data-h="${esc(d.host)}" cx="${d.x}" cy="${cy}" r="5.5" fill="${c}" stroke="#060910" stroke-width="1.5"><title>${esc(d.host)} · ${esc(d.date)}${d.wave ? ' · bought within days of another' : ''}</title></circle>`;
+          body += `<circle class="bx tdot" data-h="${esc(d.host)}" cx="${d.x}" cy="${cy}" r="5.5" fill="${c}" stroke="${ink('console')}" stroke-width="1.5"><title>${esc(d.host)} · ${esc(d.date)}${d.wave ? ' · bought within days of another' : ''}</title></circle>`;
           const wl = d.host.length * 6.4 + 10;
           const fits = named || ((lastLabel[d.l] === undefined || d.x - 8 > lastLabel[d.l]) && (!next || next.x - 8 > d.x + wl));
-          if (fits && d.x + wl < left + px + 4) { body += `<text x="${d.x + 8}" y="${cy + 4}" font-size="10.5" fill="#cfe0f2" pointer-events="none">${esc(d.host)}</text>`; lastLabel[d.l] = d.x + wl; }
-          else if (fits && d.x - wl > left && (!placed[i - 1] || placed.slice(0, i).filter(o => o.l === d.l).every(o => o.x < d.x - wl - 8))) { body += `<text x="${d.x - 8}" y="${cy + 4}" font-size="10.5" text-anchor="end" fill="#cfe0f2" pointer-events="none">${esc(d.host)}</text>`; }
+          if (fits && d.x + wl < left + px + 4) { body += `<text x="${d.x + 8}" y="${cy + 4}" font-size="10.5" fill="${ink('text2')}" pointer-events="none">${esc(d.host)}</text>`; lastLabel[d.l] = d.x + wl; }
+          else if (fits && d.x - wl > left && (!placed[i - 1] || placed.slice(0, i).filter(o => o.l === d.l).every(o => o.x < d.x - wl - 8))) { body += `<text x="${d.x - 8}" y="${cy + 4}" font-size="10.5" text-anchor="end" fill="${ink('text2')}" pointer-events="none">${esc(d.host)}</text>`; }
         });
         y += hgt;
       });
       const H = y + 10;
       let grid = '';
-      ticks.forEach(t => { const x = X(t.t); grid += `<line x1="${x}" x2="${x}" y1="24" y2="${H - 8}" stroke="rgba(255,255,255,.07)"/><text x="${x}" y="16" font-size="10.5" text-anchor="${x > left + px - 30 ? 'end' : x < left + 30 ? 'start' : 'middle'}" fill="#8fa6bf">${esc(t.label)}</text>`; });
-      const now = Date.now(); if (now >= d0 && now <= d1) grid += `<line x1="${X(now)}" x2="${X(now)}" y1="20" y2="${H - 8}" stroke="#FF4D4D" stroke-dasharray="4 4" stroke-opacity=".6"/><text x="${X(now) - 4}" y="${H - 12}" font-size="10" text-anchor="end" fill="#FF4D4D">today</text>`;
+      ticks.forEach(t => { const x = X(t.t); grid += `<line x1="${x}" x2="${x}" y1="24" y2="${H - 8}" stroke="rgba(255,255,255,.07)"/><text x="${x}" y="16" font-size="10.5" text-anchor="${x > left + px - 30 ? 'end' : x < left + 30 ? 'start' : 'middle'}" fill="${ink('muted')}">${esc(t.label)}</text>`; });
+      const now = Date.now(); if (now >= d0 && now <= d1) grid += `<line x1="${X(now)}" x2="${X(now)}" y1="20" y2="${H - 8}" stroke="${ink('crit')}" stroke-dasharray="4 4" stroke-opacity=".6"/><text x="${X(now) - 4}" y="${H - 12}" font-size="10" text-anchor="end" fill="${ink('crit')}">today</text>`;
       svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
       svg.innerHTML = `<defs><clipPath id="tl-clip"><rect x="${left - 6}" y="0" width="${px + 12}" height="${H}"/></clipPath></defs><g clip-path="url(#tl-clip)">${grid}</g>` + body;
       svg.querySelectorAll('circle.tdot').forEach(cn => { cn.addEventListener('click', () => openFinding(svg, cn.dataset.h)); cn.addEventListener('mouseenter', () => { el.querySelector('#tl-info').innerHTML = `<b class="mono">${esc(cn.dataset.h)}</b> · ${esc(cn.querySelector('title').textContent.split(' · ').slice(1).join(' · '))}`; }); });
@@ -1254,7 +1305,7 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
     svg.setAttribute('viewBox', '0 0 120 120');
     const r = 46, C = 2 * Math.PI * r; let off = 0;
     const bg = document.createElementNS(NS, 'circle'); bg.setAttribute('cx', 60); bg.setAttribute('cy', 60); bg.setAttribute('r', r);
-    bg.setAttribute('fill', 'none'); bg.setAttribute('stroke', '#1E2A3D'); bg.setAttribute('stroke-width', 13); svg.appendChild(bg);
+    bg.setAttribute('fill', 'none'); bg.setAttribute('stroke', BW.ink('border')); bg.setAttribute('stroke-width', 13); svg.appendChild(bg);
     segs.forEach((s, i) => {
       const len = total ? s.value / total * C : 0, c = document.createElementNS(NS, 'circle');
       c.setAttribute('cx', 60); c.setAttribute('cy', 60); c.setAttribute('r', r); c.setAttribute('fill', 'none');
@@ -1266,9 +1317,9 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
       later(() => c.setAttribute('stroke-dasharray', `${Math.max(0, len - 1.5)} ${C}`));
     });
     const t1 = document.createElementNS(NS, 'text'); t1.setAttribute('x', 60); t1.setAttribute('y', 62); t1.setAttribute('text-anchor', 'middle');
-    t1.setAttribute('fill', '#E6EDF5'); t1.setAttribute('font-family', 'Rajdhani, monospace'); t1.setAttribute('font-size', 26); t1.setAttribute('font-weight', 700); t1.textContent = total;
+    t1.setAttribute('fill', BW.ink('text')); t1.setAttribute('font-family', 'Rajdhani, monospace'); t1.setAttribute('font-size', 26); t1.setAttribute('font-weight', 700); t1.textContent = total;
     const t2 = document.createElementNS(NS, 'text'); t2.setAttribute('x', 60); t2.setAttribute('y', 78); t2.setAttribute('text-anchor', 'middle');
-    t2.setAttribute('fill', '#8A97A8'); t2.setAttribute('font-family', 'JetBrains Mono, monospace'); t2.setAttribute('font-size', 7.5); t2.textContent = (svg.dataset.center || 'total').toUpperCase();
+    t2.setAttribute('fill', BW.ink('muted')); t2.setAttribute('font-family', 'JetBrains Mono, monospace'); t2.setAttribute('font-size', 7.5); t2.textContent = (svg.dataset.center || 'total').toUpperCase();
     svg.appendChild(t1); svg.appendChild(t2);
   });
   // sparklines: <svg class="spark" data-spark='{"series":[{"values":[...],"color":"#..."}]}'>
@@ -1309,6 +1360,20 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
     if (el.dataset.due && new Date(utc(el.dataset.rel)) <= Date.now()) { el.textContent = 'due now'; return; }
     const r = rel(el.dataset.rel); if (r) el.textContent = r; });
   tickRel(); setInterval(tickRel, 15000);
+  // Entrances wait for the viewport. The trigger fires when an element's top reaches 80% down
+  // the screen, which gives it a moment of anticipation before it is fully in view. Anything
+  // already on screen at load is revealed immediately, so the first paint is not held back.
+  const reveal = document.querySelectorAll('.reveal');
+  if (reveal.length) {
+    if (!('IntersectionObserver' in window) || matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      reveal.forEach(el => el.classList.add('in'));
+    } else {
+      const io = new IntersectionObserver((entries, obs) => {
+        entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); obs.unobserve(e.target); } });
+      }, {rootMargin: '0px 0px -20% 0px', threshold: 0.01});
+      reveal.forEach(el => io.observe(el));
+    }
+  }
 })();
 </script>
 <div id="bw-modal" hidden>
@@ -1328,7 +1393,7 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
   #bw-modal[hidden]{display:none}
   @keyframes bwfade{from{opacity:0}to{opacity:1}}
   @keyframes bwpop{from{transform:translateY(8px) scale(.98);opacity:0}to{transform:none;opacity:1}}
-  .bw-dlg{width:min(480px,100%);background:linear-gradient(180deg,#121c2b,#0c131e);border:1px solid var(--border);border-top:3px solid var(--accent);border-radius:14px;box-shadow:0 20px 60px rgba(0,0,0,.6);padding:20px 22px 16px;display:grid;grid-template-columns:auto 1fr;gap:4px 14px;animation:bwpop .18s ease-out}
+  .bw-dlg{width:min(480px,100%);background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--accent);border-radius:14px;box-shadow:0 20px 60px rgba(0,0,0,.6);padding:20px 22px 16px;display:grid;grid-template-columns:auto 1fr;gap:4px 14px;animation:bwpop .18s ease-out}
   .bw-dlg.danger{border-top-color:var(--crit)}
   .bw-dlg-icon{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;background:rgba(53,199,242,.15);color:var(--accent)}
   .bw-dlg.danger .bw-dlg-icon{background:rgba(255,77,77,.15);color:var(--crit)}
