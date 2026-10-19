@@ -69,3 +69,24 @@ def test_the_four_map_views_become_cards_and_lists_on_a_phone(engine, tmp_path, 
             assert page.evaluate("document.documentElement.scrollWidth - innerWidth") <= 1, (width, v)
         ctx.close()
     assert [e for e in errors if BROKEN.search(e)] == []
+
+
+def test_every_page_plays_its_charts_when_seen_and_keeps_them_alive(engine, tmp_path, chromium):  # noqa: F811
+    app = _app(engine, tmp_path)
+    with TestClient(app):
+        c, ui = _api(app), _ui(app)
+        _brand(c, app)
+        html = ui.get("/ui/brands").text
+    assert "BW_whenSeen" in html and "@keyframes bw-sweep" in html and ".bw-run" in html and "@keyframes bw-scan" in html
+    ctx = chromium.new_context(viewport={"width": 1280, "height": 700})
+    page = ctx.new_page()
+    errors: list[str] = []
+    page.on("pageerror", lambda e: errors.append(str(e)))
+    page.set_content(html, wait_until="domcontentloaded")
+    page.wait_for_timeout(600)
+    # bars on screen have played and are lit; a line chart on screen has its travelling pulse
+    seen = page.evaluate("[...document.querySelectorAll('[data-w]')].filter(e => { const r = e.getBoundingClientRect(); return r.top < innerHeight && r.bottom > 0 && e.getClientRects().length; })")
+    assert page.evaluate("[...document.querySelectorAll('[data-w]')].filter(e => { const r = e.getBoundingClientRect(); return r.top < innerHeight && r.bottom > 0 && e.getClientRects().length && !e.classList.contains('lit'); }).length") == 0, seen
+    assert page.evaluate("document.querySelectorAll('svg.spark[data-spark]').length") == page.evaluate("document.querySelectorAll('.bw-run').length")
+    ctx.close()
+    assert [e for e in errors if BROKEN.search(e)] == []
