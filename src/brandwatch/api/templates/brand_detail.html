@@ -257,7 +257,7 @@
 <section class="bpane" data-pane="overview" role="tabpanel">
 <div class="grid two" style="margin-top:14px">
   <div class="panel">
-    <h2 style="margin-top:0">Latest findings <a class="small" href="/ui/findings?brand_id={{ brand.id }}" style="text-transform:none;letter-spacing:0;font-family:var(--sans)">all findings →</a></h2>
+    <h2 style="margin-top:0">Latest findings <a class="small" href="/ui/findings?brand_id={{ brand.id }}">all findings →</a></h2>
     {% for f in findings %}<div style="padding:4px 0;border-bottom:1px solid var(--border)"><span class="badge sev-{{ f.severity }}">{{ f.severity }}</span> <a href="/ui/findings/{{ f.id }}">{{ m.host(f.hostname, f.host_display, f.is_idn) }}</a> <span class="muted small">{{ f.risk_score }} · {{ f.state }}</span></div>{% endfor %}
     {% if not findings %}<p class="muted small">No findings for this brand yet.</p>{% endif %}
     <h2>Recent scans</h2>

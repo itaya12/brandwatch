@@ -161,7 +161,7 @@
   {% if not cards %}<div class="panel"><p class="muted">{% if can_write %}No brands yet — add the first one above: its official domain is enough to start.{% else %}No brands yet. An analyst or an admin adds them; you will see their findings here.{% endif %}</p></div>{% endif %}
 </div>
 <div class="panel">
-  <h2>Recent scans <a class="small" href="/ui/scans" style="text-transform:none;letter-spacing:0;font-family:var(--sans)">every scan →</a></h2>
+  <h2>Recent scans <a class="small" href="/ui/scans">every scan →</a></h2>
   <table>
     {% for j in jobs or [] %}
     {% set icon = {'brand_scan':'◎','url_scan':'⌖','investigate':'⟁','intel':'◉','noop':'·'}.get(j.kind, '·') %}

@@ -2,13 +2,14 @@
 {% block title %}Dashboard{% endblock %}
 {% block content %}
 {% import "_macros.html" as m %}
-<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
   .dash{position:relative}
+  /* base.html already lays the scanline and the top wash over every page; this adds only the
+     glow that sits behind the map, so the texture is not painted twice */
   .dash::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
-    background:repeating-linear-gradient(0deg,rgba(53,199,242,.025) 0 1px,transparent 1px 3px),radial-gradient(ellipse at 50% 20%,rgba(53,199,242,.10),transparent 60%)}
+    background:radial-gradient(ellipse at 50% 22%,rgba(53,199,242,.07),transparent 62%)}
   .dash > *{position:relative;z-index:1}
-  .dash .num{font-family:Rajdhani,var(--mono);font-weight:700;letter-spacing:.02em}
+  .dash .num{font-family:var(--display);font-weight:700;letter-spacing:.02em}
   .dash .panel h2:first-child{margin-top:0}
   .row2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px;margin-top:14px;align-items:start}
   .charts{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(280px,100%),1fr));gap:14px;margin-top:14px}
@@ -18,7 +19,7 @@
   .bars.src .row > span:first-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   /* the header line */
   .dhead{display:flex;align-items:center;gap:10px 16px;flex-wrap:wrap;margin-bottom:12px}
-  .dhead h1{margin:0;font-family:Rajdhani;font-size:26px;letter-spacing:.04em}
+  .dhead h1{margin:0;font-family:var(--display);font-size:26px;letter-spacing:.04em}
   .dhead .meta{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font:12px var(--mono);color:var(--muted)}
   .dhead .meta .chip{display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border:1px solid var(--border);border-radius:999px;background:var(--panel2)}
   .dhead .right{margin-left:auto;display:flex;gap:8px;align-items:center}
@@ -28,7 +29,7 @@
   .map-kpis{position:absolute;left:12px;right:110px;top:12px;z-index:5;display:flex;flex-wrap:wrap;gap:8px;pointer-events:none}
   .mk{pointer-events:auto;display:flex;flex-direction:column;min-width:96px;padding:8px 12px;border:1px solid rgba(53,199,242,.28);border-radius:12px;background:rgba(6,10,18,.72);backdrop-filter:blur(6px);color:var(--text);text-decoration:none;transition:border-color .2s}
   a.mk:hover{border-color:var(--accent)}
-  .mk b{font:700 26px/1 Rajdhani,var(--mono);letter-spacing:.02em}
+  .mk b{font:700 26px/1 var(--display);letter-spacing:.02em}
   .mk span{font:600 11px var(--mono);letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin-top:4px;white-space:nowrap}
   .mk.crit b{color:var(--crit)}.mk.hi b{color:var(--high)}.mk.ok b{color:var(--low)}.mk.cy b{color:var(--accent2)}
   .mk.thin{min-width:0;background:rgba(6,10,18,.55)}.mk.thin b{font-size:20px}
@@ -77,15 +78,14 @@
   .lrow .r{margin-left:auto;color:var(--muted);font:11.5px var(--mono)}
   .qstat{display:flex;gap:8px;margin:0 0 8px;flex-wrap:wrap}
   .qstat a{display:flex;flex-direction:column;padding:6px 12px;border:1px solid var(--border);border-radius:10px;background:var(--panel2);color:var(--text);text-decoration:none}
-  .qstat a b{font:700 20px/1 Rajdhani}.qstat a span{font:600 11px var(--mono);letter-spacing:.04em;text-transform:uppercase;color:var(--muted);margin-top:3px}
-  .qstat a.bad b{color:var(--crit)}.qstat a.warn b{color:var(--high)}
-  .empty{color:var(--muted);font-size:12.5px;margin:4px 0}
+  .qstat a b{font:700 20px/1 var(--display)}.qstat a span{font:600 11px var(--mono);letter-spacing:.04em;text-transform:uppercase;color:var(--muted);margin-top:3px}
+    .empty{color:var(--muted);font-size:12.5px;margin:4px 0}
   /* brands at a glance */
   .brows{display:grid;gap:6px}
   .brow{display:grid;grid-template-columns:minmax(150px,1.3fr) 92px repeat(3,minmax(70px,.6fr)) minmax(150px,1fr) 150px;gap:10px;align-items:center;padding:8px 10px;border:1px solid var(--border);border-radius:10px;background:var(--panel2);color:var(--text);text-decoration:none;font-size:12.5px}
   .brow:hover{border-color:var(--accent)}
   .brow .nm{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-  .brow .n b{display:block;font:700 17px/1 Rajdhani}.brow .n span{font:600 11px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+  .brow .n b{display:block;font:700 17px/1 var(--display)}.brow .n span{font:600 11px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
   .brow .n.bad b{color:var(--crit)}
   .brow .when{font:11.5px var(--mono);color:var(--muted)}
   .brow svg.spark{height:30px}
@@ -163,13 +163,13 @@
 
 {% set todo = (k.findings_open or 0) + (k.confirmed_no_takedown or 0) + (k.takedowns_draft or 0) + (k.confirmed_unmapped or 0) + (k.takedowns_stale or 0) %}
 {% if unscanned and can_write %}
-<div class="panel" id="first-scan" style="margin-bottom:12px;border-color:rgba(53,199,242,.55)">
+<div class="panel" id="first-scan" style="margin-bottom:14px;border-color:rgba(53,199,242,.55)">
   <h2 style="margin-top:0">Not scanned yet <span class="muted">· {{ unscanned|length }} brand{{ 's' if unscanned|length != 1 }} with no scan</span></h2>
   <div style="display:flex;flex-wrap:wrap;gap:8px">{% for b in unscanned[:6] %}<a class="btn primary" href="/ui/brands/{{ b.id }}#scan">▶ <bdi>{{ b.name }}</bdi> — set up &amp; start the first scan</a>{% endfor %}</div>
 </div>
 {% endif %}
 {% if todo %}
-<div class="panel" style="margin-bottom:12px;border-color:rgba(255,159,28,.55);box-shadow:0 0 24px rgba(255,159,28,.12)" id="action-required">
+<div class="panel" style="margin-bottom:14px;border-color:rgba(255,159,28,.55)" id="action-required">
   <h2 style="margin-top:0;color:var(--high)">Action required <span class="muted">· {{ todo }} item(s)</span></h2>
   <div class="actions" style="gap:10px">
     {% if k.findings_open %}<a class="btn" href="/ui/findings?state=open{{ bq }}"><b data-k="findings_open">{{ k.findings_open }}</b> finding(s) awaiting your verdict →</a>{% endif %}
@@ -202,16 +202,16 @@
 {# ================================================================ what waits #}
 <div class="row2">
   <div class="panel" id="new-24h">
-    <h2>New in the last 24 hours <span class="muted">· open Critical and High</span> <a class="small" href="/ui/findings?state=open&since=24h{{ bq }}" style="text-transform:none;letter-spacing:0;font-family:var(--sans)">all →</a></h2>
+    <h2>New in the last 24 hours <span class="muted">· open Critical and High</span> <a class="small" href="/ui/findings?state=open&since=24h{{ bq }}">all →</a></h2>
     {% for f in new_24h %}<div class="lrow"><span class="badge sev-{{ f.severity }}">{{ f.severity }}</span><a class="mono" href="/ui/findings/{{ f.id }}" dir="ltr">{{ f.hostname }}</a><span class="r">{{ f.score if f.score is not none else '' }} · {{ f.created_at|ts }}</span></div>{% endfor %}
     {% if not new_24h %}<p class="empty">Nothing new at High or Critical in the last 24 hours.</p>{% endif %}
   </div>
   <div class="panel" id="takedown-queue">
-    <h2>Takedowns waiting <span class="muted">· {{ takedown_queue_total }} site{{ 's' if takedown_queue_total != 1 }}, oldest first</span> <a class="small" href="/ui/takedowns{{ bq0 }}" style="text-transform:none;letter-spacing:0;font-family:var(--sans)">all →</a></h2>
+    <h2>Takedowns waiting <span class="muted">· {{ takedown_queue_total }} site{{ 's' if takedown_queue_total != 1 }}, oldest first</span> <a class="small" href="/ui/takedowns{{ bq0 }}">all →</a></h2>
     <div class="qstat">
-      <a class="bad" href="/ui/takedowns?state=none{{ bq }}"><b data-k="confirmed_no_takedown">{{ k.confirmed_no_takedown }}</b><span>no request</span></a>
+      <a href="/ui/takedowns?state=none{{ bq }}"><b data-k="confirmed_no_takedown">{{ k.confirmed_no_takedown }}</b><span>no request</span></a>
       <a href="/ui/takedowns?state=unsent{{ bq }}"><b data-k="takedowns_draft">{{ k.takedowns_draft }}</b><span>not sent</span></a>
-      <a class="warn" href="/ui/takedowns?state=stale{{ bq }}"><b data-k="takedowns_stale">{{ k.takedowns_stale }}</b><span>no answer 7d+</span></a>
+      <a href="/ui/takedowns?state=stale{{ bq }}"><b data-k="takedowns_stale">{{ k.takedowns_stale }}</b><span>no answer 7d+</span></a>
       <a href="/ui/takedowns?state=resolved{{ bq }}"><b>{{ k.takedowns_total - k.takedowns_open if k.takedowns_total is not none else 0 }}</b><span>closed</span></a>
     </div>
     {% for x in takedown_queue %}<div class="lrow"><span class="badge sev-{{ x.severity }}">{{ x.severity }}</span>
@@ -222,7 +222,7 @@
 
 {# ================================================================ brands at a glance #}
 {% if brand_rows %}
-<div class="panel" id="brands" style="margin-top:14px">
+<div class="panel reveal" id="brands" style="margin-top:14px">
   <h2>Brands <span class="muted">· {{ brand_rows|length }}</span></h2>
   <div class="brows">
     {% for b in brand_rows %}
@@ -242,7 +242,7 @@
 
 {# ================================================================ the numbers in charts #}
 <div class="charts">
-  <div class="panel">
+  <div class="panel reveal" style="--i:1">
     <h2>Threat level <span class="muted">· open findings</span></h2>
     <div class="bars">
       {% for sev in ['critical','high','medium','low'] %}{% set n = d.severity_distribution[sev] %}{% set total = k.findings_open or 1 %}
@@ -250,19 +250,19 @@
       {% endfor %}
     </div>
   </div>
-  <div class="panel">
+  <div class="panel reveal" style="--i:2">
     <h2>Risk scores <span class="muted">· current</span></h2>
     <div class="hist">
       {% set mx = d.score_histogram|max or 1 %}
       {% for n in d.score_histogram %}<i style="height:{{ (n / mx * 100)|round|int }}%" title="{{ loop.index0*10 }}–{{ loop.index0*10+9 }}: {{ n }}"><span>{{ loop.index0*10 }}</span></i>{% endfor %}
     </div>
   </div>
-  <div class="panel">
+  <div class="panel reveal" style="--i:3">
     <h2>Activity · 14 days</h2>
     <svg class="spark" viewBox="0 0 280 70" preserveAspectRatio="none" id="spark"></svg>
     <div class="legend2"><span><i style="background:var(--accent)"></i>scans {{ k.scans_today }} today</span><span><i style="background:var(--crit)"></i>new findings</span><span>{{ k.candidates_scanned_today }} domains checked today</span></div>
   </div>
-  <div class="panel">
+  <div class="panel reveal" style="--i:4">
     <h2>Discovery sources <span class="muted">· findings / domains</span></h2>
     <div class="bars src">
       {% set smx = (d.source_effectiveness|map(attribute='candidates')|max) or 1 %}
@@ -276,7 +276,7 @@
 
 {# ================================================================ fake next to real, small #}
 {% if d.showcase %}
-<section class="panel" id="showcase" style="margin-top:14px">
+<section class="panel reveal" id="showcase" style="margin-top:14px">
   <h2>Caught in the act <span class="muted">· latest fakes next to the real site</span></h2>
   <div class="cases">
     {% for c in d.showcase[:3] %}
@@ -295,7 +295,7 @@
 
 {# ================================================================ now #}
 <div class="row2">
-  <div class="panel" id="live">
+  <div class="panel reveal" id="live">
     <h2><span class="status-dot {{ '' if d.running_jobs else 'off' }}" style="margin-right:8px"></span>Live feed <span class="muted" id="running-n">· {{ d.running_jobs|length }} running</span></h2>
     <div class="runs" id="runs">{% for j in d.running_jobs %}<a href="/ui/jobs/{{ j.id }}"><span class="live-dot"></span><bdi>{{ j.brand or '—' }}</bdi> · {{ j.kind|job_label }}</a>{% endfor %}</div>
     <div class="feed" id="feed"></div>
@@ -622,6 +622,12 @@
     // traffic arcs and their head) and carry no meaning the palette owns. Everything with a
     // meaning — severity, confirmed, the brand's home — comes from BW.
     const GREEN = '#2EE6A6', LAT_TOP = 78, LAT_BOT = -56, KMAX = 8, MERGE = 24;
+    // Green belongs to the brand: its home, and its own traffic. The sweep is an instrument, so it
+    // is the accent — the one colour this system lets mean "alive". CYAN is read from the
+    // stylesheet, so the map cannot drift from the palette.
+    const CYAN = BW.ink('accent'), CYAN2 = BW.ink('accent2');
+    const calm = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const pinged = new Map();  // cluster -> when the sweep last crossed it
     const miller = lat => 1.25 * Math.log(Math.tan(Math.PI / 4 + 0.4 * lat * Math.PI / 180));
     let w = 0, hgt = 0, dpr = 1, proj = null, rings = null, coast = null, nodes = [], hqB = null, area = null;
     let raf = 0, running = false, k = 1, tx = 0, ty = 0, dirty = true, anim = null, clusters = [], labels = [];
@@ -780,11 +786,11 @@
       ctx.drawImage(base, 0, 0, w, hgt);
       ctx.save(); ctx.beginPath(); ctx.rect(area.x - 2, area.y - 2, area.w + 4, area.h + 4); ctx.clip();  // nothing spills over the title
       // scan beam sweeping west → east, slightly slanted
-      const per = 7000, bx = area.x - 120 + ((t % per) / per) * (area.w + 240), sk = 40;
+      const per = 7000, bx = area.x - 120 + ((calm ? 0.5 : (t % per) / per)) * (area.w + 240), sk = 40;
       const bg = ctx.createLinearGradient(bx - 60, 0, bx + 60, 0);
-      bg.addColorStop(0, 'rgba(46,230,166,0)'); bg.addColorStop(0.5, 'rgba(46,230,166,.10)'); bg.addColorStop(1, 'rgba(46,230,166,0)');
+      bg.addColorStop(0, rgba(CYAN, 0)); bg.addColorStop(0.5, rgba(CYAN, .10)); bg.addColorStop(1, rgba(CYAN, 0));
       ctx.fillStyle = bg; ctx.beginPath(); ctx.moveTo(bx - 60 + sk, area.y); ctx.lineTo(bx + 60 + sk, area.y); ctx.lineTo(bx + 60 - sk, area.y + area.h); ctx.lineTo(bx - 60 - sk, area.y + area.h); ctx.fill();
-      ctx.strokeStyle = 'rgba(46,230,166,.3)'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(bx + sk, area.y); ctx.lineTo(bx - sk, area.y + area.h); ctx.stroke();
+      ctx.strokeStyle = rgba(CYAN, .3); ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(bx + sk, area.y); ctx.lineTo(bx - sk, area.y + area.h); ctx.stroke();
       const beamAt = y => bx + sk - 2 * sk * ((y - area.y) / area.h);
       const hq = hqB ? S(hqB[0], hqB[1]) : null;
       // the hovered attack's hosting company: the other kits it runs, linked
@@ -799,7 +805,7 @@
         const lg = ctx.createLinearGradient(hq[0], hq[1], b[0], b[1]);
         lg.addColorStop(0, rgba(GREEN, faded ? 0.03 : 0.22)); lg.addColorStop(1, rgba(g.col, faded ? 0.05 : (on ? 1 : 0.45)));
         ctx.strokeStyle = lg; ctx.lineWidth = on ? 2 : 1; ctx.beginPath(); ctx.moveTo(hq[0], hq[1]); ctx.quadraticCurveTo(m[0], m[1], b[0], b[1]); ctx.stroke();
-        const s = ((t / 3400) + g.ph) % 1.5;
+        const s = calm ? 2 : ((t / 3400) + g.ph) % 1.5;
         if (s <= 1 && !faded) {
           for (let i = 8; i >= 1; i--) { const q = qp(hq, m, b, Math.max(0, s - i * 0.012)); ctx.fillStyle = rgba(GREEN, (1 - i / 9) * 0.45); ctx.beginPath(); ctx.arc(q[0], q[1], 2 - i * 0.15, 0, Math.PI * 2); ctx.fill(); }
           const q = qp(hq, m, b, s); ctx.shadowColor = GREEN; ctx.shadowBlur = 10; ctx.fillStyle = '#EFFFF9'; ctx.beginPath(); ctx.arc(q[0], q[1], 2.1, 0, Math.PI * 2); ctx.fill(); ctx.shadowBlur = 0;
@@ -815,19 +821,27 @@
       for (const g of clusters) {
         const on = isOn(g), faded = hovered !== null && !on, lit = on || Math.abs(beamAt(g.y) - g.x) < 18;
         ctx.globalAlpha = faded ? 0.22 : 1;
+        if (!calm) {  // the sweep passed over it: ping, then fade over 1.4s
+          if (Math.abs(beamAt(g.y) - g.x) < 10 && t - (pinged.get(g) || -1e9) > 2000) pinged.set(g, t);
+          const age = (t - (pinged.get(g) || -1e9)) / 1400;
+          if (age >= 0 && age < 1 && !faded) {
+            ctx.strokeStyle = rgba(CYAN2, (1 - age) * 0.5); ctx.lineWidth = 1;
+            ctx.beginPath(); ctx.arc(g.x, g.y, g.r + age * 26, 0, Math.PI * 2); ctx.stroke();
+          }
+        }
         const gl = ctx.createRadialGradient(g.x, g.y, 0, g.x, g.y, g.r * 2.3);
         gl.addColorStop(0, rgba(g.col, lit ? 0.42 : 0.22)); gl.addColorStop(1, rgba(g.col, 0));
         ctx.fillStyle = gl; ctx.beginPath(); ctx.arc(g.x, g.y, g.r * 2.3, 0, Math.PI * 2); ctx.fill();
-        if (g.crit) { const q = ((t / 1800) + g.ph) % 1; ctx.strokeStyle = rgba(g.col, (1 - q) * 0.5); ctx.lineWidth = 1; hex(g.x, g.y, g.r * (1 + q * 1.1), Math.PI / 6); ctx.stroke(); }
+        if (g.crit && !calm) { const q = ((t / 1800) + g.ph) % 1; ctx.strokeStyle = rgba(g.col, (1 - q) * 0.5); ctx.lineWidth = 1; hex(g.x, g.y, g.r * (1 + q * 1.1), Math.PI / 6); ctx.stroke(); }
         ctx.shadowColor = g.col; ctx.shadowBlur = on ? 12 : 6;
         ctx.fillStyle = g.cluster ? 'rgba(8,12,22,.88)' : rgba(g.col, 0.18); ctx.strokeStyle = on ? ink('text') : g.col; ctx.lineWidth = on ? 1.8 : 1.3;
-        hex(g.x, g.y, g.r * (on ? 1.15 : 1), g.cluster ? Math.PI / 6 : t / 6000 + g.ph * 6); ctx.fill(); ctx.stroke(); ctx.shadowBlur = 0;
+        hex(g.x, g.y, g.r * (on ? 1.15 : 1), g.cluster ? Math.PI / 6 : (calm ? 0 : t / 6000) + g.ph * 6); ctx.fill(); ctx.stroke(); ctx.shadowBlur = 0;
         if (g.cluster) { ctx.font = '700 11px JetBrains Mono, monospace'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillStyle = ink('text'); ctx.fillText(String(g.members.length), g.x, g.y + 0.5); ctx.textAlign = 'start'; ctx.textBaseline = 'alphabetic'; }
         else { ctx.fillStyle = on ? ink('text') : g.col; ctx.beginPath(); ctx.arc(g.x, g.y, 2.1, 0, Math.PI * 2); ctx.fill(); }
         ctx.globalAlpha = 1;
       }
       if (hq) {  // the brand's home
-        const q = (t / 2200) % 1;
+        const q = calm ? 1 : (t / 2200) % 1;
         ctx.strokeStyle = rgba(GREEN, (1 - q) * 0.7); ctx.lineWidth = 1; ctx.beginPath(); ctx.arc(hq[0], hq[1], 6 + q * 14, 0, Math.PI * 2); ctx.stroke();
         ctx.shadowColor = GREEN; ctx.shadowBlur = 10; ctx.strokeStyle = GREEN; ctx.lineWidth = 1.6; ctx.beginPath(); ctx.arc(hq[0], hq[1], 6, 0, Math.PI * 2); ctx.stroke(); ctx.shadowBlur = 0;
         ctx.fillStyle = GREEN; ctx.beginPath(); ctx.arc(hq[0], hq[1], 2.4, 0, Math.PI * 2); ctx.fill();
