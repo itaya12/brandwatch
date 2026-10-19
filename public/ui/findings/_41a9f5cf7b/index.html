@@ -143,8 +143,8 @@ button.chip{font:inherit;font-family:var(--mono);font-size:11px;box-shadow:none}
   .intro.open{display:block}
   .kpis{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:6px}
   .kpi{padding:8px 9px;border-radius:9px}
-  .kpi .v{font-size:19px!important;line-height:1.1}
-  .kpi .l{font-size:9px;letter-spacing:.04em;line-height:1.25;margin-top:2px}
+  .kpis .kpi .v{font-size:19px;line-height:1.1;overflow-wrap:anywhere}
+  .kpi .l{font-size:9px;letter-spacing:.04em;line-height:1.25;margin-top:2px;overflow-wrap:anywhere}
   details.mfold{margin:0 0 10px;border:1px solid var(--border);border-radius:10px;background:var(--panel2)}
   details.mfold>summary{cursor:pointer;padding:9px 12px;font-size:13px;color:var(--accent2);list-style:none}
   details.mfold>summary::-webkit-details-marker{display:none}
@@ -423,7 +423,7 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
         <td class="selcol"><input type="checkbox" class="sel" name="ids" value="b8ee9a9b-16e7-4c1f-be0b-6756491abd64" form="bulkform" aria-label="select account-review-center.com" title="select for a verdict on many at once"></td>
         <td class="shotcol"><img class="bigshot" data-src="/_r/63b7ec860ba3dd.png" alt="screenshot of account-review-center.com" title="click to enlarge" data-host="account-review-center.com" data-href="/ui/findings/b8ee9a9b-16e7-4c1f-be0b-6756491abd64/"></td>
         <td><span class="badge sev-critical">critical</span></td>
-        <td><a href="/ui/findings/b8ee9a9b-16e7-4c1f-be0b-6756491abd64/" class="flink"><span class="mono" dir="ltr">account-review-center.com</span></a><div class="small muted">domain name · found by Facebook / Instagram ads · <a href="/ui/findings/b8ee9a9b-16e7-4c1f-be0b-6756491abd64/#network" title="site & network investigation: servers, WHOIS history, urlscan">network</a> · <a href="/ui/candidates/51cc1b96-5331-43c9-af84-b8c0fa977125" title="domain timeline on the watchlist">timeline</a></div></td>
+        <td><a href="/ui/findings/b8ee9a9b-16e7-4c1f-be0b-6756491abd64/" class="flink"><span class="mono" dir="ltr">account-review-center.com</span></a><div class="small muted">domain name · found by Facebook / Instagram ads · <a href="/ui/findings/b8ee9a9b-16e7-4c1f-be0b-6756491abd64/#network" title="site & network investigation: servers, WHOIS history, urlscan">network</a> · <a href="/ui/candidates/51cc1b96-5331-43c9-af84-b8c0fa977125/" title="domain timeline on the watchlist">timeline</a></div></td>
         <td class="mono" style="white-space:nowrap">75<span class="scorebar"><i data-w="75"></i></span>
           <span style="margin-left:6px"><a class="pill" href="https://www.virustotal.com/gui/domain/account-review-center.com" target="_blank" rel="noreferrer noopener" title="not in VirusTotal yet — unknown is never treated as clean" style="font-size:10px;color:var(--muted)">VT —</a></span></td>
         <td><div class="ring sm" data-p="100" style="--c:var(--accent)" title="confidence in the evidence: 100%"><div>100</div></div></td>

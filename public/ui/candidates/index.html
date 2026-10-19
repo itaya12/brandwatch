@@ -143,8 +143,8 @@ button.chip{font:inherit;font-family:var(--mono);font-size:11px;box-shadow:none}
   .intro.open{display:block}
   .kpis{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:6px}
   .kpi{padding:8px 9px;border-radius:9px}
-  .kpi .v{font-size:19px!important;line-height:1.1}
-  .kpi .l{font-size:9px;letter-spacing:.04em;line-height:1.25;margin-top:2px}
+  .kpis .kpi .v{font-size:19px;line-height:1.1;overflow-wrap:anywhere}
+  .kpi .l{font-size:9px;letter-spacing:.04em;line-height:1.25;margin-top:2px;overflow-wrap:anywhere}
   details.mfold{margin:0 0 10px;border:1px solid var(--border);border-radius:10px;background:var(--panel2)}
   details.mfold>summary{cursor:pointer;padding:9px 12px;font-size:13px;color:var(--accent2);list-style:none}
   details.mfold>summary::-webkit-details-marker{display:none}
@@ -335,19 +335,19 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
 
 <div class="kpis">
   
-  <a class="kpi " href="/ui/candidates?state=new" style="--glow:#8A97A833">
+  <a class="kpi " href="/ui/candidates/_b8a596c62d/" style="--glow:#8A97A833">
     <div class="v" data-count="29" style="color:#8A97A8">0</div><div class="l" title="just discovered, not visited yet">new</div></a>
   
-  <a class="kpi " href="/ui/candidates?state=watching" style="--glow:#35C7F233">
+  <a class="kpi " href="/ui/candidates/_62bddd2d2d/" style="--glow:#35C7F233">
     <div class="v" data-count="40" style="color:#35C7F2">0</div><div class="l" title="visited, below the finding threshold: re-checked on a schedule">watching</div></a>
   
-  <a class="kpi " href="/ui/candidates?state=flagged" style="--glow:#FF4D4D33">
+  <a class="kpi " href="/ui/candidates/_062528c4d1/" style="--glow:#FF4D4D33">
     <div class="v" data-count="48" style="color:#FF4D4D">0</div><div class="l" title="scored Medium or higher: there is a finding for it">flagged (finding)</div></a>
   
-  <a class="kpi " href="/ui/candidates?state=long_watch" style="--glow:#2386a633">
+  <a class="kpi " href="/ui/candidates/_76d79decbb/" style="--glow:#2386a633">
     <div class="v" data-count="0" style="color:#2386a6">0</div><div class="l" title="quiet for the whole watch window: checked less often, then expires">long watch</div></a>
   
-  <a class="kpi " href="/ui/candidates?state=dismissed" style="--glow:#3a465833">
+  <a class="kpi " href="/ui/candidates/_dbf7168028/" style="--glow:#3a465833">
     <div class="v" data-count="1100" style="color:var(--muted)">0</div><div class="l" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</div></a>
   
   <div class="kpi cy"><div class="v" data-count="1319">0</div><div class="l">observations made</div></div>
@@ -358,7 +358,7 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
   
   <div class="bchips">
     <a class="btn on" href="/ui/candidates/">All brands <b>1217</b></a>
-    <a class="btn " href="/ui/candidates?brand_id=eb019060-41b6-4160-871c-14094ad558a4&amp;state=&amp;q="><bdi>ShopNova</bdi> <b>196</b></a><a class="btn " href="/ui/candidates?brand_id=1909c3e0-295d-4d38-bb7e-a2b05c9287d4&amp;state=&amp;q="><bdi>ShopNova · Israel</bdi> <b>70</b></a><a class="btn " href="/ui/candidates?brand_id=f46bffed-4795-4cdd-ad8f-abd3d26fcc60&amp;state=&amp;q="><bdi>CoinPilot</bdi> <b>508</b></a><a class="btn " href="/ui/candidates?brand_id=a7b5cb5c-e4a0-495d-b6c9-3ac5209ac3b2&amp;state=&amp;q="><bdi>VaultPay</bdi> <b>513</b></a>
+    <a class="btn " href="/ui/candidates/_9e35fa5890/"><bdi>ShopNova</bdi> <b>196</b></a><a class="btn " href="/ui/candidates/_be3dfbc9dc/"><bdi>ShopNova · Israel</bdi> <b>70</b></a><a class="btn " href="/ui/candidates/_9ffb45703e/"><bdi>CoinPilot</bdi> <b>508</b></a><a class="btn " href="/ui/candidates/_d860073f15/"><bdi>VaultPay</bdi> <b>513</b></a>
   </div>
   <form method="get" action="/ui/candidates/" class="filters" id="filters">
     <input type="hidden" name="brand_id" value="">
@@ -385,11 +385,11 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
     
     <tr class="wrow" style="--sc:#FF4D4D" data-host="shopnova-refund.net">
       <td class="selcol"><input type="checkbox" class="sel" name="ids" value="1709923f-5c2a-4a93-86bc-f421bbf7c479" form="bulkform" aria-label="select shopnova-refund.net"></td>
-      <td><a href="/ui/candidates/1709923f-5c2a-4a93-86bc-f421bbf7c479"><span class="mono" dir="ltr">shopnova-refund.net</span></a><div class="small muted">domain name</div></td>
-      <td class="small"><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4"><bdi>ShopNova</bdi></a></td>
+      <td><a href="/ui/candidates/1709923f-5c2a-4a93-86bc-f421bbf7c479/"><span class="mono" dir="ltr">shopnova-refund.net</span></a><div class="small muted">domain name</div></td>
+      <td class="small"><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/"><bdi>ShopNova</bdi></a></td>
       <td class="why"><b>Certificate logs</b> <span class="mono" dir="ltr">san:6aaefd363c66</span> · <b>Analyst URL scan</b></td>
       <td><span class="badge state st-flagged" title="scored Medium or higher: there is a finding for it">flagged (finding)</span></td>
-      <td><a href="/ui/findings/2cb73388-b4b7-4b89-bb02-e10192947e09" class="badge sev-critical" title="open the finding">critical · confirmed phishing</a></td>
+      <td><a href="/ui/findings/2cb73388-b4b7-4b89-bb02-e10192947e09/" class="badge sev-critical" title="open the finding">critical · confirmed phishing</a></td>
       <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="90" style="max-width:60px"></span> 30</td>
       <td class="mono small muted"><time datetime="2026-10-12T06:41:46.480759" data-local title="2026-10-12T06:41:46.480759 UTC">2026-10-12 06:41</time></td>
       <td class="mono small muted"><time datetime="2026-10-12T06:46:09.536476" data-local title="2026-10-12T06:46:09.536476 UTC">2026-10-12 06:46</time></td>
@@ -412,11 +412,11 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
     
     <tr class="wrow" style="--sc:#FF4D4D" data-host="shopnova-giftcard.com">
       <td class="selcol"><input type="checkbox" class="sel" name="ids" value="1d1d7ed6-291b-4016-8ed4-f533c3b69582" form="bulkform" aria-label="select shopnova-giftcard.com"></td>
-      <td><a href="/ui/candidates/1d1d7ed6-291b-4016-8ed4-f533c3b69582"><span class="mono" dir="ltr">shopnova-giftcard.com</span></a><div class="small muted">domain name</div></td>
-      <td class="small"><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4"><bdi>ShopNova</bdi></a></td>
+      <td><a href="/ui/candidates/1d1d7ed6-291b-4016-8ed4-f533c3b69582/"><span class="mono" dir="ltr">shopnova-giftcard.com</span></a><div class="small muted">domain name</div></td>
+      <td class="small"><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/"><bdi>ShopNova</bdi></a></td>
       <td class="why"><b>Certificate logs</b> <span class="mono" dir="ltr">san:5a09a5acbf21</span> · <b>Analyst URL scan</b></td>
       <td><span class="badge state st-flagged" title="scored Medium or higher: there is a finding for it">flagged (finding)</span></td>
-      <td><a href="/ui/findings/1bcfbce5-b1c6-44d8-b534-f678beefe1d5" class="badge sev-critical" title="open the finding">critical · confirmed phishing</a></td>
+      <td><a href="/ui/findings/1bcfbce5-b1c6-44d8-b534-f678beefe1d5/" class="badge sev-critical" title="open the finding">critical · confirmed phishing</a></td>
       <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="90" style="max-width:60px"></span> 30</td>
       <td class="mono small muted"><time datetime="2026-10-12T06:41:46.477237" data-local title="2026-10-12T06:41:46.477237 UTC">2026-10-12 06:41</time></td>
       <td class="mono small muted"><time datetime="2026-10-12T06:46:09.384581" data-local title="2026-10-12T06:46:09.384581 UTC">2026-10-12 06:46</time></td>
@@ -439,8 +439,8 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
     
     <tr class="wrow" style="--sc:#8A97A8" data-host="shopnova-eu.com">
       <td class="selcol"><input type="checkbox" class="sel" name="ids" value="d25b56ef-f7ee-48c2-aae9-543efa44b68b" form="bulkform" aria-label="select shopnova-eu.com"></td>
-      <td><a href="/ui/candidates/d25b56ef-f7ee-48c2-aae9-543efa44b68b"><span class="mono" dir="ltr">shopnova-eu.com</span></a><div class="small muted">domain name</div></td>
-      <td class="small"><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4"><bdi>ShopNova</bdi></a></td>
+      <td><a href="/ui/candidates/d25b56ef-f7ee-48c2-aae9-543efa44b68b/"><span class="mono" dir="ltr">shopnova-eu.com</span></a><div class="small muted">domain name</div></td>
+      <td class="small"><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/"><bdi>ShopNova</bdi></a></td>
       <td class="why"><b>Infrastructure map</b> <span title="pivot:brand pattern in hostname">brand pattern in hostname</span></td>
       <td><span class="badge state st-new" title="just discovered, not visited yet">new</span></td>
       <td><span class="muted small">—</span></td>
@@ -466,8 +466,8 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
     
     <tr class="wrow" style="--sc:#8A97A8" data-host="coinpilott.io">
       <td class="selcol"><input type="checkbox" class="sel" name="ids" value="4952e586-bee9-47e8-95e6-b2e6bd2d687e" form="bulkform" aria-label="select coinpilott.io"></td>
-      <td><a href="/ui/candidates/4952e586-bee9-47e8-95e6-b2e6bd2d687e"><span class="mono" dir="ltr">coinpilott.io</span></a><div class="small muted">domain name</div></td>
-      <td class="small"><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4"><bdi>ShopNova</bdi></a></td>
+      <td><a href="/ui/candidates/4952e586-bee9-47e8-95e6-b2e6bd2d687e/"><span class="mono" dir="ltr">coinpilott.io</span></a><div class="small muted">domain name</div></td>
+      <td class="small"><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/"><bdi>ShopNova</bdi></a></td>
       <td class="why"><b>Infrastructure map</b> <span title="pivot:shares cert with the campaign">shares cert with the campaign</span></td>
       <td><span class="badge state st-new" title="just discovered, not visited yet">new</span></td>
       <td><span class="muted small">—</span></td>
@@ -493,8 +493,8 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
     
     <tr class="wrow" style="--sc:#8A97A8" data-host="coinpllot.io">
       <td class="selcol"><input type="checkbox" class="sel" name="ids" value="123efcdb-fbb0-4b2d-9575-72eb36b84466" form="bulkform" aria-label="select coinpllot.io"></td>
-      <td><a href="/ui/candidates/123efcdb-fbb0-4b2d-9575-72eb36b84466"><span class="mono" dir="ltr">coinpllot.io</span></a><div class="small muted">domain name</div></td>
-      <td class="small"><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4"><bdi>ShopNova</bdi></a></td>
+      <td><a href="/ui/candidates/123efcdb-fbb0-4b2d-9575-72eb36b84466/"><span class="mono" dir="ltr">coinpllot.io</span></a><div class="small muted">domain name</div></td>
+      <td class="small"><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/"><bdi>ShopNova</bdi></a></td>
       <td class="why"><b>Infrastructure map</b> <span title="pivot:shares cert with the campaign">shares cert with the campaign</span></td>
       <td><span class="badge state st-new" title="just discovered, not visited yet">new</span></td>
       <td><span class="muted small">—</span></td>
@@ -520,8 +520,8 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
     
     <tr class="wrow" style="--sc:#8A97A8" data-host="coin-pilot.io">
       <td class="selcol"><input type="checkbox" class="sel" name="ids" value="34a395c5-524a-4108-9917-e124040166d9" form="bulkform" aria-label="select coin-pilot.io"></td>
-      <td><a href="/ui/candidates/34a395c5-524a-4108-9917-e124040166d9"><span class="mono" dir="ltr">coin-pilot.io</span></a><div class="small muted">domain name</div></td>
-      <td class="small"><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4"><bdi>ShopNova</bdi></a></td>
+      <td><a href="/ui/candidates/34a395c5-524a-4108-9917-e124040166d9/"><span class="mono" dir="ltr">coin-pilot.io</span></a><div class="small muted">domain name</div></td>
+      <td class="small"><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/"><bdi>ShopNova</bdi></a></td>
       <td class="why"><b>Infrastructure map</b> <span title="pivot:shares cert with the campaign">shares cert with the campaign</span></td>
       <td><span class="badge state st-new" title="just discovered, not visited yet">new</span></td>
       <td><span class="muted small">—</span></td>
@@ -547,8 +547,8 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
     
     <tr class="wrow" style="--sc:#8A97A8" data-host="vaultpay-login.com">
       <td class="selcol"><input type="checkbox" class="sel" name="ids" value="90326556-116b-4edb-ad02-26d53e01a006" form="bulkform" aria-label="select vaultpay-login.com"></td>
-      <td><a href="/ui/candidates/90326556-116b-4edb-ad02-26d53e01a006"><span class="mono" dir="ltr">vaultpay-login.com</span></a><div class="small muted">domain name</div></td>
-      <td class="small"><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4"><bdi>ShopNova</bdi></a></td>
+      <td><a href="/ui/candidates/90326556-116b-4edb-ad02-26d53e01a006/"><span class="mono" dir="ltr">vaultpay-login.com</span></a><div class="small muted">domain name</div></td>
+      <td class="small"><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/"><bdi>ShopNova</bdi></a></td>
       <td class="why"><b>Infrastructure map</b> <span title="pivot:shares cert with the campaign">shares cert with the campaign</span></td>
       <td><span class="badge state st-new" title="just discovered, not visited yet">new</span></td>
       <td><span class="muted small">—</span></td>
@@ -574,8 +574,8 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
     
     <tr class="wrow" style="--sc:#8A97A8" data-host="vaultpay-secure.net">
       <td class="selcol"><input type="checkbox" class="sel" name="ids" value="ed249af2-ab24-44a7-bd07-501c8a441887" form="bulkform" aria-label="select vaultpay-secure.net"></td>
-      <td><a href="/ui/candidates/ed249af2-ab24-44a7-bd07-501c8a441887"><span class="mono" dir="ltr">vaultpay-secure.net</span></a><div class="small muted">domain name</div></td>
-      <td class="small"><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4"><bdi>ShopNova</bdi></a></td>
+      <td><a href="/ui/candidates/ed249af2-ab24-44a7-bd07-501c8a441887/"><span class="mono" dir="ltr">vaultpay-secure.net</span></a><div class="small muted">domain name</div></td>
+      <td class="small"><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/"><bdi>ShopNova</bdi></a></td>
       <td class="why"><b>Infrastructure map</b> <span title="pivot:shares cert with the campaign">shares cert with the campaign</span></td>
       <td><span class="badge state st-new" title="just discovered, not visited yet">new</span></td>
       <td><span class="muted small">—</span></td>
@@ -601,8 +601,8 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
     
     <tr class="wrow" style="--sc:#8A97A8" data-host="vault-pay.co">
       <td class="selcol"><input type="checkbox" class="sel" name="ids" value="4f4fd33c-9cc1-4682-9d7f-a381682dd39a" form="bulkform" aria-label="select vault-pay.co"></td>
-      <td><a href="/ui/candidates/4f4fd33c-9cc1-4682-9d7f-a381682dd39a"><span class="mono" dir="ltr">vault-pay.co</span></a><div class="small muted">domain name</div></td>
-      <td class="small"><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4"><bdi>ShopNova</bdi></a></td>
+      <td><a href="/ui/candidates/4f4fd33c-9cc1-4682-9d7f-a381682dd39a/"><span class="mono" dir="ltr">vault-pay.co</span></a><div class="small muted">domain name</div></td>
+      <td class="small"><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/"><bdi>ShopNova</bdi></a></td>
       <td class="why"><b>Infrastructure map</b> <span title="pivot:shares cert with the campaign">shares cert with the campaign</span></td>
       <td><span class="badge state st-new" title="just discovered, not visited yet">new</span></td>
       <td><span class="muted small">—</span></td>
@@ -628,8 +628,8 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
     
     <tr class="wrow" style="--sc:#8A97A8" data-host="vaultpay-verify.com">
       <td class="selcol"><input type="checkbox" class="sel" name="ids" value="181f56a2-5e4e-4949-b6d2-be4bf8082f32" form="bulkform" aria-label="select vaultpay-verify.com"></td>
-      <td><a href="/ui/candidates/181f56a2-5e4e-4949-b6d2-be4bf8082f32"><span class="mono" dir="ltr">vaultpay-verify.com</span></a><div class="small muted">domain name</div></td>
-      <td class="small"><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4"><bdi>ShopNova</bdi></a></td>
+      <td><a href="/ui/candidates/181f56a2-5e4e-4949-b6d2-be4bf8082f32/"><span class="mono" dir="ltr">vaultpay-verify.com</span></a><div class="small muted">domain name</div></td>
+      <td class="small"><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/"><bdi>ShopNova</bdi></a></td>
       <td class="why"><b>Infrastructure map</b> <span title="pivot:shares cert with the campaign">shares cert with the campaign</span></td>
       <td><span class="badge state st-new" title="just discovered, not visited yet">new</span></td>
       <td><span class="muted small">—</span></td>
@@ -655,8 +655,8 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
     
     <tr class="wrow" style="--sc:#8A97A8" data-host="coinpilot-bot.io">
       <td class="selcol"><input type="checkbox" class="sel" name="ids" value="14a14d64-6604-41ea-838b-f51c4f34aa83" form="bulkform" aria-label="select coinpilot-bot.io"></td>
-      <td><a href="/ui/candidates/14a14d64-6604-41ea-838b-f51c4f34aa83"><span class="mono" dir="ltr">coinpilot-bot.io</span></a><div class="small muted">domain name</div></td>
-      <td class="small"><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4"><bdi>ShopNova</bdi></a></td>
+      <td><a href="/ui/candidates/14a14d64-6604-41ea-838b-f51c4f34aa83/"><span class="mono" dir="ltr">coinpilot-bot.io</span></a><div class="small muted">domain name</div></td>
+      <td class="small"><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/"><bdi>ShopNova</bdi></a></td>
       <td class="why"><b>Infrastructure map</b> <span title="pivot:shares cert with the campaign">shares cert with the campaign</span></td>
       <td><span class="badge state st-new" title="just discovered, not visited yet">new</span></td>
       <td><span class="muted small">—</span></td>
@@ -682,8 +682,8 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
     
     <tr class="wrow" style="--sc:#8A97A8" data-host="coinplot.io">
       <td class="selcol"><input type="checkbox" class="sel" name="ids" value="c6729bdc-7a71-44dc-8aec-24e28fd5c4c4" form="bulkform" aria-label="select coinplot.io"></td>
-      <td><a href="/ui/candidates/c6729bdc-7a71-44dc-8aec-24e28fd5c4c4"><span class="mono" dir="ltr">coinplot.io</span></a><div class="small muted">domain name</div></td>
-      <td class="small"><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4"><bdi>ShopNova</bdi></a></td>
+      <td><a href="/ui/candidates/c6729bdc-7a71-44dc-8aec-24e28fd5c4c4/"><span class="mono" dir="ltr">coinplot.io</span></a><div class="small muted">domain name</div></td>
+      <td class="small"><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/"><bdi>ShopNova</bdi></a></td>
       <td class="why"><b>Infrastructure map</b> <span title="pivot:shares cert with the campaign">shares cert with the campaign</span></td>
       <td><span class="badge state st-new" title="just discovered, not visited yet">new</span></td>
       <td><span class="muted small">—</span></td>
@@ -709,8 +709,8 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
     
     <tr class="wrow" style="--sc:#8A97A8" data-host="cooinpilot.io">
       <td class="selcol"><input type="checkbox" class="sel" name="ids" value="f3c2e3c5-8743-4723-8d7b-b3d4b6ed835a" form="bulkform" aria-label="select cooinpilot.io"></td>
-      <td><a href="/ui/candidates/f3c2e3c5-8743-4723-8d7b-b3d4b6ed835a"><span class="mono" dir="ltr">cooinpilot.io</span></a><div class="small muted">domain name</div></td>
-      <td class="small"><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4"><bdi>ShopNova</bdi></a></td>
+      <td><a href="/ui/candidates/f3c2e3c5-8743-4723-8d7b-b3d4b6ed835a/"><span class="mono" dir="ltr">cooinpilot.io</span></a><div class="small muted">domain name</div></td>
+      <td class="small"><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/"><bdi>ShopNova</bdi></a></td>
       <td class="why"><b>Infrastructure map</b> <span title="pivot:shares cert with the campaign">shares cert with the campaign</span></td>
       <td><span class="badge state st-new" title="just discovered, not visited yet">new</span></td>
       <td><span class="muted small">—</span></td>
@@ -736,8 +736,8 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
     
     <tr class="wrow" style="--sc:#8A97A8" data-host="koinpilot.io">
       <td class="selcol"><input type="checkbox" class="sel" name="ids" value="6bce9476-6d0f-42b5-89ff-56ad19ec289a" form="bulkform" aria-label="select koinpilot.io"></td>
-      <td><a href="/ui/candidates/6bce9476-6d0f-42b5-89ff-56ad19ec289a"><span class="mono" dir="ltr">koinpilot.io</span></a><div class="small muted">domain name</div></td>
-      <td class="small"><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4"><bdi>ShopNova</bdi></a></td>
+      <td><a href="/ui/candidates/6bce9476-6d0f-42b5-89ff-56ad19ec289a/"><span class="mono" dir="ltr">koinpilot.io</span></a><div class="small muted">domain name</div></td>
+      <td class="small"><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/"><bdi>ShopNova</bdi></a></td>
       <td class="why"><b>Infrastructure map</b> <span title="pivot:shares cert with the campaign">shares cert with the campaign</span></td>
       <td><span class="badge state st-new" title="just discovered, not visited yet">new</span></td>
       <td><span class="muted small">—</span></td>
@@ -763,8 +763,8 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
     
     <tr class="wrow" style="--sc:#8A97A8" data-host="koinpilot.io">
       <td class="selcol"><input type="checkbox" class="sel" name="ids" value="698b3666-653c-4d1f-b6fd-14906256c923" form="bulkform" aria-label="select koinpilot.io"></td>
-      <td><a href="/ui/candidates/698b3666-653c-4d1f-b6fd-14906256c923"><span class="mono" dir="ltr">koinpilot.io</span></a><div class="small muted">domain name</div></td>
-      <td class="small"><a href="/ui/brands/a7b5cb5c-e4a0-495d-b6c9-3ac5209ac3b2"><bdi>VaultPay</bdi></a></td>
+      <td><a href="/ui/candidates/698b3666-653c-4d1f-b6fd-14906256c923/"><span class="mono" dir="ltr">koinpilot.io</span></a><div class="small muted">domain name</div></td>
+      <td class="small"><a href="/ui/brands/a7b5cb5c-e4a0-495d-b6c9-3ac5209ac3b2/"><bdi>VaultPay</bdi></a></td>
       <td class="why"><b>Infrastructure map</b> <span title="pivot:shares cert with the campaign">shares cert with the campaign</span></td>
       <td><span class="badge state st-new" title="just discovered, not visited yet">new</span></td>
       <td><span class="muted small">—</span></td>
@@ -790,8 +790,8 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
     
     <tr class="wrow" style="--sc:#8A97A8" data-host="shopnova-eu.com">
       <td class="selcol"><input type="checkbox" class="sel" name="ids" value="47919a25-fb4c-4b26-9827-066ce62f32f4" form="bulkform" aria-label="select shopnova-eu.com"></td>
-      <td><a href="/ui/candidates/47919a25-fb4c-4b26-9827-066ce62f32f4"><span class="mono" dir="ltr">shopnova-eu.com</span></a><div class="small muted">domain name</div></td>
-      <td class="small"><a href="/ui/brands/a7b5cb5c-e4a0-495d-b6c9-3ac5209ac3b2"><bdi>VaultPay</bdi></a></td>
+      <td><a href="/ui/candidates/47919a25-fb4c-4b26-9827-066ce62f32f4/"><span class="mono" dir="ltr">shopnova-eu.com</span></a><div class="small muted">domain name</div></td>
+      <td class="small"><a href="/ui/brands/a7b5cb5c-e4a0-495d-b6c9-3ac5209ac3b2/"><bdi>VaultPay</bdi></a></td>
       <td class="why"><b>Infrastructure map</b> <span title="pivot:shares cert with the campaign">shares cert with the campaign</span></td>
       <td><span class="badge state st-new" title="just discovered, not visited yet">new</span></td>
       <td><span class="muted small">—</span></td>
@@ -817,8 +817,8 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
     
     <tr class="wrow" style="--sc:#8A97A8" data-host="cooinpilot.io">
       <td class="selcol"><input type="checkbox" class="sel" name="ids" value="2b7e2894-e7c5-4bde-bd22-4445f4237056" form="bulkform" aria-label="select cooinpilot.io"></td>
-      <td><a href="/ui/candidates/2b7e2894-e7c5-4bde-bd22-4445f4237056"><span class="mono" dir="ltr">cooinpilot.io</span></a><div class="small muted">domain name</div></td>
-      <td class="small"><a href="/ui/brands/a7b5cb5c-e4a0-495d-b6c9-3ac5209ac3b2"><bdi>VaultPay</bdi></a></td>
+      <td><a href="/ui/candidates/2b7e2894-e7c5-4bde-bd22-4445f4237056/"><span class="mono" dir="ltr">cooinpilot.io</span></a><div class="small muted">domain name</div></td>
+      <td class="small"><a href="/ui/brands/a7b5cb5c-e4a0-495d-b6c9-3ac5209ac3b2/"><bdi>VaultPay</bdi></a></td>
       <td class="why"><b>Infrastructure map</b> <span title="pivot:shares cert with the campaign">shares cert with the campaign</span></td>
       <td><span class="badge state st-new" title="just discovered, not visited yet">new</span></td>
       <td><span class="muted small">—</span></td>
@@ -844,8 +844,8 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
     
     <tr class="wrow" style="--sc:#8A97A8" data-host="coinpilot-bot.io">
       <td class="selcol"><input type="checkbox" class="sel" name="ids" value="b8815cca-1aa8-4002-a884-b08ed5e5f309" form="bulkform" aria-label="select coinpilot-bot.io"></td>
-      <td><a href="/ui/candidates/b8815cca-1aa8-4002-a884-b08ed5e5f309"><span class="mono" dir="ltr">coinpilot-bot.io</span></a><div class="small muted">domain name</div></td>
-      <td class="small"><a href="/ui/brands/a7b5cb5c-e4a0-495d-b6c9-3ac5209ac3b2"><bdi>VaultPay</bdi></a></td>
+      <td><a href="/ui/candidates/b8815cca-1aa8-4002-a884-b08ed5e5f309/"><span class="mono" dir="ltr">coinpilot-bot.io</span></a><div class="small muted">domain name</div></td>
+      <td class="small"><a href="/ui/brands/a7b5cb5c-e4a0-495d-b6c9-3ac5209ac3b2/"><bdi>VaultPay</bdi></a></td>
       <td class="why"><b>Infrastructure map</b> <span title="pivot:shares cert with the campaign">shares cert with the campaign</span></td>
       <td><span class="badge state st-new" title="just discovered, not visited yet">new</span></td>
       <td><span class="muted small">—</span></td>
@@ -871,8 +871,8 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
     
     <tr class="wrow" style="--sc:#8A97A8" data-host="coinplot.io">
       <td class="selcol"><input type="checkbox" class="sel" name="ids" value="ad80ade2-330a-4360-ad51-4ce730ad2d20" form="bulkform" aria-label="select coinplot.io"></td>
-      <td><a href="/ui/candidates/ad80ade2-330a-4360-ad51-4ce730ad2d20"><span class="mono" dir="ltr">coinplot.io</span></a><div class="small muted">domain name</div></td>
-      <td class="small"><a href="/ui/brands/a7b5cb5c-e4a0-495d-b6c9-3ac5209ac3b2"><bdi>VaultPay</bdi></a></td>
+      <td><a href="/ui/candidates/ad80ade2-330a-4360-ad51-4ce730ad2d20/"><span class="mono" dir="ltr">coinplot.io</span></a><div class="small muted">domain name</div></td>
+      <td class="small"><a href="/ui/brands/a7b5cb5c-e4a0-495d-b6c9-3ac5209ac3b2/"><bdi>VaultPay</bdi></a></td>
       <td class="why"><b>Infrastructure map</b> <span title="pivot:shares cert with the campaign">shares cert with the campaign</span></td>
       <td><span class="badge state st-new" title="just discovered, not visited yet">new</span></td>
       <td><span class="muted small">—</span></td>
@@ -898,8 +898,8 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
     
     <tr class="wrow" style="--sc:#8A97A8" data-host="coin-pilot.io">
       <td class="selcol"><input type="checkbox" class="sel" name="ids" value="4288eadf-21d1-497c-9c7e-e14f726eda70" form="bulkform" aria-label="select coin-pilot.io"></td>
-      <td><a href="/ui/candidates/4288eadf-21d1-497c-9c7e-e14f726eda70"><span class="mono" dir="ltr">coin-pilot.io</span></a><div class="small muted">domain name</div></td>
-      <td class="small"><a href="/ui/brands/a7b5cb5c-e4a0-495d-b6c9-3ac5209ac3b2"><bdi>VaultPay</bdi></a></td>
+      <td><a href="/ui/candidates/4288eadf-21d1-497c-9c7e-e14f726eda70/"><span class="mono" dir="ltr">coin-pilot.io</span></a><div class="small muted">domain name</div></td>
+      <td class="small"><a href="/ui/brands/a7b5cb5c-e4a0-495d-b6c9-3ac5209ac3b2/"><bdi>VaultPay</bdi></a></td>
       <td class="why"><b>Infrastructure map</b> <span title="pivot:shares cert with the campaign">shares cert with the campaign</span></td>
       <td><span class="badge state st-new" title="just discovered, not visited yet">new</span></td>
       <td><span class="muted small">—</span></td>
@@ -925,8 +925,8 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
     
     <tr class="wrow" style="--sc:#8A97A8" data-host="coinpllot.io">
       <td class="selcol"><input type="checkbox" class="sel" name="ids" value="29d2a4af-ed4c-471d-8eed-fd9ef88c79a5" form="bulkform" aria-label="select coinpllot.io"></td>
-      <td><a href="/ui/candidates/29d2a4af-ed4c-471d-8eed-fd9ef88c79a5"><span class="mono" dir="ltr">coinpllot.io</span></a><div class="small muted">domain name</div></td>
-      <td class="small"><a href="/ui/brands/a7b5cb5c-e4a0-495d-b6c9-3ac5209ac3b2"><bdi>VaultPay</bdi></a></td>
+      <td><a href="/ui/candidates/29d2a4af-ed4c-471d-8eed-fd9ef88c79a5/"><span class="mono" dir="ltr">coinpllot.io</span></a><div class="small muted">domain name</div></td>
+      <td class="small"><a href="/ui/brands/a7b5cb5c-e4a0-495d-b6c9-3ac5209ac3b2/"><bdi>VaultPay</bdi></a></td>
       <td class="why"><b>Infrastructure map</b> <span title="pivot:shares cert with the campaign">shares cert with the campaign</span></td>
       <td><span class="badge state st-new" title="just discovered, not visited yet">new</span></td>
       <td><span class="muted small">—</span></td>
@@ -952,8 +952,8 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
     
     <tr class="wrow" style="--sc:#8A97A8" data-host="coinpilott.io">
       <td class="selcol"><input type="checkbox" class="sel" name="ids" value="1e2f98bf-0829-4a3b-aa0a-41470bbc2ac6" form="bulkform" aria-label="select coinpilott.io"></td>
-      <td><a href="/ui/candidates/1e2f98bf-0829-4a3b-aa0a-41470bbc2ac6"><span class="mono" dir="ltr">coinpilott.io</span></a><div class="small muted">domain name</div></td>
-      <td class="small"><a href="/ui/brands/a7b5cb5c-e4a0-495d-b6c9-3ac5209ac3b2"><bdi>VaultPay</bdi></a></td>
+      <td><a href="/ui/candidates/1e2f98bf-0829-4a3b-aa0a-41470bbc2ac6/"><span class="mono" dir="ltr">coinpilott.io</span></a><div class="small muted">domain name</div></td>
+      <td class="small"><a href="/ui/brands/a7b5cb5c-e4a0-495d-b6c9-3ac5209ac3b2/"><bdi>VaultPay</bdi></a></td>
       <td class="why"><b>Infrastructure map</b> <span title="pivot:shares cert with the campaign">shares cert with the campaign</span></td>
       <td><span class="badge state st-new" title="just discovered, not visited yet">new</span></td>
       <td><span class="muted small">—</span></td>
@@ -979,8 +979,8 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
     
     <tr class="wrow" style="--sc:#8A97A8" data-host="shopnowa.com">
       <td class="selcol"><input type="checkbox" class="sel" name="ids" value="9080f42f-d000-480c-80a6-4fe253d229f2" form="bulkform" aria-label="select shopnowa.com"></td>
-      <td><a href="/ui/candidates/9080f42f-d000-480c-80a6-4fe253d229f2"><span class="mono" dir="ltr">shopnowa.com</span></a><div class="small muted">domain name</div></td>
-      <td class="small"><a href="/ui/brands/a7b5cb5c-e4a0-495d-b6c9-3ac5209ac3b2"><bdi>VaultPay</bdi></a></td>
+      <td><a href="/ui/candidates/9080f42f-d000-480c-80a6-4fe253d229f2/"><span class="mono" dir="ltr">shopnowa.com</span></a><div class="small muted">domain name</div></td>
+      <td class="small"><a href="/ui/brands/a7b5cb5c-e4a0-495d-b6c9-3ac5209ac3b2/"><bdi>VaultPay</bdi></a></td>
       <td class="why"><b>Infrastructure map</b> <span title="pivot:shares cert with the campaign">shares cert with the campaign</span></td>
       <td><span class="badge state st-new" title="just discovered, not visited yet">new</span></td>
       <td><span class="muted small">—</span></td>
@@ -1006,8 +1006,8 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
     
     <tr class="wrow" style="--sc:#8A97A8" data-host="shoqnova.com">
       <td class="selcol"><input type="checkbox" class="sel" name="ids" value="68254f00-dc00-46f9-9de3-48f1a18ce7b8" form="bulkform" aria-label="select shoqnova.com"></td>
-      <td><a href="/ui/candidates/68254f00-dc00-46f9-9de3-48f1a18ce7b8"><span class="mono" dir="ltr">shoqnova.com</span></a><div class="small muted">domain name</div></td>
-      <td class="small"><a href="/ui/brands/a7b5cb5c-e4a0-495d-b6c9-3ac5209ac3b2"><bdi>VaultPay</bdi></a></td>
+      <td><a href="/ui/candidates/68254f00-dc00-46f9-9de3-48f1a18ce7b8/"><span class="mono" dir="ltr">shoqnova.com</span></a><div class="small muted">domain name</div></td>
+      <td class="small"><a href="/ui/brands/a7b5cb5c-e4a0-495d-b6c9-3ac5209ac3b2/"><bdi>VaultPay</bdi></a></td>
       <td class="why"><b>Infrastructure map</b> <span title="pivot:shares cert with the campaign">shares cert with the campaign</span></td>
       <td><span class="badge state st-new" title="just discovered, not visited yet">new</span></td>
       <td><span class="muted small">—</span></td>
@@ -1033,8 +1033,8 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
     
     <tr class="wrow" style="--sc:#8A97A8" data-host="shopnova-eu.com">
       <td class="selcol"><input type="checkbox" class="sel" name="ids" value="0db67eeb-267f-42c8-a83d-b5675bcc52e8" form="bulkform" aria-label="select shopnova-eu.com"></td>
-      <td><a href="/ui/candidates/0db67eeb-267f-42c8-a83d-b5675bcc52e8"><span class="mono" dir="ltr">shopnova-eu.com</span></a><div class="small muted">domain name</div></td>
-      <td class="small"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60"><bdi>CoinPilot</bdi></a></td>
+      <td><a href="/ui/candidates/0db67eeb-267f-42c8-a83d-b5675bcc52e8/"><span class="mono" dir="ltr">shopnova-eu.com</span></a><div class="small muted">domain name</div></td>
+      <td class="small"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/"><bdi>CoinPilot</bdi></a></td>
       <td class="why"><b>Infrastructure map</b> <span title="pivot:shares cert with the campaign">shares cert with the campaign</span></td>
       <td><span class="badge state st-new" title="just discovered, not visited yet">new</span></td>
       <td><span class="muted small">—</span></td>
@@ -1060,8 +1060,8 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
     
     <tr class="wrow" style="--sc:#8A97A8" data-host="vaultpay-verify.com">
       <td class="selcol"><input type="checkbox" class="sel" name="ids" value="35743234-5c63-4fac-85a0-53d5d79d9276" form="bulkform" aria-label="select vaultpay-verify.com"></td>
-      <td><a href="/ui/candidates/35743234-5c63-4fac-85a0-53d5d79d9276"><span class="mono" dir="ltr">vaultpay-verify.com</span></a><div class="small muted">domain name</div></td>
-      <td class="small"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60"><bdi>CoinPilot</bdi></a></td>
+      <td><a href="/ui/candidates/35743234-5c63-4fac-85a0-53d5d79d9276/"><span class="mono" dir="ltr">vaultpay-verify.com</span></a><div class="small muted">domain name</div></td>
+      <td class="small"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/"><bdi>CoinPilot</bdi></a></td>
       <td class="why"><b>Infrastructure map</b> <span title="pivot:shares cert with the campaign">shares cert with the campaign</span></td>
       <td><span class="badge state st-new" title="just discovered, not visited yet">new</span></td>
       <td><span class="muted small">—</span></td>
@@ -1087,8 +1087,8 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
     
     <tr class="wrow" style="--sc:#8A97A8" data-host="vault-pay.co">
       <td class="selcol"><input type="checkbox" class="sel" name="ids" value="fc2a9924-807c-4350-afbd-367169ed6058" form="bulkform" aria-label="select vault-pay.co"></td>
-      <td><a href="/ui/candidates/fc2a9924-807c-4350-afbd-367169ed6058"><span class="mono" dir="ltr">vault-pay.co</span></a><div class="small muted">domain name</div></td>
-      <td class="small"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60"><bdi>CoinPilot</bdi></a></td>
+      <td><a href="/ui/candidates/fc2a9924-807c-4350-afbd-367169ed6058/"><span class="mono" dir="ltr">vault-pay.co</span></a><div class="small muted">domain name</div></td>
+      <td class="small"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/"><bdi>CoinPilot</bdi></a></td>
       <td class="why"><b>Infrastructure map</b> <span title="pivot:shares cert with the campaign">shares cert with the campaign</span></td>
       <td><span class="badge state st-new" title="just discovered, not visited yet">new</span></td>
       <td><span class="muted small">—</span></td>
@@ -1114,8 +1114,8 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
     
     <tr class="wrow" style="--sc:#8A97A8" data-host="shopnowa.com">
       <td class="selcol"><input type="checkbox" class="sel" name="ids" value="5a484f92-9264-44b8-967d-0dbdf9cf8b72" form="bulkform" aria-label="select shopnowa.com"></td>
-      <td><a href="/ui/candidates/5a484f92-9264-44b8-967d-0dbdf9cf8b72"><span class="mono" dir="ltr">shopnowa.com</span></a><div class="small muted">domain name</div></td>
-      <td class="small"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60"><bdi>CoinPilot</bdi></a></td>
+      <td><a href="/ui/candidates/5a484f92-9264-44b8-967d-0dbdf9cf8b72/"><span class="mono" dir="ltr">shopnowa.com</span></a><div class="small muted">domain name</div></td>
+      <td class="small"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/"><bdi>CoinPilot</bdi></a></td>
       <td class="why"><b>Infrastructure map</b> <span title="pivot:shares cert with the campaign">shares cert with the campaign</span></td>
       <td><span class="badge state st-new" title="just discovered, not visited yet">new</span></td>
       <td><span class="muted small">—</span></td>
@@ -1141,8 +1141,8 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
     
     <tr class="wrow" style="--sc:#8A97A8" data-host="shoqnova.com">
       <td class="selcol"><input type="checkbox" class="sel" name="ids" value="72dfa4a6-5273-4899-976c-9567d2395fe2" form="bulkform" aria-label="select shoqnova.com"></td>
-      <td><a href="/ui/candidates/72dfa4a6-5273-4899-976c-9567d2395fe2"><span class="mono" dir="ltr">shoqnova.com</span></a><div class="small muted">domain name</div></td>
-      <td class="small"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60"><bdi>CoinPilot</bdi></a></td>
+      <td><a href="/ui/candidates/72dfa4a6-5273-4899-976c-9567d2395fe2/"><span class="mono" dir="ltr">shoqnova.com</span></a><div class="small muted">domain name</div></td>
+      <td class="small"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/"><bdi>CoinPilot</bdi></a></td>
       <td class="why"><b>Infrastructure map</b> <span title="pivot:shares cert with the campaign">shares cert with the campaign</span></td>
       <td><span class="badge state st-new" title="just discovered, not visited yet">new</span></td>
       <td><span class="muted small">—</span></td>
@@ -1168,8 +1168,8 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
     
     <tr class="wrow" style="--sc:#8A97A8" data-host="vaultpay-login.com">
       <td class="selcol"><input type="checkbox" class="sel" name="ids" value="380fc15a-9a2f-4cb8-945b-04dc5f85abdd" form="bulkform" aria-label="select vaultpay-login.com"></td>
-      <td><a href="/ui/candidates/380fc15a-9a2f-4cb8-945b-04dc5f85abdd"><span class="mono" dir="ltr">vaultpay-login.com</span></a><div class="small muted">domain name</div></td>
-      <td class="small"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60"><bdi>CoinPilot</bdi></a></td>
+      <td><a href="/ui/candidates/380fc15a-9a2f-4cb8-945b-04dc5f85abdd/"><span class="mono" dir="ltr">vaultpay-login.com</span></a><div class="small muted">domain name</div></td>
+      <td class="small"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/"><bdi>CoinPilot</bdi></a></td>
       <td class="why"><b>Infrastructure map</b> <span title="pivot:shares cert with the campaign">shares cert with the campaign</span></td>
       <td><span class="badge state st-new" title="just discovered, not visited yet">new</span></td>
       <td><span class="muted small">—</span></td>
@@ -1195,8 +1195,8 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
     
     <tr class="wrow" style="--sc:#8A97A8" data-host="vaultpay-secure.net">
       <td class="selcol"><input type="checkbox" class="sel" name="ids" value="74212e6a-6989-4fec-af47-6f83e26e1f07" form="bulkform" aria-label="select vaultpay-secure.net"></td>
-      <td><a href="/ui/candidates/74212e6a-6989-4fec-af47-6f83e26e1f07"><span class="mono" dir="ltr">vaultpay-secure.net</span></a><div class="small muted">domain name</div></td>
-      <td class="small"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60"><bdi>CoinPilot</bdi></a></td>
+      <td><a href="/ui/candidates/74212e6a-6989-4fec-af47-6f83e26e1f07/"><span class="mono" dir="ltr">vaultpay-secure.net</span></a><div class="small muted">domain name</div></td>
+      <td class="small"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/"><bdi>CoinPilot</bdi></a></td>
       <td class="why"><b>Infrastructure map</b> <span title="pivot:shares cert with the campaign">shares cert with the campaign</span></td>
       <td><span class="badge state st-new" title="just discovered, not visited yet">new</span></td>
       <td><span class="muted small">—</span></td>
@@ -1222,11 +1222,11 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
     
     <tr class="wrow" style="--sc:#FF4D4D" data-host="shopnova-support-center.com">
       <td class="selcol"><input type="checkbox" class="sel" name="ids" value="fa7e6540-34b8-44c4-8ea7-22c057ebc4bc" form="bulkform" aria-label="select shopnova-support-center.com"></td>
-      <td><a href="/ui/candidates/fa7e6540-34b8-44c4-8ea7-22c057ebc4bc"><span class="mono" dir="ltr">shopnova-support-center.com</span></a><div class="small muted">domain name</div></td>
-      <td class="small"><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4"><bdi>ShopNova</bdi></a></td>
+      <td><a href="/ui/candidates/fa7e6540-34b8-44c4-8ea7-22c057ebc4bc/"><span class="mono" dir="ltr">shopnova-support-center.com</span></a><div class="small muted">domain name</div></td>
+      <td class="small"><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/"><bdi>ShopNova</bdi></a></td>
       <td class="why"><b>AI answer (ChatGPT / Gemini / Google AI Mode)</b> <span class="mono" dir="ltr">ai answer: 03-9817777 — ChatGPT</span> · <b>Certificate logs</b> <span class="mono" dir="ltr">san:f3ee7bffaf74</span> · <b>Analyst URL scan</b></td>
       <td><span class="badge state st-flagged" title="scored Medium or higher: there is a finding for it">flagged (finding)</span></td>
-      <td><a href="/ui/findings/226b88f3-c048-4394-987b-32bc526c461c" class="badge sev-critical" title="open the finding">critical · confirmed phishing</a></td>
+      <td><a href="/ui/findings/226b88f3-c048-4394-987b-32bc526c461c/" class="badge sev-critical" title="open the finding">critical · confirmed phishing</a></td>
       <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="6" style="max-width:60px"></span> 2</td>
       <td class="mono small muted"><time datetime="2026-10-12T06:41:46.460976" data-local title="2026-10-12T06:41:46.460976 UTC">2026-10-12 06:41</time></td>
       <td class="mono small muted"><time datetime="2026-10-18T07:32:13.165981" data-local title="2026-10-18T07:32:13.165981 UTC">2026-10-18 07:32</time></td>
@@ -1249,8 +1249,8 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
     
     <tr class="wrow" style="--sc:#FF4D4D" data-host="account-review-center.com">
       <td class="selcol"><input type="checkbox" class="sel" name="ids" value="51cc1b96-5331-43c9-af84-b8c0fa977125" form="bulkform" aria-label="select account-review-center.com"></td>
-      <td><a href="/ui/candidates/51cc1b96-5331-43c9-af84-b8c0fa977125"><span class="mono" dir="ltr">account-review-center.com</span></a><div class="small muted">domain name</div></td>
-      <td class="small"><a href="/ui/brands/a7b5cb5c-e4a0-495d-b6c9-3ac5209ac3b2"><bdi>VaultPay</bdi></a></td>
+      <td><a href="/ui/candidates/51cc1b96-5331-43c9-af84-b8c0fa977125/"><span class="mono" dir="ltr">account-review-center.com</span></a><div class="small muted">domain name</div></td>
+      <td class="small"><a href="/ui/brands/a7b5cb5c-e4a0-495d-b6c9-3ac5209ac3b2/"><bdi>VaultPay</bdi></a></td>
       <td class="why"><b>Facebook / Instagram ads</b> <span class="mono" dir="ltr">meta_ad:US:3838162960571511</span></td>
       <td><span class="badge state st-flagged" title="scored Medium or higher: there is a finding for it">flagged (finding)</span></td>
       <td><a href="/ui/findings/b8ee9a9b-16e7-4c1f-be0b-6756491abd64/" class="badge sev-critical" title="open the finding">critical · awaiting verdict</a></td>
@@ -1276,11 +1276,11 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
     
     <tr class="wrow" style="--sc:#FF4D4D" data-host="shopnova-login.com">
       <td class="selcol"><input type="checkbox" class="sel" name="ids" value="0e4c2f54-46e9-4eb8-88e8-5e8ec1e97ba9" form="bulkform" aria-label="select shopnova-login.com"></td>
-      <td><a href="/ui/candidates/0e4c2f54-46e9-4eb8-88e8-5e8ec1e97ba9"><span class="mono" dir="ltr">shopnova-login.com</span></a><div class="small muted">domain name</div></td>
-      <td class="small"><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4"><bdi>ShopNova</bdi></a></td>
+      <td><a href="/ui/candidates/0e4c2f54-46e9-4eb8-88e8-5e8ec1e97ba9/"><span class="mono" dir="ltr">shopnova-login.com</span></a><div class="small muted">domain name</div></td>
+      <td class="small"><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/"><bdi>ShopNova</bdi></a></td>
       <td class="why"><b>AI answer (ChatGPT / Gemini / Google AI Mode)</b> <span class="mono" dir="ltr">ai answer: shopnova-login.com — Gemini</span> · <b>Certificate logs</b> <span class="mono" dir="ltr">san:69d4c596d715</span> · <b>Analyst URL scan</b></td>
       <td><span class="badge state st-flagged" title="scored Medium or higher: there is a finding for it">flagged (finding)</span></td>
-      <td><a href="/ui/findings/5d2ee722-749b-41e5-8f7d-d89bccda56f9" class="badge sev-critical" title="open the finding">critical · confirmed phishing</a></td>
+      <td><a href="/ui/findings/5d2ee722-749b-41e5-8f7d-d89bccda56f9/" class="badge sev-critical" title="open the finding">critical · confirmed phishing</a></td>
       <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
       <td class="mono small muted"><time datetime="2026-10-12T06:41:46.429899" data-local title="2026-10-12T06:41:46.429899 UTC">2026-10-12 06:41</time></td>
       <td class="mono small muted"><time datetime="2026-10-18T07:32:13.541469" data-local title="2026-10-18T07:32:13.541469 UTC">2026-10-18 07:32</time></td>
@@ -1303,8 +1303,8 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
     
     <tr class="wrow" style="--sc:#FF4D4D" data-host="shopnova-login.com">
       <td class="selcol"><input type="checkbox" class="sel" name="ids" value="a53b1e5e-736f-457b-a797-848fa573f88b" form="bulkform" aria-label="select shopnova-login.com"></td>
-      <td><a href="/ui/candidates/a53b1e5e-736f-457b-a797-848fa573f88b"><span class="mono" dir="ltr">shopnova-login.com</span></a><div class="small muted">content</div></td>
-      <td class="small"><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4"><bdi>ShopNova</bdi></a></td>
+      <td><a href="/ui/candidates/a53b1e5e-736f-457b-a797-848fa573f88b/"><span class="mono" dir="ltr">shopnova-login.com</span></a><div class="small muted">content</div></td>
+      <td class="small"><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/"><bdi>ShopNova</bdi></a></td>
       <td class="why"><b>AI answer (ChatGPT / Gemini / Google AI Mode)</b> <span class="mono" dir="ltr">AI answer: Gemini</span></td>
       <td><span class="badge state st-flagged" title="scored Medium or higher: there is a finding for it">flagged (finding)</span></td>
       <td><a href="/ui/findings/6d7c2f47-cf77-4992-9dce-622f09bbf0bf/" class="badge sev-critical" title="open the finding">critical · awaiting verdict</a></td>
@@ -1330,8 +1330,8 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
     
     <tr class="wrow" style="--sc:#FF4D4D" data-host="help@shopnova-care.net">
       <td class="selcol"><input type="checkbox" class="sel" name="ids" value="e8314377-bba0-4c1d-b458-94a1304d87d5" form="bulkform" aria-label="select help@shopnova-care.net"></td>
-      <td><a href="/ui/candidates/e8314377-bba0-4c1d-b458-94a1304d87d5"><span class="mono" dir="ltr">help@shopnova-care.net</span></a><div class="small muted">content</div></td>
-      <td class="small"><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4"><bdi>ShopNova</bdi></a></td>
+      <td><a href="/ui/candidates/e8314377-bba0-4c1d-b458-94a1304d87d5/"><span class="mono" dir="ltr">help@shopnova-care.net</span></a><div class="small muted">content</div></td>
+      <td class="small"><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/"><bdi>ShopNova</bdi></a></td>
       <td class="why"><b>AI answer (ChatGPT / Gemini / Google AI Mode)</b> <span class="mono" dir="ltr">AI answer: Gemini</span></td>
       <td><span class="badge state st-flagged" title="scored Medium or higher: there is a finding for it">flagged (finding)</span></td>
       <td><a href="/ui/findings/de838d76-5b19-4caf-9212-8d9a60589653/" class="badge sev-high" title="open the finding">high · awaiting verdict</a></td>
@@ -1357,8 +1357,8 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
     
     <tr class="wrow" style="--sc:#FF4D4D" data-host="03-9817777">
       <td class="selcol"><input type="checkbox" class="sel" name="ids" value="1ad285cd-0586-4728-b94d-4123d1caec94" form="bulkform" aria-label="select 03-9817777"></td>
-      <td><a href="/ui/candidates/1ad285cd-0586-4728-b94d-4123d1caec94"><span class="mono" dir="ltr">03-9817777</span></a><div class="small muted">content</div></td>
-      <td class="small"><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4"><bdi>ShopNova</bdi></a></td>
+      <td><a href="/ui/candidates/1ad285cd-0586-4728-b94d-4123d1caec94/"><span class="mono" dir="ltr">03-9817777</span></a><div class="small muted">content</div></td>
+      <td class="small"><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/"><bdi>ShopNova</bdi></a></td>
       <td class="why"><b>AI answer (ChatGPT / Gemini / Google AI Mode)</b> <span class="mono" dir="ltr">AI answer: ChatGPT</span></td>
       <td><span class="badge state st-flagged" title="scored Medium or higher: there is a finding for it">flagged (finding)</span></td>
       <td><a href="/ui/findings/27ceca7f-5129-4f1d-ad51-b194ed5448f9/" class="badge sev-critical" title="open the finding">critical · awaiting verdict</a></td>
@@ -1384,11 +1384,11 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
     
     <tr class="wrow" style="--sc:#FF4D4D" data-host="shopnova-refund.net">
       <td class="selcol"><input type="checkbox" class="sel" name="ids" value="c1a549d4-c861-446e-8919-15dc44930f73" form="bulkform" aria-label="select shopnova-refund.net"></td>
-      <td><a href="/ui/candidates/c1a549d4-c861-446e-8919-15dc44930f73"><span class="mono" dir="ltr">shopnova-refund.net</span></a><div class="small muted">URL path</div></td>
-      <td class="small"><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4"><bdi>ShopNova</bdi></a></td>
+      <td><a href="/ui/candidates/c1a549d4-c861-446e-8919-15dc44930f73/"><span class="mono" dir="ltr">shopnova-refund.net</span></a><div class="small muted">URL path</div></td>
+      <td class="small"><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/"><bdi>ShopNova</bdi></a></td>
       <td class="why"><b>Facebook pages / Instagram profiles</b> <span class="mono" dir="ltr">social: linked from the Facebook...</span></td>
       <td><span class="badge state st-flagged" title="scored Medium or higher: there is a finding for it">flagged (finding)</span></td>
-      <td><a href="/ui/findings/6fc97f7b-606c-4e8f-89dd-19b57358c6ff" class="badge sev-critical" title="open the finding">critical · awaiting verdict</a></td>
+      <td><a href="/ui/findings/6fc97f7b-606c-4e8f-89dd-19b57358c6ff/" class="badge sev-critical" title="open the finding">critical · awaiting verdict</a></td>
       <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
       <td class="mono small muted"><time datetime="2026-10-18T06:29:19.324007" data-local title="2026-10-18T06:29:19.324007 UTC">2026-10-18 06:29</time></td>
       <td class="mono small muted"><time datetime="2026-10-18T06:29:19.719036" data-local title="2026-10-18T06:29:19.719036 UTC">2026-10-18 06:29</time></td>
@@ -1411,11 +1411,11 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
     
     <tr class="wrow" style="--sc:#FF4D4D" data-host="onestyle-shopping.com">
       <td class="selcol"><input type="checkbox" class="sel" name="ids" value="656ccb9e-7a12-451c-91aa-32bad6cd7d10" form="bulkform" aria-label="select onestyle-shopping.com"></td>
-      <td><a href="/ui/candidates/656ccb9e-7a12-451c-91aa-32bad6cd7d10"><span class="mono" dir="ltr">onestyle-shopping.com</span></a><div class="small muted">domain name</div></td>
-      <td class="small"><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4"><bdi>ShopNova</bdi></a></td>
+      <td><a href="/ui/candidates/656ccb9e-7a12-451c-91aa-32bad6cd7d10/"><span class="mono" dir="ltr">onestyle-shopping.com</span></a><div class="small muted">domain name</div></td>
+      <td class="small"><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/"><bdi>ShopNova</bdi></a></td>
       <td class="why"><b>Facebook / Instagram ads</b> <span class="mono" dir="ltr">meta_ad:IL:3998405574774845</span> · <b>Facebook pages / Instagram profiles</b> <span class="mono" dir="ltr">social: linked from the Instagram...</span></td>
       <td><span class="badge state st-flagged" title="scored Medium or higher: there is a finding for it">flagged (finding)</span></td>
-      <td><a href="/ui/findings/3f10d506-29e2-4c08-bfce-bfb343c7d5f1" class="badge sev-critical" title="open the finding">critical · confirmed phishing</a></td>
+      <td><a href="/ui/findings/3f10d506-29e2-4c08-bfce-bfb343c7d5f1/" class="badge sev-critical" title="open the finding">critical · confirmed phishing</a></td>
       <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
       <td class="mono small muted"><time datetime="2026-10-12T06:41:46.277994" data-local title="2026-10-12T06:41:46.277994 UTC">2026-10-12 06:41</time></td>
       <td class="mono small muted"><time datetime="2026-10-18T06:29:19.459788" data-local title="2026-10-18T06:29:19.459788 UTC">2026-10-18 06:29</time></td>
@@ -1438,8 +1438,8 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
     
     <tr class="wrow" style="--sc:#35C7F2" data-host="facebook.com/shopnovarunners">
       <td class="selcol"><input type="checkbox" class="sel" name="ids" value="45352c91-8db7-41b7-ac4e-a8757ecfe479" form="bulkform" aria-label="select facebook.com/shopnovarunners"></td>
-      <td><a href="/ui/candidates/45352c91-8db7-41b7-ac4e-a8757ecfe479"><span class="mono" dir="ltr">facebook.com/shopnovarunners</span></a><div class="small muted">content</div></td>
-      <td class="small"><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4"><bdi>ShopNova</bdi></a></td>
+      <td><a href="/ui/candidates/45352c91-8db7-41b7-ac4e-a8757ecfe479/"><span class="mono" dir="ltr">facebook.com/shopnovarunners</span></a><div class="small muted">content</div></td>
+      <td class="small"><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/"><bdi>ShopNova</bdi></a></td>
       <td class="why"><b>Facebook pages / Instagram profiles</b> <span class="mono" dir="ltr">Facebook page search “ShopNova”;...</span></td>
       <td><span class="badge state st-watching" title="visited, below the finding threshold: re-checked on a schedule">watching</span></td>
       <td><span class="muted small">—</span></td>
@@ -1465,11 +1465,11 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
     
     <tr class="wrow" style="--sc:#FF4D4D" data-host="facebook.com/shopnova.support.help">
       <td class="selcol"><input type="checkbox" class="sel" name="ids" value="4b9c37d8-83cb-48cc-8a51-17e612c26abe" form="bulkform" aria-label="select facebook.com/shopnova.support.help"></td>
-      <td><a href="/ui/candidates/4b9c37d8-83cb-48cc-8a51-17e612c26abe"><span class="mono" dir="ltr">facebook.com/shopnova.support.help</span></a><div class="small muted">content</div></td>
-      <td class="small"><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4"><bdi>ShopNova</bdi></a></td>
+      <td><a href="/ui/candidates/4b9c37d8-83cb-48cc-8a51-17e612c26abe/"><span class="mono" dir="ltr">facebook.com/shopnova.support.help</span></a><div class="small muted">content</div></td>
+      <td class="small"><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/"><bdi>ShopNova</bdi></a></td>
       <td class="why"><b>Facebook pages / Instagram profiles</b> <span class="mono" dir="ltr">Facebook page search “ShopNova”;...</span></td>
       <td><span class="badge state st-flagged" title="scored Medium or higher: there is a finding for it">flagged (finding)</span></td>
-      <td><a href="/ui/findings/2e59c045-14b0-4c09-baac-28046be16ff5" class="badge sev-critical" title="open the finding">critical · awaiting verdict</a></td>
+      <td><a href="/ui/findings/2e59c045-14b0-4c09-baac-28046be16ff5/" class="badge sev-critical" title="open the finding">critical · awaiting verdict</a></td>
       <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
       <td class="mono small muted"><time datetime="2026-10-12T06:41:46.228749" data-local title="2026-10-12T06:41:46.228749 UTC">2026-10-12 06:41</time></td>
       <td class="mono small muted"><time datetime="2026-10-18T06:29:19.274499" data-local title="2026-10-18T06:29:19.274499 UTC">2026-10-18 06:29</time></td>
@@ -1492,11 +1492,11 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
     
     <tr class="wrow" style="--sc:#FF4D4D" data-host="instagram.com/shopnova.israel.official">
       <td class="selcol"><input type="checkbox" class="sel" name="ids" value="8aa63d52-1f50-44a9-b52c-275e4f528d2d" form="bulkform" aria-label="select instagram.com/shopnova.israel.official"></td>
-      <td><a href="/ui/candidates/8aa63d52-1f50-44a9-b52c-275e4f528d2d"><span class="mono" dir="ltr">instagram.com/shopnova.israel.official</span></a><div class="small muted">content</div></td>
-      <td class="small"><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4"><bdi>ShopNova</bdi></a></td>
+      <td><a href="/ui/candidates/8aa63d52-1f50-44a9-b52c-275e4f528d2d/"><span class="mono" dir="ltr">instagram.com/shopnova.israel.official</span></a><div class="small muted">content</div></td>
+      <td class="small"><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/"><bdi>ShopNova</bdi></a></td>
       <td class="why"><b>Facebook pages / Instagram profiles</b> <span class="mono" dir="ltr">Google: site:instagram.com</span></td>
       <td><span class="badge state st-flagged" title="scored Medium or higher: there is a finding for it">flagged (finding)</span></td>
-      <td><a href="/ui/findings/d89d7f73-509b-4dab-b831-7ebdd96d6c06" class="badge sev-critical" title="open the finding">critical · awaiting verdict</a></td>
+      <td><a href="/ui/findings/d89d7f73-509b-4dab-b831-7ebdd96d6c06/" class="badge sev-critical" title="open the finding">critical · awaiting verdict</a></td>
       <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
       <td class="mono small muted"><time datetime="2026-10-12T06:41:46.177257" data-local title="2026-10-12T06:41:46.177257 UTC">2026-10-12 06:41</time></td>
       <td class="mono small muted"><time datetime="2026-10-18T06:29:19.228797" data-local title="2026-10-18T06:29:19.228797 UTC">2026-10-18 06:29</time></td>
@@ -1519,8 +1519,8 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
     
     <tr class="wrow" style="--sc:#3a4658" data-host="shopnovo.co.il">
       <td class="selcol"></td>
-      <td><a href="/ui/candidates/5f68018c-bf80-4b1d-ba4c-086cc801d968"><span class="mono" dir="ltr">shopnovo.co.il</span></a><div class="small muted">domain name</div></td>
-      <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4"><bdi>ShopNova · Israel</bdi></a></td>
+      <td><a href="/ui/candidates/5f68018c-bf80-4b1d-ba4c-086cc801d968/"><span class="mono" dir="ltr">shopnovo.co.il</span></a><div class="small muted">domain name</div></td>
+      <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/"><bdi>ShopNova · Israel</bdi></a></td>
       <td class="why"><b>Look-alike names</b> <span class="mono" dir="ltr">vowel-swap:shopnova.co.il</span></td>
       <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
       <td><span class="muted small">—</span></td>
@@ -1539,8 +1539,8 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
     
     <tr class="wrow" style="--sc:#3a4658" data-host="shopoova.co.il">
       <td class="selcol"></td>
-      <td><a href="/ui/candidates/a88cb3f1-96f2-4d1f-8d17-315c44d8d4c4"><span class="mono" dir="ltr">shopoova.co.il</span></a><div class="small muted">domain name</div></td>
-      <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4"><bdi>ShopNova · Israel</bdi></a></td>
+      <td><a href="/ui/candidates/a88cb3f1-96f2-4d1f-8d17-315c44d8d4c4/"><span class="mono" dir="ltr">shopoova.co.il</span></a><div class="small muted">domain name</div></td>
+      <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/"><bdi>ShopNova · Israel</bdi></a></td>
       <td class="why"><b>Look-alike names</b> <span class="mono" dir="ltr">bitsquatting:shopnova.co.il</span></td>
       <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
       <td><span class="muted small">—</span></td>
@@ -1559,8 +1559,8 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
     
     <tr class="wrow" style="--sc:#3a4658" data-host="shopnovy.co.il">
       <td class="selcol"></td>
-      <td><a href="/ui/candidates/733db5aa-ef1e-47e4-b2ab-0330db5fd32e"><span class="mono" dir="ltr">shopnovy.co.il</span></a><div class="small muted">domain name</div></td>
-      <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4"><bdi>ShopNova · Israel</bdi></a></td>
+      <td><a href="/ui/candidates/733db5aa-ef1e-47e4-b2ab-0330db5fd32e/"><span class="mono" dir="ltr">shopnovy.co.il</span></a><div class="small muted">domain name</div></td>
+      <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/"><bdi>ShopNova · Israel</bdi></a></td>
       <td class="why"><b>Look-alike names</b> <span class="mono" dir="ltr">replacement:shopnova.co.il</span></td>
       <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
       <td><span class="muted small">—</span></td>
@@ -1579,8 +1579,8 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
     
     <tr class="wrow" style="--sc:#3a4658" data-host="shhopnova.co.il">
       <td class="selcol"></td>
-      <td><a href="/ui/candidates/b65d7df8-7310-4f89-99f0-03a4f186f92c"><span class="mono" dir="ltr">shhopnova.co.il</span></a><div class="small muted">domain name</div></td>
-      <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4"><bdi>ShopNova · Israel</bdi></a></td>
+      <td><a href="/ui/candidates/b65d7df8-7310-4f89-99f0-03a4f186f92c/"><span class="mono" dir="ltr">shhopnova.co.il</span></a><div class="small muted">domain name</div></td>
+      <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/"><bdi>ShopNova · Israel</bdi></a></td>
       <td class="why"><b>Look-alike names</b> <span class="mono" dir="ltr">repetition:shopnova.co.il</span></td>
       <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
       <td><span class="muted small">—</span></td>
@@ -1599,8 +1599,8 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
     
     <tr class="wrow" style="--sc:#3a4658" data-host="shopnvoa.co.il">
       <td class="selcol"></td>
-      <td><a href="/ui/candidates/66566c18-cd00-4286-99db-d5ee4d511315"><span class="mono" dir="ltr">shopnvoa.co.il</span></a><div class="small muted">domain name</div></td>
-      <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4"><bdi>ShopNova · Israel</bdi></a></td>
+      <td><a href="/ui/candidates/66566c18-cd00-4286-99db-d5ee4d511315/"><span class="mono" dir="ltr">shopnvoa.co.il</span></a><div class="small muted">domain name</div></td>
+      <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/"><bdi>ShopNova · Israel</bdi></a></td>
       <td class="why"><b>Look-alike names</b> <span class="mono" dir="ltr">transposition:shopnova.co.il</span></td>
       <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
       <td><span class="muted small">—</span></td>
@@ -1619,8 +1619,8 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
     
     <tr class="wrow" style="--sc:#3a4658" data-host="shopnoa.co.il">
       <td class="selcol"></td>
-      <td><a href="/ui/candidates/adca22e2-3a23-4723-986a-a76a7566880f"><span class="mono" dir="ltr">shopnoa.co.il</span></a><div class="small muted">domain name</div></td>
-      <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4"><bdi>ShopNova · Israel</bdi></a></td>
+      <td><a href="/ui/candidates/adca22e2-3a23-4723-986a-a76a7566880f/"><span class="mono" dir="ltr">shopnoa.co.il</span></a><div class="small muted">domain name</div></td>
+      <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/"><bdi>ShopNova · Israel</bdi></a></td>
       <td class="why"><b>Look-alike names</b> <span class="mono" dir="ltr">omission:shopnova.co.il</span></td>
       <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
       <td><span class="muted small">—</span></td>
@@ -1639,8 +1639,8 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
     
     <tr class="wrow" style="--sc:#3a4658" data-host="shopnova1.co.il">
       <td class="selcol"></td>
-      <td><a href="/ui/candidates/61191d8a-b0c0-4357-ab3c-e4c23d23b1c0"><span class="mono" dir="ltr">shopnova1.co.il</span></a><div class="small muted">domain name</div></td>
-      <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4"><bdi>ShopNova · Israel</bdi></a></td>
+      <td><a href="/ui/candidates/61191d8a-b0c0-4357-ab3c-e4c23d23b1c0/"><span class="mono" dir="ltr">shopnova1.co.il</span></a><div class="small muted">domain name</div></td>
+      <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/"><bdi>ShopNova · Israel</bdi></a></td>
       <td class="why"><b>Look-alike names</b> <span class="mono" dir="ltr">addition:shopnova.co.il</span></td>
       <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
       <td><span class="muted small">—</span></td>
@@ -1659,8 +1659,8 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
     
     <tr class="wrow" style="--sc:#3a4658" data-host="shopnova.sb">
       <td class="selcol"></td>
-      <td><a href="/ui/candidates/771c3eeb-c13e-4fc9-aa53-ef09c8da2e40"><span class="mono" dir="ltr">shopnova.sb</span></a><div class="small muted">domain name</div></td>
-      <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4"><bdi>ShopNova · Israel</bdi></a></td>
+      <td><a href="/ui/candidates/771c3eeb-c13e-4fc9-aa53-ef09c8da2e40/"><span class="mono" dir="ltr">shopnova.sb</span></a><div class="small muted">domain name</div></td>
+      <td class="small"><a href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/"><bdi>ShopNova · Israel</bdi></a></td>
       <td class="why"><b>Look-alike names</b> <span class="mono" dir="ltr">tld-swap:shopnova.co.il</span></td>
       <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
       <td><span class="muted small">—</span></td>
@@ -1699,13 +1699,13 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
   <p class="small muted" style="margin:0 0 8px"><b>new</b> just discovered · <b>watching</b> visited, below the finding threshold, re-checked on a schedule · <b>flagged</b> scored Medium+, there is a finding · <b>long watch</b> quiet for the whole watch window, checked less often · <b>dismissed</b> dead, legitimate or allowlisted.</p>
   <div class="funnel">
     
-    <a href="/ui/candidates?state=new" data-w="2.4" style="background:#8A97A8;" title="new: 29 (2.4%)"><span class="lbl">new </span>29</a>
+    <a href="/ui/candidates/_b8a596c62d/" data-w="2.4" style="background:#8A97A8;" title="new: 29 (2.4%)"><span class="lbl">new </span>29</a>
     
-    <a href="/ui/candidates?state=watching" data-w="3.3" style="background:#35C7F2;" title="watching: 40 (3.3%)"><span class="lbl">watching </span>40</a>
+    <a href="/ui/candidates/_62bddd2d2d/" data-w="3.3" style="background:#35C7F2;" title="watching: 40 (3.3%)"><span class="lbl">watching </span>40</a>
     
-    <a href="/ui/candidates?state=flagged" data-w="3.9" style="background:#FF4D4D;" title="flagged: 48 (3.9%)"><span class="lbl">flagged </span>48</a>
+    <a href="/ui/candidates/_062528c4d1/" data-w="3.9" style="background:#FF4D4D;" title="flagged: 48 (3.9%)"><span class="lbl">flagged </span>48</a>
     
-    <a href="/ui/candidates?state=dismissed" data-w="90.4" style="background:#3a4658;color:#cfd8e3" title="dismissed: 1100 (90.4%)"><span class="lbl">dismissed </span>1100</a>
+    <a href="/ui/candidates/_dbf7168028/" data-w="90.4" style="background:#3a4658;color:#cfd8e3" title="dismissed: 1100 (90.4%)"><span class="lbl">dismissed </span>1100</a>
     
   </div>
   <div class="funnel-legend"><span><i style="background:#8A97A8"></i>new <b>29</b></span><span><i style="background:#35C7F2"></i>watching <b>40</b></span><span><i style="background:#FF4D4D"></i>flagged <b>48</b></span><span><i style="background:#3a4658"></i>dismissed <b>1100</b></span></div>
@@ -1716,21 +1716,21 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
     <h2>Next re-scans <span class="muted">· 48h</span></h2>
     <ul class="upcoming" style="list-style:none;padding:0;margin:0">
       
-      <li><span class="radar"></span><a class="mono small" href="/ui/candidates/f83bd601-7f6e-45f6-a5f8-cac27bb98b11">footstyle-il.com</a><span class="count" data-rel="2026-10-12T12:46:00.768303+00:00" data-due="1"></span></li>
+      <li><span class="radar"></span><a class="mono small" href="/ui/candidates/f83bd601-7f6e-45f6-a5f8-cac27bb98b11/">footstyle-il.com</a><span class="count" data-rel="2026-10-12T12:46:00.768303+00:00" data-due="1"></span></li>
       
-      <li><span class="radar"></span><a class="mono small" href="/ui/candidates/3457bee5-0dd3-479a-818f-b5d64396c01b">sportzone-il.co.il</a><span class="count" data-rel="2026-10-12T12:46:00.889454+00:00" data-due="1"></span></li>
+      <li><span class="radar"></span><a class="mono small" href="/ui/candidates/3457bee5-0dd3-479a-818f-b5d64396c01b/">sportzone-il.co.il</a><span class="count" data-rel="2026-10-12T12:46:00.889454+00:00" data-due="1"></span></li>
       
-      <li><span class="radar"></span><a class="mono small" href="/ui/candidates/6c1b79f0-a091-4b11-bbe4-cbcec7e3f2fd">stepcloud-store.com</a><span class="count" data-rel="2026-10-12T12:46:01.028737+00:00" data-due="1"></span></li>
+      <li><span class="radar"></span><a class="mono small" href="/ui/candidates/6c1b79f0-a091-4b11-bbe4-cbcec7e3f2fd/">stepcloud-store.com</a><span class="count" data-rel="2026-10-12T12:46:01.028737+00:00" data-due="1"></span></li>
       
-      <li><span class="radar"></span><a class="mono small" href="/ui/candidates/08cbfaaa-8046-4f32-ac1f-be015404c62a">kicksmart-il.co.il</a><span class="count" data-rel="2026-10-12T12:46:01.156778+00:00" data-due="1"></span></li>
+      <li><span class="radar"></span><a class="mono small" href="/ui/candidates/08cbfaaa-8046-4f32-ac1f-be015404c62a/">kicksmart-il.co.il</a><span class="count" data-rel="2026-10-12T12:46:01.156778+00:00" data-due="1"></span></li>
       
-      <li><span class="radar"></span><a class="mono small" href="/ui/candidates/d2ee29be-7c62-4cc2-a48c-bad8a29a36b0">outlet-sportive.co.il</a><span class="count" data-rel="2026-10-12T12:46:01.259905+00:00" data-due="1"></span></li>
+      <li><span class="radar"></span><a class="mono small" href="/ui/candidates/d2ee29be-7c62-4cc2-a48c-bad8a29a36b0/">outlet-sportive.co.il</a><span class="count" data-rel="2026-10-12T12:46:01.259905+00:00" data-due="1"></span></li>
       
-      <li><span class="radar"></span><a class="mono small" href="/ui/candidates/c312d420-9e2d-4230-a393-f03087cc1a05">nofim-sport.co.il</a><span class="count" data-rel="2026-10-12T12:46:01.376409+00:00" data-due="1"></span></li>
+      <li><span class="radar"></span><a class="mono small" href="/ui/candidates/c312d420-9e2d-4230-a393-f03087cc1a05/">nofim-sport.co.il</a><span class="count" data-rel="2026-10-12T12:46:01.376409+00:00" data-due="1"></span></li>
       
-      <li><span class="radar"></span><a class="mono small" href="/ui/candidates/f694f831-4f84-4fec-980a-fb02e2be23ce">runimport.com</a><span class="count" data-rel="2026-10-12T12:46:01.471325+00:00" data-due="1"></span></li>
+      <li><span class="radar"></span><a class="mono small" href="/ui/candidates/f694f831-4f84-4fec-980a-fb02e2be23ce/">runimport.com</a><span class="count" data-rel="2026-10-12T12:46:01.471325+00:00" data-due="1"></span></li>
       
-      <li><span class="radar"></span><a class="mono small" href="/ui/candidates/b5907bf1-2eb7-49fc-b302-c81a611162fe">stylehub-israel.com</a><span class="count" data-rel="2026-10-12T12:46:01.602696+00:00" data-due="1"></span></li>
+      <li><span class="radar"></span><a class="mono small" href="/ui/candidates/b5907bf1-2eb7-49fc-b302-c81a611162fe/">stylehub-israel.com</a><span class="count" data-rel="2026-10-12T12:46:01.602696+00:00" data-due="1"></span></li>
       
     </ul>
     

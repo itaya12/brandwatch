@@ -145,8 +145,8 @@ button.chip{font:inherit;font-family:var(--mono);font-size:11px;box-shadow:none}
   .intro.open{display:block}
   .kpis{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:6px}
   .kpi{padding:8px 9px;border-radius:9px}
-  .kpi .v{font-size:19px!important;line-height:1.1}
-  .kpi .l{font-size:9px;letter-spacing:.04em;line-height:1.25;margin-top:2px}
+  .kpis .kpi .v{font-size:19px;line-height:1.1;overflow-wrap:anywhere}
+  .kpi .l{font-size:9px;letter-spacing:.04em;line-height:1.25;margin-top:2px;overflow-wrap:anywhere}
   details.mfold{margin:0 0 10px;border:1px solid var(--border);border-radius:10px;background:var(--panel2)}
   details.mfold>summary{cursor:pointer;padding:9px 12px;font-size:13px;color:var(--accent2);list-style:none}
   details.mfold>summary::-webkit-details-marker{display:none}
@@ -1158,7 +1158,7 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
     <p>BrandWatch opens <b>shopnova.com</b> once and keeps a fingerprint: the favicon's hash, a picture of the homepage, its colours, its login form and the words a phisher would copy.</p>
     <ul class="pts"><li><b>AI</b> reads the site and writes the Google searches an attacker would target.</li></ul>
     <p class="why">Every suspect is later compared against this fingerprint, not against a guess.</p>
-    <div class="links"><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4">see the brand page →</a><a href="#step-1" data-deep>how exactly? →</a></div>
+    <div class="links"><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/">see the brand page →</a><a href="#step-1" data-deep>how exactly? →</a></div>
   </div>
   <div class="stage">
     <button type="button" class="replay">↻ replay</button>
@@ -1197,7 +1197,7 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
       <li><b>AI assistants:</b> ChatGPT and Gemini are asked what a customer asks; a phone or e-mail that is not on the brand's site becomes a finding.</li>
     </ul>
     <p class="why">Found before anyone reports it — the brand's own sites and big platforms are dropped first.</p>
-    <div class="links"><a href="/ui/candidates/">see the watchlist →</a><a href="/ui/jobs/add4c607-69e3-40f1-a14b-92a326cd31b0">replay a real scan →</a><a href="#step-2" data-deep>how exactly? →</a></div>
+    <div class="links"><a href="/ui/candidates/">see the watchlist →</a><a href="/ui/jobs/add4c607-69e3-40f1-a14b-92a326cd31b0/">replay a real scan →</a><a href="#step-2" data-deep>how exactly? →</a></div>
   </div>
   <div class="stage">
     <button type="button" class="replay">↻ replay</button>
@@ -1247,7 +1247,7 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
       <li>A <b>locked-down browser</b> that can't reach internal systems; everything it sees is kept as evidence nobody can edit.</li>
     </ul>
     <p class="why">The score uses what a victim sees, not what the kit chose to show a scanner.</p>
-    <div class="links"><a href="/ui/findings/1bcfbce5-b1c6-44d8-b534-f678beefe1d5#looks">see this kit →</a><a href="#step-5" data-deep>how exactly? →</a></div>
+    <div class="links"><a href="/ui/findings/1bcfbce5-b1c6-44d8-b534-f678beefe1d5/#looks">see this kit →</a><a href="#step-5" data-deep>how exactly? →</a></div>
   </div>
   <div class="stage">
     <button type="button" class="replay">↻ replay</button>
@@ -1287,7 +1287,7 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
     <p>50 signals in 7 capped groups, each worth fixed points: does the address use the brand, does the page look the same, does it ask for a password, how new is it, is it hiding.</p>
     <ul class="pts"><li>The same evidence always gives the same score; <b>AI is a second opinion</b> and never changes the number.</li></ul>
     <p class="why">No black box: every point traces back to a piece of evidence.</p>
-    <div class="links"><a href="/ui/findings/1bcfbce5-b1c6-44d8-b534-f678beefe1d5#why">see every signal →</a><a href="#step-7" data-deep>how exactly? →</a></div>
+    <div class="links"><a href="/ui/findings/1bcfbce5-b1c6-44d8-b534-f678beefe1d5/#why">see every signal →</a><a href="#step-7" data-deep>how exactly? →</a></div>
   </div>
   <div class="stage">
     <button type="button" class="replay">↻ replay</button>
@@ -1317,7 +1317,7 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
     <p>Nothing is confirmed automatically: an analyst reads the evidence and presses <b>Confirm</b>. From that one site, BrandWatch follows what the attacker reused — server, certificate, favicon, tracking code, owner — to the rest of the operation.</p>
     <ul class="pts"><li>Neighbours that only share a cheap server are <b>dropped as noise</b>, with the reason written down.</li></ul>
     <p class="why">One fake site leads to the whole operation, and every indicator exports to a SIEM as STIX 2.1.</p>
-    <div class="links"><a href="/ui/campaigns/88288233-1dad-4751-955d-c8fbc835dc10">open the full map →</a><a href="#step-12" data-deep>how exactly? →</a></div>
+    <div class="links"><a href="/ui/campaigns/88288233-1dad-4751-955d-c8fbc835dc10/">open the full map →</a><a href="#step-12" data-deep>how exactly? →</a></div>
   </div>
   <div class="stage">
     <button type="button" class="replay">↻ replay</button>
@@ -1367,7 +1367,7 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
       <li>A fake <b>Facebook / Instagram</b> ad or page gets Meta's report flow and a ready-to-paste report.</li>
     </ul>
     <p class="why">BrandWatch never sends anything by itself: a person reviews and sends, and every step lands in the audit log.</p>
-    <div class="links"><a href="/ui/takedowns/71c2d1cb-03bb-40bb-9283-04feaa1f3a15">open this takedown →</a><a href="/ui/takedowns/">all takedowns →</a><a href="#step-13" data-deep>how exactly? →</a></div>
+    <div class="links"><a href="/ui/takedowns/71c2d1cb-03bb-40bb-9283-04feaa1f3a15/">open this takedown →</a><a href="/ui/takedowns/">all takedowns →</a><a href="#step-13" data-deep>how exactly? →</a></div>
   </div>
   <div class="stage">
     <button type="button" class="replay">↻ replay</button>
@@ -1398,7 +1398,7 @@ First observed    : 2026-10-12T06:41:46.604012</div>
   <p class="rv" style="--t:300">That's BrandWatch, in the six steps above. Every step is explainable, every piece of evidence is tamper-proof, and a person decides everything that matters.</p>
   <div class="sx-cta rv" style="--t:600">
     <a class="btn primary big" href="/ui/dashboard/">Open the dashboard →</a>
-    <a class="btn big" href="/ui/findings/1bcfbce5-b1c6-44d8-b534-f678beefe1d5">Open the cloaked kit</a>
+    <a class="btn big" href="/ui/findings/1bcfbce5-b1c6-44d8-b534-f678beefe1d5/">Open the cloaked kit</a>
     <button type="button" class="btn big ghost" id="again">↻ Watch again</button>
   </div>
 </section>
@@ -1432,7 +1432,7 @@ First observed    : 2026-10-12T06:41:46.604012</div>
         
         
         <div class="hiw-step" id="step-1"><div class="n">1 · favicon, screenshot, login form, keywords</div><b>Learn the real site</b><p>Fingerprint the brand&#39;s real site: favicon hash, screenshot hash, colours, the login and sign-up pages, keywords — and an AI-written list of the Google searches a phisher would target.</p>
-          <div class="hiw-foot"><a class="see" href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4">see it →</a>
+          <div class="hiw-foot"><a class="see" href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/">see it →</a>
 <span class="mi"><button type="button" class="mi-btn" aria-expanded="false" aria-label="More info about Learn the real site">More info</button>
   <div class="deep" role="dialog" aria-label="Learn the real site — more info">
     <button type="button" class="mi-x" aria-label="Close">✕</button>
@@ -1458,7 +1458,7 @@ First observed    : 2026-10-12T06:41:46.604012</div>
   </div></span></div></div>
         
         <div class="hiw-step" id="step-2"><div class="n">2 · typos, new certificates, new domains, Google, Facebook / Instagram ads</div><b>Find look-alikes</b><p>Five streams look for look-alikes: typo and homoglyph permutations on 1,000+ TLDs (DNS-checked), new TLS certificates, yesterday&#39;s newly registered domains, Google results, and the urlscan archive — plus fake Facebook / Instagram accounts and ads, and what ChatGPT, Gemini and Google AI Mode tell users about the brand&#39;s contacts.</p>
-          <div class="hiw-foot"><a class="see" href="/ui/jobs/add4c607-69e3-40f1-a14b-92a326cd31b0">see it →</a>
+          <div class="hiw-foot"><a class="see" href="/ui/jobs/add4c607-69e3-40f1-a14b-92a326cd31b0/">see it →</a>
 <span class="mi"><button type="button" class="mi-btn" aria-expanded="false" aria-label="More info about Find look-alikes">More info</button>
   <div class="deep" role="dialog" aria-label="Find look-alikes — more info">
     <button type="button" class="mi-x" aria-label="Close">✕</button>
@@ -1490,7 +1490,7 @@ First observed    : 2026-10-12T06:41:46.604012</div>
   </div></span></div></div>
         
         <div class="hiw-step" id="step-3"><div class="n">3 · merge, drop official &amp; known platforms</div><b>Clean the list</b><p>One candidate per URL with every stream that found it; official domains, whitelisted partners and big platforms (YouTube, app stores) are dropped before anything is fetched.</p>
-          <div class="hiw-foot"><a class="see" href="/ui/jobs/add4c607-69e3-40f1-a14b-92a326cd31b0">see it →</a>
+          <div class="hiw-foot"><a class="see" href="/ui/jobs/add4c607-69e3-40f1-a14b-92a326cd31b0/">see it →</a>
 <span class="mi"><button type="button" class="mi-btn" aria-expanded="false" aria-label="More info about Clean the list">More info</button>
   <div class="deep" role="dialog" aria-label="Clean the list — more info">
     <button type="button" class="mi-x" aria-label="Close">✕</button>
@@ -1514,7 +1514,7 @@ First observed    : 2026-10-12T06:41:46.604012</div>
   </div></span></div></div>
         
         <div class="hiw-step" id="step-4"><div class="n">4 · DNS, WHOIS, screenshot, HTML</div><b>Visit in a sandbox</b><p>Each site is visited in a sandboxed browser behind an SSRF guard: DNS, WHOIS / RDAP, TLS, screenshot, HTML, favicon and reputation feeds — all stored as evidence.</p>
-          <div class="hiw-foot"><a class="see" href="/ui/findings/d3cddf21-a088-4189-9f17-2cf8dba61ab0">see it →</a>
+          <div class="hiw-foot"><a class="see" href="/ui/findings/d3cddf21-a088-4189-9f17-2cf8dba61ab0/">see it →</a>
 <span class="mi"><button type="button" class="mi-btn" aria-expanded="false" aria-label="More info about Visit in a sandbox">More info</button>
   <div class="deep" role="dialog" aria-label="Visit in a sandbox — more info">
     <button type="button" class="mi-x" aria-label="Close">✕</button>
@@ -1545,7 +1545,7 @@ First observed    : 2026-10-12T06:41:46.604012</div>
   </div></span></div></div>
         
         <div class="hiw-step" id="step-5"><div class="n">5 · fetch as a bot, a victim and a home IP</div><b>Catch cloaking</b><p>Kits that hide from scanners are fetched again as a bot, as a victim link, from a Google referer — and as a person: a real Chrome (User-Agent, Accept-Language, client hints, language and time zone) through a residential or a mobile 4G / 5G proxy, or both, as a desktop and / or a phone. The score uses what a victim sees.</p>
-          <div class="hiw-foot"><a class="see" href="/ui/findings/d3cddf21-a088-4189-9f17-2cf8dba61ab0">see it →</a>
+          <div class="hiw-foot"><a class="see" href="/ui/findings/d3cddf21-a088-4189-9f17-2cf8dba61ab0/">see it →</a>
 <span class="mi"><button type="button" class="mi-btn" aria-expanded="false" aria-label="More info about Catch cloaking">More info</button>
   <div class="deep" role="dialog" aria-label="Catch cloaking — more info">
     <button type="button" class="mi-x" aria-label="Close">✕</button>
@@ -1573,7 +1573,7 @@ First observed    : 2026-10-12T06:41:46.604012</div>
   </div></span></div></div>
         
         <div class="hiw-step" id="step-6"><div class="n">6 · 50 signals in 7 groups</div><b>Compare with the brand</b><p>50 signals in 7 groups compare the site with the brand: identity tricks, visual copy, what the page asks for, shared infrastructure, reputation, freshness, evasion.</p>
-          <div class="hiw-foot"><a class="see" href="/ui/findings/d3cddf21-a088-4189-9f17-2cf8dba61ab0">see it →</a>
+          <div class="hiw-foot"><a class="see" href="/ui/findings/d3cddf21-a088-4189-9f17-2cf8dba61ab0/">see it →</a>
 <span class="mi"><button type="button" class="mi-btn" aria-expanded="false" aria-label="More info about Compare with the brand">More info</button>
   <div class="deep" role="dialog" aria-label="Compare with the brand — more info">
     <button type="button" class="mi-x" aria-label="Close">✕</button>
@@ -1597,7 +1597,7 @@ First observed    : 2026-10-12T06:41:46.604012</div>
   </div></span></div></div>
         
         <div class="hiw-step" id="step-7"><div class="n">7 · risk 0–100 + confidence</div><b>Score &amp; explain</b><p>Deterministic and versioned: points per signal, a cap per group, combination rules for known kit shapes, false-positive penalties — plus a separate confidence axis. AI and a classifier give advisory opinions only.</p>
-          <div class="hiw-foot"><a class="see" href="/ui/findings/d3cddf21-a088-4189-9f17-2cf8dba61ab0">see it →</a>
+          <div class="hiw-foot"><a class="see" href="/ui/findings/d3cddf21-a088-4189-9f17-2cf8dba61ab0/">see it →</a>
 <span class="mi"><button type="button" class="mi-btn" aria-expanded="false" aria-label="More info about Score &amp; explain">More info</button>
   <div class="deep" role="dialog" aria-label="Score &amp; explain — more info">
     <button type="button" class="mi-x" aria-label="Close">✕</button>
@@ -1649,7 +1649,7 @@ First observed    : 2026-10-12T06:41:46.604012</div>
   </div></span></div></div>
         
         <div class="hiw-step" id="step-9"><div class="n">9 · what this scan did, step by step</div><b>Report</b><p>The live console narrates every step while it happens and ends with a plain-language report; an engineering trace records every provider call, AI prompt and the scoring maths.</p>
-          <div class="hiw-foot"><a class="see" href="/ui/jobs/add4c607-69e3-40f1-a14b-92a326cd31b0">see it →</a>
+          <div class="hiw-foot"><a class="see" href="/ui/jobs/add4c607-69e3-40f1-a14b-92a326cd31b0/">see it →</a>
 <span class="mi"><button type="button" class="mi-btn" aria-expanded="false" aria-label="More info about Report">More info</button>
   <div class="deep" role="dialog" aria-label="Report — more info">
     <button type="button" class="mi-x" aria-label="Close">✕</button>
@@ -1672,7 +1672,7 @@ First observed    : 2026-10-12T06:41:46.604012</div>
     </details>
   </div></span></div></div>
         
-        <div class="hiw-step" id="step-10"><div class="n">10 · verdict</div><b>Confirm or dismiss</b><p>The finding page explains itself in two sentences and shows every signal, its points and the evidence. A human decides; the reason goes to the audit log and the training set.</p><div class="hiw-foot"><a class="see" href="/ui/findings/2e59c045-14b0-4c09-baac-28046be16ff5">see it →</a>
+        <div class="hiw-step" id="step-10"><div class="n">10 · verdict</div><b>Confirm or dismiss</b><p>The finding page explains itself in two sentences and shows every signal, its points and the evidence. A human decides; the reason goes to the audit log and the training set.</p><div class="hiw-foot"><a class="see" href="/ui/findings/2e59c045-14b0-4c09-baac-28046be16ff5/">see it →</a>
 <span class="mi"><button type="button" class="mi-btn" aria-expanded="false" aria-label="More info about Confirm or dismiss">More info</button>
   <div class="deep" role="dialog" aria-label="Confirm or dismiss — more info">
     <button type="button" class="mi-x" aria-label="Close">✕</button>
@@ -1694,7 +1694,7 @@ First observed    : 2026-10-12T06:41:46.604012</div>
     <h5>Code</h5><div class="mods"><span>detection/finding.py</span><span>api/findings.py</span><span>api/campaigns.py</span><span>detection/ml.py</span></div>
     </details>
   </div></span></div></div>
-        <div class="hiw-step" id="step-11"><div class="n">11 · investigate</div><b>Site &amp; network investigation</b><p>VirusTotal-style lookup on the finding page itself: detections, DNS, certificate, RDAP and abuse contact, WHOIS history (every past owner, and details hidden later), passive DNS, every other site on the server, urlscan similar pages.</p><div class="hiw-foot"><a class="see" href="/ui/findings/d3cddf21-a088-4189-9f17-2cf8dba61ab0#reputation">see it →</a>
+        <div class="hiw-step" id="step-11"><div class="n">11 · investigate</div><b>Site &amp; network investigation</b><p>VirusTotal-style lookup on the finding page itself: detections, DNS, certificate, RDAP and abuse contact, WHOIS history (every past owner, and details hidden later), passive DNS, every other site on the server, urlscan similar pages.</p><div class="hiw-foot"><a class="see" href="/ui/findings/d3cddf21-a088-4189-9f17-2cf8dba61ab0/#reputation">see it →</a>
 <span class="mi"><button type="button" class="mi-btn" aria-expanded="false" aria-label="More info about Site &amp; network investigation">More info</button>
   <div class="deep" role="dialog" aria-label="Site &amp; network investigation — more info">
     <button type="button" class="mi-x" aria-label="Close">✕</button>
@@ -1724,7 +1724,7 @@ First observed    : 2026-10-12T06:41:46.604012</div>
     <h5>Code</h5><div class="mods"><span>detection/intel.py</span><span>detection/whois_history.py</span><span>api/intel.py</span><span>providers/impl/clients.py</span><span>security/tls_probe.py</span></div>
     </details>
   </div></span></div></div>
-        <div class="hiw-step" id="step-12"><div class="n">12 · map the attacker</div><b>Attack infrastructure</b><p>From one confirmed site, a budgeted pivot over shared servers, certificates, favicons and tracking IDs; co-hosted noise is triaged out. Indicators export as STIX 2.1.</p><div class="hiw-foot"><a class="see" href="/ui/campaigns/88288233-1dad-4751-955d-c8fbc835dc10">see it →</a>
+        <div class="hiw-step" id="step-12"><div class="n">12 · map the attacker</div><b>Attack infrastructure</b><p>From one confirmed site, a budgeted pivot over shared servers, certificates, favicons and tracking IDs; co-hosted noise is triaged out. Indicators export as STIX 2.1.</p><div class="hiw-foot"><a class="see" href="/ui/campaigns/88288233-1dad-4751-955d-c8fbc835dc10/">see it →</a>
 <span class="mi"><button type="button" class="mi-btn" aria-expanded="false" aria-label="More info about Attack infrastructure">More info</button>
   <div class="deep" role="dialog" aria-label="Attack infrastructure — more info">
     <button type="button" class="mi-x" aria-label="Close">✕</button>
@@ -1750,7 +1750,7 @@ First observed    : 2026-10-12T06:41:46.604012</div>
     <h5>Code</h5><div class="mods"><span>detection/investigation.py</span><span>api/campaigns.py</span><span>security/limits.py</span><span>detection/ai.py</span><span>detection/protect.py</span></div>
     </details>
   </div></span></div></div>
-        <div class="hiw-step" id="step-13"><div class="n">13 · take it down</div><b>Takedown</b><p>An evidence-backed request with an audited lifecycle; contacts for the registrar, the hosting provider and the CDN; 26 blocklists, anti-virus and abuse-report portals. BrandWatch never sends anything itself.</p><div class="hiw-foot"><a class="see" href="/ui/takedowns/71c2d1cb-03bb-40bb-9283-04feaa1f3a15">see it →</a>
+        <div class="hiw-step" id="step-13"><div class="n">13 · take it down</div><b>Takedown</b><p>An evidence-backed request with an audited lifecycle; contacts for the registrar, the hosting provider and the CDN; 26 blocklists, anti-virus and abuse-report portals. BrandWatch never sends anything itself.</p><div class="hiw-foot"><a class="see" href="/ui/takedowns/71c2d1cb-03bb-40bb-9283-04feaa1f3a15/">see it →</a>
 <span class="mi"><button type="button" class="mi-btn" aria-expanded="false" aria-label="More info about Takedown">More info</button>
   <div class="deep" role="dialog" aria-label="Takedown — more info">
     <button type="button" class="mi-x" aria-label="Close">✕</button>
@@ -1783,7 +1783,7 @@ First observed    : 2026-10-12T06:41:46.604012</div>
         <li><div class="where"><a href="/ui/dashboard/">Dashboard</a> — the mission line and the five-step strip</div>
           <p class="say">“BrandWatch finds sites impersonating a brand — on the web and in Facebook / Instagram ads — proves it with tamper-proof evidence, maps the attacker's servers and drafts the takedown. A human decides every step.”</p>
           <p class="q">Likely question: what's real here? → In demo mode every external service is a recorded scenario; the same code calls VirusTotal, crt.sh, Google and Chromium in live mode.</p></li>
-        <li><div class="where"><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4">The brand page</a> — tick “include fingerprinting”, press START SCAN</div>
+        <li><div class="where"><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/">The brand page</a> — tick “include fingerprinting”, press START SCAN</div>
           <p class="say">“First it learns what the real site looks like, then it hunts for copies on five streams.”</p>
           <p class="q">Likely question: how do you find domains that don't exist in any list yet? → Permutations checked in DNS, new certificates in CT logs, yesterday's registrations.</p>
           <p class="q">Likely question: what about ChatGPT and Gemini? → With AI answers on, the approved questions (support phone, contact, login, fraud) are asked to ChatGPT, Gemini and Google AI Mode; every contact in the answers is compared with the ones on the brand's own website, a mismatch gets a "show me the official page" follow-up, and BrandWatch opens the cited pages itself before it raises a finding.</p>
@@ -1791,7 +1791,7 @@ First observed    : 2026-10-12T06:41:46.604012</div>
         <li><div class="where">The live scan console — then “▶ replay highlights”</div>
           <p class="say">“Every step is narrated as it happens; the report at the bottom says what the scan did in plain words.”</p>
           <p class="q">Likely question: what if VirusTotal is down? → Retries with backoff, a circuit breaker, then the next provider in the chain; the alert panel says what happened and how to fix it.</p></li>
-        <li><div class="where"><a href="/ui/findings/d3cddf21-a088-4189-9f17-2cf8dba61ab0">A cloaked kit</a> — read the two-sentence summary, then the three screenshots</div>
+        <li><div class="where"><a href="/ui/findings/d3cddf21-a088-4189-9f17-2cf8dba61ab0/">A cloaked kit</a> — read the two-sentence summary, then the three screenshots</div>
           <p class="say">“This kit shows a blank page to scanners and the login page to real visitors. We fetch it like a victim would.”</p>
           <p class="q">Likely question: why is VirusTotal at 0? → It's days old; blocklists lag. Unknown is never treated as clean.</p></li>
         <li><div class="where">Explain Finding — signals, group caps, the score line, “open the arithmetic”</div>
@@ -1799,9 +1799,9 @@ First observed    : 2026-10-12T06:41:46.604012</div>
           <p class="q">Likely question: false positives? → Penalties (old domain, redirects to the brand), a whitelist, and a golden-dataset regression gate (precision / recall ≥ 0.90).</p></li>
         <li><div class="where">Press <b>Confirm phishing</b>, then <b>Investigate site &amp; network</b></div>
           <p class="say">“Confirming maps the attacker's infrastructure automatically. The investigation tabs on the finding page replace twenty minutes of VirusTotal, urlscan and RDAP tabs.”</p></li>
-        <li><div class="where"><a href="/ui/campaigns/88288233-1dad-4751-955d-c8fbc835dc10">The attack infrastructure map</a> — drag the graph, read two triage reasons</div>
+        <li><div class="where"><a href="/ui/campaigns/88288233-1dad-4751-955d-c8fbc835dc10/">The attack infrastructure map</a> — drag the graph, read two triage reasons</div>
           <p class="say">“One site led to the whole operation. Noise is triaged out with a reason; the indicators go to a SIEM as STIX.”</p></li>
-        <li><div class="where"><a href="/ui/takedowns/71c2d1cb-03bb-40bb-9283-04feaa1f3a15">The takedown</a> → <a href="/ui/activity/">Activity</a></div>
+        <li><div class="where"><a href="/ui/takedowns/71c2d1cb-03bb-40bb-9283-04feaa1f3a15/">The takedown</a> → <a href="/ui/activity/">Activity</a></div>
           <p class="say">“Three channels — registrar, host, CDN — plus the blocklists. Every step is in an append-only audit log the database won't let anyone edit.”</p></li>
       </ol>
     </div>
@@ -1818,11 +1818,11 @@ First observed    : 2026-10-12T06:41:46.604012</div>
         <div class="card" id="evidence"><h3>Immutable evidence</h3>
           <p>10 append-only tables: database triggers reject UPDATE and DELETE — even for an admin, on SQLite and PostgreSQL. Artifacts are content-addressed: the SHA-256 is the file name.</p>
           <p>Each finding links its evidence with a role (primary, supporting, contradicting, context): a chain of custody for a takedown or a court.</p>
-          <div class="mod">db/models · migrations/001 · evidence/store.py · <a href="/ui/findings/d3cddf21-a088-4189-9f17-2cf8dba61ab0">see it on a finding</a></div></div>
+          <div class="mod">db/models · migrations/001 · evidence/store.py · <a href="/ui/findings/d3cddf21-a088-4189-9f17-2cf8dba61ab0/">see it on a finding</a></div></div>
         <div class="card" id="resilience"><h3>Provider resilience</h3>
           <p>Every external call goes through one wrapper: TTL cache → budget check → circuit breaker → token bucket → retry with backoff (honouring Retry-After) → the next provider in the fallback chain.</p>
           <p>A bad key disables the provider for the job instead of failing 500 calls; "unknown" is never treated as clean.</p>
-          <div class="mod">providers/base.py · providers/registry.py · <a href="/ui/jobs/add4c607-69e3-40f1-a14b-92a326cd31b0">see the alerts panel</a></div></div>
+          <div class="mod">providers/base.py · providers/registry.py · <a href="/ui/jobs/add4c607-69e3-40f1-a14b-92a326cd31b0/">see the alerts panel</a></div></div>
         <div class="card" id="ledger"><h3>Cost ledger &amp; budgets</h3>
           <p>Every paid call is recorded with its cost; daily call and spend caps are checked over the trailing 24 h <em>before</em> the call, so a scan stops spending instead of overspending.</p>
           <div class="mod">providers/ledger.py · <a href="/ui/dashboard/#under-the-hood">budget meter</a></div></div>

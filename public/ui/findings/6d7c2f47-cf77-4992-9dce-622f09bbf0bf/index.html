@@ -143,8 +143,8 @@ button.chip{font:inherit;font-family:var(--mono);font-size:11px;box-shadow:none}
   .intro.open{display:block}
   .kpis{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:6px}
   .kpi{padding:8px 9px;border-radius:9px}
-  .kpi .v{font-size:19px!important;line-height:1.1}
-  .kpi .l{font-size:9px;letter-spacing:.04em;line-height:1.25;margin-top:2px}
+  .kpis .kpi .v{font-size:19px;line-height:1.1;overflow-wrap:anywhere}
+  .kpi .l{font-size:9px;letter-spacing:.04em;line-height:1.25;margin-top:2px;overflow-wrap:anywhere}
   details.mfold{margin:0 0 10px;border:1px solid var(--border);border-radius:10px;background:var(--panel2)}
   details.mfold>summary{cursor:pointer;padding:9px 12px;font-size:13px;color:var(--accent2);list-style:none}
   details.mfold>summary::-webkit-details-marker{display:none}
@@ -429,7 +429,12 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
   .inv-empty{border-style:dashed}
   .why-grid{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:18px}
   .why-grid>*,.fhead>*{min-width:0}
-  @media (max-width:900px){.why-grid,.verdict-form,.fhead{grid-template-columns:minmax(0,1fr)}.fhead .ringwrap{text-align:left}}
+  @media (max-width:900px){.why-grid,.verdict-form{grid-template-columns:minmax(0,1fr)}.fhead{grid-template-columns:auto minmax(0,1fr);gap:14px}}
+  @media (max-width:700px){
+    .fhead .ringwrap{padding-top:0}.fhead .ring{width:64px;height:64px}.fhead .ring>div{width:50px;height:50px;font-size:19px}.fhead .ringwrap .lbl{margin-top:4px}
+    .fhead .badge{white-space:normal;max-width:100%}
+    .fhead h1{font-size:19px}.lead{font-size:14px}.facts{gap:4px 14px;font-size:12.5px}
+    .qnav{flex-wrap:wrap}}
   .verdict-form .chk{display:flex;gap:6px;align-items:center;font-size:12.5px;color:var(--muted);grid-column:1 / -1}.verdict-form .chk input{width:auto;margin:0}
   .qnav{display:flex;gap:8px;align-items:center;margin:0 0 10px;font-size:12.5px;color:var(--muted)}
   .qnav .btn{padding:4px 10px;font-size:12px}.qnav .off{opacity:.4;pointer-events:none}
@@ -437,7 +442,7 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
 
 
 
-<nav class="crumbs" aria-label="Breadcrumb"><a href="/ui/brands/"><bdi>Brands &amp; Scans</bdi></a><span class="sep">›</span><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4"><bdi>ShopNova</bdi></a><span class="sep">›</span><a href="/ui/findings/_9e35fa5890/"><bdi>Findings</bdi></a><span class="sep">›</span><span class="cur" aria-current="page"><bdi>shopnova-login.com</bdi></span><span class="side"><a href="/ui/candidates/a53b1e5e-736f-457b-a797-848fa573f88b">Domain timeline</a></span></nav>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="/ui/brands/"><bdi>Brands &amp; Scans</bdi></a><span class="sep">›</span><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/"><bdi>ShopNova</bdi></a><span class="sep">›</span><a href="/ui/findings/_9e35fa5890/"><bdi>Findings</bdi></a><span class="sep">›</span><span class="cur" aria-current="page"><bdi>shopnova-login.com</bdi></span><span class="side"><a href="/ui/candidates/a53b1e5e-736f-457b-a797-848fa573f88b/">Domain timeline</a></span></nav>
 
 <nav class="qnav" aria-label="Queue">
   <span class="btn off" aria-disabled="true">← previous</span>
@@ -462,7 +467,7 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
       <span class="badge state" title="a finding no analyst has judged yet">awaiting verdict</span>
       
       
-      <span class="muted small">brand <a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4">ShopNova</a></span>
+      <span class="muted small">brand <a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/">ShopNova</a></span>
     </div>
     <h1 class="mono" style="margin:8px 0 2px;word-break:break-all"><span class="mono" dir="ltr">shopnova-login.com</span></h1>
     <p class="lead">Gemini sends users who ask about ShopNova to shopnova-login.com, which is not one of ShopNova&#39;s sites.</p>
@@ -520,7 +525,7 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
       <form method="post" action="/ui/findings/6d7c2f47-cf77-4992-9dce-622f09bbf0bf/report"><button type="submit" title="HTML + JSON with screenshots and SHA-256 of every piece of evidence">Generate evidence package</button></form>
       
     
-    <a class="small" href="/ui/candidates/a53b1e5e-736f-457b-a797-848fa573f88b" style="margin-left:4px">domain timeline</a>
+    <a class="small" href="/ui/candidates/a53b1e5e-736f-457b-a797-848fa573f88b/" style="margin-left:4px">domain timeline</a>
     
   </div>
   
@@ -619,7 +624,7 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
   </div>
   <ul class="small" style="margin:10px 0 0;padding-left:18px"><li>Gemini sent users to shopnova-login.com, which is not a site of ShopNova</li><li>shopnova-login.com is a phishing site BrandWatch confirmed</li><li>shopnova-login.com carries the brand&#39;s name but is not one of its domains</li></ul>
   <p class="small muted" style="margin:10px 0 0">The contacts ShopNova publishes on its own site:
-    <span class="mono">03-6000000</span> · <span class="mono">*6700</span> · <span class="mono">*6711</span> · <span class="mono">support@shopnova.com</span> · <span class="mono">+972506000000</span> — <a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4#ai-answers">all of them, with their pages</a></p>
+    <span class="mono">03-6000000</span> · <span class="mono">*6700</span> · <span class="mono">*6711</span> · <span class="mono">support@shopnova.com</span> · <span class="mono">+972506000000</span> — <a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/#ai-answers">all of them, with their pages</a></p>
 </div>
 
 <h2>What the assistants said</h2>
@@ -861,7 +866,7 @@ Name Server: NS2.MOCK-DNS.EXAMPLE</div></details></td></tr>
       
       <div class="tw"><table class="compact"><tr><th>Type</th><th>TTL</th><th>Value</th></tr>
         <tr><td class="mono"><b>A</b></td><td class="mono muted">300</td>
-          <td class="mono" style="word-break:break-all"><a href="/ui/intel/ip/203.0.113.66">203.0.113.66</a></td></tr><tr><td class="mono"><b>AAAA</b></td><td class="mono muted">300</td>
+          <td class="mono" style="word-break:break-all"><a href="/ui/intel/ip/203.0.113.66/">203.0.113.66</a></td></tr><tr><td class="mono"><b>AAAA</b></td><td class="mono muted">300</td>
           <td class="mono" style="word-break:break-all">2001:db8::7696</td></tr><tr><td class="mono"><b>NS</b></td><td class="mono muted">21600</td>
           <td class="mono" style="word-break:break-all">ns1.mock-dns.example</td></tr><tr><td class="mono"><b>NS</b></td><td class="mono muted">21600</td>
           <td class="mono" style="word-break:break-all">ns2.mock-dns.example</td></tr><tr><td class="mono"><b>MX</b></td><td class="mono muted">3600</td>
@@ -938,7 +943,7 @@ Name Server: NS2.MOCK-DNS.EXAMPLE</div></details></td></tr>
         · <b>8</b> sites hosted, <b style="color:var(--crit)">3</b> flagged · <b>4</b> communicating files</div>
     </div>
     <div class="links" style="margin:0"><a href="https://www.virustotal.com/gui/ip-address/203.0.113.66" target="_blank" rel="noreferrer noopener">VirusTotal IP ↗</a><a href="https://www.shodan.io/host/203.0.113.66" target="_blank" rel="noreferrer noopener">Shodan ↗</a><a href="https://www.abuseipdb.com/check/203.0.113.66" target="_blank" rel="noreferrer noopener">AbuseIPDB ↗</a><a href="https://search.censys.io/hosts/203.0.113.66" target="_blank" rel="noreferrer noopener">Censys host ↗</a>
-      <a href="/ui/intel/ip/203.0.113.66">open server page →</a></div>
+      <a href="/ui/intel/ip/203.0.113.66/">open server page →</a></div>
   </div>
   
   <div class="card" style="margin-top:14px;display:flex;flex-wrap:wrap;gap:10px 22px;align-items:center">
@@ -992,7 +997,7 @@ abuse-mailbox: abuse@bulletproofhost.example
         <span class="badge state">not flagged by urlscan</span>
         
         <span><img class="flag" src="https://flagcdn.com/w20/nl.png" width="20" height="15" alt="NL" title="Netherlands" loading="lazy" onerror="this.replaceWith(document.createTextNode(this.alt))">Netherlands</span>
-        <a class="mono" href="/ui/intel/ip/203.0.113.66">203.0.113.66</a><span class="mono">AS64512 BulletproofHost BV</span>
+        <a class="mono" href="/ui/intel/ip/203.0.113.66/">203.0.113.66</a><span class="mono">AS64512 BulletproofHost BV</span>
         <span>server nginx</span>
         <span>23 requests · 2 domains · 1 IPs · 1 countries</span>
         <span class="muted">scanned 2026-10-14 07:49</span>
@@ -1119,7 +1124,7 @@ abuse-mailbox: abuse@bulletproofhost.example
     <div class="panel" style="margin-top:12px"><h2>Passive DNS replication <span class="muted small">1</span> </h2>
       <p class="why">Every IP this domain has resolved to, with how many engines flag that IP. Click an IP to see the other sites on it.</p>
       <div class="tw"><table class="compact"><tr><th>Date resolved</th><th>Detections (IP)</th><th>IP</th></tr>
-        <tr><td class="mono">2026-09-27</td><td><span class="det bad"><b>3</b><i>/ 92</i></span></td><td class="mono"><a href="/ui/intel/ip/203.0.113.66">203.0.113.66</a></td></tr></table></div>
+        <tr><td class="mono">2026-09-27</td><td><span class="det bad"><b>3</b><i>/ 92</i></span></td><td class="mono"><a href="/ui/intel/ip/203.0.113.66/">203.0.113.66</a></td></tr></table></div>
     </div>
     <div class="cols" style="margin-top:12px">
       <div class="panel"><h2>Subdomains <span class="muted small">3</span> </h2>

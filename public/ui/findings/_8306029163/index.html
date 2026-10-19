@@ -143,8 +143,8 @@ button.chip{font:inherit;font-family:var(--mono);font-size:11px;box-shadow:none}
   .intro.open{display:block}
   .kpis{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:6px}
   .kpi{padding:8px 9px;border-radius:9px}
-  .kpi .v{font-size:19px!important;line-height:1.1}
-  .kpi .l{font-size:9px;letter-spacing:.04em;line-height:1.25;margin-top:2px}
+  .kpis .kpi .v{font-size:19px;line-height:1.1;overflow-wrap:anywhere}
+  .kpi .l{font-size:9px;letter-spacing:.04em;line-height:1.25;margin-top:2px;overflow-wrap:anywhere}
   details.mfold{margin:0 0 10px;border:1px solid var(--border);border-radius:10px;background:var(--panel2)}
   details.mfold>summary{cursor:pointer;padding:9px 12px;font-size:13px;color:var(--accent2);list-style:none}
   details.mfold>summary::-webkit-details-marker{display:none}
@@ -394,7 +394,7 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
       <div><label for="f-kind">Kind</label><select id="f-kind" name="kind"><option value="">all</option><option value="phishing" >phishing</option><option value="shop" >suspicious shop</option><option value="social" >fake social account</option><option value="ai_answer" >AI answer</option></select></div>
       <div><label for="f-since">Found</label><select id="f-since" name="since"><option value="">any time</option><option value="24h" selected>last 24 hours</option><option value="7d" >last 7 days</option><option value="visit" >since my last visit</option></select></div>
       <div><label for="f-sort">Sort by</label><select id="f-sort" name="sort"><option value="severity" selected>severity, then score</option><option value="score" >score</option><option value="newest" >newest first</option><option value="oldest" >oldest first</option><option value="confidence" >confidence</option></select></div>
-      <div class="go"><button type="submit" class="primary">Apply</button><a class="btn" href="/ui/findings/_9ffb45703e/" title="back to the open queue">Reset</a></div>
+      <div class="go"><button type="submit" class="primary">Apply</button><a class="btn" href="/ui/findings?brand_id=f46bffed-4795-4cdd-ad8f-abd3d26fcc60" title="back to the open queue">Reset</a></div>
       <div><label class="shotsw" title="a screenshot next to every site (off by default: the list stays short)"><input type="checkbox" id="t-shots"> show screenshots</label></div>
     </form>
     
@@ -404,7 +404,7 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
     
     
     
-    <p class="muted">Nothing matches these filters. <a href="/ui/findings/_9ffb45703e/">Back to the open queue</a>.</p>
+    <p class="muted">Nothing matches these filters. <a href="/ui/findings?brand_id=f46bffed-4795-4cdd-ad8f-abd3d26fcc60">Back to the open queue</a>.</p>
     
     
   </div>

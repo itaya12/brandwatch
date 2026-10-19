@@ -143,8 +143,8 @@ button.chip{font:inherit;font-family:var(--mono);font-size:11px;box-shadow:none}
   .intro.open{display:block}
   .kpis{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:6px}
   .kpi{padding:8px 9px;border-radius:9px}
-  .kpi .v{font-size:19px!important;line-height:1.1}
-  .kpi .l{font-size:9px;letter-spacing:.04em;line-height:1.25;margin-top:2px}
+  .kpis .kpi .v{font-size:19px;line-height:1.1;overflow-wrap:anywhere}
+  .kpi .l{font-size:9px;letter-spacing:.04em;line-height:1.25;margin-top:2px;overflow-wrap:anywhere}
   details.mfold{margin:0 0 10px;border:1px solid var(--border);border-radius:10px;background:var(--panel2)}
   details.mfold>summary{cursor:pointer;padding:9px 12px;font-size:13px;color:var(--accent2);list-style:none}
   details.mfold>summary::-webkit-details-marker{display:none}
@@ -429,7 +429,12 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
   .inv-empty{border-style:dashed}
   .why-grid{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:18px}
   .why-grid>*,.fhead>*{min-width:0}
-  @media (max-width:900px){.why-grid,.verdict-form,.fhead{grid-template-columns:minmax(0,1fr)}.fhead .ringwrap{text-align:left}}
+  @media (max-width:900px){.why-grid,.verdict-form{grid-template-columns:minmax(0,1fr)}.fhead{grid-template-columns:auto minmax(0,1fr);gap:14px}}
+  @media (max-width:700px){
+    .fhead .ringwrap{padding-top:0}.fhead .ring{width:64px;height:64px}.fhead .ring>div{width:50px;height:50px;font-size:19px}.fhead .ringwrap .lbl{margin-top:4px}
+    .fhead .badge{white-space:normal;max-width:100%}
+    .fhead h1{font-size:19px}.lead{font-size:14px}.facts{gap:4px 14px;font-size:12.5px}
+    .qnav{flex-wrap:wrap}}
   .verdict-form .chk{display:flex;gap:6px;align-items:center;font-size:12.5px;color:var(--muted);grid-column:1 / -1}.verdict-form .chk input{width:auto;margin:0}
   .qnav{display:flex;gap:8px;align-items:center;margin:0 0 10px;font-size:12.5px;color:var(--muted)}
   .qnav .btn{padding:4px 10px;font-size:12px}.qnav .off{opacity:.4;pointer-events:none}
@@ -437,12 +442,12 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
 
 
 
-<nav class="crumbs" aria-label="Breadcrumb"><a href="/ui/brands/"><bdi>Brands &amp; Scans</bdi></a><span class="sep">›</span><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4"><bdi>ShopNova</bdi></a><span class="sep">›</span><a href="/ui/findings/_9e35fa5890/"><bdi>Findings</bdi></a><span class="sep">›</span><span class="cur" aria-current="page"><bdi>03-9817777</bdi></span><span class="side"><a href="/ui/candidates/1ad285cd-0586-4728-b94d-4123d1caec94">Domain timeline</a></span></nav>
+<nav class="crumbs" aria-label="Breadcrumb"><a href="/ui/brands/"><bdi>Brands &amp; Scans</bdi></a><span class="sep">›</span><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/"><bdi>ShopNova</bdi></a><span class="sep">›</span><a href="/ui/findings/_9e35fa5890/"><bdi>Findings</bdi></a><span class="sep">›</span><span class="cur" aria-current="page"><bdi>03-9817777</bdi></span><span class="side"><a href="/ui/candidates/1ad285cd-0586-4728-b94d-4123d1caec94/">Domain timeline</a></span></nav>
 
 <nav class="qnav" aria-label="Queue">
   <a class="btn" href="/ui/findings/6d7c2f47-cf77-4992-9dce-622f09bbf0bf/" rel="prev" accesskey="k">← previous</a>
   <span>8 open for <bdi>ShopNova</bdi></span>
-  <a class="btn" href="/ui/findings/aa855f45-18cf-4272-ac1c-effbe5955f9c" rel="next" accesskey="j">next →</a>
+  <a class="btn" href="/ui/findings/aa855f45-18cf-4272-ac1c-effbe5955f9c/" rel="next" accesskey="j">next →</a>
   <a class="small" href="/ui/findings/_9e35fa5890/">the queue</a>
 </nav>
 
@@ -462,7 +467,7 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
       <span class="badge state" title="a finding no analyst has judged yet">awaiting verdict</span>
       
       
-      <span class="muted small">brand <a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4">ShopNova</a></span>
+      <span class="muted small">brand <a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/">ShopNova</a></span>
     </div>
     <h1 class="mono" style="margin:8px 0 2px;word-break:break-all"><span class="mono" dir="ltr">03-9817777</span></h1>
     <p class="lead">ChatGPT gives 03-9817777 as ShopNova&#39;s phone. No page of ShopNova publishes it; shopnova-support-center.com does — callers reach whoever runs that page.</p>
@@ -523,7 +528,7 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
       <form method="post" action="/ui/findings/27ceca7f-5129-4f1d-ad51-b194ed5448f9/report"><button type="submit" title="HTML + JSON with screenshots and SHA-256 of every piece of evidence">Generate evidence package</button></form>
       
     
-    <a class="small" href="/ui/candidates/1ad285cd-0586-4728-b94d-4123d1caec94" style="margin-left:4px">domain timeline</a>
+    <a class="small" href="/ui/candidates/1ad285cd-0586-4728-b94d-4123d1caec94/" style="margin-left:4px">domain timeline</a>
     
   </div>
   
@@ -621,7 +626,7 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
   </div>
   <ul class="small" style="margin:10px 0 0;padding-left:18px"><li>ChatGPT gave the phone 03-9817777 — it is on none of ShopNova&#39;s pages</li><li>03-9817777 is published on shopnova-support-center.com — not a site of ShopNova</li><li>shopnova-support-center.com carries the brand&#39;s name: a look-alike publishes the number</li><li>shopnova-support-center.com (a phishing site BrandWatch confirmed)</li></ul>
   <p class="small muted" style="margin:10px 0 0">The contacts ShopNova publishes on its own site:
-    <span class="mono">03-6000000</span> · <span class="mono">*6700</span> · <span class="mono">*6711</span> · <span class="mono">support@shopnova.com</span> · <span class="mono">+972506000000</span> — <a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4#ai-answers">all of them, with their pages</a></p>
+    <span class="mono">03-6000000</span> · <span class="mono">*6700</span> · <span class="mono">*6711</span> · <span class="mono">support@shopnova.com</span> · <span class="mono">+972506000000</span> — <a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/#ai-answers">all of them, with their pages</a></p>
 </div>
 
 <h2>What the assistants said</h2>
