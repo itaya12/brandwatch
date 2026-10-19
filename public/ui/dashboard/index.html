@@ -98,7 +98,7 @@ h2::before{content:"";width:6px;height:6px;background:var(--accent);display:inli
 h2 .muted{text-transform:none;letter-spacing:.02em;font-family:var(--sans);font-size:12px;opacity:.85}
 .panel{position:relative;background:linear-gradient(180deg,var(--panel-fill),var(--panel-fill2));border:1px solid var(--border);border-radius:10px;padding:14px 16px;
   transition:border-color .3s,box-shadow .3s,transform .3s;animation:fadeUp .6s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(var(--i,0)*70ms)}
-.panel:hover{border-color:rgba(53,199,242,.35);box-shadow:0 0 0 1px rgba(53,199,242,.08),0 8px 30px rgba(0,0,0,.35)}
+.panel:hover{transform:translateY(-2px);border-color:rgba(53,199,242,.35);box-shadow:0 0 0 1px rgba(53,199,242,.08),0 8px 30px rgba(0,0,0,.35)}
 .panel > h2:first-child{margin-top:0}
 @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
 @keyframes rowIn{from{opacity:0;transform:translateX(-6px)}to{opacity:1;transform:none}}
@@ -188,11 +188,11 @@ a.kpi{color:inherit;display:block}a.kpi.on{border-color:var(--accent);box-shadow
 .ring{--c:var(--accent);width:96px;height:96px;border-radius:50%;background:conic-gradient(var(--c) calc(var(--p)*1%),var(--border) 0);display:grid;place-items:center;transition:--p 1.4s cubic-bezier(.2,.8,.2,1)}
 .ring>div{width:76px;height:76px;border-radius:50%;background:var(--panel);display:grid;place-items:center;font-family:var(--display);font-size:28px;font-weight:700}
 .ring.sm{width:38px;height:38px}.ring.sm>div{width:28px;height:28px;font-size:11px;font-family:var(--mono)}
-.bar{height:8px;background:var(--border);border-radius:4px;overflow:hidden}.bar>i{display:block;height:100%;background:var(--accent);transition:width 1.3s cubic-bezier(.2,.8,.2,1)}
+.bar{height:8px;background:var(--border);border-radius:4px;overflow:hidden}.bar>i{display:block;height:100%;background:var(--accent);transition:width .6s ease-out}
 .bar>i[data-w]{width:0}
 .scorebar{height:6px;width:90px;background:var(--border);border-radius:3px;overflow:hidden;display:inline-block;vertical-align:middle;margin-left:8px}
-.scorebar>i{display:block;height:100%;width:0;border-radius:3px;background:rgba(230,237,245,.55);transition:width 1.3s cubic-bezier(.2,.8,.2,1)}
-.stack{display:flex;height:10px;border-radius:5px;overflow:hidden;background:var(--border)}.stack>i{display:block;height:100%;width:0;transition:width 1.3s cubic-bezier(.2,.8,.2,1)}
+.scorebar>i{display:block;height:100%;width:0;border-radius:3px;background:rgba(230,237,245,.55);transition:width .6s ease-out}
+.stack{display:flex;height:10px;border-radius:5px;overflow:hidden;background:var(--border)}.stack>i{display:block;height:100%;width:0;transition:width .6s ease-out}
 .hist{display:flex;align-items:flex-end;gap:5px;height:110px;padding-bottom:18px}
 .hist i{flex:1;position:relative;border-radius:4px 4px 0 0;min-height:2px;height:0;transition:height 1.2s cubic-bezier(.2,.8,.2,1);background:linear-gradient(180deg,var(--c,var(--accent2)),rgba(53,199,242,.15))}
 .hist i span{position:absolute;bottom:-17px;left:0;right:0;text-align:center;font-size:10px;color:var(--muted);font-family:var(--mono)}
@@ -422,6 +422,16 @@ window.BW = (function () {
   .nomap .map-kpis{position:static;margin:0 0 4px}.nomap .maptog{position:static;display:flex;justify-content:flex-end;margin-bottom:6px}
   .globe-wrap{position:relative;background:radial-gradient(ellipse at center,#0b1626 0%,var(--console) 70%);border:1px solid var(--border);border-radius:14px;overflow:hidden;height:580px;min-height:0}
   .globe-wrap canvas{display:block}
+  /* The wheel belongs to the page until the map is asked for it: a 580px box that swallows scroll
+     traps the reader halfway down the dashboard. Clicking arms it; the ring says who has the wheel. */
+  .globe-wrap{transition:box-shadow .2s,border-color .2s}
+  .globe-wrap.armed{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent),0 0 26px rgba(53,199,242,.22)}
+  .zoomhint{position:absolute;inset:0;z-index:7;display:grid;place-items:center;pointer-events:none;
+    opacity:0;transition:opacity .22s;background:rgba(6,10,18,.42)}
+  .zoomhint.show{opacity:1}
+  .zoomhint span{padding:9px 16px;border:1px solid var(--accent);border-radius:999px;
+    background:rgba(6,10,18,.92);font:600 12px var(--mono);letter-spacing:.07em;text-transform:uppercase;
+    color:var(--accent2);box-shadow:0 10px 30px rgba(0,0,0,.5)}
   .globe-legend{z-index:2;pointer-events:none}
   .globe-legend{position:absolute;right:14px;bottom:12px;font-family:var(--mono);font-size:11px;color:var(--muted);text-align:right}
   .globe-legend i{display:inline-block;width:8px;height:8px;border-radius:50%;margin-left:6px;vertical-align:middle}
@@ -475,7 +485,7 @@ window.BW = (function () {
   .live-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--low);box-shadow:0 0 8px var(--low);animation:pulse 1.6s infinite}
   /* charts */
   .bars{display:grid;gap:8px}.bars .row{display:grid;grid-template-columns:90px 1fr 46px;align-items:center;gap:10px;font-size:12px}
-  .bars .bar{height:10px}.bars .bar>i{transition:width 1.2s ease}
+  .bars .bar{height:10px}
   .hist{display:flex;align-items:flex-end;gap:4px;height:110px;margin-bottom:22px}.hist i{flex:1;background:linear-gradient(180deg,var(--accent2),rgba(53,199,242,.25));border-radius:3px 3px 0 0;position:relative;min-height:2px;transition:height 1.2s ease}
   .hist i span{position:absolute;bottom:-18px;left:0;right:0;text-align:center;font-size:11px;color:var(--muted);font-family:var(--mono)}
   svg.spark{width:100%;height:110px}
@@ -533,7 +543,7 @@ window.BW = (function () {
 <div class="dhead">
   <h1>DASHBOARD <span class="muted small" style="font-family:var(--sans)"><span class="d1">· </span>BRAND MONITOR · <bdi>all brands</bdi></span></h1>
   <div class="meta">
-    <span class="chip" title="the numbers refresh every 20 seconds">updated <span id="updated">11:47:03</span> UTC</span>
+    <span class="chip" title="the numbers refresh every 20 seconds">updated <span id="updated">14:17:09</span> UTC</span>
     <span class="chip">last scan <span data-rel="2026-10-18T17:10:04.662299+00:00"><time datetime="2026-10-18T17:10:04.662299+00:00" data-local title="2026-10-18T17:10:04.662299+00:00 UTC">2026-10-18 17:10</time></span></span>
     <span class="chip"><span class="status-dot off"></span>automatic scans off</span>
     <span class="chip" style="color:var(--accent2);border-color:var(--accent)">DEMO · $0</span>
@@ -573,7 +583,8 @@ window.BW = (function () {
   </div>
   <div class="maptog"><button type="button" class="small ghost" id="maptog" aria-controls="globe"></button></div>
   <div class="globe-wrap" id="globe">
-    <div class="globe-legend">critical<i style="background:var(--crit)"></i><br>high<i style="background:var(--high)"></i><br>medium<i style="background:var(--med)"></i><br>confirmed<i style="background:var(--accent2)"></i><span class="hint mouse">scroll to zoom · hover an attack · click to open it</span><span class="hint tap">tap an attack · + − to zoom</span></div>
+    <div class="zoomhint" aria-hidden="true"><span>Click the map to zoom</span></div>
+    <div class="globe-legend">critical<i style="background:var(--crit)"></i><br>high<i style="background:var(--high)"></i><br>medium<i style="background:var(--med)"></i><br>confirmed<i style="background:var(--accent2)"></i><span class="hint mouse">click the map to zoom · hover an attack · click it to open</span><span class="hint tap">tap an attack · + − to zoom</span></div>
   </div>
 </section>
 
@@ -918,6 +929,30 @@ window.BW = (function () {
   //   globe — turns on its own; dragging turns it by hand; wheel / buttons zoom.
   // Hover shows the attack (or the list behind a merged marker); a click opens it (or zooms in).
   // Hostnames, cities and orgs come from attacker data: always escaped.
+  // ---- who owns the wheel ---------------------------------------------------------------------
+  // The map is 580px tall. While it zoomed on every wheel event the dashboard could not be
+  // scrolled past it. Now a click hands the wheel to the map, and clicking away, leaving the box
+  // or pressing Escape hands it back. The flag lives on the element so both views can read it.
+  const geoBox = document.querySelector('.globe-wrap');
+  const zoomHint = geoBox && geoBox.querySelector('.zoomhint');
+  let hintTimer = 0;
+  const zoomArmed = () => !!(geoBox && geoBox.classList.contains('armed'));
+  const armZoom = on => {
+    if (!geoBox || zoomArmed() === on) return;
+    geoBox.classList.toggle('armed', on);
+    if (window.__bwGlobeCtl) window.__bwGlobeCtl.enableZoom = on;
+  };
+  const flashHint = () => {
+    if (!zoomHint) return;
+    zoomHint.classList.add('show'); clearTimeout(hintTimer);
+    hintTimer = setTimeout(() => zoomHint.classList.remove('show'), 1400);
+  };
+  if (geoBox) {
+    geoBox.addEventListener('pointerdown', () => armZoom(true));
+    geoBox.addEventListener('pointerleave', () => armZoom(false));
+    document.addEventListener('pointerdown', e => { if (!geoBox.contains(e.target)) armZoom(false); }, true);
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') armZoom(false); });
+  }
   const h = v => String(v ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const rgba = (hex, a) => { const n = parseInt(String(hex).slice(1), 16); return `rgba(${n >> 16},${(n >> 8) & 255},${n & 255},${a})`; };
   const KIND = {shop: 'Suspicious shop', phishing: 'Phishing site'};
@@ -1033,7 +1068,8 @@ window.BW = (function () {
     };
     // it always turns on its own; it stops while you turn it by hand (and a moment after), and while
     // the mouse is on an attack so the attack can be clicked
-    const ctl = g.controls(); ctl.autoRotateSpeed = 0.55; ctl.enableZoom = true; ctl.zoomSpeed = 0.8;
+    const ctl = g.controls(); ctl.autoRotateSpeed = 0.55; ctl.enableZoom = zoomArmed(); ctl.zoomSpeed = 0.8;
+    window.__bwGlobeCtl = ctl;  // the arming gate above toggles this
     const fit = fitAltitude(W, H), R = g.getGlobeRadius();
     ctl.minDistance = R * 1.35; ctl.maxDistance = R * (1 + fit * 1.9);
     let handling = false, resume = null;
@@ -1071,7 +1107,10 @@ window.BW = (function () {
     const R = () => Math.min(W, H) * 0.36 * z;
     const proj = (lat, lon) => { const la = lat * Math.PI/180, lo = (lon + rot) * Math.PI/180; const x = Math.cos(la) * Math.sin(lo), y = Math.sin(la), zz = Math.cos(la) * Math.cos(lo); return {x: cx + R() * x, y: cy - R() * y, z: zz}; };
     const at = (a, m, b, s) => ({x: (1-s)*(1-s)*a.x + 2*(1-s)*s*m.x + s*s*b.x, y: (1-s)*(1-s)*a.y + 2*(1-s)*s*m.y + s*s*b.y});
-    c.addEventListener('wheel', ev => { ev.preventDefault(); z = Math.max(0.7, Math.min(2.6, z * Math.exp(-ev.deltaY * 0.0015))); }, {passive: false});
+    c.addEventListener('wheel', ev => {
+      if (!zoomArmed()) { flashHint(); return; }  // the page keeps the scroll
+      ev.preventDefault(); z = Math.max(0.7, Math.min(2.6, z * Math.exp(-ev.deltaY * 0.0015)));
+    }, {passive: false});
     globeZoom = {zoom(f){ z = Math.max(0.7, Math.min(2.6, z * f)); }, reset(){ z = 1; }};
     nearest = (x, y) => {
       const r = c.getBoundingClientRect(), sx = x * (c.width / r.width), sy = y * (c.height / r.height);
@@ -1182,7 +1221,11 @@ window.BW = (function () {
       k = to.k; tx = to.tx; ty = to.ty; clampView(); dirty = true;
     }
     // wheel zooms around the pointer; dragging moves the zoomed map; double-click zooms in
-    c.addEventListener('wheel', ev => { ev.preventDefault(); const r = c.getBoundingClientRect(); zoomAt(ev.clientX - r.left, ev.clientY - r.top, Math.exp(-ev.deltaY * 0.0016), false); }, {passive: false});
+    c.addEventListener('wheel', ev => {
+      if (!zoomArmed()) { flashHint(); return; }  // the page keeps the scroll until the map is clicked
+      ev.preventDefault(); const r = c.getBoundingClientRect();
+      zoomAt(ev.clientX - r.left, ev.clientY - r.top, Math.exp(-ev.deltaY * 0.0016), false);
+    }, {passive: false});
     let drag = null;
     c.addEventListener('pointerdown', ev => { if (k > 1.001) { drag = {x: ev.clientX, y: ev.clientY, tx, ty}; c.setPointerCapture(ev.pointerId); } });
     c.addEventListener('pointermove', ev => {
