@@ -372,6 +372,8 @@
   const brandId = {{ (d.brand.id if d.brand else '')|tojson }};
   const ink = BW.ink;  // the palette comes from the stylesheet, never from a hex written here
   const color = p => p.state === 'confirmed' ? ink('accent2') : BW.sev(p.severity);
+  // the brand's own side of every picture: its home, its traffic, the near end of every route
+  const HOME_GREEN = '#2EE6A6';
 
   // count-up KPIs are handled by the shared motion layer in base.html
 
@@ -557,9 +559,11 @@
       {startLat: home.lat, startLng: home.lon, endLat: p.lat, endLng: p.lon, p, trace: 'pulse', phase: (i * 0.53) % 1.6},
     ]) : [];
     const arcColor = d => d.trace === 'pulse'
-      ? [rgba(color(d.p), dim(d.p) ? 0.05 : 0.55), rgba(ink('text'), dim(d.p) ? 0.1 : 1)]
-      : [rgba(ink('accent2'), dim(d.p) ? 0.04 : 0.28), rgba(color(d.p), dim(d.p) ? 0.08 : (hovered === d.p ? 1 : 0.7))];
-    const arcStroke = d => d.trace === 'pulse' ? 0.95 : 0.36;
+      ? [rgba(color(d.p), dim(d.p) ? 0.05 : 0.6), rgba(ink('text'), dim(d.p) ? 0.1 : 1)]
+      : [rgba(HOME_GREEN, dim(d.p) ? 0.05 : 0.6), rgba(color(d.p), dim(d.p) ? 0.09 : (hovered === d.p ? 1 : 0.92))];
+    // the standing line was 0.36 wide and vanished against the earth texture; the travelling
+    // pulse rides on top of it, so the two still read as one route rather than two
+    const arcStroke = d => d.trace === 'pulse' ? 0.95 : 0.7;
     const pointColor = d => d.p && dim(d.p) ? rgba(d.color, 0.3) : (d.p && hovered === d.p ? ink('text') : d.color);
     const labelColor = d => dim(d.p) ? rgba(d.color, 0.25) : d.color;
     const g = Globe()(view3d).width(W).height(H)
@@ -700,7 +704,7 @@
     // the globe is drawn, not styled: these four are its own materials (land, coastline, the
     // traffic arcs and their head) and carry no meaning the palette owns. Everything with a
     // meaning — severity, confirmed, the brand's home — comes from BW.
-    const GREEN = '#2EE6A6', LAT_TOP = 78, LAT_BOT = -56, KMAX = 8, MERGE = 24;
+    const GREEN = HOME_GREEN, LAT_TOP = 78, LAT_BOT = -56, KMAX = 8, MERGE = 24;
     // Green belongs to the brand: its home, and its own traffic. The sweep is an instrument, so it
     // is the accent — the one colour this system lets mean "alive". CYAN is read from the
     // stylesheet, so the map cannot drift from the palette.
@@ -886,8 +890,11 @@
       if (hq) for (const g of clusters) {
         const b = [g.x, g.y], m = ctrl(hq, b), on = isOn(g), faded = hovered !== null && !on;
         const lg = ctx.createLinearGradient(hq[0], hq[1], b[0], b[1]);
-        lg.addColorStop(0, rgba(GREEN, faded ? 0.03 : 0.22)); lg.addColorStop(1, rgba(g.col, faded ? 0.05 : (on ? 1 : 0.45)));
-        ctx.strokeStyle = lg; ctx.lineWidth = on ? 2 : 1; ctx.beginPath(); ctx.moveTo(hq[0], hq[1]); ctx.quadraticCurveTo(m[0], m[1], b[0], b[1]); ctx.stroke();
+        lg.addColorStop(0, rgba(GREEN, faded ? 0.04 : 0.5)); lg.addColorStop(1, rgba(g.col, faded ? 0.07 : (on ? 1 : 0.88)));
+        const route = () => { ctx.beginPath(); ctx.moveTo(hq[0], hq[1]); ctx.quadraticCurveTo(m[0], m[1], b[0], b[1]); ctx.stroke(); };
+        ctx.strokeStyle = lg;
+        ctx.globalAlpha = faded ? 0.1 : 0.22; ctx.lineWidth = on ? 5.5 : 3.6; route();  // lifts it off the map
+        ctx.globalAlpha = 1; ctx.lineWidth = on ? 2.4 : 1.5; route();
         const s = calm ? 2 : ((t / 3400) + g.ph) % 1.5;
         if (s <= 1 && !faded) {
           for (let i = 8; i >= 1; i--) { const q = qp(hq, m, b, Math.max(0, s - i * 0.012)); ctx.fillStyle = rgba(GREEN, (1 - i / 9) * 0.45); ctx.beginPath(); ctx.arc(q[0], q[1], 2 - i * 0.15, 0, Math.PI * 2); ctx.fill(); }
