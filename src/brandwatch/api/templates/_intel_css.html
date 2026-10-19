@@ -6,7 +6,9 @@
   .links a{font-size:12px;padding:4px 9px;border:1px solid var(--border);border-radius:999px;background:var(--panel2);color:var(--text);text-decoration:none}
   .links a:hover{border-color:var(--accent);color:var(--accent2)}
   .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
-  .card{background:var(--panel2);border:1px solid var(--border);border-radius:12px;padding:14px;min-width:0}
+  .card{background:var(--panel2);border:1px solid var(--border);border-radius:12px;padding:14px;min-width:0;
+    transition:transform .25s,border-color .25s,box-shadow .25s}
+  .card:hover{transform:translateY(-2px);border-color:rgba(53,199,242,.4);box-shadow:0 6px 24px rgba(0,0,0,.35)}
   .card h3{margin:0 0 8px;font:600 11px var(--mono);letter-spacing:.1em;color:var(--muted);text-transform:uppercase}
   .kv{display:grid;grid-template-columns:minmax(110px,160px) minmax(0,1fr);gap:5px 12px;font-size:13px}
   .kv dt{color:var(--muted)}.kv dd{margin:0;word-break:break-all}
@@ -17,7 +19,7 @@
   .pill.warn{color:var(--high);border-color:rgba(255,159,28,.5)}.pill.err{color:var(--crit);border-color:rgba(255,77,77,.5)}
   .ring.lg{--s:120px;width:var(--s);height:var(--s)}
   .vbar{height:8px;border-radius:99px;background:var(--panel);border:1px solid var(--border);overflow:hidden;margin:6px 0}
-  .vbar i{display:block;height:100%;background:var(--accent)}
+  .vbar i{display:block;height:100%;background:var(--accent);transition:width .6s ease-out}
   .mono-block{font:12px/1.5 var(--mono);white-space:pre-wrap;word-break:break-all;background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:12px;max-height:380px;overflow:auto}
   details summary{cursor:pointer;color:var(--accent2);font-size:13px;margin:8px 0}
   .ipcard{border:1px solid var(--border);border-radius:14px;padding:16px;background:var(--panel);margin-bottom:14px}

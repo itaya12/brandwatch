@@ -426,8 +426,8 @@ is information.
 
 ### Shadow Vocabulary
 
-- **Panel hover** (`0 0 0 1px rgba(53,199,242,.08), 0 8px 30px rgba(0,0,0,.35)`): a panel under the
-  cursor.
+- **Panel hover** (`0 0 0 1px rgba(53,199,242,.08), 0 8px 30px rgba(0,0,0,.35)` with
+  `translateY(-2px)`): a panel under the cursor.
 - **Tile lift** (`0 6px 24px rgba(0,0,0,.35)` with `translateY(-2px)`): KPI tiles.
 - **Card lift** (`0 0 0 1px var(--accent), 0 14px 40px rgba(0,0,0,.45)` with `translateY(-3px)`):
   operation cards, the one place hover both lifts *and* lights, because the whole card is a link.

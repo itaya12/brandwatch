@@ -390,8 +390,8 @@
       },
       {
         "name": "meter-fill",
-        "value": "width 1.3s cubic-bezier(0.2,0.8,0.2,1)",
-        "purpose": "Bars, score bars and stacked meters filling from zero."
+        "value": "width .6s ease-out",
+        "purpose": "Bars, score bars and stacked meters filling from zero — a measurement settling, not a slow reveal. Staggered 60ms apart within a panel."
       },
       {
         "name": "ring-fill",
