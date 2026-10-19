@@ -31,24 +31,41 @@
   #add .more-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:12px}
   #add .warnbox{font-size:12.5px;border:1px solid var(--high);border-radius:8px;padding:8px 12px;margin-top:8px}
   @media (max-width:900px){ #add .basics,#add .tracks,#add .kinds{grid-template-columns:minmax(0,1fr)}}
+  /* add brand: three numbered steps, a summary of what will be created */
+  #add .addlay{display:grid;grid-template-columns:minmax(0,1fr) 270px;gap:20px;align-items:start}
+  #add .stp{display:flex;gap:10px;align-items:center;margin:16px 0 8px}#add form>.stp:first-child{margin-top:4px}
+  #add .stp .no{flex:none;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font:700 13px var(--mono);background:rgba(53,199,242,.15);color:var(--accent2);border:1px solid var(--accent)}
+  #add .stp b{display:block;font-size:14px;color:var(--text)}#add .stp span:not(.no){display:block;font-size:12px;color:var(--muted)}
+  #add .addgo{margin-top:16px;display:flex;gap:12px;align-items:center;flex-wrap:wrap}#add .addgo button{padding:10px 18px;font-weight:600}
+  #add .addsum{position:sticky;top:calc(var(--hdr,0px) + 16px);border:1px solid var(--border);border-radius:12px;padding:14px;background:linear-gradient(180deg,rgba(53,199,242,.07),transparent 60%),var(--panel2)}
+  #add .as-h{font:700 11px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+  #add .as-name{font:700 22px/1.2 var(--display);margin:6px 0 10px;overflow-wrap:anywhere}
+  #add .as-row{display:flex;justify-content:space-between;gap:10px;font-size:12.5px;padding:4px 0;border-top:1px dashed var(--border)}#add .as-row span{color:var(--muted)}#add .as-row b{font-weight:600;text-align:right;overflow-wrap:anywhere}
+  #add .as-hunt{display:flex;flex-wrap:wrap;gap:5px;margin:10px 0}#add .as-hunt span{font-size:11.5px;padding:3px 9px;border-radius:999px;border:1px solid rgba(46,204,113,.45);color:var(--low)}
+  #add .as-next{margin:6px 0 0;padding-left:18px;font-size:12px;color:var(--muted);line-height:1.6}
+  #add.flash{animation:addflash 1.4s ease}
+  @keyframes addflash{0%,100%{box-shadow:none}30%{box-shadow:0 0 0 2px var(--accent),0 0 30px rgba(53,199,242,.35)}}
+  @media (max-width:1000px){ #add .addlay{grid-template-columns:minmax(0,1fr)}#add .addsum{position:static}}
 </style>
 {% set addform %}
 <div class="panel" style="margin-top:14px" id="add">
   <h2>Add brand <span class="muted">· the brand you are authorised to protect</span></h2>
+  <div class="addlay">
   <form method="post" action="/ui/brands" id="addform">
+    <div class="stp"><span class="no">1</span><div><b>What to protect</b><span>its official domains and its name</span></div></div>
     <div class="basics">
       <div><label for="nb-domain">Official domains <span style="text-transform:none">· one per line, the first is the main site</span></label>{% set rows = prefill.entries if prefill else [''] %}{% include "_domain_rows.html" %}</div>
       <div><label for="nb-name">Name</label><input id="nb-name" name="name" placeholder="ShopNova" value="{{ prefill.name if prefill }}" required dir="auto" autocomplete="off">
         <div class="small muted" style="margin-top:4px">Filled in from the first domain — change it to the brand's real name (it is what Google, the ads and the AI assistants are searched for).</div></div>
     </div>
-    <label style="margin-top:12px">Detection track {{ term('tracks') }}</label>
+    <div class="stp"><span class="no">2</span><div><b>How deep to look</b><span>you can change it on the brand page later {{ term('tracks') }}</span></div></div>
     <div class="tracks">
       {% for key in ['basic', 'standard', 'enterprise'] %}{% set info = PRESETS[key] %}
       <label class="tcard"><input type="radio" name="preset" value="{{ key }}" {{ 'checked' if key == 'standard' }}><div><b>{{ info.label }} <span style="display:inline;font-weight:400;color:var(--muted)">· {{ info.tagline }}</span></b><span>{{ info.blurb }}</span></div></label>
       {% endfor %}
     </div>
     {% if ws_cap and PRESETS.enterprise.detection.max_candidates > ws_cap %}<div class="warnbox" id="nb-capwarn" style="display:none"><b style="color:var(--high)">Deep visits up to {{ PRESETS.enterprise.detection.max_candidates }} sites a scan, but the workspace limit is {{ ws_cap }}.</b> Scans stop at {{ ws_cap }} until {% if is_admin %}you raise it in <a href="/ui/settings#budget">Settings → Workspace &amp; budget</a>{% else %}an admin raises it in Settings → Workspace &amp; budget{% endif %}.</div>{% endif %}
-    <label style="margin-top:12px">Who sells its products?</label>
+    <div class="stp"><span class="no">3</span><div><b>Who sells its products?</b><span>decides whether scam shops are hunted too</span></div></div>
     <div class="kinds">
       <label class="tcard"><input type="radio" name="kind" value="service" checked><div><b>Only the brand</b><span>a service, an app, a bank — BrandWatch hunts phishing sites and fake accounts.</span></div></label>
       <label class="tcard"><input type="radio" name="kind" value="retail"><div><b>Other shops too</b><span>shoes, clothing, electronics — also hunts scam shops that advertise the products on Facebook / Instagram (set countries and prices next).</span></div></label>
@@ -65,9 +82,20 @@
         {% include "_new_brand_params.html" %}
       </div>
     </details>
-    <div style="margin-top:14px;display:flex;gap:10px;align-items:center;flex-wrap:wrap"><button class="primary" type="submit">Create brand</button>
-      <span class="small muted">Next: the set-up page (Google queries{{ ', countries and prices for a brand other shops sell' }}), then the first scan. The official site is fingerprinted on that scan.</span></div>
+    <div class="addgo"><button class="primary" type="submit" id="nb-go">Create brand →</button>
+      <span class="small muted">Next: a short set-up page, then the first scan.</span></div>
   </form>
+  <aside class="addsum" aria-live="polite" aria-label="What will be created">
+    <div class="as-h">What will be created</div>
+    <div class="as-name" id="as-name">—</div>
+    <div class="as-row"><span>main site</span><b class="mono" id="as-site">—</b></div>
+    <div class="as-row"><span>other domains</span><b id="as-more">0</b></div>
+    <div class="as-row"><span>searched in</span><b id="as-mkt">United States · English</b></div>
+    <div class="as-row"><span>track</span><b id="as-track">—</b></div>
+    <div class="as-hunt" id="as-hunt"></div>
+    <ol class="as-next"><li>Set-up page: Google queries{{ ', countries and prices' }}</li><li>First scan: the official site is fingerprinted</li><li>Findings arrive for your verdict</li></ol>
+  </aside>
+  </div>
   <script>
   (function(){
     const form = document.getElementById('addform'); if (!form) return;
@@ -90,6 +118,19 @@
       if (auto.value === '1' && pk && pk.setMarkets) { const m = marketsFor(h); if (m) pk.setMarkets(m); }
     });
     form.addEventListener('change', () => { if (warn) warn.style.display = (form.preset.value === 'enterprise') ? '' : 'none'; });
+    // the summary beside the form says what pressing Create will make, as it is typed
+    const $ = id => document.getElementById(id), TRACK = {{ {'basic': PRESETS.basic.label, 'standard': PRESETS.standard.label, 'enterprise': PRESETS.enterprise.label}|tojson }};
+    const sync = () => {
+      const entries = [...form.querySelectorAll('.dlist input[name=entry]')].map(i => i.value.trim()).filter(Boolean), h = host(entries[0] || '');
+      const nm = name.value.trim() || nameFrom(h);
+      $('as-name').textContent = nm || '—'; $('as-site').textContent = h || '—'; $('as-more').textContent = Math.max(0, entries.length - 1);
+      const m = marketsFor(h); $('as-mkt').textContent = m && m.length ? m.map(x => { let n = String(x.country || '').toUpperCase(); try { n = new Intl.DisplayNames(['en'], {type: 'region'}).of(n) || n; } catch (e) { /* ignore */ } const L = (x.langs || []).map(l => { try { return new Intl.DisplayNames(['en'], {type: 'language'}).of(l); } catch (e) { return l; } }); return n + (L.length ? ' · ' + L.join(' + ') : ''); }).join(', ') : 'United States · English';
+      $('as-track').textContent = TRACK[form.preset.value] || '—';
+      const shop = form.kind && form.kind.value === 'retail';
+      $('as-hunt').innerHTML = ['look-alike domains', 'phishing sites', 'fake social accounts'].concat(shop ? ['scam shops & their ads'] : []).map(x => `<span>${x}</span>`).join('');
+      $('nb-go').textContent = nm ? `Create ${nm} →` : 'Create brand →';
+    };
+    form.addEventListener('input', sync); form.addEventListener('change', sync); sync();
   })();
   </script>
   <p class="muted small" style="margin-top:10px">You can change the track, the countries and every search rule on the brand page afterwards.</p>
@@ -97,7 +138,7 @@
 {% endset %}
 <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
   <h1 style="margin:0">BRANDS &amp; SCANS <span class="muted">· {{ cards|length }} monitored brand(s)</span></h1>
-  {% if can_write and cards %}<a class="btn" href="#add" style="margin-left:auto">+ Add brand</a>{% endif %}
+  {% if can_write and cards %}<a class="btn primary" href="#add" id="addbtn" style="margin-left:auto">+ Add brand</a>{% endif %}
 </div>
 <p class="intro">{{ PAGE_INTROS.brands }}</p>
 {% if error %}<div class="error" style="margin-top:10px">{{ error }}</div>{% endif %}
@@ -180,4 +221,11 @@
 </div>
 
 {% if can_write and cards %}{{ addform }}{% endif %}
+<script>
+(function(){
+  const b = document.getElementById('addbtn'), box = document.getElementById('add'); if (!b || !box) return;
+  b.addEventListener('click', ev => { ev.preventDefault(); box.scrollIntoView({behavior: 'smooth', block: 'start'}); box.classList.remove('flash'); void box.offsetWidth; box.classList.add('flash');
+    setTimeout(() => { const i = box.querySelector('.dlist input'); if (i) i.focus({preventScroll: true}); }, 500); history.replaceState(null, '', '#add'); });
+})();
+</script>
 {% endblock %}

@@ -33,6 +33,36 @@
   .krow form{display:flex;gap:6px}.krow form input{min-width:0}
   .saved{position:fixed;right:18px;bottom:18px;z-index:30;padding:9px 14px;border-radius:10px;background:var(--panel2);border:1px solid rgba(46,204,113,.5);color:var(--text);font-size:13px;box-shadow:0 10px 30px rgba(0,0,0,.45);transition:opacity .4s}
   .kv th{width:150px}
+  /* provider keys: a summary, chips, one short row per key that opens to its form */
+  .ksum{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;margin:0 0 10px}
+  .kdemo{font-size:12.5px;padding:5px 10px;border-radius:8px;background:rgba(53,199,242,.10);border:1px solid rgba(53,199,242,.35);color:var(--accent2)}
+  .kchips{display:flex;gap:6px;flex-wrap:wrap;margin-left:auto}
+  .kchips button{padding:5px 11px;border-radius:999px;font-size:12.5px}.kchips button b{font-family:var(--mono);font-weight:600;margin-left:4px;color:var(--muted)}
+  .kchips button.on{border-color:var(--accent);color:var(--accent2);background:rgba(53,199,242,.12)}
+  .kg{margin:12px 0 0;border:1px solid var(--border);border-radius:12px;overflow:hidden}
+  .kg[hidden]{display:none}
+  .kgh{display:flex;align-items:baseline;gap:10px;padding:9px 14px;background:var(--panel2);border-bottom:1px solid var(--border);font-size:13px}
+  .kgh .muted{font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+  .kgn{margin-left:auto;font:600 12px var(--mono);color:var(--muted);flex:none}.kgn.full{color:var(--low)}
+  details.kr{border-top:1px solid var(--border)}details.kr:first-of-type{border-top:0}
+  details.kr[hidden]{display:none}
+  details.kr>summary{list-style:none;cursor:pointer;display:grid;grid-template-columns:12px minmax(0,1fr) auto auto;gap:12px;align-items:center;padding:10px 14px}
+  details.kr>summary::-webkit-details-marker{display:none}
+  details.kr>summary:hover{background:rgba(53,199,242,.05)}
+  details.kr[open]>summary{background:rgba(53,199,242,.07)}
+  .kdot{display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--border);flex:none}.kdot.on{background:var(--low);box-shadow:0 0 8px rgba(46,204,113,.6)}
+  .kn{min-width:0}.kn b{font-weight:600}
+  .kd{display:block;font-size:12px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-top:1px}
+  .ks{font-size:12px;white-space:nowrap}
+  .kbtn{font-size:12px;padding:4px 10px;border:1px solid var(--border);border-radius:8px;color:var(--accent2);white-space:nowrap}
+  details.kr[open] .kbtn{border-color:var(--accent)}
+  .kbody{padding:0 14px 12px 38px}
+  .kmeta{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;margin:0 0 8px}.kmeta .tag{margin-left:0}
+  .kact{display:flex;flex-wrap:wrap;gap:6px;align-items:center}.kact form{display:flex;gap:6px;flex:1 1 320px;margin:0}.kact input{min-width:0}
+  .keytest-out{margin-top:6px}
+  details.kfree{margin-top:12px}details.kfree>summary{cursor:pointer;font-size:12.5px;color:var(--accent2)}
+  .kfl{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(260px,100%),1fr));gap:4px 18px;margin-top:8px;font-size:12.5px}.kfl .kdot{margin-right:8px;vertical-align:-1px}
+  @media (max-width:700px){details.kr>summary{grid-template-columns:12px minmax(0,1fr) auto}.ks{display:none}.kbody{padding-left:14px}.kgh .muted{display:none}}
   @media (max-width:900px){
     .set-layout{grid-template-columns:1fr}
     .set-nav{position:static;display:flex;flex-wrap:nowrap;overflow-x:auto;gap:6px;padding-bottom:4px}
@@ -106,31 +136,67 @@
   {# ================================================================== DATA SOURCES #}
   {% if is_admin %}
   <section class="panel sec" id="keys">
-    <h2>Provider API keys <span class="muted">· AES-256-GCM envelope encryption, never shown again</span></h2>
-    <p class="lead">The services BrandWatch calls during a scan. {% if settings.demo_mode %}<b>Demo mode answers every call from recorded scenarios, so no key is needed here.</b> {% endif %}A missing key never breaks a scan: that source is skipped and the console says so. Each key gets its own random 32-byte data key (AES-256-GCM), wrapped by the master key and bound to workspace:provider; only the last four characters are ever displayed.</p>
     {% set keymap = {} %}{% for k in api_keys %}{% set _ = keymap.update({k.provider: k}) %}{% endfor %}
-    {% for gkey, gname, gdesc in PROVIDER_GROUPS %}
-    <div class="keygrp">{{ gname }} <span>· {{ gdesc }}</span></div>
-    {% for pname, info in PROVIDER_INFO.items() if info.group == gkey and pname in keymap %}{% set k = keymap[pname] %}
-    <div class="krow" id="key-{{ pname }}">
-      <div>
-        <div class="nm">{{ info.name }}{% if info.recommended %}<span class="tag rec">recommended</span>{% endif %}{% for u in KEY_USED_BY.get(pname, []) %}<span class="tag" title="this key is used by {{ u }}">{{ u }}</span>{% endfor %}{% if info.built is sameas false %}<span class="tag" title="the key is stored, but the connector is not written yet: this source is skipped">connector not built yet</span>{% endif %}<a href="{{ info.url }}" target="_blank" rel="noreferrer noopener">get a key ↗</a></div>
-        <div class="ds">{{ info.does }}{% if info.plan %} · <span class="mono">{{ info.plan }}</span>{% endif %}</div>
-      </div>
-      <div>
-        <div class="small" style="margin-bottom:6px">{% if k.configured %}<span class="tag ok">✓ set</span> <span class="mono">{{ k.masked }}</span> <span class="muted">from {{ k.source }}{% if k.rotated_at %} · rotated {{ k.rotated_at[:10] }}{% endif %}</span>{% else %}<span class="tag">not set</span>{% endif %}</div>
-        <div style="display:flex;gap:6px">
-          <form method="post" action="/ui/settings/api-keys/{{ k.provider }}" style="flex:1"><input name="key" type="password" placeholder="{{ 'paste a new key to rotate' if k.configured else 'paste key' }}" autocomplete="off" aria-label="{{ info.name }} API key"><button type="submit">Save</button></form>
-          {% if k.source == 'workspace' %}<form method="post" action="/ui/settings/api-keys/{{ k.provider }}/delete"><button class="danger" type="submit" title="remove the stored key">Remove</button></form>{% endif %}
-          {% if k.configured %}<button type="button" class="ghost keytest" data-p="{{ k.provider }}" title="calls the provider once to see whether the key works (WhoisXML: the free balance check)">Test</button>{% if k.provider == 'whoisxml' %}<button type="button" class="ghost keytest" data-p="whoisxml-history" title="WHOIS History is a separate WhoisXML product with its own credits (Domain Research Suite). Looks at the free balance first; spends 1 credit only if there is one to spend.">Test history</button>{% endif %}{% endif %}
-        </div>
-        <div class="small keytest-out" data-for="{{ k.provider }}" style="margin-top:6px;min-height:1em"></div>
+    {% set nset = api_keys|selectattr('configured')|list|length %}
+    <h2>Provider API keys <span class="muted">· {{ nset }} of {{ api_keys|length }} set</span>
+      <span class="help" title="A missing key never breaks a scan: that source is skipped and the console says so. Keys are stored encrypted (AES-256-GCM, a random data key per key, wrapped by the master key and bound to workspace:provider); only the last four characters are ever shown.">?</span></h2>
+    <div class="ksum">
+      {% if settings.demo_mode %}<span class="kdemo">Demo mode · every call is answered from recorded scenarios, no key is needed</span>{% endif %}
+      <div class="kchips" role="group" aria-label="Show">
+        <button type="button" class="on" data-kf="all">All <b>{{ api_keys|length }}</b></button>
+        <button type="button" data-kf="set">Set <b>{{ nset }}</b></button>
+        <button type="button" data-kf="unset">Not set <b>{{ api_keys|length - nset }}</b></button>
+        <button type="button" data-kf="rec">Recommended</button>
       </div>
     </div>
+    {% for gkey, gname, gdesc in PROVIDER_GROUPS %}
+    {% set rows = [] %}{% for pname, info in PROVIDER_INFO.items() if info.group == gkey and pname in keymap %}{% set _ = rows.append(pname) %}{% endfor %}
+    {% if rows %}
+    {% set gset = rows|select('in', api_keys|selectattr('configured')|map(attribute='provider')|list)|list|length %}
+    <div class="kg">
+      <div class="kgh"><b>{{ gname }}</b><span class="muted">{{ gdesc }}</span><span class="kgn {{ 'full' if gset == rows|length }}">{{ gset }}/{{ rows|length }}</span></div>
+      {% for pname in rows %}{% set info = PROVIDER_INFO[pname] %}{% set k = keymap[pname] %}
+      <details class="kr" id="key-{{ pname }}" data-set="{{ 1 if k.configured else 0 }}" data-rec="{{ 1 if info.recommended else 0 }}">
+        <summary>
+          <i class="kdot {{ 'on' if k.configured }}" aria-hidden="true"></i>
+          <span class="kn"><b>{{ info.name }}</b>{% if info.recommended %}<span class="tag rec">recommended</span>{% endif %}{% if info.built is sameas false %}<span class="tag" title="the key is stored, but the connector is not written yet: this source is skipped">not built yet</span>{% endif %}
+            <span class="kd">{{ info.does }}</span></span>
+          <span class="ks">{% if k.configured %}<span class="mono">{{ k.masked }}</span>{% else %}<span class="muted">not set</span>{% endif %}</span>
+          <span class="kbtn">{{ 'Change' if k.configured else 'Add key' }}</span>
+        </summary>
+        <div class="kbody">
+          <div class="kmeta">{% for u in KEY_USED_BY.get(pname, []) %}<span class="tag" title="this key is used by {{ u }}">{{ u }}</span>{% endfor %}{% if info.plan %}<span class="mono small muted">{{ info.plan }}</span>{% endif %}
+            {% if k.configured %}<span class="small muted">from {{ k.source }}{% if k.rotated_at %} · rotated {{ k.rotated_at[:10] }}{% endif %}</span>{% endif %}
+            <a href="{{ info.url }}" target="_blank" rel="noreferrer noopener" class="small">get a key ↗</a></div>
+          <div class="kact">
+            <form method="post" action="/ui/settings/api-keys/{{ k.provider }}"><input name="key" type="password" placeholder="{{ 'paste a new key to replace it' if k.configured else 'paste the key' }}" autocomplete="off" aria-label="{{ info.name }} API key"><button type="submit" class="primary">Save</button></form>
+            {% if k.configured %}<button type="button" class="ghost keytest" data-p="{{ k.provider }}" title="calls the provider once to see whether the key works (WhoisXML: the free balance check)">Test</button>{% if k.provider == 'whoisxml' %}<button type="button" class="ghost keytest" data-p="whoisxml-history" title="WHOIS History is a separate WhoisXML product with its own credits (Domain Research Suite). Looks at the free balance first; spends 1 credit only if there is one to spend.">Test history</button>{% endif %}{% endif %}
+            {% if k.source == 'workspace' %}<form method="post" action="/ui/settings/api-keys/{{ k.provider }}/delete"><button class="danger ghost" type="submit" title="remove the stored key">Remove</button></form>{% endif %}
+          </div>
+          <div class="small keytest-out" data-for="{{ k.provider }}"></div>
+        </div>
+      </details>
+      {% endfor %}
+    </div>
+    {% endif %}
     {% endfor %}
-    {% endfor %}
-    <div class="keygrp">No key needed <span>· always on</span></div>
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:4px 18px" class="small">{% for n, d in KEYLESS_SOURCES %}<div><span class="tag ok" style="margin:0 6px 0 0">✓</span><b style="font-weight:500">{{ n }}</b> <span class="muted">— {{ d }}</span></div>{% endfor %}</div>
+    <details class="kfree"><summary>No key needed · always on · {{ KEYLESS_SOURCES|length }} sources</summary>
+      <div class="kfl">{% for n, d in KEYLESS_SOURCES %}<div><span class="kdot on"></span><b>{{ n }}</b> <span class="muted">— {{ d }}</span></div>{% endfor %}</div></details>
+    <script>
+    (function(){
+      // the chips show a part of the list; a group with nothing left to show folds away
+      const sec = document.getElementById('keys'); if (!sec) return;
+      sec.querySelectorAll('.kchips button').forEach(b => b.addEventListener('click', () => {
+        sec.querySelectorAll('.kchips button').forEach(x => x.classList.toggle('on', x === b));
+        const f = b.dataset.kf;
+        sec.querySelectorAll('details.kr').forEach(r => { r.hidden = !(f === 'all' || (f === 'set' && r.dataset.set === '1') || (f === 'unset' && r.dataset.set === '0') || (f === 'rec' && r.dataset.rec === '1')); });
+        sec.querySelectorAll('.kg').forEach(g => { g.hidden = ![...g.querySelectorAll('details.kr')].some(r => !r.hidden); });
+      }));
+      // a link to one key (#key-virustotal) opens its row
+      const open = () => { const t = location.hash && document.getElementById(location.hash.slice(1)); if (t && t.matches('details.kr')) { t.open = true; t.scrollIntoView({block: 'center'}); } };
+      open(); addEventListener('hashchange', open);
+    })();
+    </script>
   </section>
   {% endif %}
 

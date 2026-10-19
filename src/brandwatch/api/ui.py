@@ -1427,6 +1427,7 @@ def campaigns_page(
         return _login_redirect(request)
     brand_id = _uuid_or_none(brand_id)
     rows = campaigns_api.list_campaigns(session, user, brand_id=brand_id, limit=100)
+    rows = sorted(rows, key=lambda r: -len(r.get("findings") or []))  # the maps that tie most findings together first
     brands = brands_api.list_brands(session, user)
     return _render(
         request,

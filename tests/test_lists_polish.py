@@ -128,3 +128,19 @@ def test_the_review_fixes_hold_across_the_app(engine, tmp_path, chromium):  # no
     assert page.evaluate("getComputedStyle(document.querySelector('main h1 .hsep')).display") == "none"
     ctx.close()
     assert [e for e in errors if BROKEN.search(e)] == []
+
+
+def test_the_infrastructure_settings_and_add_brand_sections_are_short_and_clear(engine, tmp_path):
+    app = _app(engine, tmp_path)
+    with TestClient(app):
+        c, ui = _api(app), _ui(app)
+        _brand(c, app)
+        camp = ui.get("/ui/campaigns").text
+        assert 'id="maps"' in camp and 'class="mtiles"' in camp and 'class="ccard"' not in camp
+        settings = ui.get("/ui/settings").text
+        keys = settings.split('id="keys"')[1].split("</section>")[0]
+        assert 'class="kchips"' in keys and '<details class="kr" id="key-virustotal"' in keys and "Add key" in keys
+        assert "Each key gets its own random 32-byte data key" not in keys  # the long security text is a "?" tip now
+        brands = ui.get("/ui/brands").text
+        add = brands.split('id="add"')[1]
+        assert add.count('class="stp"') == 3 and 'id="as-name"' in add and 'id="nb-go"' in add

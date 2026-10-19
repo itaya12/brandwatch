@@ -14,6 +14,38 @@
   .mini b{display:block;font-family:var(--display);font-size:20px;line-height:1}.mini span{font-size:10px;color:var(--muted);text-transform:uppercase}
   @media (max-width:800px){.ccard{grid-template-columns:1fr}.ccard canvas{width:100%;height:auto;aspect-ratio:440/300}}
   @media (max-width:420px){.mini{grid-template-columns:repeat(3,1fr)}}
+  /* everyone at a glance: a summary, the servers that matter as cards, short bar lists; the full table folded */
+  .gl-sum{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:4px 0 14px}
+  .gl-sum>div{border:1px solid var(--border);border-radius:10px;padding:10px 12px;background:var(--panel2)}
+  .gl-sum>div.hot{border-color:rgba(255,77,77,.5);box-shadow:inset 3px 0 0 var(--crit)}
+  .gl-sum b{display:block;font:700 24px/1.1 var(--display);color:var(--text)}.gl-sum .hot b{color:var(--crit)}.gl-sum b.sm{font:600 14px/1.4 var(--sans)}
+  .gl-sum span{font:600 11px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+  .gl-h{font:700 11px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--text2);margin:6px 0 8px}.gl-h span{text-transform:none;letter-spacing:0;font-weight:400;color:var(--muted)}
+  .gl-servers{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(280px,100%),1fr));gap:10px;margin-bottom:14px}
+  .gl-srv{border:1px solid var(--border);border-left:3px solid var(--crit);border-radius:10px;padding:10px 12px;background:rgba(10,15,26,.6)}
+  .gl-top{display:flex;align-items:center;gap:8px;font-size:14px}.gl-top img{border-radius:2px}
+  .gl-top .n{margin-left:auto;font:700 16px var(--display);color:var(--crit)}.gl-top .n::after{content:" sites";font:500 11px var(--mono);color:var(--muted)}
+  .gl-net{font-size:12px;color:var(--muted);margin:3px 0 7px}.gl-net .bad{color:var(--crit);font-weight:600}
+  .gl-sites{display:flex;flex-wrap:wrap;gap:4px}.gl-sites span{font-size:11.5px;padding:2px 8px;border:1px solid var(--border);border-radius:999px;color:var(--text2)}.gl-sites .more{color:var(--accent2)}
+  .gl-cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(260px,100%),1fr));gap:12px 24px}
+  .gl-bar{display:grid;grid-template-columns:minmax(0,1fr) 90px 28px;gap:8px;align-items:center;font-size:12.5px;padding:3px 0}
+  .gl-bar span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.gl-bar b{font:600 12px var(--mono);text-align:right}
+  .gl-bar .bar{display:block;height:6px}
+  details.gl-more{margin-top:14px}details.gl-more>summary{cursor:pointer;font-size:12.5px;color:var(--accent2)}
+  details.gl-more table{margin-top:8px}
+  /* the maps: compact tiles */
+  .mtiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(330px,100%),1fr));gap:10px}
+  .mtile{display:grid;grid-template-columns:96px minmax(0,1fr);gap:12px;align-items:start;padding:10px;border:1px solid var(--border);border-radius:12px;color:inherit;text-decoration:none;
+    background:linear-gradient(160deg,rgba(18,26,43,.9),rgba(10,15,26,.9));transition:transform .25s,border-color .25s,box-shadow .25s}
+  .mtile:hover{transform:translateY(-2px);border-color:var(--accent);box-shadow:0 10px 26px rgba(0,0,0,.4)}
+  .mtile.mhide{display:none}
+  .mtile canvas{width:96px;height:66px;border-radius:8px;border:1px solid var(--border);background:radial-gradient(circle,color-mix(in srgb,var(--accent) 6%,var(--panel)),var(--bg))}
+  .mt-title{font-weight:700;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .mt-meta{font-size:12px;color:var(--muted);margin:1px 0 6px}
+  .mt-stats{display:flex;flex-wrap:wrap;gap:2px 12px;font-size:12px;color:var(--muted);margin-bottom:6px}.mt-stats b{color:var(--text);font-family:var(--mono)}
+  .mtile .stack{height:5px}
+  .mt-sites{display:flex;flex-wrap:wrap;gap:4px;margin-top:7px;min-width:0}.mt-sites .badge{max-width:100%;overflow:hidden;text-overflow:ellipsis}
+  .mt-all{margin-top:10px;width:100%}
 </style>
 <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
   <h1 style="margin:0">ATTACK INFRASTRUCTURE <span class="muted">· one confirmed finding → the attacker's whole network of servers, certificates and sites</span></h1>
@@ -120,26 +152,51 @@
 </div>
 
 {% if glance.sites %}
+{% set ns = namespace(multi=[], single=[], cdn=[], countries={}) %}
+{% for s in glance.servers %}{% if s.shared %}{% set ns.cdn = ns.cdn + [s] %}{% elif s.sites|length > 1 %}{% set ns.multi = ns.multi + [s] %}{% else %}{% set ns.single = ns.single + [s] %}{% endif %}
+  {% if s.country %}{% set _ = ns.countries.update({s.country: ns.countries.get(s.country, 0) + s.sites|length}) %}{% endif %}{% endfor %}
+{% set countries = ns.countries.items()|sort(attribute='1', reverse=true)|list %}
+{% set topreg = glance.registrars[0] if glance.registrars else none %}
 <div class="panel" style="margin-top:14px" id="glance">
-  <h2>Everyone at a glance <span class="muted">· {{ glance.investigated }} of {{ glance.sites }} confirmed sites investigated · what they share</span></h2>
-  <p class="small muted">Built from the investigations that follow every confirmation, so nothing has to be opened one by one. A server that carries several confirmed sites, the same registrar or the same name servers are the operator's fingerprints. Shared Cloudflare addresses carry thousands of unrelated sites and are not evidence of a link.</p>
-  {% if glance.servers %}
-  <h3 class="muted" style="font-size:12px;letter-spacing:.14em;margin:14px 0 6px">SERVERS</h3>
+  <h2>Everyone at a glance <span class="muted">· {{ glance.investigated }} of {{ glance.sites }} confirmed sites investigated</span>
+    <span class="help" title="Built from the investigations that follow every confirmation. A server that carries several confirmed sites, the same registrar or the same name servers are the operator's fingerprints. Shared CDN addresses carry thousands of unrelated sites and are not evidence of a link.">?</span></h2>
+  <div class="gl-sum">
+    <div class="{{ 'hot' if ns.multi }}"><b data-count="{{ ns.multi|length }}">0</b><span>server{{ 's' if ns.multi|length != 1 }} carrying 2+ sites</span></div>
+    <div><b data-count="{{ glance.servers|length }}">0</b><span>servers in all</span></div>
+    <div><b data-count="{{ countries|length }}">0</b><span>countries</span></div>
+    {% if topreg %}<div><b class="sm">{{ topreg.name|truncate(22) }}</b><span>top registrar · {{ topreg.sites|length }} site{{ 's' if topreg.sites|length != 1 }}</span></div>{% endif %}
+  </div>
+  {% if ns.multi %}
+  <div class="gl-h">Servers that carry several confirmed sites <span>· the operator's machines</span></div>
+  <div class="gl-servers">
+    {% for s in ns.multi %}
+    <div class="gl-srv">
+      <div class="gl-top">{% if s.country_code %}{{ flag_img(s.country_code, 18) }}{% endif %}<a class="mono" href="/ui/intel/ip/{{ s.ip }}">{{ s.ip }}</a><span class="n">{{ s.sites|length }}</span></div>
+      <div class="gl-net">{{ s.country or '—' }}{% if s.owner %} · {{ s.owner|truncate(30) }}{% endif %}{% if s.detections %} · <b class="bad">{{ s.detections }} engine{{ 's' if s.detections != 1 }}</b>{% endif %}{% if s.abuse %} · abuse {{ s.abuse }}{% endif %}</div>
+      <div class="gl-sites">{% for h in s.sites[:4] %}<span class="mono">{{ h }}</span>{% endfor %}{% if s.sites|length > 4 %}<span class="more" title="{{ s.sites[4:]|join(', ') }}">+{{ s.sites|length - 4 }}</span>{% endif %}</div>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+  <div class="gl-cols">
+    {% if countries %}<div><div class="gl-h">Where they are hosted</div>{% set cmax = countries[0][1] %}
+      {% for name, n in countries[:6] %}<div class="gl-bar"><span>{{ name }}</span><i class="bar"><i data-w="{{ (n / cmax * 100)|round|int }}"></i></i><b>{{ n }}</b></div>{% endfor %}</div>{% endif %}
+    {% if glance.registrars %}<div><div class="gl-h">Registrars</div>{% set rmax = glance.registrars[0].sites|length %}
+      {% for r in glance.registrars[:6] %}<div class="gl-bar" title="{{ r.sites|join(', ') }}"><span>{{ r.name }}</span><i class="bar"><i data-w="{{ (r.sites|length / rmax * 100)|round|int }}"></i></i><b>{{ r.sites|length }}</b></div>{% endfor %}</div>{% endif %}
+    {% if glance.nameservers %}<div><div class="gl-h">Name servers</div>{% set nmax = glance.nameservers[0].sites|length %}
+      {% for r in glance.nameservers[:6] %}<div class="gl-bar" title="{{ r.sites|join(', ') }}"><span class="mono">{{ r.name }}</span><i class="bar"><i data-w="{{ (r.sites|length / nmax * 100)|round|int }}"></i></i><b>{{ r.sites|length }}</b></div>{% endfor %}</div>{% endif %}
+  </div>
+  {% if ns.single or ns.cdn %}<details class="gl-more"><summary>Every server ({{ glance.servers|length }}) — {{ ns.single|length }} with one site{% if ns.cdn %}, {{ ns.cdn|length }} shared CDN{% endif %}</summary>
   <table class="small">
     <tr><th>Server</th><th>Where</th><th>Network</th><th>Engines</th><th>Abuse</th><th>Confirmed sites on it</th></tr>
     {% for s in glance.servers %}<tr>
       <td class="mono"><a href="/ui/intel/ip/{{ s.ip }}">{{ s.ip }}</a></td>
       <td>{{ s.country or '—' }}</td>
-      <td>{% if s.asn %}AS{{ s.asn }} {% endif %}{{ s.owner or '' }}{% if s.shared %} <span class="pill muted" title="a Cloudflare address shared by a great many unrelated sites">shared CDN</span>{% endif %}</td>
+      <td>{% if s.asn %}AS{{ s.asn }} {% endif %}{{ s.owner or '' }}{% if s.shared %} <span class="pill muted" title="a CDN address shared by a great many unrelated sites">shared CDN</span>{% endif %}</td>
       <td>{{ s.detections if s.detections is not none else '—' }}</td><td>{{ s.abuse if s.abuse is not none else '—' }}</td>
-      <td>{% if s.sites|length > 1 and not s.shared %}<b style="color:var(--crit)">{{ s.sites|length }}</b> · {% endif %}{% for h in s.sites %}<span class="mono">{{ h }}</span>{{ ', ' if not loop.last }}{% endfor %}</td>
+      <td><span class="mono">{{ s.sites|join(', ') }}</span></td>
     </tr>{% endfor %}
-  </table>
-  {% endif %}
-  <div class="cols" style="margin-top:12px">
-    <div>{% if glance.registrars %}<h3 class="muted" style="font-size:12px;letter-spacing:.14em;margin:14px 0 6px">REGISTRARS</h3><table class="small">{% for r in glance.registrars %}<tr><td>{{ r.name }}</td><td>{% if r.sites|length > 1 %}<b>{{ r.sites|length }}</b> · {% endif %}<span class="mono">{{ r.sites|join(', ') }}</span></td></tr>{% endfor %}</table>{% endif %}</div>
-    <div>{% if glance.nameservers %}<h3 class="muted" style="font-size:12px;letter-spacing:.14em;margin:14px 0 6px">NAME SERVERS</h3><table class="small">{% for r in glance.nameservers %}<tr><td class="mono">{{ r.name }}</td><td>{% if r.sites|length > 1 %}<b>{{ r.sites|length }}</b> · {% endif %}<span class="mono">{{ r.sites|join(', ') }}</span></td></tr>{% endfor %}</table>{% endif %}</div>
-  </div>
+  </table></details>{% endif %}
   {% if glance.pending %}<p class="small muted" style="margin-top:10px">Not investigated yet: {% for p in glance.pending %}<a class="mono" href="/ui/findings/{{ p.id }}">{{ p.host }}</a> ({{ p.state }}){{ ', ' if not loop.last }}{% endfor %}.</p>{% endif %}
 </div>
 {% endif %}
@@ -165,31 +222,26 @@
   setInterval(tick, 3000);
 })();
 </script>
-<h2 style="margin-top:14px" id="maps">Infrastructure maps <span class="muted">· {{ campaigns|length }}</span></h2>
-<div class="grid" style="margin-top:8px;grid-template-columns:repeat(auto-fill,minmax(min(560px,100%),1fr))">
-  {% for c in campaigns %}
-  <a class="ccard" href="/ui/campaigns/{{ c.id }}" style="--i:{{ loop.index0 }}">
+{% set ordered = campaigns %}
+<div class="panel" style="margin-top:14px" id="maps">
+<h2>Infrastructure maps <span class="muted">· {{ campaigns|length }} · one per confirmed site that was mapped, most findings first</span></h2>
+<div class="mtiles">
+  {% for c in ordered %}
+  <a class="mtile{{ ' mhide' if loop.index > 9 }}" href="/ui/campaigns/{{ c.id }}">
     <canvas class="constellation" width="440" height="300" data-n="{{ c.stats.included }}" data-x="{{ c.stats.excluded }}" data-f="{{ c.findings|length }}"></canvas>
-    <div>
-      <div class="title">{{ c.title or c.name }}</div>
-      {% if c.headline %}<div class="small" style="margin:2px 0 4px">{{ c.headline }}</div>{% endif %}
-      <div class="small muted">{% for b in brands if b.id == c.brand_id %}{{ b.name }} · {% endfor %}investigated <span data-rel="{{ c.created_at }}"></span></div>
-      <div class="mini">
-        <div><b data-count="{{ c.stats.nodes }}">0</b><span>nodes</span></div>
-        <div><b data-count="{{ c.stats.included }}">0</b><span>included</span></div>
-        <div><b data-count="{{ c.stats.edges }}">0</b><span>edges</span></div>
-        <div><b data-count="{{ c.findings|length }}">0</b><span>findings</span></div>
-        <div><b data-count="{{ c.iocs }}">0</b><span>IOCs</span></div>
-      </div>
-      <div class="stack" title="included vs excluded by co-hosted triage"><i data-w="{{ c.included_pct }}" style="background:var(--low)"></i><i data-w="{{ 100 - c.included_pct }}" style="background:var(--border)"></i></div>
-      <div class="small" style="margin-top:8px">
-        {% for f in c.findings[:4] %}<span class="badge sev-{{ f.severity }}" style="margin:2px">{{ f.hostname }}</span>{% endfor %}{% if c.findings|length > 4 %}<span class="muted">+{{ c.findings|length - 4 }}</span>{% endif %}
-      </div>
-      <div class="small muted mono" style="margin-top:6px">servers {{ (c.actor_profile.servers or [])|join(', ') or '—' }}{% if c.actor_profile.registrant_email %} · registrant {{ c.actor_profile.registrant_email }}{% endif %}</div>
+    <div class="mt-body">
+      <div class="mt-title">{{ c.title or c.name }}</div>
+      <div class="mt-meta">{% for b in brands if b.id == c.brand_id %}<bdi>{{ b.name }}</bdi> · {% endfor %}<span data-rel="{{ c.created_at }}"></span></div>
+      <div class="mt-stats"><span><b>{{ c.findings|length }}</b> finding{{ 's' if c.findings|length != 1 }}</span><span><b>{{ (c.actor_profile.servers or [])|length }}</b> server{{ 's' if (c.actor_profile.servers or [])|length != 1 }}</span><span><b>{{ c.iocs }}</b> IOCs</span><span><b>{{ c.stats.included }}</b>/{{ c.stats.nodes }} kept</span></div>
+      <div class="stack" title="kept vs dropped by the co-hosted triage"><i data-w="{{ c.included_pct }}" style="background:var(--low)"></i><i data-w="{{ 100 - c.included_pct }}" style="background:var(--border)"></i></div>
+      <div class="mt-sites">{% for f in c.findings[:2] %}<span class="badge sev-{{ f.severity }}">{{ f.hostname }}</span>{% endfor %}{% if c.findings|length > 2 %}<span class="muted small">+{{ c.findings|length - 2 }}</span>{% endif %}</div>
     </div>
   </a>
   {% endfor %}
 </div>
+{% if campaigns|length > 9 %}<button type="button" class="mt-all" id="mt-all">Show all {{ campaigns|length }} maps ▾</button>{% endif %}
+</div>
+<script>(function(){ const b = document.getElementById('mt-all'); if (b) b.addEventListener('click', () => { document.querySelectorAll('.mtile.mhide').forEach(t => t.classList.remove('mhide')); b.remove(); window.dispatchEvent(new Event('resize')); }); })();</script>
 {% if not campaigns %}<div class="panel" style="margin-top:14px"><p class="muted">No infrastructure maps yet. <a href="/ui/findings?state=confirmed">Confirm a finding</a>, then press <em>Map attack infrastructure</em> on it.</p></div>{% endif %}
 
 <script>
