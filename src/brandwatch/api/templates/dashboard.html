@@ -1167,7 +1167,7 @@
   [tabs.geo, tabs.infra].forEach(t => t.addEventListener('keydown', e => {
     if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') { const o = t === tabs.geo ? tabs.infra : tabs.geo; o.focus(); o.click(); } }));
   if (location.hash === '#infrastructure') pick('infra');
-  setTimeout(load, 900);
+  setTimeout(load, 150);  // soon after the first paint (the static demo copy records this fetch while the page settles)
 })();
 </script>
 <script>
