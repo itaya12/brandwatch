@@ -26,6 +26,21 @@
   .bulkbar[hidden]{display:none}
   .bulkbar input[name=reason]{flex:1;min-width:180px;margin:0}
   .why{font-size:12px;color:var(--muted);max-width:280px}
+  .why .srcs{display:flex}
+  /* the table fits a laptop screen: long names wrap, the finding is a badge with its state under it, the two actions stack */
+  #ctable .dom{min-width:190px;max-width:260px;overflow-wrap:anywhere}
+  #ctable .why{max-width:210px}
+  #ctable .prio{max-width:40px!important}
+  #ctable td.pr{white-space:nowrap;padding-right:14px}
+  #ctable .fnd{white-space:nowrap}
+  #ctable .acts{white-space:nowrap}
+  #ctable .acts form{display:block!important;margin:0 0 4px}
+  #ctable .acts button{width:100%}
+  /* first seen, last seen and the next re-check in one narrow column: three short lines that never wrap */
+  .seen{font:11.5px/1.55 var(--mono);color:var(--muted);white-space:nowrap}
+  .seen span{display:inline-block;width:44px;color:var(--muted);opacity:.7;text-transform:uppercase;font-size:11px;letter-spacing:.04em}
+  .seen time{color:var(--text2)}
+  .seen .nx b{font-weight:500;color:var(--accent2)}
   .why b{color:var(--text);font-weight:500}
   .pager{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:10px}.pager .off{opacity:.4;pointer-events:none}
   .wstats summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:8px;margin:18px 0 8px}
@@ -72,23 +87,20 @@
   </form>{% endif %}
   {% if candidates %}
   <table id="ctable" class="rwd">
-    <thead><tr>{% if can_write %}<th class="selcol"><input type="checkbox" id="selall" aria-label="select every domain on this page"></th>{% endif %}<th>Domain</th><th>Brand</th><th>Why it is here</th><th>State</th><th>Finding</th><th>Priority</th><th>First seen</th><th>Last seen</th><th>Next scan</th><th class="right">Scans</th>{% if can_write %}<th>Actions</th>{% endif %}</tr></thead>
+    <thead><tr>{% if can_write %}<th class="selcol"><input type="checkbox" id="selall" aria-label="select every domain on this page"></th>{% endif %}<th>Domain</th><th>Why it is here</th><th>State</th><th>Finding</th><th>Priority</th><th>Seen</th>{% if can_write %}<th>Actions</th>{% endif %}</tr></thead>
     <tbody>
     {% for c in candidates %}
     <tr class="wrow" style="--sc:{{ w.state_colors.get(c.state, 'var(--border)') }}" data-host="{{ c.hostname }}">
       {% if can_write %}<td class="selcol">{% if c.state != 'dismissed' %}<input type="checkbox" class="sel" name="ids" value="{{ c.id }}" form="bulkform" aria-label="select {{ c.hostname }}">{% endif %}</td>{% endif %}
-      <td><a href="/ui/candidates/{{ c.id }}">{{ m.host(c.hostname, c.host_display, c.is_idn) }}</a><div class="small muted">{{ SURFACE_LABELS.get(c.surface, c.surface) }}</div></td>
-      <td class="small"><a href="/ui/brands/{{ c.brand_id }}"><bdi>{{ c.brand_name or '—' }}</bdi></a></td>
-      <td class="why">{% for src in c.sources %}{% if src.stream == 'manual' and (src.pattern or '').startswith('pivot') %}<b>Infrastructure map</b> <span title="{{ src.pattern }}">{{ (src.pattern[6:].strip() if src.pattern.startswith('pivot:') else src.pattern)|truncate(70) }}</span>{% else %}<b>{{ src.stream|stream_label }}</b>{% if src.pattern %} <span class="mono" dir="ltr">{{ src.pattern|truncate(40) }}</span>{% endif %}{% endif %}{{ ' · ' if not loop.last }}{% else %}<span class="muted">—</span>{% endfor %}</td>
+      <td class="dom"><a href="/ui/candidates/{{ c.id }}">{{ m.host(c.hostname, c.host_display, c.is_idn) }}</a><div class="small muted"><a href="/ui/brands/{{ c.brand_id }}" title="the brand it imitates"><bdi>{{ c.brand_name or '—' }}</bdi></a> · {{ SURFACE_LABELS.get(c.surface, c.surface) }}</div></td>
+      <td class="why"><span class="srcs" style="margin:0 0 3px">{% for b in c.sources|source_badges %}{{ m.src_icon(b) }}{% endfor %}</span>{% for src in c.sources %}{% if src.stream == 'manual' and (src.pattern or '').startswith('pivot') %}<b>Infrastructure map</b> <span title="{{ src.pattern }}">{{ (src.pattern[6:].strip() if src.pattern.startswith('pivot:') else src.pattern)|truncate(70) }}</span>{% else %}<b>{{ src.stream|stream_label }}</b>{% if src.pattern %} <span class="mono" dir="ltr">{{ src.pattern|truncate(40) }}</span>{% endif %}{% endif %}{{ ' · ' if not loop.last }}{% else %}<span class="muted">—</span>{% endfor %}</td>
       <td><span class="badge state st-{{ c.state }}" title="{{ STATE_HELP.get(c.state, '') }}">{{ c.state|state_label }}</span></td>
-      <td>{% if c.finding %}<a href="/ui/findings/{{ c.finding.id }}" class="badge sev-{{ c.finding.severity }}" title="open the finding">{{ c.finding.severity }} · {{ c.finding.state|state_label }}</a>{% else %}<span class="muted small">—</span>{% endif %}</td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="{{ [c.priority * 3, 100]|min }}" style="max-width:60px"></span> {{ c.priority }}</td>
-      <td class="mono small muted">{{ c.first_seen|ts }}</td>
-      <td class="mono small muted">{{ c.last_seen|ts }}</td>
-      <td class="mono small" {% if c.next_scan_at %}data-rel="{{ c.next_scan_at }}" data-due="1" style="color:var(--accent2)"{% endif %}>{{ '—' if not c.next_scan_at else c.next_scan_at[:16].replace('T',' ') }}</td>
-      <td class="right mono">{{ c.scan_count }}</td>
+      <td class="fnd">{% if c.finding %}<a href="/ui/findings/{{ c.finding.id }}" class="badge sev-{{ c.finding.severity }}" title="open the finding">{{ c.finding.severity }}</a><div class="small muted">{{ c.finding.state|state_label }}</div>{% else %}<span class="muted small">—</span>{% endif %}</td>
+      <td class="mono small pr"><span class="prio" data-w="{{ [c.priority * 3, 100]|min }}" style="max-width:60px"></span> {{ c.priority }}</td>
+      <td class="seen ts-short"><div><span>first</span>{{ c.first_seen|ts }}</div><div><span>last</span>{{ c.last_seen|ts }}</div>
+        <div class="nx"><span>next</span>{% if c.next_scan_at %}<b data-rel="{{ c.next_scan_at }}" data-due="1" title="{{ c.next_scan_at[:16].replace('T', ' ') }} UTC">{{ c.next_scan_at[:16].replace('T', ' ') }}</b>{% else %}—{% endif %}</div><div><span>scans</span>{{ c.scan_count }}</div></td>
       {% if can_write %}
-      <td style="white-space:nowrap">
+      <td class="acts">
         {% if c.state != 'dismissed' %}
         <form method="post" action="/ui/candidates/{{ c.id }}/dismiss" style="display:inline"
               data-confirm="Known legit: remove {{ c.hostname }} from the watchlist and allowlist its domain for {{ c.brand_name or 'this brand' }}?&#10;&#10;It (and its subdomains) will never be flagged again. You can undo this on the brand page → whitelist."

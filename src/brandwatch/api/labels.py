@@ -412,6 +412,47 @@ def stream_label(s: Any) -> str:
     return STREAM_LABELS.get(v, v.replace("_", " "))
 
 
+# Where a domain was found, as one small mark per kind of source: the analyst reads "Google", "ChatGPT", "Facebook" at a
+# glance instead of a sentence. Several streams are one source to a reader (four certificate logs, four Google APIs).
+STREAM_GROUP: dict[str, str] = {
+    "dnstwist": "lookalike", "ct": "cert", "crtsh": "cert", "certspotter": "cert", "nrd": "nrd",
+    "search": "google", "serpapi": "google", "serper": "google", "scraperapi": "google", "urlscan": "urlscan",
+    "manual": "analyst", "pivot": "pivot", "meta_ads": "meta_ads", "social": "social", "redirect": "redirect", "ai_answer": "ai",
+}  # fmt: skip
+SOURCE_SHORT: dict[str, str] = {
+    "lookalike": "Look-alike name", "cert": "Certificate logs", "nrd": "New domains", "google": "Google", "urlscan": "urlscan",
+    "analyst": "Analyst scan", "pivot": "Infrastructure map", "meta_ads": "Facebook / Instagram ad", "social": "Facebook / Instagram",
+    "redirect": "Redirect", "ai": "ChatGPT / Gemini",
+}  # fmt: skip
+_SVG = '<svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'
+SOURCE_GLYPH: dict[str, Markup] = {k: Markup(v) for k, v in {
+    "google": "G", "social": "f", "meta_ads": "f",
+    "ai": _SVG + '<path d="M8 1.8l1.5 4.2 4.3 1.5-4.3 1.5L8 13.2 6.5 9 2.2 7.5 6.5 6z" fill="currentColor" stroke="none"/></svg>',
+    "cert": _SVG + '<rect x="3.2" y="7.2" width="9.6" height="6.6" rx="1.5"/><path d="M5.5 7.2V5.3a2.5 2.5 0 015 0v1.9"/></svg>',
+    "lookalike": "Aa",
+    "urlscan": _SVG + '<circle cx="7" cy="7" r="4.2"/><path d="M10.2 10.2l3.6 3.6"/></svg>',
+    "analyst": _SVG + '<path d="M3.5 2.5l9 4.8-4 1.3-1.6 3.9z" fill="currentColor"/></svg>',
+    "nrd": _SVG + '<path d="M8 2.5v11M2.5 8h11"/></svg>',
+    "pivot": _SVG + '<circle cx="4" cy="4.5" r="1.9"/><circle cx="12" cy="4.5" r="1.9"/><circle cx="8" cy="12" r="1.9"/><path d="M5.6 5.6l1.6 4.6M10.4 5.6l-1.6 4.6M5.9 4.5h4.2"/></svg>',
+    "redirect": _SVG + '<path d="M3 4.5h6.5a3.2 3.2 0 010 6.4H5"/><path d="M7 8.7l-2.2 2.2L7 13.1"/></svg>',
+}.items()}  # fmt: skip
+
+
+def source_badges(sources: Any, limit: int = 3) -> list[dict[str, Any]]:
+    """One mark per kind of source, in the order found: [{g, label, title, glyph}]. Takes stream names or {stream, pattern}."""
+    out: list[dict[str, Any]] = []
+    seen: set[str] = set()
+    for src in sources or []:
+        stream = str(src.get("stream") if isinstance(src, dict) else getattr(src, "value", src) or "")
+        pattern = str((src.get("pattern") if isinstance(src, dict) else "") or "")
+        g = "pivot" if stream == "manual" and pattern.startswith("pivot") else STREAM_GROUP.get(stream, "analyst")
+        if g in seen:
+            continue
+        seen.add(g)
+        out.append({"g": g, "label": SOURCE_SHORT.get(g, stream), "title": STREAM_LABELS.get(stream, stream), "glyph": SOURCE_GLYPH.get(g, "")})
+    return out[:limit]
+
+
 def rule_label(r: str) -> str:
     return RULE_LABELS.get(r, r.replace("_", " "))
 
@@ -447,7 +488,7 @@ def register(templates: Any) -> None:
     env.filters.update({
         "signal_label": signal_label, "signal_help": signal_help, "group_label": group_label,
         "state_label": state_label, "stream_label": stream_label, "rule_label": rule_label,
-        "fp_label": fp_label, "job_label": job_label, "ts": ts,
+        "fp_label": fp_label, "job_label": job_label, "ts": ts, "source_badges": source_badges,
     })  # fmt: skip
     from brandwatch.detection.takedown_channels import REPORT_PORTALS
 

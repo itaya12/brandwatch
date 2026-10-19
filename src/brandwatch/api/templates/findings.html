@@ -27,6 +27,19 @@
   #ftable tr.cur td{background:rgba(53,199,242,.09);box-shadow:inset 3px 0 0 var(--accent)}
   .bigshot{width:220px;height:138px;object-fit:cover;object-position:top;border:1px solid var(--border);border-radius:6px;background:#000;cursor:zoom-in;display:block}
   .noshot{width:220px;height:138px;border:1px dashed var(--border);border-radius:6px;display:flex;align-items:center;justify-content:center;text-align:center;padding:10px;font-size:11.5px;color:var(--muted)}
+  /* the host line: where it was found (one tile per source), the host, the brand */
+  .hrow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;min-width:0}
+  .hrow .flink{font-size:14px;font-weight:600;min-width:0;overflow-wrap:anywhere}
+  .hrow .pill.bp{font-size:11px;padding:1px 8px}
+  .fmeta{margin-top:5px;line-height:1.5}
+  .fmeta a{white-space:nowrap}
+  #ftable .fwhen,#ftable .stc{white-space:nowrap;width:1%}
+  #ftable .sevc{width:1%;min-width:118px}
+  #ftable .sevc .badge{display:inline-block;white-space:normal;max-width:130px;text-align:center}
+  #ftable .scc{white-space:nowrap}
+  #ftable .scc .pill{display:block;width:max-content;margin:5px 0 0}
+  @media (min-width:701px){ #ftable .hcell{min-width:250px}}
+  #ftable .scorebar{width:64px}
   .selcol{width:28px}
   .selcol input{width:16px;height:16px;margin:0;cursor:pointer}
   /* the bulk bar sits under the sticky header (z-index 20 in main{z-index:1} slid under it before) */
@@ -128,14 +141,15 @@
       <tr class="sevrow {{ f.severity }}" data-host="{{ f.hostname }}" data-id="{{ f.id }}">
         {% if can_write %}<td class="selcol">{% if f.state == 'open' %}<input type="checkbox" class="sel" name="ids" value="{{ f.id }}" form="bulkform" aria-label="select {{ f.hostname }}" title="select for a verdict on many at once">{% endif %}</td>{% endif %}
         <td class="shotcol">{% if f.thumbnail_url %}<img class="bigshot" data-src="{{ f.thumbnail_url }}" alt="screenshot of {{ f.hostname }}" title="click to enlarge" data-host="{{ f.hostname }}" data-href="/ui/findings/{{ f.id }}">{% else %}<div class="noshot">{{ f.preview_note or 'no screenshot' }}</div>{% endif %}</td>
-        <td><span class="badge sev-{{ f.severity }}">{{ f.severity }}</span>{% if f.kind == 'shop' %}<div style="margin-top:4px"><span class="badge" style="border:1px solid {{ 'var(--crit)' if f.shop_level and f.shop_level.level != 'suspicious_retailer' else 'var(--high)' }};color:{{ 'var(--crit)' if f.shop_level and f.shop_level.level != 'suspicious_retailer' else 'var(--high)' }}" title="{{ f.shop_level.label if f.shop_level else 'Suspicious shop' }} — {{ f.shop_level.help if f.shop_level else '' }}">shop · {{ f.shop_level.short if f.shop_level else 'suspicious' }}</span></div>{% elif f.kind == 'social' %}<div style="margin-top:4px"><span class="badge" style="border:1px solid var(--accent);color:var(--accent2)" title="a Facebook page or Instagram profile that poses as the brand">social</span></div>{% elif f.kind == 'ai_answer' %}<div style="margin-top:4px"><span class="badge" style="border:1px solid var(--accent);color:var(--accent2)" title="a contact an AI assistant gives for the brand that is not on its website">AI answer</span></div>{% endif %}{% if f.cloaked %}<div style="margin-top:4px">{{ m.cloaked_badge(true) }}</div>{% endif %}</td>
-        <td><a href="/ui/findings/{{ f.id }}" class="flink">{{ m.host(f.hostname, f.host_display, f.is_idn) }}</a>{% if not filters.brand_id and brand_chips|length > 1 and bname.get(f.brand_id) %} <span class="pill" style="font-size:10.5px;padding:0 7px" title="the brand this finding is about"><bdi>{{ bname.get(f.brand_id) }}</bdi></span>{% endif %}<div class="small muted">{{ SURFACE_LABELS.get(f.surface, f.surface) }} · found by {{ f.sources|map('stream_label')|unique|join(', ') }}{% if f.kind == 'social' %} · <a href="/ui/findings/{{ f.id }}#social" title="the account, its content and Report to Meta">account</a> · {% elif f.kind == 'ai_answer' %} · <a href="/ui/findings/{{ f.id }}#aianswer" title="what the assistants said and what the pages say">answers</a> · {% else %} · <a href="/ui/findings/{{ f.id }}#network" title="site & network investigation: servers, WHOIS history, urlscan">network</a> · {% endif %}<a href="/ui/candidates/{{ f.candidate_id }}" title="domain timeline on the watchlist">timeline</a></div></td>
-        <td class="mono" style="white-space:nowrap">{{ f.score if f.score is not none else '—' }}{% if f.score is not none %}<span class="scorebar"><i data-w="{{ f.score }}"></i></span>{% endif %}
+        <td class="sevc"><span class="badge sev-{{ f.severity }}">{{ f.severity }}</span>{% if f.kind == 'shop' %}<div style="margin-top:4px"><span class="badge" style="border:1px solid {{ 'var(--crit)' if f.shop_level and f.shop_level.level != 'suspicious_retailer' else 'var(--high)' }};color:{{ 'var(--crit)' if f.shop_level and f.shop_level.level != 'suspicious_retailer' else 'var(--high)' }}" title="{{ f.shop_level.label if f.shop_level else 'Suspicious shop' }} — {{ f.shop_level.help if f.shop_level else '' }}">shop · {{ f.shop_level.short if f.shop_level else 'suspicious' }}</span></div>{% elif f.kind == 'social' %}<div style="margin-top:4px"><span class="badge" style="border:1px solid var(--accent);color:var(--accent2)" title="a Facebook page or Instagram profile that poses as the brand">social</span></div>{% elif f.kind == 'ai_answer' %}<div style="margin-top:4px"><span class="badge" style="border:1px solid var(--accent);color:var(--accent2)" title="a contact an AI assistant gives for the brand that is not on its website">AI answer</span></div>{% endif %}{% if f.cloaked %}<div style="margin-top:4px">{{ m.cloaked_badge(true) }}</div>{% endif %}</td>
+        {% set srcs = f.sources|source_badges %}
+        <td class="hcell"><div class="hrow"><span class="srcs">{% for b in srcs %}{{ m.src_icon(b) }}{% endfor %}</span><a href="/ui/findings/{{ f.id }}" class="flink">{{ m.host(f.hostname, f.host_display, f.is_idn) }}</a>{% if not filters.brand_id and brand_chips|length > 1 and bname.get(f.brand_id) %}<span class="pill bp" title="the brand this finding is about"><bdi>{{ bname.get(f.brand_id) }}</bdi></span>{% endif %}</div><div class="small muted fmeta">{{ srcs|map(attribute='label')|join(' · ') }} · {{ SURFACE_LABELS.get(f.surface, f.surface) }}{% if f.kind == 'social' %} · <a href="/ui/findings/{{ f.id }}#social" title="the account, its content and Report to Meta">account</a> · {% elif f.kind == 'ai_answer' %} · <a href="/ui/findings/{{ f.id }}#aianswer" title="what the assistants said and what the pages say">answers</a> · {% else %} · <a href="/ui/findings/{{ f.id }}#network" title="site & network investigation: servers, WHOIS history, urlscan">network</a> · {% endif %}<a href="/ui/candidates/{{ f.candidate_id }}" title="domain timeline on the watchlist">timeline</a></div></td>
+        <td class="mono scc">{{ f.score if f.score is not none else '—' }}{% if f.score is not none %}<span class="scorebar"><i data-w="{{ f.score }}"></i></span>{% endif %}
           {% if f.kind not in ('social', 'ai_answer') %}<span style="margin-left:6px">{{ m.vt(f.vt) }}</span>{% endif %}</td>
         <td>{% if f.confidence is not none %}<div class="ring sm" data-p="{{ f.confidence|round|int }}" style="--c:{{ 'var(--accent)' if f.confidence >= 85 else 'var(--muted)' }}" title="confidence in the evidence: {{ f.confidence|round|int }}%"><div>{{ f.confidence|round|int }}</div></div>{% else %}—{% endif %}</td>
-        <td class="small" style="max-width:360px">{{ m.pills(f.signal_items, 4, '/ui/findings/' ~ f.id) }}</td>
-        <td><span class="badge state st-{{ f.state }}" title="{{ STATE_HELP.get(f.state, '') }}">{{ f.state|state_label }}</span></td>
-        <td class="mono small muted">{{ f.created_at|ts }}</td>
+        <td class="small" style="max-width:260px">{{ m.pills(f.signal_items, 4, '/ui/findings/' ~ f.id) }}</td>
+        <td class="stc"><span class="badge state st-{{ f.state }}" title="{{ STATE_HELP.get(f.state, '') }}">{{ f.state|state_label }}</span></td>
+        <td class="mono small muted fwhen ts-short">{{ f.created_at|ts }}</td>
       </tr>
       {% endfor %}
       </tbody>

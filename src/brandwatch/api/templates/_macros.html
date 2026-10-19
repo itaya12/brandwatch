@@ -14,3 +14,6 @@
   {%- elif v.checked and v.status == 'negative' %}<a class="pill" href="{{ v.url }}" target="_blank" rel="noreferrer noopener" title="VirusTotal engines do not flag it (yet)" style="font-size:10px;color:var(--muted)">VT clean</a>
   {%- else %}<a class="pill" href="{{ v.url }}" target="_blank" rel="noreferrer noopener" title="not in VirusTotal yet — unknown is never treated as clean" style="font-size:10px;color:var(--muted)">VT —</a>{% endif %}{% endif -%}
 {%- endmacro %}
+{% macro src_icon(b) -%}
+  <span class="srcic s-{{ b.g }}" title="found by {{ b.title }}" role="img" aria-label="{{ b.label }}">{{ b.glyph }}</span>
+{%- endmacro %}
