@@ -79,7 +79,8 @@ header.topbar.plain .logo{font-family:var(--mono);font-weight:700;letter-spacing
   header.topbar{display:flex;position:sticky;top:0;z-index:25;align-items:center;gap:12px;padding:9px 12px;background:var(--panel);border-bottom:1px solid var(--border)}
   header.topbar .logo{font-family:var(--mono);font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-size:13px}
   header.topbar .menu{padding:6px 10px;font-size:16px;line-height:1}
-  header.topbar .cnt{margin-left:auto;display:flex;gap:8px}
+  header.topbar .tsearch{margin-left:auto;display:grid;place-items:center;width:38px;height:38px;border:1px solid var(--border);border-radius:9px;color:var(--accent2)}
+  header.topbar .cnt{display:flex;gap:8px}
   header.topbar .cnt a{font:600 11px var(--mono);padding:3px 8px;border-radius:999px;background:rgba(53,199,242,.15);color:var(--accent2)}
   header.topbar .cnt a.warn{background:rgba(255,77,77,.15);color:var(--crit)}
   .side{width:min(280px,86vw);transform:translateX(-102%);transition:transform .22s ease;box-shadow:none}
@@ -140,7 +141,7 @@ button.chip{font:inherit;font-family:var(--mono);font-size:11px;box-shadow:none}
   table.rwd td.selcol{position:absolute;top:10px;right:10px;width:auto}
   table.rwd td[data-label]:not([data-label=""]):not(.rwd-main)::before{content:attr(data-label);display:block;font:600 9.5px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--dim);margin-bottom:1px}
   table.rwd tr:hover td{background:transparent}
-  table.rwd .badge{font-size:10px;padding:1px 7px;white-space:normal;max-width:100%}
+  table.rwd .badge{font-size:11px;padding:2px 8px;white-space:normal;max-width:100%}
   table.rwd td.rwd-main{order:-1}  /* the site first, whatever the column order */
 }
 /* phones: the page head is short — compact number tiles, a two-line intro (tap for the rest), filters folded */
@@ -148,10 +149,27 @@ button.chip{font:inherit;font-family:var(--mono);font-size:11px;box-shadow:none}
   h1{font-size:20px;margin-bottom:8px}
   .intro{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;cursor:pointer;font-size:12.5px;margin:2px 0 10px}
   .intro.open{display:block}
-  .kpis{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:6px}
-  .kpi{padding:8px 9px;border-radius:9px}
-  .kpis .kpi .v{font-size:19px;line-height:1.1;overflow-wrap:anywhere}
-  .kpi .l{font-size:9px;letter-spacing:.04em;line-height:1.25;margin-top:2px;overflow-wrap:anywhere}
+  /* the number tiles are one row that slides sideways: the page's content starts on the first screen */
+  .kpis{display:flex!important;gap:8px;overflow-x:auto;scroll-snap-type:x proximity;scrollbar-width:none;margin-right:-12px;padding:0 12px 4px 0}
+  .kpis::-webkit-scrollbar{display:none}
+  .kpis>.kpi,.kpis>a.kpi{flex:0 0 40%;min-width:0;scroll-snap-align:start;padding:9px 11px;border-radius:10px}
+  .kpis .kpi .v{font-size:22px;line-height:1.1}
+  .kpi .l{font-size:11px;letter-spacing:.03em;line-height:1.3;margin-top:3px;overflow-wrap:normal;word-break:normal;hyphens:auto}
+  /* nothing a finger presses is smaller than 40 px; no label under 11 px */
+  main button,main .btn,main select,main input:not([type=checkbox]):not([type=radio]){min-height:40px}
+  main input[type=checkbox]{width:20px;height:20px}
+  table.rwd td a:not(.badge):not(.btn),.fmeta a,.lrow a,.why a{display:inline-block;padding:5px 0}
+  main .chip,main a.pill{min-height:32px;display:inline-flex;align-items:center}
+  main .badge{font-size:11px}
+  table.rwd td[data-label]:not([data-label=""]):not(.rwd-main)::before{font-size:11px}
+  /* the small labels the pages set below 11 px (grid cells, tags, table heads, tile captions) come up to 11 px on a phone */
+  main th,main table.grid,main table.grid td,main .tag,main .mini span,main span.l,main .bh,main .fl,main .sechd span,main .pill,main .w,main .tick,main span.g,main div.k{font-size:11px!important}
+  /* and the things pressed with a thumb get room: checkboxes, chips, badge links, the toggles of folded sections */
+  main input[type=checkbox],main input[type=radio]{width:22px;height:22px}
+  table.rwd td.selcol{padding:4px}
+  main a.badge,main a.pill{padding-top:6px;padding-bottom:6px}
+  main .chips a.sc,main .opsites a,main .links a,main a.see,main .row>a.mono,main a.small{min-height:32px;display:inline-flex;align-items:center}
+  main details>summary{padding-top:6px;padding-bottom:6px}
   details.mfold{margin:0 0 10px;border:1px solid var(--border);border-radius:10px;background:var(--panel2)}
   details.mfold>summary{cursor:pointer;padding:9px 12px;font-size:13px;color:var(--accent2);list-style:none}
   details.mfold>summary::-webkit-details-marker{display:none}
@@ -336,6 +354,26 @@ button:not(.ghost):not(.fold):not(.menu):not(.chip):hover::after,.btn:not(.ghost
 .srcic.s-pivot{background:color-mix(in srgb,var(--accent) 16%,transparent);color:var(--accent2)}
 .srcic.s-redirect{background:color-mix(in srgb,var(--op5) 18%,transparent);color:var(--op5)}
 .srcs{display:inline-flex;gap:4px;align-items:center;vertical-align:middle}
+/* a title's subtitle starts with " · " beside the title; on its own line (a phone) the dot goes */
+@media (max-width:900px){h1 .hsep{display:none}}
+/* a long page gets a bar of its sections under the header (built by the script below) and a way back to the top */
+nav.jump{position:sticky;top:var(--hdr,0px);z-index:18;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin:0 0 12px;padding:8px 2px;
+  background:var(--bg);box-shadow:0 8px 14px -8px rgba(0,0,0,.6);mask-image:linear-gradient(90deg,#000 94%,transparent)}
+nav.jump::-webkit-scrollbar{display:none}
+nav.jump a{flex:none;padding:6px 12px;border:1px solid var(--border);border-radius:999px;background:var(--panel2);color:var(--text2);font-size:12.5px;text-decoration:none;white-space:nowrap}
+nav.jump a:hover{border-color:var(--accent);color:var(--text)}
+nav.jump a.on{border-color:var(--accent);color:var(--accent2);background:rgba(53,199,242,.12)}
+#totop{position:fixed;right:16px;bottom:62px;z-index:40;width:44px;height:44px;border-radius:50%;display:grid;place-items:center;padding:0;
+  background:var(--panel2);border:1px solid var(--accent);color:var(--accent2);font-size:18px;box-shadow:0 8px 24px rgba(0,0,0,.45);opacity:0;pointer-events:none;transform:translateY(8px);transition:opacity .2s,transform .2s}
+#totop.on{opacity:1;pointer-events:auto;transform:none}
+/* the explanation under a page title is folded: "About this page" opens it (remembered per page) */
+details.about{margin:2px 0 12px;max-width:980px}
+details.about>summary{display:inline-flex;align-items:center;gap:7px;cursor:pointer;list-style:none;font-size:12.5px;color:var(--muted);padding:4px 10px 4px 6px;border:1px solid var(--border);border-radius:999px;min-height:30px}
+details.about>summary::-webkit-details-marker{display:none}
+details.about>summary:hover{color:var(--text);border-color:var(--accent)}
+details.about>summary i{display:grid;place-items:center;width:18px;height:18px;border-radius:50%;background:rgba(53,199,242,.15);color:var(--accent2);font:700 11px var(--mono);font-style:normal}
+details.about[open]>summary{margin-bottom:6px;color:var(--text2)}
+details.about .intro{display:block!important;margin:0;-webkit-line-clamp:unset;cursor:auto}
 /* ---- the charts stay alive after they played (.lit is set by the motion layer when a chart is first seen) ----
    A light runs along every bar and the end of the bar breathes; a scan crosses each histogram; a ring's score glows
    in its colour; a donut's segments breathe; a pulse travels each line chart (.bw-run). The values never move. */
@@ -390,12 +428,13 @@ window.BW = (function () {
 
 <header class="topbar"><button type="button" class="menu" id="menu" aria-controls="side" aria-expanded="false" aria-label="Open the menu">☰</button>
   <a class="logo" href="/ui/dashboard/">BrandWatch</a>
+  <a class="tsearch" href="/ui/search/" aria-label="Search" title="Search"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.2-4.2"/></svg></a>
   <span class="cnt"><a href="/ui/findings/" title="awaiting a verdict">9 open</a><a href="/ui/takedowns/" class="warn" title="takedowns not sent">38 to send</a></span>
 </header>
 <aside class="side" id="side" aria-label="Navigation">
   <div class="top"><a class="logo" href="/ui/dashboard/" title="BrandWatch"><span>BrandWatch</span></a>
     <button type="button" class="fold small" id="fold" aria-label="Fold the menu to icons" title="fold the menu (icons only)">«</button></div>
-  <form method="get" action="/ui/search" class="hsearch" role="search"><input name="q" id="hsearch" placeholder="Search · /" aria-label="Search a domain, an IP, a takedown reference" autocomplete="off" maxlength="120"></form>
+  <form method="get" action="/ui/search/" class="hsearch" role="search"><input name="q" id="hsearch" placeholder="Search · /" aria-label="Search a domain, an IP, a takedown reference" autocomplete="off" maxlength="120"></form>
   <nav aria-label="Main">
     <div class="grp">Work</div>
     <a href="/ui/dashboard/" class="" title="Dashboard"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg><span class="lbl">Dashboard</span></a>
@@ -436,6 +475,38 @@ window.BW = (function () {
   .mini b{display:block;font-family:var(--display);font-size:20px;line-height:1}.mini span{font-size:10px;color:var(--muted);text-transform:uppercase}
   @media (max-width:800px){.ccard{grid-template-columns:1fr}.ccard canvas{width:100%;height:auto;aspect-ratio:440/300}}
   @media (max-width:420px){.mini{grid-template-columns:repeat(3,1fr)}}
+  /* everyone at a glance: a summary, the servers that matter as cards, short bar lists; the full table folded */
+  .gl-sum{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:4px 0 14px}
+  .gl-sum>div{border:1px solid var(--border);border-radius:10px;padding:10px 12px;background:var(--panel2)}
+  .gl-sum>div.hot{border-color:rgba(255,77,77,.5);box-shadow:inset 3px 0 0 var(--crit)}
+  .gl-sum b{display:block;font:700 24px/1.1 var(--display);color:var(--text)}.gl-sum .hot b{color:var(--crit)}.gl-sum b.sm{font:600 14px/1.4 var(--sans)}
+  .gl-sum span{font:600 11px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+  .gl-h{font:700 11px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--text2);margin:6px 0 8px}.gl-h span{text-transform:none;letter-spacing:0;font-weight:400;color:var(--muted)}
+  .gl-servers{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(280px,100%),1fr));gap:10px;margin-bottom:14px}
+  .gl-srv{border:1px solid var(--border);border-left:3px solid var(--crit);border-radius:10px;padding:10px 12px;background:rgba(10,15,26,.6)}
+  .gl-top{display:flex;align-items:center;gap:8px;font-size:14px}.gl-top img{border-radius:2px}
+  .gl-top .n{margin-left:auto;font:700 16px var(--display);color:var(--crit)}.gl-top .n::after{content:" sites";font:500 11px var(--mono);color:var(--muted)}
+  .gl-net{font-size:12px;color:var(--muted);margin:3px 0 7px}.gl-net .bad{color:var(--crit);font-weight:600}
+  .gl-sites{display:flex;flex-wrap:wrap;gap:4px}.gl-sites span{font-size:11.5px;padding:2px 8px;border:1px solid var(--border);border-radius:999px;color:var(--text2)}.gl-sites .more{color:var(--accent2)}
+  .gl-cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(260px,100%),1fr));gap:12px 24px}
+  .gl-bar{display:grid;grid-template-columns:minmax(0,1fr) 90px 28px;gap:8px;align-items:center;font-size:12.5px;padding:3px 0}
+  .gl-bar span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.gl-bar b{font:600 12px var(--mono);text-align:right}
+  .gl-bar .bar{display:block;height:6px}
+  details.gl-more{margin-top:14px}details.gl-more>summary{cursor:pointer;font-size:12.5px;color:var(--accent2)}
+  details.gl-more table{margin-top:8px}
+  /* the maps: compact tiles */
+  .mtiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(330px,100%),1fr));gap:10px}
+  .mtile{display:grid;grid-template-columns:96px minmax(0,1fr);gap:12px;align-items:start;padding:10px;border:1px solid var(--border);border-radius:12px;color:inherit;text-decoration:none;
+    background:linear-gradient(160deg,rgba(18,26,43,.9),rgba(10,15,26,.9));transition:transform .25s,border-color .25s,box-shadow .25s}
+  .mtile:hover{transform:translateY(-2px);border-color:var(--accent);box-shadow:0 10px 26px rgba(0,0,0,.4)}
+  .mtile.mhide{display:none}
+  .mtile canvas{width:96px;height:66px;border-radius:8px;border:1px solid var(--border);background:radial-gradient(circle,color-mix(in srgb,var(--accent) 6%,var(--panel)),var(--bg))}
+  .mt-title{font-weight:700;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .mt-meta{font-size:12px;color:var(--muted);margin:1px 0 6px}
+  .mt-stats{display:flex;flex-wrap:wrap;gap:2px 12px;font-size:12px;color:var(--muted);margin-bottom:6px}.mt-stats b{color:var(--text);font-family:var(--mono)}
+  .mtile .stack{height:5px}
+  .mt-sites{display:flex;flex-wrap:wrap;gap:4px;margin-top:7px;min-width:0}.mt-sites .badge{max-width:100%;overflow:hidden;text-overflow:ellipsis}
+  .mt-all{margin-top:10px;width:100%}
 </style>
 <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
   <h1 style="margin:0">ATTACK INFRASTRUCTURE <span class="muted">· one confirmed finding → the attacker's whole network of servers, certificates and sites</span></h1>
@@ -597,38 +668,55 @@ window.BW = (function () {
 </div>
 
 
+
+
+  
+  
+  
+
+
 <div class="panel" style="margin-top:14px" id="glance">
-  <h2>Everyone at a glance <span class="muted">· 7 of 7 confirmed sites investigated · what they share</span></h2>
-  <p class="small muted">Built from the investigations that follow every confirmation, so nothing has to be opened one by one. A server that carries several confirmed sites, the same registrar or the same name servers are the operator's fingerprints. Shared Cloudflare addresses carry thousands of unrelated sites and are not evidence of a link.</p>
-  
-  <h3 class="muted" style="font-size:12px;letter-spacing:.14em;margin:14px 0 6px">SERVERS</h3>
-  <table class="small">
-    <tr><th>Server</th><th>Where</th><th>Network</th><th>Engines</th><th>Abuse</th><th>Confirmed sites on it</th></tr>
-    <tr>
-      <td class="mono"><a href="/ui/intel/ip/198.51.100.77/">198.51.100.77</a></td>
-      <td>Russia</td>
-      <td>AS64531 Fast VPS LLC</td>
-      <td>3</td><td>79</td>
-      <td><b style="color:var(--crit)">3</b> · <span class="mono">coinpllot.io</span>, <span class="mono">coinpilott.io</span>, <span class="mono">coin-pilot.io</span></td>
-    </tr><tr>
-      <td class="mono"><a href="/ui/intel/ip/198.51.100.78/">198.51.100.78</a></td>
-      <td>Türkiye</td>
-      <td>AS64536 Mock Hosting LLC</td>
-      <td>0</td><td>59</td>
-      <td><b style="color:var(--crit)">2</b> · <span class="mono">koinpilot.io</span>, <span class="mono">coinplot.io</span></td>
-    </tr><tr>
-      <td class="mono"><a href="/ui/intel/ip/198.51.100.79/">198.51.100.79</a></td>
-      <td>United States</td>
-      <td>AS64539 Mock Hosting LLC</td>
-      <td>0</td><td>67</td>
-      <td><b style="color:var(--crit)">2</b> · <span class="mono">cooinpilot.io</span>, <span class="mono">coinpilot-bot.io</span></td>
-    </tr>
-  </table>
-  
-  <div class="cols" style="margin-top:12px">
-    <div><h3 class="muted" style="font-size:12px;letter-spacing:.14em;margin:14px 0 6px">REGISTRARS</h3><table class="small"><tr><td>Mock Registrar LLC</td><td><b>7</b> · <span class="mono">coin-pilot.io, coinpilot-bot.io, coinpilott.io, coinpllot.io, coinplot.io, cooinpilot.io, koinpilot.io</span></td></tr></table></div>
-    <div><h3 class="muted" style="font-size:12px;letter-spacing:.14em;margin:14px 0 6px">NAME SERVERS</h3><table class="small"><tr><td class="mono">ns1.mock-dns.example</td><td><b>7</b> · <span class="mono">coin-pilot.io, coinpilot-bot.io, coinpilott.io, coinpllot.io, coinplot.io, cooinpilot.io, koinpilot.io</span></td></tr><tr><td class="mono">ns2.mock-dns.example</td><td><b>7</b> · <span class="mono">coin-pilot.io, coinpilot-bot.io, coinpilott.io, coinpllot.io, coinplot.io, cooinpilot.io, koinpilot.io</span></td></tr></table></div>
+  <h2>Everyone at a glance <span class="muted">· 7 of 7 confirmed sites investigated</span>
+    <span class="help" title="Built from the investigations that follow every confirmation. A server that carries several confirmed sites, the same registrar or the same name servers are the operator's fingerprints. Shared CDN addresses carry thousands of unrelated sites and are not evidence of a link.">?</span></h2>
+  <div class="gl-sum">
+    <div class="hot"><b data-count="3">0</b><span>servers carrying 2+ sites</span></div>
+    <div><b data-count="3">0</b><span>servers in all</span></div>
+    <div><b data-count="3">0</b><span>countries</span></div>
+    <div><b class="sm">Mock Registrar LLC</b><span>top registrar · 7 sites</span></div>
   </div>
+  
+  <div class="gl-h">Servers that carry several confirmed sites <span>· the operator's machines</span></div>
+  <div class="gl-servers">
+    
+    <div class="gl-srv">
+      <div class="gl-top"><img class="flag" src="https://flagcdn.com/w20/ru.png" width="18" height="14" alt="RU" title="Russia" loading="lazy" onerror="this.replaceWith(document.createTextNode(this.alt))"><a class="mono" href="/ui/intel/ip/198.51.100.77/">198.51.100.77</a><span class="n">3</span></div>
+      <div class="gl-net">Russia · Fast VPS LLC · <b class="bad">3 engines</b> · abuse 79</div>
+      <div class="gl-sites"><span class="mono">coinpllot.io</span><span class="mono">coinpilott.io</span><span class="mono">coin-pilot.io</span></div>
+    </div>
+    
+    <div class="gl-srv">
+      <div class="gl-top"><img class="flag" src="https://flagcdn.com/w20/tr.png" width="18" height="14" alt="TR" title="Türkiye" loading="lazy" onerror="this.replaceWith(document.createTextNode(this.alt))"><a class="mono" href="/ui/intel/ip/198.51.100.78/">198.51.100.78</a><span class="n">2</span></div>
+      <div class="gl-net">Türkiye · Mock Hosting LLC · abuse 59</div>
+      <div class="gl-sites"><span class="mono">koinpilot.io</span><span class="mono">coinplot.io</span></div>
+    </div>
+    
+    <div class="gl-srv">
+      <div class="gl-top"><img class="flag" src="https://flagcdn.com/w20/us.png" width="18" height="14" alt="US" title="United States" loading="lazy" onerror="this.replaceWith(document.createTextNode(this.alt))"><a class="mono" href="/ui/intel/ip/198.51.100.79/">198.51.100.79</a><span class="n">2</span></div>
+      <div class="gl-net">United States · Mock Hosting LLC · abuse 67</div>
+      <div class="gl-sites"><span class="mono">cooinpilot.io</span><span class="mono">coinpilot-bot.io</span></div>
+    </div>
+    
+  </div>
+  
+  <div class="gl-cols">
+    <div><div class="gl-h">Where they are hosted</div>
+      <div class="gl-bar"><span>Russia</span><i class="bar"><i data-w="100"></i></i><b>3</b></div><div class="gl-bar"><span>Türkiye</span><i class="bar"><i data-w="67"></i></i><b>2</b></div><div class="gl-bar"><span>United States</span><i class="bar"><i data-w="67"></i></i><b>2</b></div></div>
+    <div><div class="gl-h">Registrars</div>
+      <div class="gl-bar" title="coin-pilot.io, coinpilot-bot.io, coinpilott.io, coinpllot.io, coinplot.io, cooinpilot.io, koinpilot.io"><span>Mock Registrar LLC</span><i class="bar"><i data-w="100"></i></i><b>7</b></div></div>
+    <div><div class="gl-h">Name servers</div>
+      <div class="gl-bar" title="coin-pilot.io, coinpilot-bot.io, coinpilott.io, coinpllot.io, coinplot.io, cooinpilot.io, koinpilot.io"><span class="mono">ns1.mock-dns.example</span><i class="bar"><i data-w="100"></i></i><b>7</b></div><div class="gl-bar" title="coin-pilot.io, coinpilot-bot.io, coinpilott.io, coinpllot.io, coinplot.io, cooinpilot.io, koinpilot.io"><span class="mono">ns2.mock-dns.example</span><i class="bar"><i data-w="100"></i></i><b>7</b></div></div>
+  </div>
+  
   
 </div>
 
@@ -654,31 +742,26 @@ window.BW = (function () {
   setInterval(tick, 3000);
 })();
 </script>
-<h2 style="margin-top:14px" id="maps">Infrastructure maps <span class="muted">· 1</span></h2>
-<div class="grid" style="margin-top:8px;grid-template-columns:repeat(auto-fill,minmax(min(560px,100%),1fr))">
+
+<div class="panel" style="margin-top:14px" id="maps">
+<h2>Infrastructure maps <span class="muted">· 1 · one per confirmed site that was mapped, most findings first</span></h2>
+<div class="mtiles">
   
-  <a class="ccard" href="/ui/campaigns/efbd390f-8961-48f3-8889-4b26c49941da/" style="--i:0">
+  <a class="mtile" href="/ui/campaigns/efbd390f-8961-48f3-8889-4b26c49941da/">
     <canvas class="constellation" width="440" height="300" data-n="19" data-x="1" data-f="7"></canvas>
-    <div>
-      <div class="title">CoinPilot campaign 5DA0FFD7</div>
-      
-      <div class="small muted">CoinPilot · investigated <span data-rel="2026-10-14T09:46:28.509020"></span></div>
-      <div class="mini">
-        <div><b data-count="20">0</b><span>nodes</span></div>
-        <div><b data-count="19">0</b><span>included</span></div>
-        <div><b data-count="56">0</b><span>edges</span></div>
-        <div><b data-count="7">0</b><span>findings</span></div>
-        <div><b data-count="24">0</b><span>IOCs</span></div>
-      </div>
-      <div class="stack" title="included vs excluded by co-hosted triage"><i data-w="95" style="background:var(--low)"></i><i data-w="5" style="background:var(--border)"></i></div>
-      <div class="small" style="margin-top:8px">
-        <span class="badge sev-critical" style="margin:2px">coinpilott.io</span><span class="badge sev-critical" style="margin:2px">coinpllot.io</span><span class="badge sev-critical" style="margin:2px">coinplot.io</span><span class="badge sev-critical" style="margin:2px">koinpilot.io</span><span class="muted">+3</span>
-      </div>
-      <div class="small muted mono" style="margin-top:6px">servers 198.51.100.79 · registrant ops@affnet-mail.example</div>
+    <div class="mt-body">
+      <div class="mt-title">CoinPilot campaign 5DA0FFD7</div>
+      <div class="mt-meta"><bdi>CoinPilot</bdi> · <span data-rel="2026-10-14T09:46:28.509020"></span></div>
+      <div class="mt-stats"><span><b>7</b> findings</span><span><b>1</b> server</span><span><b>24</b> IOCs</span><span><b>19</b>/20 kept</span></div>
+      <div class="stack" title="kept vs dropped by the co-hosted triage"><i data-w="95" style="background:var(--low)"></i><i data-w="5" style="background:var(--border)"></i></div>
+      <div class="mt-sites"><span class="badge sev-critical">coinpilott.io</span><span class="badge sev-critical">coinpllot.io</span><span class="muted small">+5</span></div>
     </div>
   </a>
   
 </div>
+
+</div>
+<script>(function(){ const b = document.getElementById('mt-all'); if (b) b.addEventListener('click', () => { document.querySelectorAll('.mtile.mhide').forEach(t => t.classList.remove('mhide')); b.remove(); window.dispatchEvent(new Event('resize')); }); })();</script>
 
 
 <script>
@@ -753,9 +836,30 @@ window.BW = (function () {
       else if (WIDE.test(h) || td.querySelector('form, button, .pill + .pill')) td.classList.add('rwd-wide');
       if (!td.querySelector('input, img, form, svg') && (text === '' || text === '—' || text === '-')) td.classList.add('rwd-empty');
     })); });
-  // phones: the intro opens on a tap; the list filters fold into one "Search & filters" box (open when a filter is on)
+  // the explanation under a page title folds into "About this page" (open again where the reader left it open)
+  const aboutKey = 'bw-about:' + location.pathname;
+  document.querySelectorAll('main .intro').forEach((el, i) => {
+    if (el.closest('details') || el.closest('.panel')) return;
+    const d = document.createElement('details'); d.className = 'about';
+    const sm = document.createElement('summary'); sm.innerHTML = '<i>i</i>About this page'; d.appendChild(sm);
+    el.parentNode.insertBefore(d, el); d.appendChild(el);
+    try { if (localStorage.getItem(aboutKey + i) === '1') d.open = true; } catch (e) { /* a private window */ }
+    d.addEventListener('toggle', () => { try { localStorage.setItem(aboutKey + i, d.open ? '1' : '0'); } catch (e) { /* ignore */ } });
+  });
+  // a subtitle's leading " · " belongs beside the title: wrap it so a phone can drop it when the subtitle sits below
+  document.querySelectorAll('main h1 > .muted, main h1 > .small').forEach(el => {
+    const t = el.firstChild; if (!t || t.nodeType !== 3) return;
+    const m = t.textContent.match(/^\s*·\s*/); if (!m) return;
+    t.textContent = t.textContent.slice(m[0].length);
+    const sp = document.createElement('span'); sp.className = 'hsep'; sp.textContent = '· '; el.insertBefore(sp, t);
+  });
+  // a list filter applies as soon as a choice changes; a typed search still waits for Enter or Apply
+  document.querySelectorAll('main form.filters, main form.afilters, main form.mfoldable, main form[data-autosubmit]').forEach(f => {
+    if ((f.getAttribute('method') || 'get').toLowerCase() !== 'get') return;
+    f.addEventListener('change', ev => { const t = ev.target; if (t.name && t.matches('select, input[type=checkbox], input[type=radio], input[type=date]') && !t.dataset.noauto) { f.requestSubmit ? f.requestSubmit() : f.submit(); } });
+  });
+  // phones: the list filters fold into one "Search & filters" box (open when a filter is on)
   if (matchMedia('(max-width: 700px)').matches) {
-    document.querySelectorAll('.intro').forEach(el => el.addEventListener('click', () => el.classList.toggle('open')));
     document.querySelectorAll('main form.filters, main form.afilters, main form.mfoldable').forEach(f => {
       const on = [...f.elements].filter(e => e.name && e.type !== 'hidden' && e.type !== 'submit' && e.type !== 'checkbox' && e.value && !['sort'].includes(e.name) && !(e.name === 'state' && e.value === 'open')).length;
       const d = document.createElement('details'); d.className = 'mfold'; if (on) d.open = false;
@@ -763,6 +867,39 @@ window.BW = (function () {
       f.parentNode.insertBefore(d, f); d.appendChild(f);
     });
   }
+  // a long page: a bar of its sections under the header, the one in view lit, and a button back to the top
+  (function jumpBar(){
+    const main = document.querySelector('main'); if (!main || main.dataset.nojump !== undefined || document.getElementById('rail') || document.getElementById('setnav')) return;
+    if (document.documentElement.scrollHeight < innerHeight * 3) return;
+    const heads = [...main.querySelectorAll('h2')].filter(h => !h.closest('.vw, .deep, details:not([open]), .gcard, #drawer, nav, dialog, [hidden], .sec, .case') && h.getClientRects().length);
+    const seen = new Set(), items = [];
+    heads.forEach(h => {
+      const box = h.closest('.panel, section') || h; if (seen.has(box)) return; seen.add(box);
+      const name = [...h.childNodes].filter(n => n.nodeType === 3 || (n.nodeType === 1 && !n.matches('.muted, .small, .help, a, button, span.cnt, .badge, .pill'))).map(n => n.textContent).join(' ').replace(/\s+/g, ' ').replace(/\s*·.*$/, '').trim();
+      if (!name) return;
+      if (!box.id) box.id = 'sec-' + name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 40);
+      items.push({box, name: name.length > 28 ? name.replace(/^(.{1,26})\s.*$/, '$1') + '…' : name});
+    });
+    if (items.length < 4) return;
+    const nav = document.createElement('nav'); nav.className = 'jump'; nav.setAttribute('aria-label', 'Sections of this page');
+    nav.innerHTML = items.slice(0, 12).map(it => `<a href="#${it.box.id}">${it.name.replace(/[&<>]/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;'}[c]))}</a>`).join('');
+    const after = main.querySelector('details.about') || main.querySelector('.kpis') || main.querySelector('h1');
+    (after && after.parentNode === main ? after : main.firstElementChild).insertAdjacentElement('afterend', nav);
+    const links = [...nav.querySelectorAll('a')];
+    links.forEach(a => a.addEventListener('click', ev => { const t = document.getElementById(a.getAttribute('href').slice(1)); if (!t) return; ev.preventDefault();
+      const y = t.getBoundingClientRect().top + scrollY - (parseInt(getComputedStyle(document.documentElement).getPropertyValue('--hdr')) || 0) - nav.offsetHeight - 10;
+      scrollTo({top: y, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'}); history.replaceState(null, '', a.getAttribute('href')); }));
+    if ('IntersectionObserver' in window) {
+      const io = new IntersectionObserver(es => es.forEach(e => { if (!e.isIntersecting) return; links.forEach(a => { const on = a.getAttribute('href') === '#' + e.target.id; a.classList.toggle('on', on); if (on) nav.scrollLeft = a.offsetLeft - 20; }); }), {rootMargin: '-30% 0px -60% 0px'});
+      items.forEach(it => io.observe(it.box));
+    }
+  })();
+  (function backToTop(){
+    const b = document.createElement('button'); b.type = 'button'; b.id = 'totop'; b.setAttribute('aria-label', 'Back to the top'); b.title = 'back to the top'; b.textContent = '↑';
+    b.addEventListener('click', () => scrollTo({top: 0, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'}));
+    document.body.appendChild(b);
+    let tk = 0; addEventListener('scroll', () => { if (tk) return; tk = requestAnimationFrame(() => { tk = 0; b.classList.toggle('on', scrollY > innerHeight * 1.5); }); }, {passive: true});
+  })();
   // the sticky header's height, for anything that sticks under it
   const hdr = document.querySelector('header.topbar'); const setH = () => document.documentElement.style.setProperty('--hdr', (hdr ? hdr.offsetHeight : 0) + 'px');
   setH(); window.addEventListener('resize', setH);

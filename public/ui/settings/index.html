@@ -79,7 +79,8 @@ header.topbar.plain .logo{font-family:var(--mono);font-weight:700;letter-spacing
   header.topbar{display:flex;position:sticky;top:0;z-index:25;align-items:center;gap:12px;padding:9px 12px;background:var(--panel);border-bottom:1px solid var(--border)}
   header.topbar .logo{font-family:var(--mono);font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-size:13px}
   header.topbar .menu{padding:6px 10px;font-size:16px;line-height:1}
-  header.topbar .cnt{margin-left:auto;display:flex;gap:8px}
+  header.topbar .tsearch{margin-left:auto;display:grid;place-items:center;width:38px;height:38px;border:1px solid var(--border);border-radius:9px;color:var(--accent2)}
+  header.topbar .cnt{display:flex;gap:8px}
   header.topbar .cnt a{font:600 11px var(--mono);padding:3px 8px;border-radius:999px;background:rgba(53,199,242,.15);color:var(--accent2)}
   header.topbar .cnt a.warn{background:rgba(255,77,77,.15);color:var(--crit)}
   .side{width:min(280px,86vw);transform:translateX(-102%);transition:transform .22s ease;box-shadow:none}
@@ -140,7 +141,7 @@ button.chip{font:inherit;font-family:var(--mono);font-size:11px;box-shadow:none}
   table.rwd td.selcol{position:absolute;top:10px;right:10px;width:auto}
   table.rwd td[data-label]:not([data-label=""]):not(.rwd-main)::before{content:attr(data-label);display:block;font:600 9.5px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--dim);margin-bottom:1px}
   table.rwd tr:hover td{background:transparent}
-  table.rwd .badge{font-size:10px;padding:1px 7px;white-space:normal;max-width:100%}
+  table.rwd .badge{font-size:11px;padding:2px 8px;white-space:normal;max-width:100%}
   table.rwd td.rwd-main{order:-1}  /* the site first, whatever the column order */
 }
 /* phones: the page head is short — compact number tiles, a two-line intro (tap for the rest), filters folded */
@@ -148,10 +149,27 @@ button.chip{font:inherit;font-family:var(--mono);font-size:11px;box-shadow:none}
   h1{font-size:20px;margin-bottom:8px}
   .intro{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;cursor:pointer;font-size:12.5px;margin:2px 0 10px}
   .intro.open{display:block}
-  .kpis{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:6px}
-  .kpi{padding:8px 9px;border-radius:9px}
-  .kpis .kpi .v{font-size:19px;line-height:1.1;overflow-wrap:anywhere}
-  .kpi .l{font-size:9px;letter-spacing:.04em;line-height:1.25;margin-top:2px;overflow-wrap:anywhere}
+  /* the number tiles are one row that slides sideways: the page's content starts on the first screen */
+  .kpis{display:flex!important;gap:8px;overflow-x:auto;scroll-snap-type:x proximity;scrollbar-width:none;margin-right:-12px;padding:0 12px 4px 0}
+  .kpis::-webkit-scrollbar{display:none}
+  .kpis>.kpi,.kpis>a.kpi{flex:0 0 40%;min-width:0;scroll-snap-align:start;padding:9px 11px;border-radius:10px}
+  .kpis .kpi .v{font-size:22px;line-height:1.1}
+  .kpi .l{font-size:11px;letter-spacing:.03em;line-height:1.3;margin-top:3px;overflow-wrap:normal;word-break:normal;hyphens:auto}
+  /* nothing a finger presses is smaller than 40 px; no label under 11 px */
+  main button,main .btn,main select,main input:not([type=checkbox]):not([type=radio]){min-height:40px}
+  main input[type=checkbox]{width:20px;height:20px}
+  table.rwd td a:not(.badge):not(.btn),.fmeta a,.lrow a,.why a{display:inline-block;padding:5px 0}
+  main .chip,main a.pill{min-height:32px;display:inline-flex;align-items:center}
+  main .badge{font-size:11px}
+  table.rwd td[data-label]:not([data-label=""]):not(.rwd-main)::before{font-size:11px}
+  /* the small labels the pages set below 11 px (grid cells, tags, table heads, tile captions) come up to 11 px on a phone */
+  main th,main table.grid,main table.grid td,main .tag,main .mini span,main span.l,main .bh,main .fl,main .sechd span,main .pill,main .w,main .tick,main span.g,main div.k{font-size:11px!important}
+  /* and the things pressed with a thumb get room: checkboxes, chips, badge links, the toggles of folded sections */
+  main input[type=checkbox],main input[type=radio]{width:22px;height:22px}
+  table.rwd td.selcol{padding:4px}
+  main a.badge,main a.pill{padding-top:6px;padding-bottom:6px}
+  main .chips a.sc,main .opsites a,main .links a,main a.see,main .row>a.mono,main a.small{min-height:32px;display:inline-flex;align-items:center}
+  main details>summary{padding-top:6px;padding-bottom:6px}
   details.mfold{margin:0 0 10px;border:1px solid var(--border);border-radius:10px;background:var(--panel2)}
   details.mfold>summary{cursor:pointer;padding:9px 12px;font-size:13px;color:var(--accent2);list-style:none}
   details.mfold>summary::-webkit-details-marker{display:none}
@@ -336,6 +354,26 @@ button:not(.ghost):not(.fold):not(.menu):not(.chip):hover::after,.btn:not(.ghost
 .srcic.s-pivot{background:color-mix(in srgb,var(--accent) 16%,transparent);color:var(--accent2)}
 .srcic.s-redirect{background:color-mix(in srgb,var(--op5) 18%,transparent);color:var(--op5)}
 .srcs{display:inline-flex;gap:4px;align-items:center;vertical-align:middle}
+/* a title's subtitle starts with " · " beside the title; on its own line (a phone) the dot goes */
+@media (max-width:900px){h1 .hsep{display:none}}
+/* a long page gets a bar of its sections under the header (built by the script below) and a way back to the top */
+nav.jump{position:sticky;top:var(--hdr,0px);z-index:18;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin:0 0 12px;padding:8px 2px;
+  background:var(--bg);box-shadow:0 8px 14px -8px rgba(0,0,0,.6);mask-image:linear-gradient(90deg,#000 94%,transparent)}
+nav.jump::-webkit-scrollbar{display:none}
+nav.jump a{flex:none;padding:6px 12px;border:1px solid var(--border);border-radius:999px;background:var(--panel2);color:var(--text2);font-size:12.5px;text-decoration:none;white-space:nowrap}
+nav.jump a:hover{border-color:var(--accent);color:var(--text)}
+nav.jump a.on{border-color:var(--accent);color:var(--accent2);background:rgba(53,199,242,.12)}
+#totop{position:fixed;right:16px;bottom:62px;z-index:40;width:44px;height:44px;border-radius:50%;display:grid;place-items:center;padding:0;
+  background:var(--panel2);border:1px solid var(--accent);color:var(--accent2);font-size:18px;box-shadow:0 8px 24px rgba(0,0,0,.45);opacity:0;pointer-events:none;transform:translateY(8px);transition:opacity .2s,transform .2s}
+#totop.on{opacity:1;pointer-events:auto;transform:none}
+/* the explanation under a page title is folded: "About this page" opens it (remembered per page) */
+details.about{margin:2px 0 12px;max-width:980px}
+details.about>summary{display:inline-flex;align-items:center;gap:7px;cursor:pointer;list-style:none;font-size:12.5px;color:var(--muted);padding:4px 10px 4px 6px;border:1px solid var(--border);border-radius:999px;min-height:30px}
+details.about>summary::-webkit-details-marker{display:none}
+details.about>summary:hover{color:var(--text);border-color:var(--accent)}
+details.about>summary i{display:grid;place-items:center;width:18px;height:18px;border-radius:50%;background:rgba(53,199,242,.15);color:var(--accent2);font:700 11px var(--mono);font-style:normal}
+details.about[open]>summary{margin-bottom:6px;color:var(--text2)}
+details.about .intro{display:block!important;margin:0;-webkit-line-clamp:unset;cursor:auto}
 /* ---- the charts stay alive after they played (.lit is set by the motion layer when a chart is first seen) ----
    A light runs along every bar and the end of the bar breathes; a scan crosses each histogram; a ring's score glows
    in its colour; a donut's segments breathe; a pulse travels each line chart (.bw-run). The values never move. */
@@ -390,12 +428,13 @@ window.BW = (function () {
 
 <header class="topbar"><button type="button" class="menu" id="menu" aria-controls="side" aria-expanded="false" aria-label="Open the menu">☰</button>
   <a class="logo" href="/ui/dashboard/">BrandWatch</a>
+  <a class="tsearch" href="/ui/search/" aria-label="Search" title="Search"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.2-4.2"/></svg></a>
   <span class="cnt"><a href="/ui/findings/" title="awaiting a verdict">9 open</a><a href="/ui/takedowns/" class="warn" title="takedowns not sent">38 to send</a></span>
 </header>
 <aside class="side" id="side" aria-label="Navigation">
   <div class="top"><a class="logo" href="/ui/dashboard/" title="BrandWatch"><span>BrandWatch</span></a>
     <button type="button" class="fold small" id="fold" aria-label="Fold the menu to icons" title="fold the menu (icons only)">«</button></div>
-  <form method="get" action="/ui/search" class="hsearch" role="search"><input name="q" id="hsearch" placeholder="Search · /" aria-label="Search a domain, an IP, a takedown reference" autocomplete="off" maxlength="120"></form>
+  <form method="get" action="/ui/search/" class="hsearch" role="search"><input name="q" id="hsearch" placeholder="Search · /" aria-label="Search a domain, an IP, a takedown reference" autocomplete="off" maxlength="120"></form>
   <nav aria-label="Main">
     <div class="grp">Work</div>
     <a href="/ui/dashboard/" class="" title="Dashboard"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg><span class="lbl">Dashboard</span></a>
@@ -456,6 +495,36 @@ window.BW = (function () {
   .krow form{display:flex;gap:6px}.krow form input{min-width:0}
   .saved{position:fixed;right:18px;bottom:18px;z-index:30;padding:9px 14px;border-radius:10px;background:var(--panel2);border:1px solid rgba(46,204,113,.5);color:var(--text);font-size:13px;box-shadow:0 10px 30px rgba(0,0,0,.45);transition:opacity .4s}
   .kv th{width:150px}
+  /* provider keys: a summary, chips, one short row per key that opens to its form */
+  .ksum{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;margin:0 0 10px}
+  .kdemo{font-size:12.5px;padding:5px 10px;border-radius:8px;background:rgba(53,199,242,.10);border:1px solid rgba(53,199,242,.35);color:var(--accent2)}
+  .kchips{display:flex;gap:6px;flex-wrap:wrap;margin-left:auto}
+  .kchips button{padding:5px 11px;border-radius:999px;font-size:12.5px}.kchips button b{font-family:var(--mono);font-weight:600;margin-left:4px;color:var(--muted)}
+  .kchips button.on{border-color:var(--accent);color:var(--accent2);background:rgba(53,199,242,.12)}
+  .kg{margin:12px 0 0;border:1px solid var(--border);border-radius:12px;overflow:hidden}
+  .kg[hidden]{display:none}
+  .kgh{display:flex;align-items:baseline;gap:10px;padding:9px 14px;background:var(--panel2);border-bottom:1px solid var(--border);font-size:13px}
+  .kgh .muted{font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+  .kgn{margin-left:auto;font:600 12px var(--mono);color:var(--muted);flex:none}.kgn.full{color:var(--low)}
+  details.kr{border-top:1px solid var(--border)}details.kr:first-of-type{border-top:0}
+  details.kr[hidden]{display:none}
+  details.kr>summary{list-style:none;cursor:pointer;display:grid;grid-template-columns:12px minmax(0,1fr) auto auto;gap:12px;align-items:center;padding:10px 14px}
+  details.kr>summary::-webkit-details-marker{display:none}
+  details.kr>summary:hover{background:rgba(53,199,242,.05)}
+  details.kr[open]>summary{background:rgba(53,199,242,.07)}
+  .kdot{display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--border);flex:none}.kdot.on{background:var(--low);box-shadow:0 0 8px rgba(46,204,113,.6)}
+  .kn{min-width:0}.kn b{font-weight:600}
+  .kd{display:block;font-size:12px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-top:1px}
+  .ks{font-size:12px;white-space:nowrap}
+  .kbtn{font-size:12px;padding:4px 10px;border:1px solid var(--border);border-radius:8px;color:var(--accent2);white-space:nowrap}
+  details.kr[open] .kbtn{border-color:var(--accent)}
+  .kbody{padding:0 14px 12px 38px}
+  .kmeta{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;margin:0 0 8px}.kmeta .tag{margin-left:0}
+  .kact{display:flex;flex-wrap:wrap;gap:6px;align-items:center}.kact form{display:flex;gap:6px;flex:1 1 320px;margin:0}.kact input{min-width:0}
+  .keytest-out{margin-top:6px}
+  details.kfree{margin-top:12px}details.kfree>summary{cursor:pointer;font-size:12.5px;color:var(--accent2)}
+  .kfl{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(260px,100%),1fr));gap:4px 18px;margin-top:8px;font-size:12.5px}.kfl .kdot{margin-right:8px;vertical-align:-1px}
+  @media (max-width:700px){details.kr>summary{grid-template-columns:12px minmax(0,1fr) auto}.ks{display:none}.kbody{padding-left:14px}.kgh .muted{display:none}}
   @media (max-width:900px){
     .set-layout{grid-template-columns:1fr}
     .set-nav{position:static;display:flex;flex-wrap:nowrap;overflow-x:auto;gap:6px;padding-bottom:4px}
@@ -464,7 +533,7 @@ window.BW = (function () {
   }
 </style>
 
-<h1>Settings <span class="muted small">· default · signed in as admin (admin)</span></h1>
+<h1>SETTINGS <span class="muted small">· default · signed in as admin (admin)</span></h1>
 <p class="intro">Everything that changes how BrandWatch runs, in one place: the data sources it calls, the money and limits it may spend, who can use it, and how good its detection is. Every change is written to the Activity log.</p>
 
 
@@ -506,235 +575,355 @@ window.BW = (function () {
   
   
   <section class="panel sec" id="keys">
-    <h2>Provider API keys <span class="muted">· AES-256-GCM envelope encryption, never shown again</span></h2>
-    <p class="lead">The services BrandWatch calls during a scan. <b>Demo mode answers every call from recorded scenarios, so no key is needed here.</b> A missing key never breaks a scan: that source is skipped and the console says so. Each key gets its own random 32-byte data key (AES-256-GCM), wrapped by the master key and bound to workspace:provider; only the last four characters are ever displayed.</p>
     
     
-    <div class="keygrp">Threat reputation <span>· is this site already known as bad?</span></div>
-    
-    <div class="krow" id="key-virustotal">
-      <div>
-        <div class="nm">VirusTotal<span class="tag rec">recommended</span><span class="tag" title="this key is used by every track">every track</span><span class="tag" title="this key is used by the site investigation">the site investigation</span><a href="https://www.virustotal.com" target="_blank" rel="noreferrer noopener">get a key ↗</a></div>
-        <div class="ds">Verdicts from 70+ anti-virus and blocklist engines for every visited site. Also powers passive DNS on the infrastructure map and most of a finding&#39;s site &amp; network investigation. · <span class="mono">free public key · 4 requests/min</span></div>
-      </div>
-      <div>
-        <div class="small" style="margin-bottom:6px"><span class="tag">not set</span></div>
-        <div style="display:flex;gap:6px">
-          <form method="post" action="/ui/settings/api-keys/virustotal" style="flex:1"><input name="key" type="password" placeholder="paste key" autocomplete="off" aria-label="VirusTotal API key"><button type="submit">Save</button></form>
-          
-          
-        </div>
-        <div class="small keytest-out" data-for="virustotal" style="margin-top:6px;min-height:1em"></div>
-      </div>
-    </div>
-    
-    <div class="krow" id="key-urlhaus">
-      <div>
-        <div class="nm">URLhaus · abuse.ch<span class="tag" title="this key is used by every track">every track</span><a href="https://urlhaus.abuse.ch" target="_blank" rel="noreferrer noopener">get a key ↗</a></div>
-        <div class="ds">Checks each URL against abuse.ch&#39;s feed of malware and phishing URLs (second in the reputation chain). · <span class="mono">free key</span></div>
-      </div>
-      <div>
-        <div class="small" style="margin-bottom:6px"><span class="tag">not set</span></div>
-        <div style="display:flex;gap:6px">
-          <form method="post" action="/ui/settings/api-keys/urlhaus" style="flex:1"><input name="key" type="password" placeholder="paste key" autocomplete="off" aria-label="URLhaus · abuse.ch API key"><button type="submit">Save</button></form>
-          
-          
-        </div>
-        <div class="small keytest-out" data-for="urlhaus" style="margin-top:6px;min-height:1em"></div>
-      </div>
-    </div>
-    
-    <div class="krow" id="key-safebrowsing">
-      <div>
-        <div class="nm">Google Safe Browsing<span class="tag rec">recommended</span><span class="tag" title="this key is used by every track">every track</span><a href="https://developers.google.com/safe-browsing/v4/get-started" target="_blank" rel="noreferrer noopener">get a key ↗</a></div>
-        <div class="ds">The list Chrome, Firefox and Safari use to warn users. Checked for every visited site: shows whether Google already warns about it, so you can tell when BrandWatch found a kit first. · <span class="mono">free for non-commercial use · Google Cloud key</span></div>
-      </div>
-      <div>
-        <div class="small" style="margin-bottom:6px"><span class="tag">not set</span></div>
-        <div style="display:flex;gap:6px">
-          <form method="post" action="/ui/settings/api-keys/safebrowsing" style="flex:1"><input name="key" type="password" placeholder="paste key" autocomplete="off" aria-label="Google Safe Browsing API key"><button type="submit">Save</button></form>
-          
-          
-        </div>
-        <div class="small keytest-out" data-for="safebrowsing" style="margin-top:6px;min-height:1em"></div>
-      </div>
-    </div>
-    
-    <div class="krow" id="key-abuseipdb">
-      <div>
-        <div class="nm">AbuseIPDB<span class="tag" title="this key is used by the site investigation">the site investigation</span><a href="https://www.abuseipdb.com/account/api" target="_blank" rel="noreferrer noopener">get a key ↗</a></div>
-        <div class="ds">Community abuse reports for every server in a finding&#39;s investigation: a 0–100 abuse score, how many reports, from how many reporters, and when last. · <span class="mono">free daily quota</span></div>
-      </div>
-      <div>
-        <div class="small" style="margin-bottom:6px"><span class="tag">not set</span></div>
-        <div style="display:flex;gap:6px">
-          <form method="post" action="/ui/settings/api-keys/abuseipdb" style="flex:1"><input name="key" type="password" placeholder="paste key" autocomplete="off" aria-label="AbuseIPDB API key"><button type="submit">Save</button></form>
-          
-          
-        </div>
-        <div class="small keytest-out" data-for="abuseipdb" style="margin-top:6px;min-height:1em"></div>
+    <h2>Provider API keys <span class="muted">· 0 of 16 set</span>
+      <span class="help" title="A missing key never breaks a scan: that source is skipped and the console says so. Keys are stored encrypted (AES-256-GCM, a random data key per key, wrapped by the master key and bound to workspace:provider); only the last four characters are ever shown.">?</span></h2>
+    <div class="ksum">
+      <span class="kdemo">Demo mode · every call is answered from recorded scenarios, no key is needed</span>
+      <div class="kchips" role="group" aria-label="Show">
+        <button type="button" class="on" data-kf="all">All <b>16</b></button>
+        <button type="button" data-kf="set">Set <b>0</b></button>
+        <button type="button" data-kf="unset">Not set <b>16</b></button>
+        <button type="button" data-kf="rec">Recommended</button>
       </div>
     </div>
     
     
-    <div class="keygrp">Discovery &amp; search <span>· where look-alikes are found</span></div>
     
-    <div class="krow" id="key-serpapi">
-      <div>
-        <div class="nm">SerpApi<span class="tag rec">recommended</span><span class="tag" title="this key is used by Google search">Google search</span><a href="https://serpapi.com" target="_blank" rel="noreferrer noopener">get a key ↗</a></div>
-        <div class="ds">Google results for the brand&#39;s search queries: the &#39;Google search&#39; discovery stream, run per country. · <span class="mono">free tier</span></div>
-      </div>
-      <div>
-        <div class="small" style="margin-bottom:6px"><span class="tag">not set</span></div>
-        <div style="display:flex;gap:6px">
-          <form method="post" action="/ui/settings/api-keys/serpapi" style="flex:1"><input name="key" type="password" placeholder="paste key" autocomplete="off" aria-label="SerpApi API key"><button type="submit">Save</button></form>
-          
-          
+    
+    <div class="kg">
+      <div class="kgh"><b>Threat reputation</b><span class="muted">is this site already known as bad?</span><span class="kgn ">0/4</span></div>
+      
+      <details class="kr" id="key-virustotal" data-set="0" data-rec="1">
+        <summary>
+          <i class="kdot " aria-hidden="true"></i>
+          <span class="kn"><b>VirusTotal</b><span class="tag rec">recommended</span>
+            <span class="kd">Verdicts from 70+ anti-virus and blocklist engines for every visited site. Also powers passive DNS on the infrastructure map and most of a finding&#39;s site &amp; network investigation.</span></span>
+          <span class="ks"><span class="muted">not set</span></span>
+          <span class="kbtn">Add key</span>
+        </summary>
+        <div class="kbody">
+          <div class="kmeta"><span class="tag" title="this key is used by every track">every track</span><span class="tag" title="this key is used by the site investigation">the site investigation</span><span class="mono small muted">free public key · 4 requests/min</span>
+            
+            <a href="https://www.virustotal.com" target="_blank" rel="noreferrer noopener" class="small">get a key ↗</a></div>
+          <div class="kact">
+            <form method="post" action="/ui/settings/api-keys/virustotal"><input name="key" type="password" placeholder="paste the key" autocomplete="off" aria-label="VirusTotal API key"><button type="submit" class="primary">Save</button></form>
+            
+            
+          </div>
+          <div class="small keytest-out" data-for="virustotal"></div>
         </div>
-        <div class="small keytest-out" data-for="serpapi" style="margin-top:6px;min-height:1em"></div>
-      </div>
-    </div>
-    
-    <div class="krow" id="key-scraperapi">
-      <div>
-        <div class="nm">ScraperAPI<span class="tag" title="this key is used by Google search (fallback)">Google search (fallback)</span><a href="https://www.scraperapi.com" target="_blank" rel="noreferrer noopener">get a key ↗</a></div>
-        <div class="ds">The fallback of SerpApi for the &#39;Google search&#39; discovery stream: when SerpApi has no key, no quota left or is down, the same searches go to ScraperAPI (about 25 credits a search). · <span class="mono">paid · free trial credits</span></div>
-      </div>
-      <div>
-        <div class="small" style="margin-bottom:6px"><span class="tag">not set</span></div>
-        <div style="display:flex;gap:6px">
-          <form method="post" action="/ui/settings/api-keys/scraperapi" style="flex:1"><input name="key" type="password" placeholder="paste key" autocomplete="off" aria-label="ScraperAPI API key"><button type="submit">Save</button></form>
-          
-          
+      </details>
+      
+      <details class="kr" id="key-urlhaus" data-set="0" data-rec="0">
+        <summary>
+          <i class="kdot " aria-hidden="true"></i>
+          <span class="kn"><b>URLhaus · abuse.ch</b>
+            <span class="kd">Checks each URL against abuse.ch&#39;s feed of malware and phishing URLs (second in the reputation chain).</span></span>
+          <span class="ks"><span class="muted">not set</span></span>
+          <span class="kbtn">Add key</span>
+        </summary>
+        <div class="kbody">
+          <div class="kmeta"><span class="tag" title="this key is used by every track">every track</span><span class="mono small muted">free key</span>
+            
+            <a href="https://urlhaus.abuse.ch" target="_blank" rel="noreferrer noopener" class="small">get a key ↗</a></div>
+          <div class="kact">
+            <form method="post" action="/ui/settings/api-keys/urlhaus"><input name="key" type="password" placeholder="paste the key" autocomplete="off" aria-label="URLhaus · abuse.ch API key"><button type="submit" class="primary">Save</button></form>
+            
+            
+          </div>
+          <div class="small keytest-out" data-for="urlhaus"></div>
         </div>
-        <div class="small keytest-out" data-for="scraperapi" style="margin-top:6px;min-height:1em"></div>
-      </div>
-    </div>
-    
-    <div class="krow" id="key-urlscan">
-      <div>
-        <div class="nm">urlscan.io<span class="tag rec">recommended</span><span class="tag" title="this key is used by Standard · Deep">Standard · Deep</span><span class="tag" title="this key is used by the site investigation">the site investigation</span><a href="https://urlscan.io" target="_blank" rel="noreferrer noopener">get a key ↗</a></div>
-        <div class="ds">Searches the urlscan.io archive for pages that mention the brand (a discovery stream), and submits fresh scans from a finding&#39;s investigation. · <span class="mono">free key</span></div>
-      </div>
-      <div>
-        <div class="small" style="margin-bottom:6px"><span class="tag">not set</span></div>
-        <div style="display:flex;gap:6px">
-          <form method="post" action="/ui/settings/api-keys/urlscan" style="flex:1"><input name="key" type="password" placeholder="paste key" autocomplete="off" aria-label="urlscan.io API key"><button type="submit">Save</button></form>
-          
-          
+      </details>
+      
+      <details class="kr" id="key-safebrowsing" data-set="0" data-rec="1">
+        <summary>
+          <i class="kdot " aria-hidden="true"></i>
+          <span class="kn"><b>Google Safe Browsing</b><span class="tag rec">recommended</span>
+            <span class="kd">The list Chrome, Firefox and Safari use to warn users. Checked for every visited site: shows whether Google already warns about it, so you can tell when BrandWatch found a kit first.</span></span>
+          <span class="ks"><span class="muted">not set</span></span>
+          <span class="kbtn">Add key</span>
+        </summary>
+        <div class="kbody">
+          <div class="kmeta"><span class="tag" title="this key is used by every track">every track</span><span class="mono small muted">free for non-commercial use · Google Cloud key</span>
+            
+            <a href="https://developers.google.com/safe-browsing/v4/get-started" target="_blank" rel="noreferrer noopener" class="small">get a key ↗</a></div>
+          <div class="kact">
+            <form method="post" action="/ui/settings/api-keys/safebrowsing"><input name="key" type="password" placeholder="paste the key" autocomplete="off" aria-label="Google Safe Browsing API key"><button type="submit" class="primary">Save</button></form>
+            
+            
+          </div>
+          <div class="small keytest-out" data-for="safebrowsing"></div>
         </div>
-        <div class="small keytest-out" data-for="urlscan" style="margin-top:6px;min-height:1em"></div>
-      </div>
-    </div>
-    
-    
-    <div class="keygrp">Domains &amp; servers <span>· who registered it and where it runs</span></div>
-    
-    <div class="krow" id="key-shodan">
-      <div>
-        <div class="nm">Shodan<span class="tag" title="this key is used by the infrastructure map">the infrastructure map</span><a href="https://www.shodan.io" target="_blank" rel="noreferrer noopener">get a key ↗</a></div>
-        <div class="ds">Infrastructure map: what runs on each hosting server, and other servers that serve the same favicon. · <span class="mono">paid membership for search</span></div>
-      </div>
-      <div>
-        <div class="small" style="margin-bottom:6px"><span class="tag">not set</span></div>
-        <div style="display:flex;gap:6px">
-          <form method="post" action="/ui/settings/api-keys/shodan" style="flex:1"><input name="key" type="password" placeholder="paste key" autocomplete="off" aria-label="Shodan API key"><button type="submit">Save</button></form>
-          
-          
+      </details>
+      
+      <details class="kr" id="key-abuseipdb" data-set="0" data-rec="0">
+        <summary>
+          <i class="kdot " aria-hidden="true"></i>
+          <span class="kn"><b>AbuseIPDB</b>
+            <span class="kd">Community abuse reports for every server in a finding&#39;s investigation: a 0–100 abuse score, how many reports, from how many reporters, and when last.</span></span>
+          <span class="ks"><span class="muted">not set</span></span>
+          <span class="kbtn">Add key</span>
+        </summary>
+        <div class="kbody">
+          <div class="kmeta"><span class="tag" title="this key is used by the site investigation">the site investigation</span><span class="mono small muted">free daily quota</span>
+            
+            <a href="https://www.abuseipdb.com/account/api" target="_blank" rel="noreferrer noopener" class="small">get a key ↗</a></div>
+          <div class="kact">
+            <form method="post" action="/ui/settings/api-keys/abuseipdb"><input name="key" type="password" placeholder="paste the key" autocomplete="off" aria-label="AbuseIPDB API key"><button type="submit" class="primary">Save</button></form>
+            
+            
+          </div>
+          <div class="small keytest-out" data-for="abuseipdb"></div>
         </div>
-        <div class="small keytest-out" data-for="shodan" style="margin-top:6px;min-height:1em"></div>
-      </div>
-    </div>
-    
-    <div class="krow" id="key-whoisxml">
-      <div>
-        <div class="nm">WhoisXML API<span class="tag" title="this key is used by WHOIS history">WHOIS history</span><span class="tag" title="this key is used by WHOIS by service">WHOIS by service</span><a href="https://whoisxmlapi.com" target="_blank" rel="noreferrer noopener">get a key ↗</a></div>
-        <div class="ds">WHOIS history on the finding page: every past owner, registrar and privacy change, and owner details hidden after registration. Also WHOIS records when Lookups → WHOIS is &#39;Service&#39; (the default RDAP method needs no key). · <span class="mono">paid · WHOIS History is its own product on the same key</span></div>
-      </div>
-      <div>
-        <div class="small" style="margin-bottom:6px"><span class="tag">not set</span></div>
-        <div style="display:flex;gap:6px">
-          <form method="post" action="/ui/settings/api-keys/whoisxml" style="flex:1"><input name="key" type="password" placeholder="paste key" autocomplete="off" aria-label="WhoisXML API API key"><button type="submit">Save</button></form>
-          
-          
-        </div>
-        <div class="small keytest-out" data-for="whoisxml" style="margin-top:6px;min-height:1em"></div>
-      </div>
-    </div>
-    
-    
-    <div class="keygrp">Suspicious shops <span>· ads selling the brand&#39;s products, and whether the seller exists</span></div>
-    
-    <div class="krow" id="key-searchapi">
-      <div>
-        <div class="nm">SearchApi.io · Meta Ad Library, social accounts, AI answers<span class="tag rec">recommended</span><span class="tag" title="this key is used by social media">social media</span><span class="tag" title="this key is used by ads">ads</span><span class="tag" title="this key is used by AI answers">AI answers</span><a href="https://www.searchapi.io/meta-ad-library-api" target="_blank" rel="noreferrer noopener">get a key ↗</a></div>
-        <div class="ds">Finds Facebook and Instagram ads that sell the brand&#39;s products in each chosen country, and the shops they link to (brands whose products other shops resell); fake Facebook pages and Instagram profiles; and what ChatGPT, Gemini and Google AI Mode tell users about the brand&#39;s phone, e-mail and login. Meta&#39;s own Ad Library API only covers ads that ran in the EU/UK. · <span class="mono">100 free requests · then $40/month for 10k</span></div>
-      </div>
-      <div>
-        <div class="small" style="margin-bottom:6px"><span class="tag">not set</span></div>
-        <div style="display:flex;gap:6px">
-          <form method="post" action="/ui/settings/api-keys/searchapi" style="flex:1"><input name="key" type="password" placeholder="paste key" autocomplete="off" aria-label="SearchApi.io · Meta Ad Library, social accounts, AI answers API key"><button type="submit">Save</button></form>
-          
-          
-        </div>
-        <div class="small keytest-out" data-for="searchapi" style="margin-top:6px;min-height:1em"></div>
-      </div>
-    </div>
-    
-    <div class="krow" id="key-companies_house">
-      <div>
-        <div class="nm">UK Companies House<span class="tag" title="this key is used by scam-shop checks (UK)">scam-shop checks (UK)</span><a href="https://developer.company-information.service.gov.uk/get-started" target="_blank" rel="noreferrer noopener">get a key ↗</a></div>
-        <div class="ds">Checks that a UK company number printed on a shop exists and is not dissolved. · <span class="mono">free key</span></div>
-      </div>
-      <div>
-        <div class="small" style="margin-bottom:6px"><span class="tag">not set</span></div>
-        <div style="display:flex;gap:6px">
-          <form method="post" action="/ui/settings/api-keys/companies_house" style="flex:1"><input name="key" type="password" placeholder="paste key" autocomplete="off" aria-label="UK Companies House API key"><button type="submit">Save</button></form>
-          
-          
-        </div>
-        <div class="small keytest-out" data-for="companies_house" style="margin-top:6px;min-height:1em"></div>
-      </div>
-    </div>
-    
-    <div class="krow" id="key-opencorporates">
-      <div>
-        <div class="nm">OpenCorporates<span class="tag" title="this key is used by scam-shop checks">scam-shop checks</span><a href="https://opencorporates.com/api_accounts/new" target="_blank" rel="noreferrer noopener">get a key ↗</a></div>
-        <div class="ds">Company numbers in 140+ countries — only needed for countries without a free official registry (otherwise BrandWatch searches Google for the company). · <span class="mono">paid · optional</span></div>
-      </div>
-      <div>
-        <div class="small" style="margin-bottom:6px"><span class="tag">not set</span></div>
-        <div style="display:flex;gap:6px">
-          <form method="post" action="/ui/settings/api-keys/opencorporates" style="flex:1"><input name="key" type="password" placeholder="paste key" autocomplete="off" aria-label="OpenCorporates API key"><button type="submit">Save</button></form>
-          
-          
-        </div>
-        <div class="small keytest-out" data-for="opencorporates" style="margin-top:6px;min-height:1em"></div>
-      </div>
+      </details>
+      
     </div>
     
     
-    <div class="keygrp">AI <span>· advisory only, never part of the score</span></div>
     
-    <div class="krow" id="key-openai">
-      <div>
-        <div class="nm">OpenAI<span class="tag rec">recommended</span><span class="tag" title="this key is used by AI second opinion">AI second opinion</span><span class="tag" title="this key is used by Suggest with AI">Suggest with AI</span><span class="tag" title="this key is used by ad relevance">ad relevance</span><a href="https://platform.openai.com/api-keys" target="_blank" rel="noreferrer noopener">get a key ↗</a></div>
-        <div class="ds">Writes the Google queries a phisher would target, gives the advisory second opinion on findings, and triages co-hosted pages on the infrastructure map. · <span class="mono">paid per token</span></div>
-      </div>
-      <div>
-        <div class="small" style="margin-bottom:6px"><span class="tag">not set</span></div>
-        <div style="display:flex;gap:6px">
-          <form method="post" action="/ui/settings/api-keys/openai" style="flex:1"><input name="key" type="password" placeholder="paste key" autocomplete="off" aria-label="OpenAI API key"><button type="submit">Save</button></form>
-          
-          
+    
+    
+    <div class="kg">
+      <div class="kgh"><b>Discovery &amp; search</b><span class="muted">where look-alikes are found</span><span class="kgn ">0/3</span></div>
+      
+      <details class="kr" id="key-serpapi" data-set="0" data-rec="1">
+        <summary>
+          <i class="kdot " aria-hidden="true"></i>
+          <span class="kn"><b>SerpApi</b><span class="tag rec">recommended</span>
+            <span class="kd">Google results for the brand&#39;s search queries: the &#39;Google search&#39; discovery stream, run per country.</span></span>
+          <span class="ks"><span class="muted">not set</span></span>
+          <span class="kbtn">Add key</span>
+        </summary>
+        <div class="kbody">
+          <div class="kmeta"><span class="tag" title="this key is used by Google search">Google search</span><span class="mono small muted">free tier</span>
+            
+            <a href="https://serpapi.com" target="_blank" rel="noreferrer noopener" class="small">get a key ↗</a></div>
+          <div class="kact">
+            <form method="post" action="/ui/settings/api-keys/serpapi"><input name="key" type="password" placeholder="paste the key" autocomplete="off" aria-label="SerpApi API key"><button type="submit" class="primary">Save</button></form>
+            
+            
+          </div>
+          <div class="small keytest-out" data-for="serpapi"></div>
         </div>
-        <div class="small keytest-out" data-for="openai" style="margin-top:6px;min-height:1em"></div>
-      </div>
+      </details>
+      
+      <details class="kr" id="key-scraperapi" data-set="0" data-rec="0">
+        <summary>
+          <i class="kdot " aria-hidden="true"></i>
+          <span class="kn"><b>ScraperAPI</b>
+            <span class="kd">The fallback of SerpApi for the &#39;Google search&#39; discovery stream: when SerpApi has no key, no quota left or is down, the same searches go to ScraperAPI (about 25 credits a search).</span></span>
+          <span class="ks"><span class="muted">not set</span></span>
+          <span class="kbtn">Add key</span>
+        </summary>
+        <div class="kbody">
+          <div class="kmeta"><span class="tag" title="this key is used by Google search (fallback)">Google search (fallback)</span><span class="mono small muted">paid · free trial credits</span>
+            
+            <a href="https://www.scraperapi.com" target="_blank" rel="noreferrer noopener" class="small">get a key ↗</a></div>
+          <div class="kact">
+            <form method="post" action="/ui/settings/api-keys/scraperapi"><input name="key" type="password" placeholder="paste the key" autocomplete="off" aria-label="ScraperAPI API key"><button type="submit" class="primary">Save</button></form>
+            
+            
+          </div>
+          <div class="small keytest-out" data-for="scraperapi"></div>
+        </div>
+      </details>
+      
+      <details class="kr" id="key-urlscan" data-set="0" data-rec="1">
+        <summary>
+          <i class="kdot " aria-hidden="true"></i>
+          <span class="kn"><b>urlscan.io</b><span class="tag rec">recommended</span>
+            <span class="kd">Searches the urlscan.io archive for pages that mention the brand (a discovery stream), and submits fresh scans from a finding&#39;s investigation.</span></span>
+          <span class="ks"><span class="muted">not set</span></span>
+          <span class="kbtn">Add key</span>
+        </summary>
+        <div class="kbody">
+          <div class="kmeta"><span class="tag" title="this key is used by Standard · Deep">Standard · Deep</span><span class="tag" title="this key is used by the site investigation">the site investigation</span><span class="mono small muted">free key</span>
+            
+            <a href="https://urlscan.io" target="_blank" rel="noreferrer noopener" class="small">get a key ↗</a></div>
+          <div class="kact">
+            <form method="post" action="/ui/settings/api-keys/urlscan"><input name="key" type="password" placeholder="paste the key" autocomplete="off" aria-label="urlscan.io API key"><button type="submit" class="primary">Save</button></form>
+            
+            
+          </div>
+          <div class="small keytest-out" data-for="urlscan"></div>
+        </div>
+      </details>
+      
     </div>
     
     
-    <div class="keygrp">No key needed <span>· always on</span></div>
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:4px 18px" class="small"><div><span class="tag ok" style="margin:0 6px 0 0">✓</span><b style="font-weight:500">crt.sh · CertSpotter</b> <span class="muted">— certificate transparency logs</span></div><div><span class="tag ok" style="margin:0 6px 0 0">✓</span><b style="font-weight:500">RDAP · port-43 WHOIS</b> <span class="muted">— registration date, registrar, abuse contact</span></div><div><span class="tag ok" style="margin:0 6px 0 0">✓</span><b style="font-weight:500">DNS</b> <span class="muted">— BrandWatch&#39;s own resolver walk, or public resolvers</span></div><div><span class="tag ok" style="margin:0 6px 0 0">✓</span><b style="font-weight:500">Chromium (Playwright)</b> <span class="muted">— the sandboxed browser that visits every site</span></div><div><span class="tag ok" style="margin:0 6px 0 0">✓</span><b style="font-weight:500">ip-api</b> <span class="muted">— where a server is (country, city, network)</span></div><div><span class="tag ok" style="margin:0 6px 0 0">✓</span><b style="font-weight:500">whoisds</b> <span class="muted">— yesterday&#39;s newly registered domains</span></div><div><span class="tag ok" style="margin:0 6px 0 0">✓</span><b style="font-weight:500">Israel Registrar of Companies (data.gov.il)</b> <span class="muted">— company numbers printed on Israeli shops</span></div><div><span class="tag ok" style="margin:0 6px 0 0">✓</span><b style="font-weight:500">EU VIES</b> <span class="muted">— VAT numbers printed on EU shops</span></div><div><span class="tag ok" style="margin:0 6px 0 0">✓</span><b style="font-weight:500">GLEIF</b> <span class="muted">— registered companies worldwide, by name (LEI holders)</span></div></div>
+    
+    
+    
+    <div class="kg">
+      <div class="kgh"><b>Domains &amp; servers</b><span class="muted">who registered it and where it runs</span><span class="kgn ">0/2</span></div>
+      
+      <details class="kr" id="key-shodan" data-set="0" data-rec="0">
+        <summary>
+          <i class="kdot " aria-hidden="true"></i>
+          <span class="kn"><b>Shodan</b>
+            <span class="kd">Infrastructure map: what runs on each hosting server, and other servers that serve the same favicon.</span></span>
+          <span class="ks"><span class="muted">not set</span></span>
+          <span class="kbtn">Add key</span>
+        </summary>
+        <div class="kbody">
+          <div class="kmeta"><span class="tag" title="this key is used by the infrastructure map">the infrastructure map</span><span class="mono small muted">paid membership for search</span>
+            
+            <a href="https://www.shodan.io" target="_blank" rel="noreferrer noopener" class="small">get a key ↗</a></div>
+          <div class="kact">
+            <form method="post" action="/ui/settings/api-keys/shodan"><input name="key" type="password" placeholder="paste the key" autocomplete="off" aria-label="Shodan API key"><button type="submit" class="primary">Save</button></form>
+            
+            
+          </div>
+          <div class="small keytest-out" data-for="shodan"></div>
+        </div>
+      </details>
+      
+      <details class="kr" id="key-whoisxml" data-set="0" data-rec="0">
+        <summary>
+          <i class="kdot " aria-hidden="true"></i>
+          <span class="kn"><b>WhoisXML API</b>
+            <span class="kd">WHOIS history on the finding page: every past owner, registrar and privacy change, and owner details hidden after registration. Also WHOIS records when Lookups → WHOIS is &#39;Service&#39; (the default RDAP method needs no key).</span></span>
+          <span class="ks"><span class="muted">not set</span></span>
+          <span class="kbtn">Add key</span>
+        </summary>
+        <div class="kbody">
+          <div class="kmeta"><span class="tag" title="this key is used by WHOIS history">WHOIS history</span><span class="tag" title="this key is used by WHOIS by service">WHOIS by service</span><span class="mono small muted">paid · WHOIS History is its own product on the same key</span>
+            
+            <a href="https://whoisxmlapi.com" target="_blank" rel="noreferrer noopener" class="small">get a key ↗</a></div>
+          <div class="kact">
+            <form method="post" action="/ui/settings/api-keys/whoisxml"><input name="key" type="password" placeholder="paste the key" autocomplete="off" aria-label="WhoisXML API API key"><button type="submit" class="primary">Save</button></form>
+            
+            
+          </div>
+          <div class="small keytest-out" data-for="whoisxml"></div>
+        </div>
+      </details>
+      
+    </div>
+    
+    
+    
+    
+    
+    <div class="kg">
+      <div class="kgh"><b>Suspicious shops</b><span class="muted">ads selling the brand&#39;s products, and whether the seller exists</span><span class="kgn ">0/3</span></div>
+      
+      <details class="kr" id="key-searchapi" data-set="0" data-rec="1">
+        <summary>
+          <i class="kdot " aria-hidden="true"></i>
+          <span class="kn"><b>SearchApi.io · Meta Ad Library, social accounts, AI answers</b><span class="tag rec">recommended</span>
+            <span class="kd">Finds Facebook and Instagram ads that sell the brand&#39;s products in each chosen country, and the shops they link to (brands whose products other shops resell); fake Facebook pages and Instagram profiles; and what ChatGPT, Gemini and Google AI Mode tell users about the brand&#39;s phone, e-mail and login. Meta&#39;s own Ad Library API only covers ads that ran in the EU/UK.</span></span>
+          <span class="ks"><span class="muted">not set</span></span>
+          <span class="kbtn">Add key</span>
+        </summary>
+        <div class="kbody">
+          <div class="kmeta"><span class="tag" title="this key is used by social media">social media</span><span class="tag" title="this key is used by ads">ads</span><span class="tag" title="this key is used by AI answers">AI answers</span><span class="mono small muted">100 free requests · then $40/month for 10k</span>
+            
+            <a href="https://www.searchapi.io/meta-ad-library-api" target="_blank" rel="noreferrer noopener" class="small">get a key ↗</a></div>
+          <div class="kact">
+            <form method="post" action="/ui/settings/api-keys/searchapi"><input name="key" type="password" placeholder="paste the key" autocomplete="off" aria-label="SearchApi.io · Meta Ad Library, social accounts, AI answers API key"><button type="submit" class="primary">Save</button></form>
+            
+            
+          </div>
+          <div class="small keytest-out" data-for="searchapi"></div>
+        </div>
+      </details>
+      
+      <details class="kr" id="key-companies_house" data-set="0" data-rec="0">
+        <summary>
+          <i class="kdot " aria-hidden="true"></i>
+          <span class="kn"><b>UK Companies House</b>
+            <span class="kd">Checks that a UK company number printed on a shop exists and is not dissolved.</span></span>
+          <span class="ks"><span class="muted">not set</span></span>
+          <span class="kbtn">Add key</span>
+        </summary>
+        <div class="kbody">
+          <div class="kmeta"><span class="tag" title="this key is used by scam-shop checks (UK)">scam-shop checks (UK)</span><span class="mono small muted">free key</span>
+            
+            <a href="https://developer.company-information.service.gov.uk/get-started" target="_blank" rel="noreferrer noopener" class="small">get a key ↗</a></div>
+          <div class="kact">
+            <form method="post" action="/ui/settings/api-keys/companies_house"><input name="key" type="password" placeholder="paste the key" autocomplete="off" aria-label="UK Companies House API key"><button type="submit" class="primary">Save</button></form>
+            
+            
+          </div>
+          <div class="small keytest-out" data-for="companies_house"></div>
+        </div>
+      </details>
+      
+      <details class="kr" id="key-opencorporates" data-set="0" data-rec="0">
+        <summary>
+          <i class="kdot " aria-hidden="true"></i>
+          <span class="kn"><b>OpenCorporates</b>
+            <span class="kd">Company numbers in 140+ countries — only needed for countries without a free official registry (otherwise BrandWatch searches Google for the company).</span></span>
+          <span class="ks"><span class="muted">not set</span></span>
+          <span class="kbtn">Add key</span>
+        </summary>
+        <div class="kbody">
+          <div class="kmeta"><span class="tag" title="this key is used by scam-shop checks">scam-shop checks</span><span class="mono small muted">paid · optional</span>
+            
+            <a href="https://opencorporates.com/api_accounts/new" target="_blank" rel="noreferrer noopener" class="small">get a key ↗</a></div>
+          <div class="kact">
+            <form method="post" action="/ui/settings/api-keys/opencorporates"><input name="key" type="password" placeholder="paste the key" autocomplete="off" aria-label="OpenCorporates API key"><button type="submit" class="primary">Save</button></form>
+            
+            
+          </div>
+          <div class="small keytest-out" data-for="opencorporates"></div>
+        </div>
+      </details>
+      
+    </div>
+    
+    
+    
+    
+    
+    <div class="kg">
+      <div class="kgh"><b>AI</b><span class="muted">advisory only, never part of the score</span><span class="kgn ">0/1</span></div>
+      
+      <details class="kr" id="key-openai" data-set="0" data-rec="1">
+        <summary>
+          <i class="kdot " aria-hidden="true"></i>
+          <span class="kn"><b>OpenAI</b><span class="tag rec">recommended</span>
+            <span class="kd">Writes the Google queries a phisher would target, gives the advisory second opinion on findings, and triages co-hosted pages on the infrastructure map.</span></span>
+          <span class="ks"><span class="muted">not set</span></span>
+          <span class="kbtn">Add key</span>
+        </summary>
+        <div class="kbody">
+          <div class="kmeta"><span class="tag" title="this key is used by AI second opinion">AI second opinion</span><span class="tag" title="this key is used by Suggest with AI">Suggest with AI</span><span class="tag" title="this key is used by ad relevance">ad relevance</span><span class="mono small muted">paid per token</span>
+            
+            <a href="https://platform.openai.com/api-keys" target="_blank" rel="noreferrer noopener" class="small">get a key ↗</a></div>
+          <div class="kact">
+            <form method="post" action="/ui/settings/api-keys/openai"><input name="key" type="password" placeholder="paste the key" autocomplete="off" aria-label="OpenAI API key"><button type="submit" class="primary">Save</button></form>
+            
+            
+          </div>
+          <div class="small keytest-out" data-for="openai"></div>
+        </div>
+      </details>
+      
+    </div>
+    
+    
+    <details class="kfree"><summary>No key needed · always on · 9 sources</summary>
+      <div class="kfl"><div><span class="kdot on"></span><b>crt.sh · CertSpotter</b> <span class="muted">— certificate transparency logs</span></div><div><span class="kdot on"></span><b>RDAP · port-43 WHOIS</b> <span class="muted">— registration date, registrar, abuse contact</span></div><div><span class="kdot on"></span><b>DNS</b> <span class="muted">— BrandWatch&#39;s own resolver walk, or public resolvers</span></div><div><span class="kdot on"></span><b>Chromium (Playwright)</b> <span class="muted">— the sandboxed browser that visits every site</span></div><div><span class="kdot on"></span><b>ip-api</b> <span class="muted">— where a server is (country, city, network)</span></div><div><span class="kdot on"></span><b>whoisds</b> <span class="muted">— yesterday&#39;s newly registered domains</span></div><div><span class="kdot on"></span><b>Israel Registrar of Companies (data.gov.il)</b> <span class="muted">— company numbers printed on Israeli shops</span></div><div><span class="kdot on"></span><b>EU VIES</b> <span class="muted">— VAT numbers printed on EU shops</span></div><div><span class="kdot on"></span><b>GLEIF</b> <span class="muted">— registered companies worldwide, by name (LEI holders)</span></div></div></details>
+    <script>
+    (function(){
+      // the chips show a part of the list; a group with nothing left to show folds away
+      const sec = document.getElementById('keys'); if (!sec) return;
+      sec.querySelectorAll('.kchips button').forEach(b => b.addEventListener('click', () => {
+        sec.querySelectorAll('.kchips button').forEach(x => x.classList.toggle('on', x === b));
+        const f = b.dataset.kf;
+        sec.querySelectorAll('details.kr').forEach(r => { r.hidden = !(f === 'all' || (f === 'set' && r.dataset.set === '1') || (f === 'unset' && r.dataset.set === '0') || (f === 'rec' && r.dataset.rec === '1')); });
+        sec.querySelectorAll('.kg').forEach(g => { g.hidden = ![...g.querySelectorAll('details.kr')].some(r => !r.hidden); });
+      }));
+      // a link to one key (#key-virustotal) opens its row
+      const open = () => { const t = location.hash && document.getElementById(location.hash.slice(1)); if (t && t.matches('details.kr')) { t.open = true; t.scrollIntoView({block: 'center'}); } };
+      open(); addEventListener('hashchange', open);
+    })();
+    </script>
   </section>
   
 
@@ -852,7 +1041,7 @@ window.BW = (function () {
             <button type="submit">Save</button>
           </form>
         </td>
-        <td class="mono small muted"><time datetime="2026-10-19T19:06:48.419181" data-local title="2026-10-19T19:06:48.419181 UTC">2026-10-19 19:06</time></td>
+        <td class="mono small muted"><time datetime="2026-10-19T20:36:40.471763" data-local title="2026-10-19T20:36:40.471763 UTC">2026-10-19 20:36</time></td>
       </tr>
       
     </table>
@@ -1066,9 +1255,30 @@ curl -N -H "Authorization: Bearer $TOKEN" http://127.0.0.1:8765/api/jobs/&lt;job
       else if (WIDE.test(h) || td.querySelector('form, button, .pill + .pill')) td.classList.add('rwd-wide');
       if (!td.querySelector('input, img, form, svg') && (text === '' || text === '—' || text === '-')) td.classList.add('rwd-empty');
     })); });
-  // phones: the intro opens on a tap; the list filters fold into one "Search & filters" box (open when a filter is on)
+  // the explanation under a page title folds into "About this page" (open again where the reader left it open)
+  const aboutKey = 'bw-about:' + location.pathname;
+  document.querySelectorAll('main .intro').forEach((el, i) => {
+    if (el.closest('details') || el.closest('.panel')) return;
+    const d = document.createElement('details'); d.className = 'about';
+    const sm = document.createElement('summary'); sm.innerHTML = '<i>i</i>About this page'; d.appendChild(sm);
+    el.parentNode.insertBefore(d, el); d.appendChild(el);
+    try { if (localStorage.getItem(aboutKey + i) === '1') d.open = true; } catch (e) { /* a private window */ }
+    d.addEventListener('toggle', () => { try { localStorage.setItem(aboutKey + i, d.open ? '1' : '0'); } catch (e) { /* ignore */ } });
+  });
+  // a subtitle's leading " · " belongs beside the title: wrap it so a phone can drop it when the subtitle sits below
+  document.querySelectorAll('main h1 > .muted, main h1 > .small').forEach(el => {
+    const t = el.firstChild; if (!t || t.nodeType !== 3) return;
+    const m = t.textContent.match(/^\s*·\s*/); if (!m) return;
+    t.textContent = t.textContent.slice(m[0].length);
+    const sp = document.createElement('span'); sp.className = 'hsep'; sp.textContent = '· '; el.insertBefore(sp, t);
+  });
+  // a list filter applies as soon as a choice changes; a typed search still waits for Enter or Apply
+  document.querySelectorAll('main form.filters, main form.afilters, main form.mfoldable, main form[data-autosubmit]').forEach(f => {
+    if ((f.getAttribute('method') || 'get').toLowerCase() !== 'get') return;
+    f.addEventListener('change', ev => { const t = ev.target; if (t.name && t.matches('select, input[type=checkbox], input[type=radio], input[type=date]') && !t.dataset.noauto) { f.requestSubmit ? f.requestSubmit() : f.submit(); } });
+  });
+  // phones: the list filters fold into one "Search & filters" box (open when a filter is on)
   if (matchMedia('(max-width: 700px)').matches) {
-    document.querySelectorAll('.intro').forEach(el => el.addEventListener('click', () => el.classList.toggle('open')));
     document.querySelectorAll('main form.filters, main form.afilters, main form.mfoldable').forEach(f => {
       const on = [...f.elements].filter(e => e.name && e.type !== 'hidden' && e.type !== 'submit' && e.type !== 'checkbox' && e.value && !['sort'].includes(e.name) && !(e.name === 'state' && e.value === 'open')).length;
       const d = document.createElement('details'); d.className = 'mfold'; if (on) d.open = false;
@@ -1076,6 +1286,39 @@ curl -N -H "Authorization: Bearer $TOKEN" http://127.0.0.1:8765/api/jobs/&lt;job
       f.parentNode.insertBefore(d, f); d.appendChild(f);
     });
   }
+  // a long page: a bar of its sections under the header, the one in view lit, and a button back to the top
+  (function jumpBar(){
+    const main = document.querySelector('main'); if (!main || main.dataset.nojump !== undefined || document.getElementById('rail') || document.getElementById('setnav')) return;
+    if (document.documentElement.scrollHeight < innerHeight * 3) return;
+    const heads = [...main.querySelectorAll('h2')].filter(h => !h.closest('.vw, .deep, details:not([open]), .gcard, #drawer, nav, dialog, [hidden], .sec, .case') && h.getClientRects().length);
+    const seen = new Set(), items = [];
+    heads.forEach(h => {
+      const box = h.closest('.panel, section') || h; if (seen.has(box)) return; seen.add(box);
+      const name = [...h.childNodes].filter(n => n.nodeType === 3 || (n.nodeType === 1 && !n.matches('.muted, .small, .help, a, button, span.cnt, .badge, .pill'))).map(n => n.textContent).join(' ').replace(/\s+/g, ' ').replace(/\s*·.*$/, '').trim();
+      if (!name) return;
+      if (!box.id) box.id = 'sec-' + name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 40);
+      items.push({box, name: name.length > 28 ? name.replace(/^(.{1,26})\s.*$/, '$1') + '…' : name});
+    });
+    if (items.length < 4) return;
+    const nav = document.createElement('nav'); nav.className = 'jump'; nav.setAttribute('aria-label', 'Sections of this page');
+    nav.innerHTML = items.slice(0, 12).map(it => `<a href="#${it.box.id}">${it.name.replace(/[&<>]/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;'}[c]))}</a>`).join('');
+    const after = main.querySelector('details.about') || main.querySelector('.kpis') || main.querySelector('h1');
+    (after && after.parentNode === main ? after : main.firstElementChild).insertAdjacentElement('afterend', nav);
+    const links = [...nav.querySelectorAll('a')];
+    links.forEach(a => a.addEventListener('click', ev => { const t = document.getElementById(a.getAttribute('href').slice(1)); if (!t) return; ev.preventDefault();
+      const y = t.getBoundingClientRect().top + scrollY - (parseInt(getComputedStyle(document.documentElement).getPropertyValue('--hdr')) || 0) - nav.offsetHeight - 10;
+      scrollTo({top: y, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'}); history.replaceState(null, '', a.getAttribute('href')); }));
+    if ('IntersectionObserver' in window) {
+      const io = new IntersectionObserver(es => es.forEach(e => { if (!e.isIntersecting) return; links.forEach(a => { const on = a.getAttribute('href') === '#' + e.target.id; a.classList.toggle('on', on); if (on) nav.scrollLeft = a.offsetLeft - 20; }); }), {rootMargin: '-30% 0px -60% 0px'});
+      items.forEach(it => io.observe(it.box));
+    }
+  })();
+  (function backToTop(){
+    const b = document.createElement('button'); b.type = 'button'; b.id = 'totop'; b.setAttribute('aria-label', 'Back to the top'); b.title = 'back to the top'; b.textContent = '↑';
+    b.addEventListener('click', () => scrollTo({top: 0, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'}));
+    document.body.appendChild(b);
+    let tk = 0; addEventListener('scroll', () => { if (tk) return; tk = requestAnimationFrame(() => { tk = 0; b.classList.toggle('on', scrollY > innerHeight * 1.5); }); }, {passive: true});
+  })();
   // the sticky header's height, for anything that sticks under it
   const hdr = document.querySelector('header.topbar'); const setH = () => document.documentElement.style.setProperty('--hdr', (hdr ? hdr.offsetHeight : 0) + 'px');
   setH(); window.addEventListener('resize', setH);
