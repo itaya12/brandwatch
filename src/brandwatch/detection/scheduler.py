@@ -211,6 +211,9 @@ class WatchScheduler:
             last = next((j for j in jobs if (j.payload or {}).get("scheduled")), None)
             if now < sched_mod.next_due(sc, last.created_at if last else None, now):
                 continue
+            # end this thread's write transaction first: the queue writes the job through a connection of its own,
+            # which would wait (and fail after 30 s, "database is locked") for the lock this tick holds
+            session.commit()
             job_id = self._queue.enqueue(
                 "brand_scan",
                 {"scheduled": True, "reason": "schedule", "schedule": sc.label, "tasks": scan_tasks,

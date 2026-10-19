@@ -148,3 +148,56 @@ def test_schedule_api_and_panel(engine, tmp_path):
         assert s.scalars(sa.select(m.AuditEvent).where(m.AuditEvent.action == "brand.schedule_updated",
                                                       m.AuditEvent.object_id == uuid.UUID(b["id"]))).first()  # fmt: skip
 
+
+
+def test_a_due_brand_scan_does_not_lock_the_database_against_itself(engine, tmp_path):
+    """The live scheduler thread takes SQLite's write lock up front (``writer_thread``). Its tick used to call
+    ``queue.enqueue`` — which inserts the job through a second connection — while still holding that lock: the second
+    connection waited 30 s for the lock its own thread held, the tick failed with "database is locked" every minute,
+    and every URL scan started during those 30 s failed the same way. Now the tick commits before it enqueues."""
+    import threading
+    import time
+
+    from brandwatch.db.base import make_session_factory, writer_thread
+    from brandwatch.jobs.queue import create_job
+
+    factory = make_session_factory(engine)
+
+    class _DbQueue:  # like the threaded queue: the job row is written by a session of its own
+        def __init__(self):
+            self.ids = []
+
+        def enqueue(self, kind, payload=None, *, workspace_id, brand_id=None):
+            with factory() as s:
+                job = create_job(s, kind, payload, workspace_id=workspace_id, brand_id=brand_id)
+                s.commit()
+                self.ids.append(job.id)
+                return job.id
+
+    settings = Settings(_env_file=None, demo_mode=True, evidence_dir=str(tmp_path / "ev"))
+    now = datetime.now(UTC)
+    with factory() as s:
+        ws = make_workspace(s, f"lock-{uuid.uuid4().hex[:6]}")
+        b = make_brand(s, ws, "Due Brand")
+        b.schedule = {"enabled": True, "every_hours": 24, "hour": None, "tasks": ["ct"], "updated_at": (now - timedelta(hours=1)).isoformat()}
+        s.commit()
+        bid = b.id
+    q = _DbQueue()
+    out: dict = {}
+
+    def run():
+        writer_thread()  # exactly what WatchScheduler._loop does
+        t0 = time.monotonic()
+        try:
+            out["report"] = WatchScheduler(factory, q, settings).tick(now)
+        except Exception as exc:  # noqa: BLE001
+            out["error"] = exc
+        out["seconds"] = time.monotonic() - t0
+
+    t = threading.Thread(target=run)
+    t.start()
+    t.join(60)
+    assert "error" not in out, out.get("error")
+    assert out["seconds"] < 10, out["seconds"]
+    with factory() as s:
+        assert s.scalars(sa.select(m.ScanJob).where(m.ScanJob.brand_id == bid, m.ScanJob.kind == "brand_scan")).all()
