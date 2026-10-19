@@ -304,7 +304,8 @@ button:active,.btn:active,.chip:active{transform:translateY(1px)}
 td .badge.sev-critical,table .badge.sev-critical{animation:none}
 /* a control answers a press, and a light passes over it under the pointer */
 button:active,.btn:active,.chip:active{transform:translateY(1px) scale(.985)}
-button:not(.ghost):not(.fold):not(.menu):not(.chip),.btn:not(.ghost){position:relative;overflow:hidden}
+/* :where() keeps this at zero specificity: a component that places its own button (absolute, fixed) still wins */
+:where(button:not(.ghost):not(.fold):not(.menu):not(.chip),.btn:not(.ghost)){position:relative;overflow:hidden}
 button:not(.ghost):not(.fold):not(.menu):not(.chip)::after,.btn:not(.ghost)::after{
   content:"";position:absolute;inset:0;pointer-events:none;opacity:0;transform:translateX(-100%);
   background:linear-gradient(100deg,transparent 22%,rgba(53,199,242,.20) 48%,transparent 72%)}
@@ -406,11 +407,11 @@ window.BW = (function () {
 <p class="intro">The append-only audit trail: who did what, when, old → new, and why. The database itself refuses to edit or delete it.</p>
 
 <div class="kpis">
-  <div class="kpi"><div class="v" data-count="5">0</div><div class="l">events (latest)</div></div>
-  <div class="kpi"><div class="v" data-count="5">0</div><div class="l">analyst actions</div></div>
+  <div class="kpi"><div class="v" data-count="7">0</div><div class="l">events (latest)</div></div>
+  <div class="kpi"><div class="v" data-count="7">0</div><div class="l">analyst actions</div></div>
   <div class="kpi"><div class="v" data-count="0">0</div><div class="l">system actions</div></div>
   <div class="kpi"><div class="v" data-count="0">0</div><div class="l">verdicts recorded</div></div>
-  <div class="kpi"><div class="v" data-count="3">0</div><div class="l">logins (24h)</div></div>
+  <div class="kpi"><div class="v" data-count="4">0</div><div class="l">logins (24h)</div></div>
 </div>
 
 <form method="get" action="/ui/activity/" class="afilters" style="margin-top:14px">
@@ -430,7 +431,7 @@ window.BW = (function () {
 
 <div class="grid actg" style="grid-template-columns:2.2fr 1fr;margin-top:14px">
   <div class="panel">
-    <div class="small muted" style="margin-bottom:6px">498 events match</div>
+    <div class="small muted" style="margin-bottom:6px">517 events match</div>
     <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px" id="chips">
       <button type="button" class="chip on" data-cat="notable" title="everything except sign-ins" aria-pressed="true">notable</button>
       <button type="button" class="chip" data-cat="*" aria-pressed="false">all</button>
@@ -443,12 +444,12 @@ window.BW = (function () {
       <div class="ev " data-cat="user" data-notable="0" style="--r:0;display:none">
         <div class="av " title="admin">AD</div>
         <div>
-          <div class="what"><span class="muted">admin</span> <b>user</b> · login <span class="pill" title="46 consecutive events, first 2026-10-19 10:08">×46</span>
+          <div class="what"><span class="muted">admin</span> <b>user</b> · login <span class="pill" title="17 consecutive events, first 2026-10-19 15:31">×17</span>
             
             <span class="muted small">user bc089017</span></div>
           
         </div>
-        <div class="when"><time datetime="2026-10-19T15:16:06.122688+00:00" data-local title="2026-10-19T15:16:06.122688+00:00 UTC">2026-10-19 15:16</time><div><a class="small" href="/ui/activity/_d2793a420a/" title="every event about this user">history</a></div></div>
+        <div class="when"><time datetime="2026-10-19T16:20:15.369458+00:00" data-local title="2026-10-19T16:20:15.369458+00:00 UTC">2026-10-19 16:20</time><div><a class="small" href="/ui/activity/_d2793a420a/" title="every event about this user">history</a></div></div>
       </div>
       
       
@@ -460,11 +461,35 @@ window.BW = (function () {
             <span class="muted small">user bc089017</span></div>
           
         </div>
-        <div class="when"><time datetime="2026-10-19T10:08:43.648806+00:00" data-local title="2026-10-19T10:08:43.648806+00:00 UTC">2026-10-19 10:08</time><div><a class="small" href="/ui/activity/_d2793a420a/" title="every event about this user">history</a></div></div>
+        <div class="when"><time datetime="2026-10-19T15:31:18.574843+00:00" data-local title="2026-10-19T15:31:18.574843+00:00 UTC">2026-10-19 15:31</time><div><a class="small" href="/ui/activity/_d2793a420a/" title="every event about this user">history</a></div></div>
       </div>
       
       
       <div class="ev " data-cat="user" data-notable="0" style="--r:2;display:none">
+        <div class="av " title="admin">AD</div>
+        <div>
+          <div class="what"><span class="muted">admin</span> <b>user</b> · login <span class="pill" title="47 consecutive events, first 2026-10-19 10:08">×47</span>
+            
+            <span class="muted small">user bc089017</span></div>
+          
+        </div>
+        <div class="when"><time datetime="2026-10-19T15:28:53.402203+00:00" data-local title="2026-10-19T15:28:53.402203+00:00 UTC">2026-10-19 15:28</time><div><a class="small" href="/ui/activity/_d2793a420a/" title="every event about this user">history</a></div></div>
+      </div>
+      
+      
+      <div class="ev " data-cat="user" data-notable="0" style="--r:3;display:none">
+        <div class="av " title="admin">AD</div>
+        <div>
+          <div class="what"><span class="muted">admin</span> <b>user</b> · login failed
+            
+            <span class="muted small">user bc089017</span></div>
+          
+        </div>
+        <div class="when"><time datetime="2026-10-19T10:08:43.648806+00:00" data-local title="2026-10-19T10:08:43.648806+00:00 UTC">2026-10-19 10:08</time><div><a class="small" href="/ui/activity/_d2793a420a/" title="every event about this user">history</a></div></div>
+      </div>
+      
+      
+      <div class="ev " data-cat="user" data-notable="0" style="--r:4;display:none">
         <div class="av " title="admin">AD</div>
         <div>
           <div class="what"><span class="muted">admin</span> <b>user</b> · login <span class="pill" title="52 consecutive events, first 2026-10-18 21:18">×52</span>
@@ -476,7 +501,7 @@ window.BW = (function () {
       </div>
       
       <div class="day" data-day="2026-10-18">2026-10-18</div>
-      <div class="ev " data-cat="user" data-notable="0" style="--r:3;display:none">
+      <div class="ev " data-cat="user" data-notable="0" style="--r:5;display:none">
         <div class="av " title="admin">AD</div>
         <div>
           <div class="what"><span class="muted">admin</span> <b>user</b> · login failed
@@ -488,10 +513,10 @@ window.BW = (function () {
       </div>
       
       
-      <div class="ev " data-cat="user" data-notable="0" style="--r:4;display:none">
+      <div class="ev " data-cat="user" data-notable="0" style="--r:6;display:none">
         <div class="av " title="admin">AD</div>
         <div>
-          <div class="what"><span class="muted">admin</span> <b>user</b> · login <span class="pill" title="200 consecutive events, first 2026-10-11 12:31">×200</span>
+          <div class="what"><span class="muted">admin</span> <b>user</b> · login <span class="pill" title="181 consecutive events, first 2026-10-11 13:33">×181</span>
             
             <span class="muted small">user bc089017</span></div>
           
@@ -503,7 +528,7 @@ window.BW = (function () {
     </div>
     <div class="more"><button type="button" id="more" style="display:none">Show older events</button>
       
-      <a class="btn small" href="/ui/activity?object_id=bc089017-3cdf-4d6a-90a5-d397ceef5fba&amp;page=2" title="the next 300 events from the server">older page →</a></div>
+      <a class="btn small" href="/ui/activity/_f1ba406e5f/" title="the next 300 events from the server">older page →</a></div>
   </div>
   <div>
     <div class="panel">
@@ -515,7 +540,7 @@ window.BW = (function () {
     </div>
     <div class="panel" style="margin-top:14px">
       <h2>Activity · 14 days</h2>
-      <svg class="spark" data-spark='{"series": [{"color": "#35C7F2", "values": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 3]}]}'></svg>
+      <svg class="spark" data-spark='{"series": [{"color": "#35C7F2", "values": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 5]}]}'></svg>
     </div>
     <div class="panel" style="margin-top:14px">
       <h2>Most active</h2>

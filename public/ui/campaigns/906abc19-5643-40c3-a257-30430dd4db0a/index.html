@@ -304,7 +304,8 @@ button:active,.btn:active,.chip:active{transform:translateY(1px)}
 td .badge.sev-critical,table .badge.sev-critical{animation:none}
 /* a control answers a press, and a light passes over it under the pointer */
 button:active,.btn:active,.chip:active{transform:translateY(1px) scale(.985)}
-button:not(.ghost):not(.fold):not(.menu):not(.chip),.btn:not(.ghost){position:relative;overflow:hidden}
+/* :where() keeps this at zero specificity: a component that places its own button (absolute, fixed) still wins */
+:where(button:not(.ghost):not(.fold):not(.menu):not(.chip),.btn:not(.ghost)){position:relative;overflow:hidden}
 button:not(.ghost):not(.fold):not(.menu):not(.chip)::after,.btn:not(.ghost)::after{
   content:"";position:absolute;inset:0;pointer-events:none;opacity:0;transform:translateX(-100%);
   background:linear-gradient(100deg,transparent 22%,rgba(53,199,242,.20) 48%,transparent 72%)}
@@ -470,7 +471,8 @@ window.BW = (function () {
   const W = svg.clientWidth || 800, H = W < 600 ? 400 : (parseInt(svg.getAttribute('height')) || 520);
   svg.setAttribute('height', H);
   svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
-  svg.style.touchAction = 'none';
+  // on the dashboard a vertical swipe still scrolls the page; a sideways drag moves the map
+  svg.style.touchAction = opts.armWheel ? 'pan-y' : 'none';
   const ns = 'http://www.w3.org/2000/svg';
   const ink = BW.ink;  // the palette comes from the stylesheet, never from a hex written here
   const colors = {passive_dns: ink('accent'), cert: ink('med'), favicon: ink('low'), tracking_id: ink('high'), reverse_whois: ink('crit'), reverse_ns: ink('muted')};
@@ -630,7 +632,18 @@ window.BW = (function () {
   function loop(){ tick(true); requestAnimationFrame(loop); }
 
   // zoom with the wheel (around the pointer), move the map by dragging the background
-  svg.addEventListener('wheel', ev => { ev.preventDefault(); zoomAt(ev.deltaY < 0 ? 1.15 : 1/1.15, toScreen(ev)); }, {passive: false});
+  // on a page that scrolls past the map (the dashboard: BW_GRAPH.armWheel) the wheel stays the page's until the map is clicked
+  let armed = !opts.armWheel, hintEl = null, hintT = 0;
+  if (opts.armWheel) {
+    const wrap = svg.parentElement;
+    hintEl = document.createElement('div'); hintEl.className = 'zoomhint'; hintEl.setAttribute('aria-hidden', 'true'); hintEl.innerHTML = '<span>Click the map to zoom</span>';
+    if (wrap) wrap.appendChild(hintEl);
+    svg.addEventListener('pointerdown', () => { armed = true; svg.classList.add('armed'); if (hintEl) hintEl.classList.remove('show'); });
+    svg.addEventListener('pointerleave', () => { armed = false; svg.classList.remove('armed'); });
+  }
+  svg.addEventListener('wheel', ev => {
+    if (!armed) { if (hintEl) { hintEl.classList.add('show'); clearTimeout(hintT); hintT = setTimeout(() => hintEl.classList.remove('show'), 1100); } return; }
+    ev.preventDefault(); zoomAt(ev.deltaY < 0 ? 1.15 : 1/1.15, toScreen(ev)); }, {passive: false});
   function zoomAt(f, [sx, sy]){ const k = Math.max(0.25, Math.min(5, view.k * f)); const r = k / view.k; view.tx = sx - (sx - view.tx) * r; view.ty = sy - (sy - view.ty) * r; view.k = k; apply(); }
   let pan = null;
   svg.addEventListener('pointerdown', ev => { if (ev.target !== svg && ev.target.tagName !== 'rect' && ev.target.tagName !== 'path') return; pan = {x: ev.clientX, y: ev.clientY, tx: view.tx, ty: view.ty, moved: false}; svg.setPointerCapture(ev.pointerId); svg.style.cursor = 'grabbing'; });

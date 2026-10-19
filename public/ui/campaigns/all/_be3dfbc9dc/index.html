@@ -304,7 +304,8 @@ button:active,.btn:active,.chip:active{transform:translateY(1px)}
 td .badge.sev-critical,table .badge.sev-critical{animation:none}
 /* a control answers a press, and a light passes over it under the pointer */
 button:active,.btn:active,.chip:active{transform:translateY(1px) scale(.985)}
-button:not(.ghost):not(.fold):not(.menu):not(.chip),.btn:not(.ghost){position:relative;overflow:hidden}
+/* :where() keeps this at zero specificity: a component that places its own button (absolute, fixed) still wins */
+:where(button:not(.ghost):not(.fold):not(.menu):not(.chip),.btn:not(.ghost)){position:relative;overflow:hidden}
 button:not(.ghost):not(.fold):not(.menu):not(.chip)::after,.btn:not(.ghost)::after{
   content:"";position:absolute;inset:0;pointer-events:none;opacity:0;transform:translateX(-100%);
   background:linear-gradient(100deg,transparent 22%,rgba(53,199,242,.20) 48%,transparent 72%)}
@@ -385,31 +386,6 @@ window.BW = (function () {
 
 
 <style>
-  line.flow{stroke-dasharray:7 5;animation:flow 1.1s linear infinite}
-  @keyframes flow{to{stroke-dashoffset:-24}}
-  circle.halo{animation:halo 1.8s ease-out infinite;transform-box:fill-box;transform-origin:center}
-  @keyframes halo{0%{opacity:.9;transform:scale(1)}100%{opacity:0;transform:scale(2.6)}}
-  #graph{background:radial-gradient(circle at 50% 45%,color-mix(in srgb,var(--accent) 7%,var(--panel)),var(--console) 70%)!important;cursor:grab;touch-action:none;display:block}
-  .legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:12px;margin:6px 0}
-  .legend b{display:inline-block;width:22px;height:0;border-top:3px solid;margin-right:5px;vertical-align:3px}
-  .gsel{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 8px;align-items:center}
-  .gsel button, .tool button{padding:4px 11px;font-size:12px}
-  .gsel button.on{background:rgba(53,199,242,.18);border-color:var(--accent);color:var(--accent2)}
-  .tool{display:flex;gap:6px;margin-left:auto;flex-wrap:wrap;align-items:center}
-  .tool label{font-size:12px;display:flex;gap:5px;align-items:center;cursor:pointer;color:var(--muted);text-transform:none;letter-spacing:0;white-space:nowrap}
-  .tool input[type=checkbox]{width:auto;margin:0}
-  .mapwrap{position:relative}
-  #drawer{position:absolute;top:10px;right:10px;width:310px;max-width:calc(100% - 20px);max-height:calc(100% - 20px);overflow:auto;background:rgba(10,16,26,.96);border:1px solid var(--border);border-radius:10px;padding:12px 14px;font-size:13px;box-shadow:0 8px 30px rgba(0,0,0,.5)}
-  #drawer[hidden]{display:none}
-  #drawer h3{margin:0 0 4px;font-size:14px;word-break:break-all}
-  #drawer .x{position:absolute;top:6px;right:8px;cursor:pointer;color:var(--muted);background:none;border:0;font-size:16px}
-  #drawer dl{margin:8px 0 0;display:grid;grid-template-columns:auto 1fr;gap:3px 10px}
-  #drawer dt{color:var(--muted)} #drawer dd{margin:0;word-break:break-all}
-  .vsw{display:flex;gap:0;border:1px solid var(--border);border-radius:8px;overflow:hidden}
-  .vsw button{border:0;border-radius:0;padding:5px 13px;font-size:12.5px;background:transparent;border-right:1px solid var(--border)}
-  .vsw button:last-child{border-right:0}
-  .vsw button.on{background:rgba(53,199,242,.2);color:var(--accent2);font-weight:700}
-  .vw[hidden]{display:none}
   details.sub{margin:6px 0 2px;border-left:2px solid var(--border);padding-left:10px}
   details.sub>summary{cursor:pointer;font-size:12.5px}
   .cnt{font-weight:400;font-size:11.5px;color:var(--muted);margin-left:6px;padding:0 7px;border:1px solid var(--border);border-radius:999px}
@@ -514,14 +490,10 @@ window.BW = (function () {
   .ticks{position:relative;height:16px;margin-left:240px;font-size:10.5px;color:var(--muted)}
   .ticks span{position:absolute;transform:translateX(-50%)}
   @media(max-width:700px){.lane{grid-template-columns:1fr}.ticks{margin-left:0}.conf{min-width:70px}#drawer{position:static;width:auto;max-width:none;margin-top:8px}}
-  #analysing{position:fixed;inset:0;background:rgba(5,8,14,.72);display:none;align-items:center;justify-content:center;z-index:50}
-  #analysing div{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:22px 30px;text-align:center;font-size:15px}
-  #analysing small{display:block;margin-top:6px;color:var(--muted);font-size:12px}
 </style>
 
 
 <nav class="crumbs" aria-label="Breadcrumb"><a href="/ui/campaigns/_be3dfbc9dc/"><bdi>Attack infrastructure</bdi></a><span class="sep">›</span><span class="cur" aria-current="page"><bdi>All confirmed sites</bdi></span></nav>
-<div id="analysing"><div><span class="radar"></span> <b>Analysing again…</b><small>leaving that link out and working out which sites are still connected</small></div></div>
 <h1>ALL CONFIRMED SITES <span class="muted">· one map: are they connected, and by what?</span></h1>
 <div class="bchips" id="brand-filter" style="display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 4px;align-items:center">
   <span class="small muted" style="margin-right:4px">Brand:</span>
@@ -557,6 +529,60 @@ window.BW = (function () {
 
 
 
+
+<style>
+  /* the dashboard's copy: the wheel belongs to the page until the map is clicked; a ring says who has it */
+  #graph{transition:box-shadow .2s,border-color .2s}
+  #graph.armed{border-color:var(--accent)!important;box-shadow:0 0 0 1px var(--accent),0 0 26px rgba(53,199,242,.22)}
+  .mapwrap .zoomhint{position:absolute;inset:0;z-index:7;display:grid;place-items:center;pointer-events:none;opacity:0;transition:opacity .22s;background:rgba(6,10,18,.42);border-radius:8px}
+  .mapwrap .zoomhint.show{opacity:1}
+  .mapwrap .zoomhint span{padding:9px 16px;border:1px solid var(--accent);border-radius:999px;background:rgba(6,10,18,.92);font:600 12px var(--mono);letter-spacing:.07em;text-transform:uppercase;color:var(--accent2)}
+  line.flow{stroke-dasharray:7 5;animation:flow 1.1s linear infinite}
+  @keyframes flow{to{stroke-dashoffset:-24}}
+  circle.halo{animation:halo 1.8s ease-out infinite;transform-box:fill-box;transform-origin:center}
+  @keyframes halo{0%{opacity:.9;transform:scale(1)}100%{opacity:0;transform:scale(2.6)}}
+  #graph{background:radial-gradient(circle at 50% 45%,color-mix(in srgb,var(--accent) 7%,var(--panel)),var(--console) 70%)!important;cursor:grab;touch-action:none;display:block}
+  .legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:12px;margin:6px 0}
+  .legend b{display:inline-block;width:22px;height:0;border-top:3px solid;margin-right:5px;vertical-align:3px}
+  .gsel{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 8px;align-items:center}
+  .gsel button, .tool button{padding:4px 11px;font-size:12px}
+  .gsel button.on{background:rgba(53,199,242,.18);border-color:var(--accent);color:var(--accent2)}
+  .tool{display:flex;gap:6px;margin-left:auto;flex-wrap:wrap;align-items:center}
+  .tool label{font-size:12px;display:flex;gap:5px;align-items:center;cursor:pointer;color:var(--muted);text-transform:none;letter-spacing:0;white-space:nowrap}
+  .tool input[type=checkbox]{width:auto;margin:0}
+  .mapwrap{position:relative}
+  #drawer{position:absolute;top:10px;right:10px;width:310px;max-width:calc(100% - 20px);max-height:calc(100% - 20px);overflow:auto;background:rgba(10,16,26,.96);border:1px solid var(--border);border-radius:10px;padding:12px 14px;font-size:13px;box-shadow:0 8px 30px rgba(0,0,0,.5)}
+  #drawer[hidden]{display:none}
+  #drawer h3{margin:0 0 4px;font-size:14px;word-break:break-all}
+  #drawer .x{position:absolute;top:6px;right:8px;cursor:pointer;color:var(--muted);background:none;border:0;font-size:16px}
+  #drawer dl{margin:8px 0 0;display:grid;grid-template-columns:auto 1fr;gap:3px 10px}
+  #drawer dt{color:var(--muted)} #drawer dd{margin:0;word-break:break-all}
+  .vsw{display:flex;gap:0;border:1px solid var(--border);border-radius:8px;overflow:hidden}
+  .vsw button{border:0;border-radius:0;padding:5px 13px;font-size:12.5px;background:transparent;border-right:1px solid var(--border)}
+  .vsw button:last-child{border-right:0}
+  .vsw button.on{background:rgba(53,199,242,.2);color:var(--accent2);font-weight:700}
+  .vw[hidden]{display:none}
+  /* the dashboard's copy: numbers and drawings only (the help text lives on the full page), and a tall view scrolls in its box */
+  #mapviews.embed .vhead .txt{display:none}
+  #mapviews.embed .vhead{justify-content:flex-end;padding-top:0}
+  #mapviews.embed .vbox{max-height:640px;overflow:auto}
+  /* phones: one row of view buttons and one row of groups, each sliding sideways, never three rows of chips */
+  @media (max-width:700px){
+    #mapviews .vsw{max-width:100%;overflow-x:auto;scrollbar-width:none}
+    #mapviews .vsw::-webkit-scrollbar,#mapviews .gsel::-webkit-scrollbar{display:none}
+    #mapviews .vsw button{flex:0 0 auto;white-space:nowrap;padding:8px 13px}
+    #mapviews .gsel{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;padding-bottom:2px;margin-right:-4px}
+    #mapviews .gsel button{flex:0 0 auto;white-space:nowrap;padding:6px 12px}
+    #mapviews .tool{margin-left:0;width:100%;justify-content:space-between}
+    #mapviews .vlegend{font-size:11px;gap:3px 10px}
+    #mapviews.embed .vbox{max-height:520px}
+    #mapviews .legend{font-size:11px;gap:4px 12px}
+  }
+  #analysing{position:fixed;inset:0;background:rgba(5,8,14,.72);display:none;align-items:center;justify-content:center;z-index:50}
+  #analysing div{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:22px 30px;text-align:center;font-size:15px}
+  #analysing small{display:block;margin-top:6px;color:var(--muted);font-size:12px}
+</style>
+<div id="analysing"><div><span class="radar"></span> <b>Analysing again…</b><small>leaving that link out and working out which sites are still connected</small></div></div>
 <div class="panel" style="margin-top:14px" id="mapviews">
   <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
     <h2 style="margin:0">The map</h2>
@@ -587,21 +613,6 @@ window.BW = (function () {
   
   
 </div>
-
-<div class="panel" style="margin-top:14px" id="groups">
-  <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><h2 style="margin:0">Which sites are connected <span class="muted">· one card per operation (a group of sites that belong to one attacker)</span></h2>
-    </div>
-  <p class="small muted">No two confirmed sites share a server, certificate, analytics ID or registrant.</p>
-  <h3 class="muted" style="font-size:12px;letter-spacing:.14em;margin:14px 0 6px">NO STRONG LINK TO THE OTHERS · 1</h3>
-    <div class="mono small" style="word-break:break-all;line-height:1.9"><span style="white-space:nowrap;margin-right:12px"><a href="/ui/findings/60292b11-724b-4b3f-bf1f-262976b5659f/">shopnova-id-check.com</a> <span class="muted">· Look-alike domains</span></span></div>
-  <h3 class="muted" style="font-size:12px;letter-spacing:.14em;margin:14px 0 6px">SOCIAL IMPERSONATION · 1 <span style="text-transform:none;letter-spacing:0">(pages, not infrastructure: they have no server to compare)</span></h3>
-    <div class="mono small" style="word-break:break-all;line-height:1.9"><span style="white-space:nowrap;margin-right:12px"><a href="/ui/findings/3ef032cc-e0af-4d14-a4b1-f1bde6e033e9/">instagram.com/shopnova.israel.official</a></span></div>
-</div>
-
-
-
-
-
 
 <script>
 (function(){
@@ -671,7 +682,7 @@ window.BW = (function () {
     drawer.innerHTML = h; drawer.hidden = false;
     drawer.querySelectorAll('form').forEach(f => f.addEventListener('submit', () => { document.getElementById('analysing').style.display = 'flex'; }));
   }
-  window.BW_GRAPH = {clusters: true, names: names, onSelect: showDrawer, filter: visible};
+  window.BW_GRAPH = {clusters: true, names: names, onSelect: showDrawer, filter: visible, armWheel: false};
   window.pickGroup = function(gid){
     state.g = String(gid);
     const sel = document.getElementById('gsel');
@@ -694,7 +705,8 @@ window.BW = (function () {
   const W = svg.clientWidth || 800, H = W < 600 ? 400 : (parseInt(svg.getAttribute('height')) || 520);
   svg.setAttribute('height', H);
   svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
-  svg.style.touchAction = 'none';
+  // on the dashboard a vertical swipe still scrolls the page; a sideways drag moves the map
+  svg.style.touchAction = opts.armWheel ? 'pan-y' : 'none';
   const ns = 'http://www.w3.org/2000/svg';
   const ink = BW.ink;  // the palette comes from the stylesheet, never from a hex written here
   const colors = {passive_dns: ink('accent'), cert: ink('med'), favicon: ink('low'), tracking_id: ink('high'), reverse_whois: ink('crit'), reverse_ns: ink('muted')};
@@ -854,7 +866,18 @@ window.BW = (function () {
   function loop(){ tick(true); requestAnimationFrame(loop); }
 
   // zoom with the wheel (around the pointer), move the map by dragging the background
-  svg.addEventListener('wheel', ev => { ev.preventDefault(); zoomAt(ev.deltaY < 0 ? 1.15 : 1/1.15, toScreen(ev)); }, {passive: false});
+  // on a page that scrolls past the map (the dashboard: BW_GRAPH.armWheel) the wheel stays the page's until the map is clicked
+  let armed = !opts.armWheel, hintEl = null, hintT = 0;
+  if (opts.armWheel) {
+    const wrap = svg.parentElement;
+    hintEl = document.createElement('div'); hintEl.className = 'zoomhint'; hintEl.setAttribute('aria-hidden', 'true'); hintEl.innerHTML = '<span>Click the map to zoom</span>';
+    if (wrap) wrap.appendChild(hintEl);
+    svg.addEventListener('pointerdown', () => { armed = true; svg.classList.add('armed'); if (hintEl) hintEl.classList.remove('show'); });
+    svg.addEventListener('pointerleave', () => { armed = false; svg.classList.remove('armed'); });
+  }
+  svg.addEventListener('wheel', ev => {
+    if (!armed) { if (hintEl) { hintEl.classList.add('show'); clearTimeout(hintT); hintT = setTimeout(() => hintEl.classList.remove('show'), 1100); } return; }
+    ev.preventDefault(); zoomAt(ev.deltaY < 0 ? 1.15 : 1/1.15, toScreen(ev)); }, {passive: false});
   function zoomAt(f, [sx, sy]){ const k = Math.max(0.25, Math.min(5, view.k * f)); const r = k / view.k; view.tx = sx - (sx - view.tx) * r; view.ty = sy - (sy - view.ty) * r; view.k = k; apply(); }
   let pan = null;
   svg.addEventListener('pointerdown', ev => { if (ev.target !== svg && ev.target.tagName !== 'rect' && ev.target.tagName !== 'path') return; pan = {x: ev.clientX, y: ev.clientY, tx: view.tx, ty: view.ty, moved: false}; svg.setPointerCapture(ev.pointerId); svg.style.cursor = 'grabbing'; });
@@ -910,6 +933,20 @@ window.BW = (function () {
   const head = (txt, zoom = true) => `<div class="vhead"><div class="txt">${txt}</div>${zoom ? '<div class="vtools"><button type="button" data-z="in" title="zoom in">＋</button><button type="button" data-z="out" title="zoom out">－</button><button type="button" data-z="fit" title="everything back in view">fit</button></div>' : ''}</div>`;
   const openFinding = (svg, h) => { if (Date.now() - (svg.__dragged || 0) > 250 && info[h]) location.href = '/ui/findings/' + info[h].id; };
 
+  // on the dashboard (BW_GRAPH.armWheel) the wheel scrolls the page until the drawing is clicked
+  const armed = () => !!(window.BW_GRAPH || {}).armWheel;
+  const wheelOk = svg => !armed() || svg.classList.contains('armed');
+  function armWheel(svg){
+    if (!armed() || svg.dataset.arm) return; svg.dataset.arm = '1';
+    svg.addEventListener('pointerdown', () => svg.classList.add('armed'));
+    svg.addEventListener('pointerleave', () => svg.classList.remove('armed'));
+  }
+  // a drawing wider than its box (the matrix, the flow on a phone) keeps its real size and the box scrolls sideways,
+  // instead of shrinking the text until nobody can read it
+  function natural(el, w){
+    const svg = el.querySelector('.vbox svg'); if (!svg) return;
+    if (w > el.clientWidth + 2) { svg.style.width = w + 'px'; svg.style.maxWidth = 'none'; svg.parentElement.style.overflowX = 'auto'; }
+  }
   // zoom (wheel, buttons) and move (drag) any of these drawings, by changing its viewBox
   function panzoom(svg, bar){
     const b = svg.viewBox.baseVal, init = {x: b.x, y: b.y, w: b.width, h: b.height};
@@ -917,7 +954,8 @@ window.BW = (function () {
     const set = () => svg.setAttribute('viewBox', `${v.x} ${v.y} ${v.w} ${v.h}`);
     const at = ev => { const r = svg.getBoundingClientRect(); return [v.x + (ev.clientX - r.left) / r.width * v.w, v.y + (ev.clientY - r.top) / r.height * v.h]; };
     const zoom = (f, cx, cy) => { const w = Math.max(init.w / 12, Math.min(init.w, v.w / f)), k = w / v.w; v.x = cx - (cx - v.x) * k; v.y = cy - (cy - v.y) * k; v.w = w; v.h *= k; if (w === init.w) v = {...init}; set(); };
-    svg.addEventListener('wheel', ev => { ev.preventDefault(); const [x, y] = at(ev); zoom(ev.deltaY < 0 ? 1.2 : 1 / 1.2, x, y); }, {passive: false});
+    armWheel(svg);
+    svg.addEventListener('wheel', ev => { if (!wheelOk(svg)) return; ev.preventDefault(); const [x, y] = at(ev); zoom(ev.deltaY < 0 ? 1.2 : 1 / 1.2, x, y); }, {passive: false});
     let drag = null;
     svg.addEventListener('pointerdown', ev => { drag = {x: ev.clientX, y: ev.clientY, vx: v.x, vy: v.y, moved: false}; });
     svg.addEventListener('pointermove', ev => {
@@ -978,7 +1016,7 @@ window.BW = (function () {
     const used = new Set(T.flatMap(t => t.sites));
     let S = hs.filter(h => used.has(h)); const lone = hs.filter(h => !used.has(h));
     [T, S] = arrange(T, S);
-    const W = wide(el), row = 30, kh = 22, wl = Math.min(380, W * 0.42), wr = Math.min(300, W * 0.34), xl = 10, xr = W - wr - 10;
+    const W = wide(el), narrow = W < 520, row = 30, kh = 22, wl = Math.min(380, W * (narrow ? 0.45 : 0.42)), wr = Math.min(300, W * (narrow ? 0.4 : 0.34)), xl = narrow ? 4 : 10, xr = W - wr - (narrow ? 4 : 10);
     const ty = new Map(), sy = new Map();
     let y = 10, lastK = null; const kindHeads = [];
     T.forEach(t => { if (t.kind !== lastK) { kindHeads.push({k: t, y: y}); y += kh; lastK = t.kind; } ty.set(t, y); y += row; });
@@ -990,12 +1028,12 @@ window.BW = (function () {
     T.forEach((t, i) => t.sites.forEach(h => { if (!sy.has(h)) return;
       const x1 = xl + wl, y1 = ty.get(t) + dl + (row - 6) / 2, x2 = xr, y2 = sy.get(h) + dr + (row - 6) / 2, mx = (x1 + x2) / 2;
       s += `<path class="ln" data-t="${i}" data-s="${esc(h)}" d="M${x1},${y1} C${mx},${y1} ${mx},${y2} ${x2},${y2}" fill="none" stroke="${KC[t.kind] || ink('muted')}" stroke-width="${(1 + t.weight * 2.2).toFixed(1)}" stroke-opacity=".6"${t.level === 'solid' ? '' : ' stroke-dasharray="5 4"'}/>`; }));
-    kindHeads.forEach(k => { s += `<text x="${xl + 2}" y="${k.y + dl + 15}" font-size="10.5" letter-spacing=".1em" fill="${KC[k.k.kind] || ink('muted')}">${esc(k.k.label.replace(/^the same |^a |^an /, '').toUpperCase())}</text>`; });
-    opHeads.forEach(o => { s += `<text x="${xr + 2}" y="${o.y + dr + 15}" font-size="10.5" letter-spacing=".06em" fill="${col(o.op)}" font-weight="700">${esc(cut(opName(o.op), 40).toUpperCase())}</text>`; });
-    const chars = Math.floor((wl - 84) / 6.6);
+    kindHeads.forEach(k => { s += `<text x="${xl + 2}" y="${k.y + dl + 15}" font-size="10.5" letter-spacing=".1em" fill="${KC[k.k.kind] || ink('muted')}">${esc(cut(k.k.label.replace(/^the same |^a |^an /, '').toUpperCase(), Math.floor((xr - xl - 10) / 7.4)))}</text>`; });
+    opHeads.forEach(o => { s += `<text x="${xr + 2}" y="${o.y + dr + 15}" font-size="10.5" letter-spacing=".06em" fill="${col(o.op)}" font-weight="700">${esc(cut(opName(o.op), Math.floor((wr - 4) / 7.2)).toUpperCase())}</text>`; });
+    const chars = Math.floor((wl - (narrow ? 44 : 84)) / 6.6);
     T.forEach((t, i) => { const yy = ty.get(t) + dl, c = KC[t.kind] || ink('muted');
       s += `<g class="bx th" data-t="${i}"><rect x="${xl}" y="${yy}" width="${wl}" height="${row - 6}" rx="6" fill="rgba(14,22,34,.95)" stroke="${c}" stroke-opacity=".75"${t.level === 'solid' ? '' : ' stroke-dasharray="4 3"'}/><rect x="${xl}" y="${yy}" width="5" height="${row - 6}" rx="2" fill="${c}"/>`
-        + `<text x="${xl + 12}" y="${yy + 16}" font-size="11.5" fill="${ink('text')}">${esc(cut(tname(t), chars))}</text><text x="${xl + wl - 8}" y="${yy + 16}" font-size="11" text-anchor="end" fill="${ink('muted')}">${t.sites.length} sites</text><title>${esc(t.label)} · ${esc(t.values.join(', '))} · ${Math.round(t.weight * 100)}%</title></g>`; });
+        + `<text x="${xl + 12}" y="${yy + 16}" font-size="11.5" fill="${ink('text')}">${esc(cut(tname(t), chars))}</text><text x="${xl + wl - 8}" y="${yy + 16}" font-size="11" text-anchor="end" fill="${ink('muted')}">${t.sites.length}${narrow ? '' : ' sites'}</text><title>${esc(t.label)} · ${esc(t.values.join(', '))} · ${Math.round(t.weight * 100)}%</title></g>`; });
     S.forEach(h => { const yy = sy.get(h) + dr;
       s += `<g class="bx st" data-s="${esc(h)}"><rect x="${xr}" y="${yy}" width="${wr}" height="${row - 6}" rx="6" fill="rgba(14,22,34,.95)" stroke="${col(info[h].op)}" stroke-opacity=".6"/><circle cx="${xr + 12}" cy="${yy + 12}" r="4.5" fill="${SEV[info[h].severity] || ink('muted')}"/>`
         + `<text x="${xr + 24}" y="${yy + 16}" font-size="11.5" fill="${col(info[h].op)}">${esc(cut(h, Math.floor((wr - 34) / 6.6)))}</text><title>${esc(h)} · ${esc(opName(info[h].op))} · click to open the finding</title></g>`; });
@@ -1042,6 +1080,7 @@ window.BW = (function () {
     s += `<text x="${lw - 6}" y="${H - 14}" font-size="10.5" text-anchor="end" fill="${ink('muted')}">sites sharing it</text><text x="${lw + n * cell + 10}" y="${th - 10}" font-size="10.5" fill="${ink('muted')}">ties</text></svg>`;
     el.innerHTML = head('<b>A row per site, a column per shared thing</b>: a filled square = the site has it. A long column = many sites share that one thing; rows that look alike = sites built the same way. Point at a square for what it is, click a site to open its finding.')
       + legend(T) + `<div class="vbox">${s}</div><div class="vinfo" id="mx-info"></div>`;
+    natural(el, w);
     const svg = el.querySelector('svg'), box = el.querySelector('#mx-info'), rr = svg.querySelector('#mx-row'), rc = svg.querySelector('#mx-col');
     panzoom(svg, el.querySelector('.vtools'));
     svg.querySelectorAll('rect.mc').forEach(r => r.addEventListener('mouseenter', () => {
@@ -1058,7 +1097,7 @@ window.BW = (function () {
     const rows = V.flow.rows.filter(r => inScope(r.host)); if (!rows.length) return empty(el);
     const withSites = rows.length <= 60, cols = (withSites ? ['Site'] : []).concat(V.flow.columns);
     const vals = rows.map(r => (withSites ? [r.host] : []).concat(r.vals)), nc = cols.length, n = rows.length;
-    const W = wide(el), unit = Math.max(withSites ? 18 : 10, Math.min(26, Math.floor(560 / n))), gap = 10, top = 30;
+    const W = Math.max(wide(el), el.clientWidth < 600 ? 760 : 0), unit = Math.max(withSites ? 18 : 10, Math.min(26, Math.floor(560 / n))), gap = 10, top = 30;
     const lastW = Math.max(150, Math.min(300, W * 0.24)), step = (W - 20 - lastW) / (nc - 1), bw = Math.max(104, Math.min(210, step * 0.72));
     const xs = cols.map((_, i) => 10 + i * step), bwOf = c => c === nc - 1 ? lastW : bw;
     const order = new Map(V.order.map((h, i) => [h, i]));
@@ -1098,6 +1137,7 @@ window.BW = (function () {
     s += '</svg>';
     el.innerHTML = head('<b>How each site is built</b>, left to right: the site, who registered it, where it is hosted, which host forwards its visitors, and the operation it belongs to. The number in a box = how many sites go through it; a box that many sites go through is the one party a single report reaches. Point at a box to follow its sites.')
       + `<div class="vbox">${s}</div><div class="vinfo" id="fl-info"></div>`;
+    natural(el, W);
     const svg = el.querySelector('svg'), box = el.querySelector('#fl-info'), lines = [...svg.querySelectorAll('.ln')];
     panzoom(svg, el.querySelector('.vtools'));
     svg.querySelectorAll('g.fn').forEach(g => {
@@ -1178,7 +1218,8 @@ window.BW = (function () {
     }
     const zoomAt = (f, t) => { const span = Math.min(tl.hi - tl.lo, Math.max(3 * DAY, (tl.d1 - tl.d0) / f)), k = span / (tl.d1 - tl.d0); tl.d0 = t - (t - tl.d0) * k; tl.d1 = tl.d0 + span; if (span >= tl.hi - tl.lo) { tl.d0 = tl.lo; tl.d1 = tl.hi; } draw(); };
     const tAt = ev => { const r = svg.getBoundingClientRect(), x = (ev.clientX - r.left) / r.width * W; return tl.d0 + (Math.min(Math.max(x, left), left + px) - left) / px * (tl.d1 - tl.d0); };
-    svg.addEventListener('wheel', ev => { ev.preventDefault(); zoomAt(ev.deltaY < 0 ? 1.25 : 1 / 1.25, tAt(ev)); }, {passive: false});
+    armWheel(svg);
+    svg.addEventListener('wheel', ev => { if (!wheelOk(svg)) return; ev.preventDefault(); zoomAt(ev.deltaY < 0 ? 1.25 : 1 / 1.25, tAt(ev)); }, {passive: false});
     let drag = null;
     svg.addEventListener('pointerdown', ev => { drag = {x: ev.clientX, d0: tl.d0, d1: tl.d1, moved: false}; });
     svg.addEventListener('pointermove', ev => { if (!drag) return; const r = svg.getBoundingClientRect(), dx = (ev.clientX - drag.x) / r.width * W; if (Math.abs(dx) > 4) drag.moved = true; if (!drag.moved) return;
@@ -1220,6 +1261,27 @@ window.BW = (function () {
   if (sel) sel.addEventListener('click', ev => { const b = ev.target.closest('button'); if (b) pickGroup(b.dataset.g); });
   // the toggles change which kinds of line are drawn (the page's filter reads bwState)
   [['t-hints', 'hints'], ['t-common', 'common']].forEach(([id, key]) => { const c = document.getElementById(id); if (c) c.addEventListener('change', () => { bwState[key] = c.checked; bwGraph.setData(null); if (window.bwViews) bwViews.refresh(); }); });
+})();
+</script>
+
+
+<div class="panel" style="margin-top:14px" id="groups">
+  <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><h2 style="margin:0">Which sites are connected <span class="muted">· one card per operation (a group of sites that belong to one attacker)</span></h2>
+    </div>
+  <p class="small muted">No two confirmed sites share a server, certificate, analytics ID or registrant.</p>
+  <h3 class="muted" style="font-size:12px;letter-spacing:.14em;margin:14px 0 6px">NO STRONG LINK TO THE OTHERS · 1</h3>
+    <div class="mono small" style="word-break:break-all;line-height:1.9"><span style="white-space:nowrap;margin-right:12px"><a href="/ui/findings/60292b11-724b-4b3f-bf1f-262976b5659f/">shopnova-id-check.com</a> <span class="muted">· Look-alike domains</span></span></div>
+  <h3 class="muted" style="font-size:12px;letter-spacing:.14em;margin:14px 0 6px">SOCIAL IMPERSONATION · 1 <span style="text-transform:none;letter-spacing:0">(pages, not infrastructure: they have no server to compare)</span></h3>
+    <div class="mono small" style="word-break:break-all;line-height:1.9"><span style="white-space:nowrap;margin-right:12px"><a href="/ui/findings/3ef032cc-e0af-4d14-a4b1-f1bde6e033e9/">instagram.com/shopnova.israel.official</a></span></div>
+</div>
+
+
+
+
+
+
+<script>
+(function(){
   // every section of the cards is a drop-down: open or close them all, or the ones of one card
   const setAll = (root, open) => root.querySelectorAll('details.sec, details.sub').forEach(d => { d.open = open; });
   const ex = document.getElementById('expall'), co = document.getElementById('colall');

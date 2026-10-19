@@ -304,7 +304,8 @@ button:active,.btn:active,.chip:active{transform:translateY(1px)}
 td .badge.sev-critical,table .badge.sev-critical{animation:none}
 /* a control answers a press, and a light passes over it under the pointer */
 button:active,.btn:active,.chip:active{transform:translateY(1px) scale(.985)}
-button:not(.ghost):not(.fold):not(.menu):not(.chip),.btn:not(.ghost){position:relative;overflow:hidden}
+/* :where() keeps this at zero specificity: a component that places its own button (absolute, fixed) still wins */
+:where(button:not(.ghost):not(.fold):not(.menu):not(.chip),.btn:not(.ghost)){position:relative;overflow:hidden}
 button:not(.ghost):not(.fold):not(.menu):not(.chip)::after,.btn:not(.ghost)::after{
   content:"";position:absolute;inset:0;pointer-events:none;opacity:0;transform:translateX(-100%);
   background:linear-gradient(100deg,transparent 22%,rgba(53,199,242,.20) 48%,transparent 72%)}
@@ -406,8 +407,8 @@ window.BW = (function () {
 <p class="intro">The append-only audit trail: who did what, when, old → new, and why. The database itself refuses to edit or delete it.</p>
 
 <div class="kpis">
-  <div class="kpi"><div class="v" data-count="1">0</div><div class="l">events (latest)</div></div>
-  <div class="kpi"><div class="v" data-count="0">0</div><div class="l">analyst actions</div></div>
+  <div class="kpi"><div class="v" data-count="5">0</div><div class="l">events (latest)</div></div>
+  <div class="kpi"><div class="v" data-count="4">0</div><div class="l">analyst actions</div></div>
   <div class="kpi"><div class="v" data-count="1">0</div><div class="l">system actions</div></div>
   <div class="kpi"><div class="v" data-count="0">0</div><div class="l">verdicts recorded</div></div>
   <div class="kpi"><div class="v" data-count="0">0</div><div class="l">logins (24h)</div></div>
@@ -418,9 +419,9 @@ window.BW = (function () {
   <div><label for="a-cat">What</label><select id="a-cat" name="category"><option value="">everything</option><option value="finding" >finding</option><option value="takedown" >takedown</option><option value="brand" >brand</option><option value="candidate" >candidate</option><option value="scan" >scan</option><option value="campaign" >campaign</option><option value="intel" >intel</option><option value="user" >user</option><option value="workspace" >workspace</option><option value="notification" >notification</option><option value="report" >report</option></select></div>
   <div><label for="a-since">From</label><input id="a-since" type="date" name="since" value=""></div>
   <div><label for="a-until">To</label><input id="a-until" type="date" name="until" value=""></div>
-  <input type="hidden" name="object_id" value="a32bc041-fe78-4ccf-8081-5e3a2bdf71ef">
+  <input type="hidden" name="object_id" value="bc089017-3cdf-4d6a-90a5-d397ceef5fba">
   <div class="go"><button type="submit" class="primary">Apply</button> <a class="btn" href="/ui/activity/">Reset</a>
-    <a class="btn" href="/ui/activity.csv?object_id=a32bc041-fe78-4ccf-8081-5e3a2bdf71ef" title="the events these filters keep, one row each, as a spreadsheet">⤓ CSV</a></div>
+    <a class="btn" href="/ui/activity.csv?object_id=bc089017-3cdf-4d6a-90a5-d397ceef5fba" title="the events these filters keep, one row each, as a spreadsheet">⤓ CSV</a></div>
 </form>
 <p class="small muted" style="margin:6px 0 0">Only the events about one object · <a href="/ui/activity/">show everything</a></p>
 <style>.afilters{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px 10px;align-items:end}
@@ -430,35 +431,83 @@ window.BW = (function () {
 
 <div class="grid actg" style="grid-template-columns:2.2fr 1fr;margin-top:14px">
   <div class="panel">
-    <div class="small muted" style="margin-bottom:6px">1 event match</div>
+    <div class="small muted" style="margin-bottom:6px">517 events match · page 2</div>
     <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px" id="chips">
       <button type="button" class="chip on" data-cat="notable" title="everything except sign-ins" aria-pressed="true">notable</button>
       <button type="button" class="chip" data-cat="*" aria-pressed="false">all</button>
-      <button type="button" class="chip" data-cat="campaign" aria-pressed="false">campaign</button>
+      <button type="button" class="chip" data-cat="user" aria-pressed="false">user</button>
     </div>
     <div class="feed" id="feed">
       
       
-      <div class="day" data-day="2026-10-14">2026-10-14</div>
-      <div class="ev " data-cat="campaign" data-notable="1" style="--r:0">
+      <div class="day" data-day="2026-10-11">2026-10-11</div>
+      <div class="ev " data-cat="user" data-notable="0" style="--r:0;display:none">
+        <div class="av " title="admin">AD</div>
+        <div>
+          <div class="what"><span class="muted">admin</span> <b>user</b> · login <span class="pill" title="141 consecutive events, first 2026-10-09 11:30">×141</span>
+            
+            <span class="muted small">user bc089017</span></div>
+          
+        </div>
+        <div class="when"><time datetime="2026-10-11T13:33:28.703184+00:00" data-local title="2026-10-11T13:33:28.703184+00:00 UTC">2026-10-11 13:33</time><div><a class="small" href="/ui/activity/_d2793a420a/" title="every event about this user">history</a></div></div>
+      </div>
+      
+      <div class="day" data-day="2026-10-09">2026-10-09</div>
+      <div class="ev " data-cat="user" data-notable="0" style="--r:1;display:none">
+        <div class="av " title="admin">AD</div>
+        <div>
+          <div class="what"><span class="muted">admin</span> <b>user</b> · login failed
+            
+            <span class="muted small">user bc089017</span></div>
+          
+        </div>
+        <div class="when"><time datetime="2026-10-09T11:29:01.036830+00:00" data-local title="2026-10-09T11:29:01.036830+00:00 UTC">2026-10-09 11:29</time><div><a class="small" href="/ui/activity/_d2793a420a/" title="every event about this user">history</a></div></div>
+      </div>
+      
+      
+      <div class="ev " data-cat="user" data-notable="0" style="--r:2;display:none">
+        <div class="av " title="admin">AD</div>
+        <div>
+          <div class="what"><span class="muted">admin</span> <b>user</b> · login <span class="pill" title="73 consecutive events, first 2026-10-07 18:34">×73</span>
+            
+            <span class="muted small">user bc089017</span></div>
+          
+        </div>
+        <div class="when"><time datetime="2026-10-09T11:28:55.189147+00:00" data-local title="2026-10-09T11:28:55.189147+00:00 UTC">2026-10-09 11:28</time><div><a class="small" href="/ui/activity/_d2793a420a/" title="every event about this user">history</a></div></div>
+      </div>
+      
+      <div class="day" data-day="2026-10-07">2026-10-07</div>
+      <div class="ev " data-cat="user" data-notable="0" style="--r:3;display:none">
+        <div class="av " title="admin">AD</div>
+        <div>
+          <div class="what"><span class="muted">admin</span> <b>user</b> · login failed
+            
+            <span class="muted small">user bc089017</span></div>
+          
+        </div>
+        <div class="when"><time datetime="2026-10-07T18:34:11.505251+00:00" data-local title="2026-10-07T18:34:11.505251+00:00 UTC">2026-10-07 18:34</time><div><a class="small" href="/ui/activity/_d2793a420a/" title="every event about this user">history</a></div></div>
+      </div>
+      
+      
+      <div class="ev " data-cat="user" data-notable="1" style="--r:4">
         <div class="av sys" title="system">SYS</div>
         <div>
-          <div class="what"><span class="muted">system</span> <b>campaign</b> · investigated
+          <div class="what"><span class="muted">system</span> <b>user</b> · bootstrap
             
-            <span class="muted small">campaign <a href="/ui/campaigns/a32bc041-fe78-4ccf-8081-5e3a2bdf71ef/" class="mono">ShopNova campaign 8D975E6B ↗</a></span></div>
+            <span class="muted small">user bc089017</span></div>
           
           
-          <div class="diff"><span class="new">{"api_calls": 3, "budget_exhausted": null, "edges": 2, "included": 3, "iocs": 5, "nodes": 3}</span>
+          <div class="diff"><span class="new">email: admin@example.com · role: admin</span>
             </div>
           
         </div>
-        <div class="when"><time datetime="2026-10-14T09:52:37.350084+00:00" data-local title="2026-10-14T09:52:37.350084+00:00 UTC">2026-10-14 09:52</time><div><a class="small" href="/ui/activity/_d014fba333/" title="every event about this campaign">history</a></div></div>
+        <div class="when"><time datetime="2026-10-07T18:33:45.437711+00:00" data-local title="2026-10-07T18:33:45.437711+00:00 UTC">2026-10-07 18:33</time><div><a class="small" href="/ui/activity/_d2793a420a/" title="every event about this user">history</a></div></div>
       </div>
       
       
     </div>
     <div class="more"><button type="button" id="more" style="display:none">Show older events</button>
-      
+      <a class="btn small" href="/ui/activity?object_id=bc089017-3cdf-4d6a-90a5-d397ceef5fba&amp;page=1">← newer</a>
       </div>
   </div>
   <div>
@@ -466,18 +515,23 @@ window.BW = (function () {
       <h2>By category</h2>
       
       
-      <div class="hbar"><span>campaign</span><div class="bar"><i data-w="100"></i></div><b>1</b></div>
+      <div class="hbar"><span>user</span><div class="bar"><i data-w="100"></i></div><b>217</b></div>
       
     </div>
     <div class="panel" style="margin-top:14px">
       <h2>Activity · 14 days</h2>
-      <svg class="spark" data-spark='{"series": [{"color": "#35C7F2", "values": [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0]}]}'></svg>
+      <svg class="spark" data-spark='{"series": [{"color": "#35C7F2", "values": [0, 2, 0, 2, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0]}]}'></svg>
     </div>
     <div class="panel" style="margin-top:14px">
       <h2>Most active</h2>
       
       <div style="display:grid;grid-template-columns:1fr 40px;gap:8px;align-items:center;margin:8px 0">
-        <div><div class="small mono">system</div><div class="bar" style="height:6px;margin-top:3px"><i data-w="100"></i></div></div>
+        <div><div class="small mono">admin</div><div class="bar" style="height:6px;margin-top:3px"><i data-w="100"></i></div></div>
+        <div class="mono small right">216</div>
+      </div>
+      
+      <div style="display:grid;grid-template-columns:1fr 40px;gap:8px;align-items:center;margin:8px 0">
+        <div><div class="small mono">system</div><div class="bar" style="height:6px;margin-top:3px"><i data-w="0"></i></div></div>
         <div class="mono small right">1</div>
       </div>
       

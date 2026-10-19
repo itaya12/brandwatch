@@ -304,7 +304,8 @@ button:active,.btn:active,.chip:active{transform:translateY(1px)}
 td .badge.sev-critical,table .badge.sev-critical{animation:none}
 /* a control answers a press, and a light passes over it under the pointer */
 button:active,.btn:active,.chip:active{transform:translateY(1px) scale(.985)}
-button:not(.ghost):not(.fold):not(.menu):not(.chip),.btn:not(.ghost){position:relative;overflow:hidden}
+/* :where() keeps this at zero specificity: a component that places its own button (absolute, fixed) still wins */
+:where(button:not(.ghost):not(.fold):not(.menu):not(.chip),.btn:not(.ghost)){position:relative;overflow:hidden}
 button:not(.ghost):not(.fold):not(.menu):not(.chip)::after,.btn:not(.ghost)::after{
   content:"";position:absolute;inset:0;pointer-events:none;opacity:0;transform:translateX(-100%);
   background:linear-gradient(100deg,transparent 22%,rgba(53,199,242,.20) 48%,transparent 72%)}
@@ -812,7 +813,7 @@ window.BW = (function () {
             <button type="submit">Save</button>
           </form>
         </td>
-        <td class="mono small muted"><time datetime="2026-10-19T15:16:06.123932" data-local title="2026-10-19T15:16:06.123932 UTC">2026-10-19 15:16</time></td>
+        <td class="mono small muted"><time datetime="2026-10-19T16:20:15.373605" data-local title="2026-10-19T16:20:15.373605 UTC">2026-10-19 16:20</time></td>
       </tr>
       
     </table>

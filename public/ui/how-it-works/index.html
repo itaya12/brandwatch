@@ -306,7 +306,8 @@ button:active,.btn:active,.chip:active{transform:translateY(1px)}
 td .badge.sev-critical,table .badge.sev-critical{animation:none}
 /* a control answers a press, and a light passes over it under the pointer */
 button:active,.btn:active,.chip:active{transform:translateY(1px) scale(.985)}
-button:not(.ghost):not(.fold):not(.menu):not(.chip),.btn:not(.ghost){position:relative;overflow:hidden}
+/* :where() keeps this at zero specificity: a component that places its own button (absolute, fixed) still wins */
+:where(button:not(.ghost):not(.fold):not(.menu):not(.chip),.btn:not(.ghost)){position:relative;overflow:hidden}
 button:not(.ghost):not(.fold):not(.menu):not(.chip)::after,.btn:not(.ghost)::after{
   content:"";position:absolute;inset:0;pointer-events:none;opacity:0;transform:translateX(-100%);
   background:linear-gradient(100deg,transparent 22%,rgba(53,199,242,.20) 48%,transparent 72%)}
@@ -656,13 +657,26 @@ window.BW = (function () {
     .sx-author .lk{margin-left:0;width:100%}
     .sx-rail{margin:0 -12px;padding:8px 12px;background:var(--bg);backdrop-filter:none;-webkit-backdrop-filter:none}
     .btn-play .tri{animation-iteration-count:3}
-    .sx-rail .segs{display:flex;overflow-x:auto;scrollbar-width:none;gap:10px}
-    .sx-rail .segs::-webkit-scrollbar{display:none}
-    .sx-rail .seg{flex:0 0 auto;overflow:visible}
+    /* the six steps always fit: a number each, and the name of the step you are on */
+    .sx-rail .segs{display:flex;gap:6px;overflow:visible}
+    .sx-rail .seg{flex:1 1 0;min-width:0;text-align:center;font-size:12px}
+    .sx-rail .seg .k{display:none}
+    .sx-rail .seg.on{flex:3 1 auto;text-align:left}
+    .sx-rail .seg.on .k{display:inline}
     .sx-rail .left{display:none}
   }
   @media (max-width:700px){
-    .stage{padding:40px 14px 14px;min-height:0}
+    .stage{padding:44px 14px 14px;min-height:0}
+    /* the long domain gets the whole first line, the button the second */
+    .decide .h{flex:1 1 60%;overflow-wrap:anywhere;word-break:break-all}
+    .decide .cbtn{flex:1 1 100%}
+    .graph text{font-size:13px}.graph .ty{font-size:11px}
+    /* Go deeper: the title on one line, what it holds under it */
+    details.fold > summary{display:grid;grid-template-columns:26px minmax(0,1fr);gap:4px 12px;align-items:start;padding:14px}
+    details.fold > summary::before{grid-row:1 / span 2;margin-top:1px}
+    details.fold > summary b{font-size:17px}
+    details.fold > summary span{grid-column:2;font-size:13px;line-height:1.45}
+    details.fold > .in{padding:0 14px 14px}
     .views,.chans,.fp{grid-template-columns:minmax(0,1fr)}
     .found .src{display:none}  /* the domain is what matters on a phone */
     .score{grid-template-columns:minmax(0,1fr);justify-items:center}
@@ -730,11 +744,14 @@ window.BW = (function () {
   /* the tall drawing: smaller type, the same classes */
   .sx-flow-h{max-width:1240px;margin-left:auto;margin-right:auto}  /* the picture and the headline fit one 1440×900 screen */
   .sx-flow-v{display:none;padding:10px 4px 4px;margin:4px 0 10px}
-  .sx-flow-v .lbl{font-size:10.5px;letter-spacing:.04em}
-  .sx-flow-v .sub{font-size:9.5px}
-  .sx-flow-v .cap{font-size:11px;letter-spacing:.1em}
-  .sx-flow-v .glyph{font-size:12px}
-  .sx-flow-v .badge text{font-size:10px}
+  /* the drawing is shown at about 80% on a 390px phone: these sizes land at 10-11px on screen */
+  .sx-flow-v .lbl{font-size:12.5px;letter-spacing:.03em}
+  .sx-flow-v .sub{font-size:11.5px}
+  .sx-flow-v .cap{font-size:12px;letter-spacing:.08em}
+  .sx-flow-v .glyph{font-size:13px}
+  .sx-flow-v .badge text{font-size:11px}
+  /* a line that passes under a name never cuts through it */
+  .sx-flow-v .lbl,.sx-flow-v .sub,.sx-flow-v .cap{paint-order:stroke;stroke:var(--console);stroke-width:3.5px;stroke-linejoin:round}
   @media (max-width:900px){ .sx-flow-h{display:none} .sx-flow-v{display:block} }
   @media (prefers-reduced-motion:reduce){ .sx-flow .core-ring{animation:none} }
 </style>
@@ -1021,12 +1038,12 @@ window.BW = (function () {
     
     <path id="fv-s8" d="M326,650 L210,430" stroke="#FF9F1C" stroke-opacity=".35" stroke-width="1.4" class="dash" fill="none"/>
   
-  <path id="fv-o1" d="M210,484 C210,730 88,750 88,808" stroke="#35C7F2" stroke-opacity=".55" stroke-width="2" fill="none"/>
+  <path id="fv-o1" d="M210,484 C210,730 72,750 72,808" stroke="#35C7F2" stroke-opacity=".55" stroke-width="2" fill="none"/>
   <path id="fv-o2" d="M210,484 L210,808" stroke="#2ECC71" stroke-opacity=".55" stroke-width="2" fill="none"/>
-  <path id="fv-o3" d="M210,484 C210,730 332,750 332,808" stroke="#2ECC71" stroke-opacity=".55" stroke-width="2" fill="none"/>
-  <path id="fv-p1" d="M88,872 C88,960 190,970 198,996" stroke="#2ECC71" stroke-opacity=".45" stroke-width="2" fill="none"/>
+  <path id="fv-o3" d="M210,484 C210,730 348,750 348,808" stroke="#2ECC71" stroke-opacity=".55" stroke-width="2" fill="none"/>
+  <path id="fv-p1" d="M72,872 C72,960 190,970 198,996" stroke="#2ECC71" stroke-opacity=".45" stroke-width="2" fill="none"/>
   <path id="fv-p2" d="M210,872 L210,996" stroke="#2ECC71" stroke-opacity=".45" stroke-width="2" fill="none"/>
-  <path id="fv-p3" d="M332,872 C332,960 230,970 222,996" stroke="#2ECC71" stroke-opacity=".45" stroke-width="2" fill="none"/>
+  <path id="fv-p3" d="M348,872 C348,960 230,970 222,996" stroke="#2ECC71" stroke-opacity=".45" stroke-width="2" fill="none"/>
 
   <g class="packets">
     <circle r="3.5" visibility="hidden" fill="#FF9F1C"><set attributeName="visibility" to="visible" begin="0.45s"/><animateMotion dur="2.6s" begin="0.45s" repeatCount="indefinite"><mpath href="#fv-s1"/></animateMotion></circle><circle r="3.5" visibility="hidden" fill="#FF9F1C"><set attributeName="visibility" to="visible" begin="0.9s"/><animateMotion dur="2.6s" begin="0.9s" repeatCount="indefinite"><mpath href="#fv-s2"/></animateMotion></circle><circle r="3.5" visibility="hidden" fill="#FF9F1C"><set attributeName="visibility" to="visible" begin="1.35s"/><animateMotion dur="2.6s" begin="1.35s" repeatCount="indefinite"><mpath href="#fv-s3"/></animateMotion></circle><circle r="3.5" visibility="hidden" fill="#FF9F1C"><set attributeName="visibility" to="visible" begin="1.8s"/><animateMotion dur="2.6s" begin="1.8s" repeatCount="indefinite"><mpath href="#fv-s4"/></animateMotion></circle><circle r="3.5" visibility="hidden" fill="#B388FF"><set attributeName="visibility" to="visible" begin="2.25s"/><animateMotion dur="2.6s" begin="2.25s" repeatCount="indefinite"><mpath href="#fv-s5"/></animateMotion></circle><circle r="3.5" visibility="hidden" fill="#FF4D4D"><set attributeName="visibility" to="visible" begin="2.7s"/><animateMotion dur="2.6s" begin="2.7s" repeatCount="indefinite"><mpath href="#fv-s6"/></animateMotion></circle><circle r="3.5" visibility="hidden" fill="#FF4D4D"><set attributeName="visibility" to="visible" begin="3.15s"/><animateMotion dur="2.6s" begin="3.15s" repeatCount="indefinite"><mpath href="#fv-s7"/></animateMotion></circle><circle r="3.5" visibility="hidden" fill="#FF9F1C"><set attributeName="visibility" to="visible" begin="3.6s"/><animateMotion dur="2.6s" begin="3.6s" repeatCount="indefinite"><mpath href="#fv-s8"/></animateMotion></circle>
@@ -1045,9 +1062,10 @@ window.BW = (function () {
     <circle cx="210" cy="70" r="62" fill="url(#fv-core)"/>
     <circle cx="210" cy="70" r="44" fill="#0E1A2B" stroke="#35C7F2" stroke-width="2.2" class="ring"/>
     <path d="M194,58 h32 v24 h-32 z M199,65 h22 M199,71 h16 M199,77 h19" stroke="#35C7F2" stroke-width="2.2" fill="none" stroke-linecap="round"/>
-    <text x="300" y="66" text-anchor="start" class="cap" style="fill:var(--text);font-size:12px">SHOPNOVA</text>
-    <text x="300" y="82" text-anchor="start" class="sub">fingerprint: logo · colours</text>
-    <text x="300" y="95" text-anchor="start" class="sub">login page · keywords</text>
+    <text x="268" y="52" text-anchor="start" class="cap" style="fill:var(--text);font-size:12px">SHOPNOVA</text>
+    <text x="268" y="70" text-anchor="start" class="sub">fingerprint:</text>
+    <text x="268" y="85" text-anchor="start" class="sub">logo · colours</text>
+    <text x="268" y="100" text-anchor="start" class="sub">login · keywords</text>
   </a>
 
   
@@ -1152,7 +1170,7 @@ window.BW = (function () {
     <text x="210" y="424" text-anchor="middle" class="cap" style="fill:var(--accent2);font-size:12px">BRAND</text>
     <text x="210" y="440" text-anchor="middle" class="cap" style="fill:var(--accent2);font-size:12px">WATCH</text>
   </a>
-  <rect x="106" y="490" width="208" height="32" rx="8" fill="#0b1220" fill-opacity=".9"/>
+  <rect x="74" y="490" width="272" height="34" rx="8" fill="#0b1220" fill-opacity=".9"/>
   <a href="#ch-visit" data-jump="2"><text x="210" y="503" text-anchor="middle" class="lbl">visit like a victim</text></a>
   <a href="#ch-score" data-jump="3"><text x="210" y="517" text-anchor="middle" class="sub" style="fill:var(--text2)">score 50 signals · explain every point</text></a>
   <g class="badge"><rect x="168.0" y="348" width="84" height="18" rx="9" style="stroke:var(--accent)"/>
@@ -1162,13 +1180,16 @@ window.BW = (function () {
   
   
   <a href="#ch-map" data-jump="4"><title>Attacker footprint</title>
-    <circle cx="88" cy="840" r="32" fill="#0E1A22" stroke="#35C7F2" stroke-width="2.2" class="ring"/>
-    <g stroke="#35C7F2" stroke-width="1.8" fill="none"><circle cx="78" cy="833" r="4.2"/><circle cx="100" cy="835" r="4.2"/><circle cx="88" cy="850" r="4.2"/><path d="M81,836 L86,846 M97,838 L91,847 M82,833 L96,835"/></g>
+    <circle cx="72" cy="840" r="32" fill="#0E1A22" stroke="#35C7F2" stroke-width="2.2" class="ring"/>
+    <g stroke="#35C7F2" stroke-width="1.8" fill="none"><circle cx="62" cy="833" r="4.2"/><circle cx="84" cy="835" r="4.2"/><circle cx="72" cy="850" r="4.2"/><path d="M65,836 L70,846 M81,838 L75,847 M66,833 L80,835"/></g>
     
-    <text x="88" y="890" text-anchor="middle" class="lbl">Attacker footprint</text>
-    <text x="88" y="904" text-anchor="middle" class="sub">servers · certs · owners</text>
-    <g class="badge"><rect x="40.6" y="784" width="94.8" height="18" rx="9" style="stroke:#35C7F2"/>
-      <text x="88" y="793" style="fill:#35C7F2">23 networks</text></g>
+    
+    
+    <text x="72" y="890" text-anchor="middle" class="lbl">Attacker</text><text x="72" y="904" text-anchor="middle" class="lbl">footprint</text>
+    
+    <text x="72" y="919" text-anchor="middle" class="sub" style="font-size:10.5px">servers · certs · owners</text>
+    <g class="badge"><rect x="24.6" y="784" width="94.8" height="18" rx="9" style="stroke:#35C7F2"/>
+      <text x="72" y="793" style="fill:#35C7F2">23 networks</text></g>
   </a>
   
   
@@ -1176,18 +1197,22 @@ window.BW = (function () {
     <circle cx="210" cy="840" r="32" fill="#0E1A22" stroke="#2ECC71" stroke-width="2.2" class="ring"/>
     <path d="M197,832 h26 v18 h-26 z M197,832 l13,11 l13,-11" stroke="#2ECC71" stroke-width="2" fill="none" stroke-linejoin="round"/>
     
+    
+    
     <text x="210" y="890" text-anchor="middle" class="lbl">Takedown</text>
-    <text x="210" y="904" text-anchor="middle" class="sub">registrar · host · CDN</text>
+    <text x="210" y="905" text-anchor="middle" class="sub" style="font-size:10.5px">registrar · host · CDN</text>
     <g class="badge"><rect x="179.6" y="784" width="60.8" height="18" rx="9" style="stroke:#2ECC71"/>
       <text x="210" y="793" style="fill:#2ECC71">1 sent</text></g>
   </a>
   
   
   <a href="#ch-takedown" data-jump="5"><title>Reports</title>
-    <circle cx="332" cy="840" r="32" fill="#0E1A22" stroke="#2ECC71" stroke-width="2.2" class="ring"/>
-    <path d="M322,828 v24 M322,828 h18 l-4,6 l4,6 h-18" stroke="#2ECC71" stroke-width="2" fill="none" stroke-linejoin="round"/>
-    <text x="332" y="890" text-anchor="middle" class="lbl">Reports</text>
-    <text x="332" y="904" text-anchor="middle" class="sub">Meta · 26 blocklists</text>
+    <circle cx="348" cy="840" r="32" fill="#0E1A22" stroke="#2ECC71" stroke-width="2.2" class="ring"/>
+    <path d="M338,828 v24 M338,828 h18 l-4,6 l4,6 h-18" stroke="#2ECC71" stroke-width="2" fill="none" stroke-linejoin="round"/>
+    
+    
+    <text x="348" y="890" text-anchor="middle" class="lbl">Reports</text>
+    <text x="348" y="905" text-anchor="middle" class="sub" style="font-size:10.5px">Meta · 26 blocklists</text>
     
   </a>
   
@@ -1221,19 +1246,19 @@ window.BW = (function () {
 <div class="sx-proof" aria-label="Numbers read from the code">
   <a href="#about"><b>50</b> signals in 7 groups</a>
   <a href="#about"><b>26</b> data providers</a>
-  <a href="#about"><b>659</b> automated tests</a>
+  <a href="#about"><b>661</b> automated tests</a>
   <a href="#ch-takedown"><b>26</b> report portals</a>
   <a href="#about"><b>$0</b> demo · no API keys</a>
 </div>
 <div class="sx-author" id="author">
   <span class="by">Built by Itay Azulay <span>· a solo project</span></span>
   <span class="tech">Python · FastAPI · SQLAlchemy · Playwright · CI on SQLite &amp; PostgreSQL</span>
-  
+  <span class="lk"><a href="https://nbse3h.s.gy/sSLDpR" target="_blank" rel="noopener">▶ A real case study</a></span>
 </div>
 
 
 <nav class="sx-rail" id="rail" aria-label="Chapters">
-  <div class="segs"><a class="seg" href="#ch-learn" data-jump="0">1 · Learn<i></i></a><a class="seg" href="#ch-find" data-jump="1">2 · Find<i></i></a><a class="seg" href="#ch-visit" data-jump="2">3 · Visit<i></i></a><a class="seg" href="#ch-score" data-jump="3">4 · Score<i></i></a><a class="seg" href="#ch-map" data-jump="4">5 · Map<i></i></a><a class="seg" href="#ch-takedown" data-jump="5">6 · Take down<i></i></a></div>
+  <div class="segs"><a class="seg" href="#ch-learn" data-jump="0" aria-label="Step 1: Learn">1<span class="k"> · Learn</span><i></i></a><a class="seg" href="#ch-find" data-jump="1" aria-label="Step 2: Find">2<span class="k"> · Find</span><i></i></a><a class="seg" href="#ch-visit" data-jump="2" aria-label="Step 3: Visit">3<span class="k"> · Visit</span><i></i></a><a class="seg" href="#ch-score" data-jump="3" aria-label="Step 4: Score">4<span class="k"> · Score</span><i></i></a><a class="seg" href="#ch-map" data-jump="4" aria-label="Step 5: Map">5<span class="k"> · Map</span><i></i></a><a class="seg" href="#ch-takedown" data-jump="5" aria-label="Step 6: Take down">6<span class="k"> · Take down</span><i></i></a></div>
   <div class="ctl"><span class="left" id="left"></span><button type="button" id="play2" aria-label="Play the story">▶ Play</button></div>
 </nav>
 
@@ -1499,7 +1524,7 @@ First observed    : 2026-10-12T06:41:46.604012</div>
     <div class="kpi vi rv" style="--t:160"><div class="v" data-to="26">0</div><div class="l">providers in 15 fallback chains</div></div>
     <div class="kpi ok rv" style="--t:240"><div class="v" data-to="65">0</div><div class="l">recorded golden scenarios</div></div>
     <div class="kpi rv" style="--t:320"><div class="v" data-to="10">0</div><div class="l">DB-enforced immutable tables</div></div>
-    <div class="kpi mg rv" style="--t:400"><div class="v" data-to="659">0</div><div class="l">automated tests in 73 files</div></div>
+    <div class="kpi mg rv" style="--t:400"><div class="v" data-to="661">0</div><div class="l">automated tests in 73 files</div></div>
     <div class="kpi rv" style="--t:480"><div class="v" data-to="97">0</div><div class="l">REST API operations (<a href="/docs" target="_blank">OpenAPI</a>)</div></div>
     <div class="kpi rv" style="--t:560"><div class="v" data-to="16">0</div><div class="l">Alembic migrations · SQLite &amp; PostgreSQL</div></div>
   </div>
@@ -1925,7 +1950,7 @@ First observed    : 2026-10-12T06:41:46.604012</div>
           <p>Every query is workspace-scoped; RBAC (admin / analyst / viewer) is identical in the UI and the API.</p>
           <div class="mod">keys.py · config/secrets.py · tenancy.py · api/auth.py</div></div>
         <div class="card" id="tests"><h3>Tests &amp; CI</h3>
-          <p>659 test functions in 73 files: schema and trigger enforcement, SSRF cases, provider resilience, every UI page, the golden gate. CI runs lint, test-sqlite, test-postgres, including migrations up and down on PostgreSQL 16.</p>
+          <p>661 test functions in 73 files: schema and trigger enforcement, SSRF cases, provider resilience, every UI page, the golden gate. CI runs lint, test-sqlite, test-postgres, including migrations up and down on PostgreSQL 16.</p>
           <div class="mod">tests/ · .github/workflows/ci.yml</div></div>
       </div>
       <h2>Trust &amp; safety</h2>

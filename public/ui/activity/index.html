@@ -304,7 +304,8 @@ button:active,.btn:active,.chip:active{transform:translateY(1px)}
 td .badge.sev-critical,table .badge.sev-critical{animation:none}
 /* a control answers a press, and a light passes over it under the pointer */
 button:active,.btn:active,.chip:active{transform:translateY(1px) scale(.985)}
-button:not(.ghost):not(.fold):not(.menu):not(.chip),.btn:not(.ghost){position:relative;overflow:hidden}
+/* :where() keeps this at zero specificity: a component that places its own button (absolute, fixed) still wins */
+:where(button:not(.ghost):not(.fold):not(.menu):not(.chip),.btn:not(.ghost)){position:relative;overflow:hidden}
 button:not(.ghost):not(.fold):not(.menu):not(.chip)::after,.btn:not(.ghost)::after{
   content:"";position:absolute;inset:0;pointer-events:none;opacity:0;transform:translateX(-100%);
   background:linear-gradient(100deg,transparent 22%,rgba(53,199,242,.20) 48%,transparent 72%)}
@@ -406,11 +407,11 @@ window.BW = (function () {
 <p class="intro">The append-only audit trail: who did what, when, old → new, and why. The database itself refuses to edit or delete it.</p>
 
 <div class="kpis">
-  <div class="kpi"><div class="v" data-count="118">0</div><div class="l">events (latest)</div></div>
-  <div class="kpi"><div class="v" data-count="38">0</div><div class="l">analyst actions</div></div>
-  <div class="kpi"><div class="v" data-count="80">0</div><div class="l">system actions</div></div>
-  <div class="kpi"><div class="v" data-count="10">0</div><div class="l">verdicts recorded</div></div>
-  <div class="kpi"><div class="v" data-count="5">0</div><div class="l">logins (24h)</div></div>
+  <div class="kpi"><div class="v" data-count="101">0</div><div class="l">events (latest)</div></div>
+  <div class="kpi"><div class="v" data-count="37">0</div><div class="l">analyst actions</div></div>
+  <div class="kpi"><div class="v" data-count="64">0</div><div class="l">system actions</div></div>
+  <div class="kpi"><div class="v" data-count="8">0</div><div class="l">verdicts recorded</div></div>
+  <div class="kpi"><div class="v" data-count="6">0</div><div class="l">logins (24h)</div></div>
 </div>
 
 <form method="get" action="/ui/activity/" class="afilters" style="margin-top:14px">
@@ -430,7 +431,7 @@ window.BW = (function () {
 
 <div class="grid actg" style="grid-template-columns:2.2fr 1fr;margin-top:14px">
   <div class="panel">
-    <div class="small muted" style="margin-bottom:6px">2807 events</div>
+    <div class="small muted" style="margin-bottom:6px">2826 events</div>
     <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px" id="chips">
       <button type="button" class="chip on" data-cat="notable" title="everything except sign-ins" aria-pressed="true">notable</button>
       <button type="button" class="chip" data-cat="*" aria-pressed="false">all</button>
@@ -443,12 +444,12 @@ window.BW = (function () {
       <div class="ev " data-cat="user" data-notable="0" style="--r:0;display:none">
         <div class="av " title="admin">AD</div>
         <div>
-          <div class="what"><span class="muted">admin</span> <b>user</b> · login <span class="pill" title="46 consecutive events, first 2026-10-19 10:08">×46</span>
+          <div class="what"><span class="muted">admin</span> <b>user</b> · login <span class="pill" title="17 consecutive events, first 2026-10-19 15:31">×17</span>
             
             <span class="muted small">user bc089017</span></div>
           
         </div>
-        <div class="when"><time datetime="2026-10-19T15:16:06.122688+00:00" data-local title="2026-10-19T15:16:06.122688+00:00 UTC">2026-10-19 15:16</time><div><a class="small" href="/ui/activity/_d2793a420a/" title="every event about this user">history</a></div></div>
+        <div class="when"><time datetime="2026-10-19T16:20:15.369458+00:00" data-local title="2026-10-19T16:20:15.369458+00:00 UTC">2026-10-19 16:20</time><div><a class="small" href="/ui/activity/_d2793a420a/" title="every event about this user">history</a></div></div>
       </div>
       
       
@@ -460,11 +461,35 @@ window.BW = (function () {
             <span class="muted small">user bc089017</span></div>
           
         </div>
-        <div class="when"><time datetime="2026-10-19T10:08:43.648806+00:00" data-local title="2026-10-19T10:08:43.648806+00:00 UTC">2026-10-19 10:08</time><div><a class="small" href="/ui/activity/_d2793a420a/" title="every event about this user">history</a></div></div>
+        <div class="when"><time datetime="2026-10-19T15:31:18.574843+00:00" data-local title="2026-10-19T15:31:18.574843+00:00 UTC">2026-10-19 15:31</time><div><a class="small" href="/ui/activity/_d2793a420a/" title="every event about this user">history</a></div></div>
       </div>
       
       
       <div class="ev " data-cat="user" data-notable="0" style="--r:2;display:none">
+        <div class="av " title="admin">AD</div>
+        <div>
+          <div class="what"><span class="muted">admin</span> <b>user</b> · login <span class="pill" title="47 consecutive events, first 2026-10-19 10:08">×47</span>
+            
+            <span class="muted small">user bc089017</span></div>
+          
+        </div>
+        <div class="when"><time datetime="2026-10-19T15:28:53.402203+00:00" data-local title="2026-10-19T15:28:53.402203+00:00 UTC">2026-10-19 15:28</time><div><a class="small" href="/ui/activity/_d2793a420a/" title="every event about this user">history</a></div></div>
+      </div>
+      
+      
+      <div class="ev " data-cat="user" data-notable="0" style="--r:3;display:none">
+        <div class="av " title="admin">AD</div>
+        <div>
+          <div class="what"><span class="muted">admin</span> <b>user</b> · login failed
+            
+            <span class="muted small">user bc089017</span></div>
+          
+        </div>
+        <div class="when"><time datetime="2026-10-19T10:08:43.648806+00:00" data-local title="2026-10-19T10:08:43.648806+00:00 UTC">2026-10-19 10:08</time><div><a class="small" href="/ui/activity/_d2793a420a/" title="every event about this user">history</a></div></div>
+      </div>
+      
+      
+      <div class="ev " data-cat="user" data-notable="0" style="--r:4;display:none">
         <div class="av " title="admin">AD</div>
         <div>
           <div class="what"><span class="muted">admin</span> <b>user</b> · login <span class="pill" title="52 consecutive events, first 2026-10-18 21:18">×52</span>
@@ -476,7 +501,7 @@ window.BW = (function () {
       </div>
       
       <div class="day" data-day="2026-10-18">2026-10-18</div>
-      <div class="ev " data-cat="user" data-notable="0" style="--r:3;display:none">
+      <div class="ev " data-cat="user" data-notable="0" style="--r:5;display:none">
         <div class="av " title="admin">AD</div>
         <div>
           <div class="what"><span class="muted">admin</span> <b>user</b> · login failed
@@ -488,7 +513,7 @@ window.BW = (function () {
       </div>
       
       
-      <div class="ev " data-cat="user" data-notable="0" style="--r:4;display:none">
+      <div class="ev " data-cat="user" data-notable="0" style="--r:6;display:none">
         <div class="av " title="admin">AD</div>
         <div>
           <div class="what"><span class="muted">admin</span> <b>user</b> · login
@@ -500,7 +525,7 @@ window.BW = (function () {
       </div>
       
       
-      <div class="ev " data-cat="intel" data-notable="1" style="--r:5">
+      <div class="ev " data-cat="intel" data-notable="1" style="--r:7">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>intel</b> · started
@@ -516,7 +541,7 @@ window.BW = (function () {
       </div>
       
       
-      <div class="ev " data-cat="intel" data-notable="1" style="--r:6">
+      <div class="ev " data-cat="intel" data-notable="1" style="--r:8">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>intel</b> · started
@@ -532,7 +557,7 @@ window.BW = (function () {
       </div>
       
       
-      <div class="ev " data-cat="user" data-notable="0" style="--r:7;display:none">
+      <div class="ev " data-cat="user" data-notable="0" style="--r:9;display:none">
         <div class="av " title="admin">AD</div>
         <div>
           <div class="what"><span class="muted">admin</span> <b>user</b> · login <span class="pill" title="31 consecutive events, first 2026-10-18 17:10">×31</span>
@@ -544,7 +569,7 @@ window.BW = (function () {
       </div>
       
       
-      <div class="ev " data-cat="notification" data-notable="1" style="--r:8">
+      <div class="ev " data-cat="notification" data-notable="1" style="--r:10">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>notification</b> · sent
@@ -560,7 +585,7 @@ window.BW = (function () {
       </div>
       
       
-      <div class="ev " data-cat="finding" data-notable="1" style="--r:9">
+      <div class="ev " data-cat="finding" data-notable="1" style="--r:11">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>finding</b> · created
@@ -576,7 +601,7 @@ window.BW = (function () {
       </div>
       
       
-      <div class="ev " data-cat="scan" data-notable="1" style="--r:10">
+      <div class="ev " data-cat="scan" data-notable="1" style="--r:12">
         <div class="av " title="admin">AD</div>
         <div>
           <div class="what"><span class="muted">admin</span> <b>scan</b> · started
@@ -592,7 +617,7 @@ window.BW = (function () {
       </div>
       
       
-      <div class="ev " data-cat="brand" data-notable="1" style="--r:11">
+      <div class="ev " data-cat="brand" data-notable="1" style="--r:13">
         <div class="av " title="admin">AD</div>
         <div>
           <div class="what"><span class="muted">admin</span> <b>brand</b> · config updated
@@ -608,7 +633,7 @@ window.BW = (function () {
       </div>
       
       
-      <div class="ev " data-cat="user" data-notable="0" style="--r:12;display:none">
+      <div class="ev " data-cat="user" data-notable="0" style="--r:14;display:none">
         <div class="av " title="admin">AD</div>
         <div>
           <div class="what"><span class="muted">admin</span> <b>user</b> · login <span class="pill" title="36 consecutive events, first 2026-10-18 07:32">×36</span>
@@ -620,7 +645,7 @@ window.BW = (function () {
       </div>
       
       
-      <div class="ev " data-cat="notification" data-notable="1" style="--r:13">
+      <div class="ev " data-cat="notification" data-notable="1" style="--r:15">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>notification</b> · sent
@@ -636,7 +661,7 @@ window.BW = (function () {
       </div>
       
       
-      <div class="ev " data-cat="finding" data-notable="1" style="--r:14">
+      <div class="ev " data-cat="finding" data-notable="1" style="--r:16">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>finding</b> · rescored
@@ -652,7 +677,7 @@ window.BW = (function () {
       </div>
       
       
-      <div class="ev " data-cat="notification" data-notable="1" style="--r:15">
+      <div class="ev " data-cat="notification" data-notable="1" style="--r:17">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>notification</b> · sent
@@ -668,7 +693,7 @@ window.BW = (function () {
       </div>
       
       
-      <div class="ev " data-cat="finding" data-notable="1" style="--r:16">
+      <div class="ev " data-cat="finding" data-notable="1" style="--r:18">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>finding</b> · rescored
@@ -684,7 +709,7 @@ window.BW = (function () {
       </div>
       
       
-      <div class="ev " data-cat="notification" data-notable="1" style="--r:17">
+      <div class="ev " data-cat="notification" data-notable="1" style="--r:19">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>notification</b> · sent
@@ -700,7 +725,7 @@ window.BW = (function () {
       </div>
       
       
-      <div class="ev " data-cat="finding" data-notable="1" style="--r:18">
+      <div class="ev " data-cat="finding" data-notable="1" style="--r:20">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>finding</b> · rescored
@@ -716,7 +741,7 @@ window.BW = (function () {
       </div>
       
       
-      <div class="ev " data-cat="notification" data-notable="1" style="--r:19">
+      <div class="ev " data-cat="notification" data-notable="1" style="--r:21">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>notification</b> · sent
@@ -732,7 +757,7 @@ window.BW = (function () {
       </div>
       
       
-      <div class="ev " data-cat="finding" data-notable="1" style="--r:20">
+      <div class="ev " data-cat="finding" data-notable="1" style="--r:22">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>finding</b> · rescored
@@ -748,7 +773,7 @@ window.BW = (function () {
       </div>
       
       
-      <div class="ev " data-cat="notification" data-notable="1" style="--r:21">
+      <div class="ev " data-cat="notification" data-notable="1" style="--r:23">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>notification</b> · sent
@@ -764,7 +789,7 @@ window.BW = (function () {
       </div>
       
       
-      <div class="ev " data-cat="finding" data-notable="1" style="--r:22">
+      <div class="ev " data-cat="finding" data-notable="1" style="--r:24">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>finding</b> · rescored
@@ -780,7 +805,7 @@ window.BW = (function () {
       </div>
       
       
-      <div class="ev " data-cat="scan" data-notable="1" style="--r:23">
+      <div class="ev " data-cat="scan" data-notable="1" style="--r:25">
         <div class="av " title="admin">AD</div>
         <div>
           <div class="what"><span class="muted">admin</span> <b>scan</b> · started
@@ -796,7 +821,7 @@ window.BW = (function () {
       </div>
       
       
-      <div class="ev " data-cat="brand" data-notable="1" style="--r:24">
+      <div class="ev " data-cat="brand" data-notable="1" style="--r:26">
         <div class="av " title="admin">AD</div>
         <div>
           <div class="what"><span class="muted">admin</span> <b>brand</b> · ai prompts approved
@@ -812,7 +837,7 @@ window.BW = (function () {
       </div>
       
       
-      <div class="ev " data-cat="scan" data-notable="1" style="--r:25">
+      <div class="ev " data-cat="scan" data-notable="1" style="--r:27">
         <div class="av " title="admin">AD</div>
         <div>
           <div class="what"><span class="muted">admin</span> <b>scan</b> · started
@@ -828,7 +853,7 @@ window.BW = (function () {
       </div>
       
       
-      <div class="ev " data-cat="user" data-notable="0" style="--r:26;display:none">
+      <div class="ev " data-cat="user" data-notable="0" style="--r:28;display:none">
         <div class="av " title="admin">AD</div>
         <div>
           <div class="what"><span class="muted">admin</span> <b>user</b> · login <span class="pill" title="2 consecutive events, first 2026-10-18 07:29">×2</span>
@@ -840,7 +865,7 @@ window.BW = (function () {
       </div>
       
       
-      <div class="ev " data-cat="notification" data-notable="1" style="--r:27">
+      <div class="ev " data-cat="notification" data-notable="1" style="--r:29">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>notification</b> · sent
@@ -856,7 +881,7 @@ window.BW = (function () {
       </div>
       
       
-      <div class="ev " data-cat="finding" data-notable="1" style="--r:28">
+      <div class="ev " data-cat="finding" data-notable="1" style="--r:30">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>finding</b> · rescored
@@ -872,7 +897,7 @@ window.BW = (function () {
       </div>
       
       
-      <div class="ev " data-cat="notification" data-notable="1" style="--r:29">
+      <div class="ev " data-cat="notification" data-notable="1" style="--r:30">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>notification</b> · sent
@@ -1976,352 +2001,48 @@ window.BW = (function () {
       </div>
       
       
-      <div class="ev " data-cat="report" data-notable="1" style="--r:30">
-        <div class="av sys" title="system">SYS</div>
-        <div>
-          <div class="what"><span class="muted">system</span> <b>report</b> · generated
-            
-            <span class="muted small">finding <a href="/ui/findings/4432be9e-24d0-4136-87ff-af50eb57fe11/" class="mono">shopnova-account.net ↗</a></span></div>
-          
-          
-          <div class="diff"><span class="new">{"reports": {"html": "c5e5f244-f191-46cc-92c8-eef13dcde6ea", "json": "daa9c369-3c6d-43ed-b1b1-f1485723818d"}}</span>
-            </div>
-          
-        </div>
-        <div class="when"><time datetime="2026-10-14T09:52:41.284786+00:00" data-local title="2026-10-14T09:52:41.284786+00:00 UTC">2026-10-14 09:52</time><div><a class="small" href="/ui/activity/_8fcba53b14/" title="every event about this finding">history</a></div></div>
-      </div>
-      
-      
-      <div class="ev " data-cat="campaign" data-notable="1" style="--r:30">
-        <div class="av sys" title="system">SYS</div>
-        <div>
-          <div class="what"><span class="muted">system</span> <b>campaign</b> · investigated
-            
-            <span class="muted small">campaign <a href="/ui/campaigns/f353eefc-a77a-4a21-8a8a-d3f210ec83bb/" class="mono">ShopNova campaign 393FD129 ↗</a></span></div>
-          
-          
-          <div class="diff"><span class="new">{"api_calls": 3, "budget_exhausted": null, "edges": 3, "included": 4, "iocs": 5, "nodes": 4}</span>
-            </div>
-          
-        </div>
-        <div class="when"><time datetime="2026-10-14T09:52:40.994734+00:00" data-local title="2026-10-14T09:52:40.994734+00:00 UTC">2026-10-14 09:52</time><div><a class="small" href="/ui/activity/_9172e9b9d3/" title="every event about this campaign">history</a></div></div>
-      </div>
-      
-      
-      <div class="ev " data-cat="intel" data-notable="1" style="--r:30">
-        <div class="av sys" title="system">SYS</div>
-        <div>
-          <div class="what"><span class="muted">system</span> <b>intel</b> · started
-            
-            <span class="muted small">finding <a href="/ui/findings/4432be9e-24d0-4136-87ff-af50eb57fe11/" class="mono">shopnova-account.net ↗</a></span></div>
-          
-          
-          <div class="diff"><span class="new">force: no · light: yes · package: yes · auto: yes</span>
-            </div>
-          
-        </div>
-        <div class="when"><time datetime="2026-10-14T09:52:40.809968+00:00" data-local title="2026-10-14T09:52:40.809968+00:00 UTC">2026-10-14 09:52</time><div><a class="small" href="/ui/activity/_8fcba53b14/" title="every event about this finding">history</a></div></div>
-      </div>
-      
-      
-      <div class="ev " data-cat="investigation" data-notable="1" style="--r:30">
-        <div class="av sys" title="admin">SYS</div>
-        <div>
-          <div class="what"><span class="muted">admin</span> <b>investigation</b> · started
-            
-            <span class="muted small">finding <a href="/ui/findings/4432be9e-24d0-4136-87ff-af50eb57fe11/" class="mono">shopnova-account.net ↗</a></span></div>
-          
-          
-          <div class="diff"><span class="new">auto: yes</span>
-            </div>
-          
-        </div>
-        <div class="when"><time datetime="2026-10-14T09:52:40.799937+00:00" data-local title="2026-10-14T09:52:40.799937+00:00 UTC">2026-10-14 09:52</time><div><a class="small" href="/ui/activity/_8fcba53b14/" title="every event about this finding">history</a></div></div>
-      </div>
-      
-      
-      <div class="ev t-crit" data-cat="finding" data-notable="1" style="--r:30">
-        <div class="av " title="admin">AD</div>
-        <div>
-          <div class="what"><span class="muted">admin</span> <b>finding</b> · confirmed
-            
-            <span class="muted small">finding <a href="/ui/findings/4432be9e-24d0-4136-87ff-af50eb57fe11/" class="mono">shopnova-account.net ↗</a></span></div>
-          
-          
-          <div class="diff"><span class="old">state: open</span> → <span class="new">state: confirmed · verdict: phishing</span>
-            </div>
-          
-        </div>
-        <div class="when"><time datetime="2026-10-14T09:52:40.796248+00:00" data-local title="2026-10-14T09:52:40.796248+00:00 UTC">2026-10-14 09:52</time><div><a class="small" href="/ui/activity/_8fcba53b14/" title="every event about this finding">history</a></div></div>
-      </div>
-      
-      
-      <div class="ev " data-cat="report" data-notable="1" style="--r:30">
-        <div class="av sys" title="system">SYS</div>
-        <div>
-          <div class="what"><span class="muted">system</span> <b>report</b> · generated
-            
-            <span class="muted small">finding <a href="/ui/findings/8d975e6b-5ed0-45d8-97c0-71ab0b64823d/" class="mono">shopnova-verify.com ↗</a></span></div>
-          
-          
-          <div class="diff"><span class="new">{"reports": {"html": "a96d2101-aec8-488e-a8d4-8dd4dfb78e98", "json": "2901fe8b-2dfb-47ec-acb5-56c48118dcde"}}</span>
-            </div>
-          
-        </div>
-        <div class="when"><time datetime="2026-10-14T09:52:37.822814+00:00" data-local title="2026-10-14T09:52:37.822814+00:00 UTC">2026-10-14 09:52</time><div><a class="small" href="/ui/activity/_21dbff7936/" title="every event about this finding">history</a></div></div>
-      </div>
-      
-      
-      <div class="ev " data-cat="campaign" data-notable="1" style="--r:30">
-        <div class="av sys" title="system">SYS</div>
-        <div>
-          <div class="what"><span class="muted">system</span> <b>campaign</b> · investigated
-            
-            <span class="muted small">campaign <a href="/ui/campaigns/a32bc041-fe78-4ccf-8081-5e3a2bdf71ef/" class="mono">ShopNova campaign 8D975E6B ↗</a></span></div>
-          
-          
-          <div class="diff"><span class="new">{"api_calls": 3, "budget_exhausted": null, "edges": 2, "included": 3, "iocs": 5, "nodes": 3}</span>
-            </div>
-          
-        </div>
-        <div class="when"><time datetime="2026-10-14T09:52:37.350084+00:00" data-local title="2026-10-14T09:52:37.350084+00:00 UTC">2026-10-14 09:52</time><div><a class="small" href="/ui/activity/_d014fba333/" title="every event about this campaign">history</a></div></div>
-      </div>
-      
-      
-      <div class="ev " data-cat="intel" data-notable="1" style="--r:30">
-        <div class="av sys" title="system">SYS</div>
-        <div>
-          <div class="what"><span class="muted">system</span> <b>intel</b> · started
-            
-            <span class="muted small">finding <a href="/ui/findings/8d975e6b-5ed0-45d8-97c0-71ab0b64823d/" class="mono">shopnova-verify.com ↗</a></span></div>
-          
-          
-          <div class="diff"><span class="new">force: no · light: yes · package: yes · auto: yes</span>
-            </div>
-          
-        </div>
-        <div class="when"><time datetime="2026-10-14T09:52:37.208291+00:00" data-local title="2026-10-14T09:52:37.208291+00:00 UTC">2026-10-14 09:52</time><div><a class="small" href="/ui/activity/_21dbff7936/" title="every event about this finding">history</a></div></div>
-      </div>
-      
-      
-      <div class="ev " data-cat="investigation" data-notable="1" style="--r:30">
-        <div class="av sys" title="admin">SYS</div>
-        <div>
-          <div class="what"><span class="muted">admin</span> <b>investigation</b> · started
-            
-            <span class="muted small">finding <a href="/ui/findings/8d975e6b-5ed0-45d8-97c0-71ab0b64823d/" class="mono">shopnova-verify.com ↗</a></span></div>
-          
-          
-          <div class="diff"><span class="new">auto: yes</span>
-            </div>
-          
-        </div>
-        <div class="when"><time datetime="2026-10-14T09:52:37.202065+00:00" data-local title="2026-10-14T09:52:37.202065+00:00 UTC">2026-10-14 09:52</time><div><a class="small" href="/ui/activity/_21dbff7936/" title="every event about this finding">history</a></div></div>
-      </div>
-      
-      
-      <div class="ev t-crit" data-cat="finding" data-notable="1" style="--r:30">
-        <div class="av " title="admin">AD</div>
-        <div>
-          <div class="what"><span class="muted">admin</span> <b>finding</b> · confirmed
-            
-            <span class="muted small">finding <a href="/ui/findings/8d975e6b-5ed0-45d8-97c0-71ab0b64823d/" class="mono">shopnova-verify.com ↗</a></span></div>
-          
-          
-          <div class="diff"><span class="old">state: open</span> → <span class="new">state: confirmed · verdict: phishing</span>
-            </div>
-          
-        </div>
-        <div class="when"><time datetime="2026-10-14T09:52:37.193950+00:00" data-local title="2026-10-14T09:52:37.193950+00:00 UTC">2026-10-14 09:52</time><div><a class="small" href="/ui/activity/_21dbff7936/" title="every event about this finding">history</a></div></div>
-      </div>
-      
-      
-      <div class="ev " data-cat="notification" data-notable="1" style="--r:30">
-        <div class="av sys" title="system">SYS</div>
-        <div>
-          <div class="what"><span class="muted">system</span> <b>notification</b> · sent
-            
-            <span class="muted small">notification shopnova-id-check.com</span></div>
-          
-          
-          <div class="diff"><span class="new">channel: log · subject: [BrandWatch] HIGH rescored: shopnova-id-check.com impersonates ShopNova · Israel · kind: finding</span>
-            </div>
-          
-        </div>
-        <div class="when"><time datetime="2026-10-14T09:52:26.121898+00:00" data-local title="2026-10-14T09:52:26.121898+00:00 UTC">2026-10-14 09:52</time><div><a class="small" href="/ui/activity/_18e2ee327b/" title="every event about this notification">history</a></div></div>
-      </div>
-      
-      
-      <div class="ev " data-cat="finding" data-notable="1" style="--r:30">
-        <div class="av sys" title="system">SYS</div>
-        <div>
-          <div class="what"><span class="muted">system</span> <b>finding</b> · rescored
-            
-            <span class="muted small">finding <a href="/ui/findings/60292b11-724b-4b3f-bf1f-262976b5659f/" class="mono">shopnova-id-check.com ↗</a></span></div>
-          
-          
-          <div class="diff"><span class="old">severity: high · confidence: 85.0</span> → <span class="new">severity: high · score: 50 · confidence: 100.0 · scoring version: v2-c213b21d+c7</span>
-            <div style="color:var(--text);opacity:.8;margin-top:2px">“7 signals fired; rules: [&#39;known_phishing_verdict&#39;]; already confirmed by an analyst — score history appended”</div></div>
-          
-        </div>
-        <div class="when"><time datetime="2026-10-14T09:52:26.114380+00:00" data-local title="2026-10-14T09:52:26.114380+00:00 UTC">2026-10-14 09:52</time><div><a class="small" href="/ui/activity/_18e2ee327b/" title="every event about this finding">history</a></div></div>
-      </div>
-      
-      
-      <div class="ev " data-cat="notification" data-notable="1" style="--r:30">
-        <div class="av sys" title="system">SYS</div>
-        <div>
-          <div class="what"><span class="muted">system</span> <b>notification</b> · sent
-            
-            <span class="muted small">notification shopnova-eu.com</span></div>
-          
-          
-          <div class="diff"><span class="new">channel: log · subject: [BrandWatch] CRITICAL rescored: shopnova-eu.com impersonates ShopNova · Israel · kind: finding</span>
-            </div>
-          
-        </div>
-        <div class="when"><time datetime="2026-10-14T09:52:26.017485+00:00" data-local title="2026-10-14T09:52:26.017485+00:00 UTC">2026-10-14 09:52</time><div><a class="small" href="/ui/activity/_fe1ce76898/" title="every event about this notification">history</a></div></div>
-      </div>
-      
-      
-      <div class="ev " data-cat="finding" data-notable="1" style="--r:30">
-        <div class="av sys" title="system">SYS</div>
-        <div>
-          <div class="what"><span class="muted">system</span> <b>finding</b> · rescored
-            
-            <span class="muted small">finding <a href="/ui/findings/6ed451ca-2fd1-464b-b381-03f8df804f34/" class="mono">shopnova-eu.com ↗</a></span></div>
-          
-          
-          <div class="diff"><span class="old">severity: critical · confidence: 92.0</span> → <span class="new">severity: critical · score: 75 · confidence: 92.0 · scoring version: v2-c213b21d+c7</span>
-            <div style="color:var(--text);opacity:.8;margin-top:2px">“14 signals fired; rules: [&#39;pixel_clone_login&#39;, &#39;fresh_lookalike_login&#39;, &#39;brand_title_login&#39;, &#39;looks_like_brand_verdict&#39;]”</div></div>
-          
-        </div>
-        <div class="when"><time datetime="2026-10-14T09:52:26.017485+00:00" data-local title="2026-10-14T09:52:26.017485+00:00 UTC">2026-10-14 09:52</time><div><a class="small" href="/ui/activity/_fe1ce76898/" title="every event about this finding">history</a></div></div>
-      </div>
-      
-      
-      <div class="ev " data-cat="notification" data-notable="1" style="--r:30">
-        <div class="av sys" title="system">SYS</div>
-        <div>
-          <div class="what"><span class="muted">system</span> <b>notification</b> · sent
-            
-            <span class="muted small">notification facebook.com/shopnova.support.help</span></div>
-          
-          
-          <div class="diff"><span class="new">channel: log · subject: [BrandWatch] CRITICAL rescored: facebook.com/shopnova.support.help impersonates ShopNova · Israel · kind: finding</span>
-            </div>
-          
-        </div>
-        <div class="when"><time datetime="2026-10-14T09:52:23.731723+00:00" data-local title="2026-10-14T09:52:23.731723+00:00 UTC">2026-10-14 09:52</time><div><a class="small" href="/ui/activity?object_id=aa855f45-18cf-4272-ac1c-effbe5955f9c" title="every event about this notification">history</a></div></div>
-      </div>
-      
-      
-      <div class="ev " data-cat="finding" data-notable="1" style="--r:30">
-        <div class="av sys" title="system">SYS</div>
-        <div>
-          <div class="what"><span class="muted">system</span> <b>finding</b> · rescored
-            
-            <span class="muted small">finding <a href="/ui/findings/aa855f45-18cf-4272-ac1c-effbe5955f9c/" class="mono">facebook.com/shopnova.support.help ↗</a></span></div>
-          
-          
-          <div class="diff"><span class="old">severity: critical · confidence: 85.0</span> → <span class="new">severity: critical · score: 100 · confidence: 85 · scoring version: social-v1-6ace7e14</span>
-            <div style="color:var(--text);opacity:.8;margin-top:2px">“9 signals fired; rules: []”</div></div>
-          
-        </div>
-        <div class="when"><time datetime="2026-10-14T09:52:23.712060+00:00" data-local title="2026-10-14T09:52:23.712060+00:00 UTC">2026-10-14 09:52</time><div><a class="small" href="/ui/activity?object_id=aa855f45-18cf-4272-ac1c-effbe5955f9c" title="every event about this finding">history</a></div></div>
-      </div>
-      
-      
-      <div class="ev " data-cat="notification" data-notable="1" style="--r:30">
-        <div class="av sys" title="system">SYS</div>
-        <div>
-          <div class="what"><span class="muted">system</span> <b>notification</b> · sent
-            
-            <span class="muted small">notification instagram.com/shopnova.israel.official</span></div>
-          
-          
-          <div class="diff"><span class="new">channel: log · subject: [BrandWatch] CRITICAL rescored: instagram.com/shopnova.israel.official impersonates ShopNova · Israel · kind: finding</span>
-            </div>
-          
-        </div>
-        <div class="when"><time datetime="2026-10-14T09:52:23.704925+00:00" data-local title="2026-10-14T09:52:23.704925+00:00 UTC">2026-10-14 09:52</time><div><a class="small" href="/ui/activity?object_id=3ef032cc-e0af-4d14-a4b1-f1bde6e033e9" title="every event about this notification">history</a></div></div>
-      </div>
-      
-      
-      <div class="ev " data-cat="finding" data-notable="1" style="--r:30">
-        <div class="av sys" title="system">SYS</div>
-        <div>
-          <div class="what"><span class="muted">system</span> <b>finding</b> · rescored
-            
-            <span class="muted small">finding <a href="/ui/findings/3ef032cc-e0af-4d14-a4b1-f1bde6e033e9/" class="mono">instagram.com/shopnova.israel.official ↗</a></span></div>
-          
-          
-          <div class="diff"><span class="old">severity: critical · confidence: 80.0</span> → <span class="new">severity: critical · score: 86 · confidence: 80 · scoring version: social-v1-6ace7e14</span>
-            <div style="color:var(--text);opacity:.8;margin-top:2px">“5 signals fired; rules: []; already confirmed by an analyst — score history appended”</div></div>
-          
-        </div>
-        <div class="when"><time datetime="2026-10-14T09:52:23.694546+00:00" data-local title="2026-10-14T09:52:23.694546+00:00 UTC">2026-10-14 09:52</time><div><a class="small" href="/ui/activity?object_id=3ef032cc-e0af-4d14-a4b1-f1bde6e033e9" title="every event about this finding">history</a></div></div>
-      </div>
-      
-      
-      <div class="ev " data-cat="scan" data-notable="1" style="--r:30">
-        <div class="av " title="admin">AD</div>
-        <div>
-          <div class="what"><span class="muted">admin</span> <b>scan</b> · started
-            
-            <span class="muted small">scan job <a href="/ui/jobs/c8a8b3bf-162f-4dd1-a17c-e51123594eb5" class="mono">brand scan c8a8b3bf ↗</a></span></div>
-          
-          
-          <div class="diff"><span class="new">kind: brand_scan · brand: ShopNova · Israel</span>
-            </div>
-          
-        </div>
-        <div class="when"><time datetime="2026-10-14T09:52:22.751572+00:00" data-local title="2026-10-14T09:52:22.751572+00:00 UTC">2026-10-14 09:52</time><div><a class="small" href="/ui/activity?object_id=c8a8b3bf-162f-4dd1-a17c-e51123594eb5" title="every event about this scan job">history</a></div></div>
-      </div>
-      
-      
     </div>
     <div class="more"><button type="button" id="more" style="display:none">Show older events</button>
       
-      <a class="btn small" href="/ui/activity?page=2" title="the next 300 events from the server">older page →</a></div>
+      <a class="btn small" href="/ui/activity/_b941a131dc/" title="the next 300 events from the server">older page →</a></div>
   </div>
   <div>
     <div class="panel">
       <h2>By category</h2>
       
       
-      <div class="hbar"><span>user</span><div class="bar"><i data-w="100"></i></div><b>194</b></div>
+      <div class="hbar"><span>user</span><div class="bar"><i data-w="100"></i></div><b>213</b></div>
       
-      <div class="hbar"><span>finding</span><div class="bar"><i data-w="15"></i></div><b>29</b></div>
+      <div class="hbar"><span>finding</span><div class="bar"><i data-w="11"></i></div><b>23</b></div>
       
-      <div class="hbar"><span>notification</span><div class="bar"><i data-w="10"></i></div><b>19</b></div>
+      <div class="hbar"><span>notification</span><div class="bar"><i data-w="7"></i></div><b>15</b></div>
       
-      <div class="hbar"><span>intel</span><div class="bar"><i data-w="6"></i></div><b>12</b></div>
+      <div class="hbar"><span>intel</span><div class="bar"><i data-w="5"></i></div><b>10</b></div>
       
-      <div class="hbar"><span>report</span><div class="bar"><i data-w="5"></i></div><b>10</b></div>
+      <div class="hbar"><span>Brand use</span><div class="bar"><i data-w="4"></i></div><b>9</b></div>
       
-      <div class="hbar"><span>campaign</span><div class="bar"><i data-w="5"></i></div><b>10</b></div>
+      <div class="hbar"><span>report</span><div class="bar"><i data-w="4"></i></div><b>8</b></div>
       
-      <div class="hbar"><span>investigation</span><div class="bar"><i data-w="5"></i></div><b>10</b></div>
+      <div class="hbar"><span>campaign</span><div class="bar"><i data-w="4"></i></div><b>8</b></div>
       
-      <div class="hbar"><span>Brand use</span><div class="bar"><i data-w="5"></i></div><b>9</b></div>
+      <div class="hbar"><span>investigation</span><div class="bar"><i data-w="4"></i></div><b>8</b></div>
       
     </div>
     <div class="panel" style="margin-top:14px">
       <h2>Activity · 14 days</h2>
-      <svg class="spark" data-spark='{"series": [{"color": "#35C7F2", "values": [0, 0, 0, 0, 0, 0, 0, 0, 59, 0, 0, 0, 56, 3]}]}'></svg>
+      <svg class="spark" data-spark='{"series": [{"color": "#35C7F2", "values": [0, 0, 0, 0, 0, 0, 0, 0, 40, 0, 0, 0, 56, 5]}]}'></svg>
     </div>
     <div class="panel" style="margin-top:14px">
       <h2>Most active</h2>
       
       <div style="display:grid;grid-template-columns:1fr 40px;gap:8px;align-items:center;margin:8px 0">
         <div><div class="small mono">admin</div><div class="bar" style="height:6px;margin-top:3px"><i data-w="100"></i></div></div>
-        <div class="mono small right">230</div>
+        <div class="mono small right">244</div>
       </div>
       
       <div style="display:grid;grid-template-columns:1fr 40px;gap:8px;align-items:center;margin:8px 0">
-        <div><div class="small mono">system</div><div class="bar" style="height:6px;margin-top:3px"><i data-w="30"></i></div></div>
-        <div class="mono small right">70</div>
+        <div><div class="small mono">system</div><div class="bar" style="height:6px;margin-top:3px"><i data-w="23"></i></div></div>
+        <div class="mono small right">56</div>
       </div>
       
     </div>
