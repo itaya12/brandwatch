@@ -368,9 +368,39 @@
   const days = {{ d.scans_per_day|tojson }};
   const svg = document.getElementById('spark');
   const mx = Math.max(1, ...days.map(x => Math.max(x.jobs, x.findings)));
-  const pts = key => days.map((x, i) => `${(i / (days.length - 1)) * 280},${68 - (x[key] / mx) * 60}`).join(' ');
-  svg.innerHTML = `<polyline fill="none" stroke="${ink('accent')}" stroke-width="2" points="${pts('jobs')}"/><polyline fill="none" stroke="${ink('crit')}" stroke-width="2" points="${pts('findings')}"/>` +
-    days.map((x, i) => `<circle cx="${(i / (days.length - 1)) * 280}" cy="${68 - (x.jobs / mx) * 60}" r="2" fill="${ink('accent2')}"><title>${x.date}: ${x.jobs} scans, ${x.findings} findings</title></circle>`).join('');
+  const X = i => (i / Math.max(1, days.length - 1)) * 280;
+  const Y = v => 68 - (v / mx) * 60;
+  const pts = key => days.map((x, i) => `${X(i)},${Y(x[key])}`).join(' ');
+  const calm = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  svg.innerHTML = `<polyline class="ln-jobs" fill="none" stroke="${ink('accent')}" stroke-width="2" points="${pts('jobs')}"/>`
+    + `<polyline class="ln-find" fill="none" stroke="${ink('crit')}" stroke-width="2" points="${pts('findings')}"/>`
+    + `<circle class="mk" r="3.5" fill="${ink('accent2')}" opacity="0"/>`
+    + days.map((x, i) => `<circle class="hit" data-i="${i}" cx="${X(i)}" cy="${Y(x.jobs)}" r="9" fill="transparent"/>`).join('');
+  // the two lines draw themselves in, the second a beat behind the first
+  if (!calm) svg.querySelectorAll('polyline').forEach((ln, i) => {
+    const L = ln.getTotalLength ? ln.getTotalLength() : 600;
+    ln.style.strokeDasharray = L; ln.style.strokeDashoffset = L;
+    ln.style.transition = `stroke-dashoffset 1.6s cubic-bezier(.2,.8,.2,1) ${i * 220}ms`;
+    requestAnimationFrame(() => requestAnimationFrame(() => { ln.style.strokeDashoffset = 0; }));
+  });
+  // read a day off the chart: a tip in the panel, not a native title that waits a second
+  (function activityTips(){
+    const wrap = svg.parentElement; if (!wrap) return;
+    if (getComputedStyle(wrap).position === 'static') wrap.classList.add('sparkwrap');
+    const tip = document.createElement('div'); tip.className = 'sparktip'; wrap.appendChild(tip);
+    const mark = svg.querySelector('.mk');
+    svg.querySelectorAll('.hit').forEach(hit => {
+      const i = +hit.dataset.i, d = days[i];
+      hit.style.cursor = 'crosshair';
+      hit.addEventListener('pointerenter', () => {
+        tip.innerHTML = `${d.date}<br>${d.jobs} scan${d.jobs === 1 ? '' : 's'} · ${d.findings} finding${d.findings === 1 ? '' : 's'}`;
+        tip.style.left = (X(i) / 280 * 100) + '%'; tip.style.top = (Y(d.jobs) / 80 * 100) + '%';
+        tip.classList.add('on');
+        mark.setAttribute('cx', X(i)); mark.setAttribute('cy', Y(d.jobs)); mark.setAttribute('opacity', 1);
+      });
+      hit.addEventListener('pointerleave', () => { tip.classList.remove('on'); mark.setAttribute('opacity', 0); });
+    });
+  })();
 
   // ---- live feed
   const feed = document.getElementById('feed'); let lastKey = '';
@@ -584,6 +614,16 @@
       const grd = ctx.createRadialGradient(cx - RR*0.3, cy - RR*0.3, RR*0.2, cx, cy, RR*1.15); grd.addColorStop(0, '#0f2238'); grd.addColorStop(1, ink('console'));
       ctx.fillStyle = grd; ctx.beginPath(); ctx.arc(cx, cy, RR, 0, Math.PI*2); ctx.fill();
       ctx.strokeStyle = 'rgba(53,199,242,.9)'; ctx.lineWidth = 1.2; ctx.shadowColor = ink('accent'); ctx.shadowBlur = 18; ctx.stroke(); ctx.shadowBlur = 0;
+      if (!still) {  // a radar ring leaves the centre every 3.2s and fades at the rim
+        const ph = ((now || 0) % 3200) / 3200;
+        ctx.strokeStyle = `rgba(53,199,242,${(1 - ph) * 0.33})`; ctx.lineWidth = 1;
+        ctx.beginPath(); ctx.arc(cx, cy, RR * (0.12 + ph * 0.92), 0, Math.PI * 2); ctx.stroke();
+      }
+      // the room's scanline, clipped to the sphere so the globe reads as a screen, not a ball
+      ctx.save(); ctx.beginPath(); ctx.arc(cx, cy, RR, 0, Math.PI * 2); ctx.clip();
+      ctx.strokeStyle = 'rgba(53,199,242,.055)'; ctx.lineWidth = 1;
+      for (let y = cy - RR; y <= cy + RR; y += 3) { ctx.beginPath(); ctx.moveTo(cx - RR, y); ctx.lineTo(cx + RR, y); ctx.stroke(); }
+      ctx.restore();
       ctx.strokeStyle = 'rgba(53,199,242,.18)'; ctx.lineWidth = 1;
       for (let lat = -60; lat <= 60; lat += 30) { ctx.beginPath(); for (let lon = -180; lon <= 180; lon += 4) { const p = proj(lat, lon); if (p.z < 0) { ctx.moveTo(p.x, p.y); continue; } ctx.lineTo(p.x, p.y); } ctx.stroke(); }
       for (let lon = -180; lon < 180; lon += 30) { ctx.beginPath(); for (let lat = -90; lat <= 90; lat += 4) { const p = proj(lat, lon); if (p.z < 0) { ctx.moveTo(p.x, p.y); continue; } ctx.lineTo(p.x, p.y); } ctx.stroke(); }
