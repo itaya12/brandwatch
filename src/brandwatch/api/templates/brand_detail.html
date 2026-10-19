@@ -504,7 +504,7 @@
   // tabs: one section at a time; a link to a section (#queries, #profile …) opens the tab that holds it
   const tabs = [...document.querySelectorAll('#btabs [data-pane]')], panes = [...document.querySelectorAll('.bpane')];
   if (!tabs.length) return;
-  const hdr = document.querySelector('header'); if (hdr) document.documentElement.style.setProperty('--hdr', hdr.offsetHeight + 'px');
+  const hdr = document.querySelector('header.topbar'); if (hdr) document.documentElement.style.setProperty('--hdr', hdr.offsetHeight + 'px');
   const KEY = 'bw.brandTab';
   const setUrl = u => { try { history.replaceState(null, '', u); } catch (e) {} };  // a page with no address (a preview) has no history
   function show(name, remember){

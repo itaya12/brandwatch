@@ -241,7 +241,7 @@ SHIM = r"""(function () {
     var pill = document.createElement('a');
     pill.href = GH || '#'; pill.target = '_blank'; pill.rel = 'noopener';
     pill.innerHTML = '<b style="color:#35C7F2">STATIC DEMO</b> · fictional brands · read-only' + (GH ? ' · GitHub ↗' : '');
-    pill.style.cssText = 'position:fixed;left:14px;bottom:14px;z-index:99998;padding:7px 13px;border-radius:999px;background:rgba(8,16,26,.92);border:1px solid rgba(53,199,242,.55);color:#cfe9f5;font:12px/1.2 system-ui,sans-serif;text-decoration:none;letter-spacing:.02em;box-shadow:0 6px 18px rgba(0,0,0,.4)';
+    pill.style.cssText = 'position:fixed;right:14px;bottom:14px;z-index:99998;padding:7px 13px;border-radius:999px;background:rgba(8,16,26,.92);border:1px solid rgba(53,199,242,.55);color:#cfe9f5;font:12px/1.2 system-ui,sans-serif;text-decoration:none;letter-spacing:.02em;box-shadow:0 6px 18px rgba(0,0,0,.4)';
     document.body.appendChild(pill);
   });
 })();

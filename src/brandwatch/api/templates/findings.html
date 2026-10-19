@@ -58,7 +58,7 @@
   @media (max-width:700px){
     .fhead .keys{display:none}  /* no keyboard on a phone */
     .filters{grid-template-columns:1fr 1fr}.filters .wide{grid-column:span 2}
-    .qtiles a{min-width:calc(33% - 6px)}
+    .qtiles{gap:6px}.qtiles a{min-width:calc(25% - 6px);padding:6px 8px;border-radius:9px}.qtiles .v{font-size:17px}.qtiles .l{font-size:8.5px;letter-spacing:.03em}
     .bulkbar{top:calc(var(--hdr,56px) + 4px);grid-template-columns:1fr}
     #ftable th:nth-child(6),#ftable td:nth-child(6),#ftable th:nth-child(7),#ftable td:nth-child(7){display:none}
   }

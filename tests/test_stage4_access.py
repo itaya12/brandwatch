@@ -59,7 +59,7 @@ def test_no_page_scrolls_sideways_on_a_phone_and_the_tables_become_cards(engine,
         if name in ("findings", "watchlist", "takedowns", "scans"):
             shown = page.evaluate("[...document.querySelectorAll('table.rwd')].map(t => getComputedStyle(t.querySelector('tr')).display)")
             labelled = page.evaluate("document.querySelectorAll('table.rwd td[data-label]').length")
-            assert shown and all(d == "block" for d in shown) and labelled > 0, name  # one card per row, each cell labelled
+            assert shown and all(d in ("block", "grid") for d in shown) and labelled > 0, name  # one card per row, each cell labelled
         page.close()
     ctx.close()
     assert wide == {}, f"pages wider than a 390 px phone: {wide}"

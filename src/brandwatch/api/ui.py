@@ -1912,7 +1912,7 @@ def scans_page(
     filters = {"brand_id": str(bid) if bid else "", "state": st.value if st else "", "kind": kind if kind in JOB_KINDS else ""}
     base_qs = "&".join(f"{k}={v}" for k, v in filters.items() if v)
     return _render(request, "scans.html", user, jobs=rows, brands=brands, filters=filters, total=total, page=page, pages=pages,
-                   per_page=per_page, base_qs=base_qs, JOB_KINDS=JOB_KINDS, JOB_STATES=[s.value for s in JobState], active="brands")  # fmt: skip
+                   per_page=per_page, base_qs=base_qs, JOB_KINDS=JOB_KINDS, JOB_STATES=[s.value for s in JobState], active="scans")  # fmt: skip
 
 
 @router.post("/jobs/{job_id}/retry")

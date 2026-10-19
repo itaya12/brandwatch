@@ -2,7 +2,7 @@
 {% block title %}Takedowns{% endblock %}
 {% block content %}
 <style>
-  @media (max-width:700px){.kpis{grid-template-columns:1fr 1fr}}
+  @media (max-width:700px){table.rwd td:nth-child(6),table.rwd td:nth-child(7){display:none}}  /* reference and abuse contact: on the request page */
   .cta{display:inline-flex;align-items:center;gap:8px;padding:7px 12px;border-radius:9px;border:1px solid var(--crit);color:var(--crit);background:rgba(255,77,77,.08);font-weight:600;font-size:12px;cursor:pointer}
   .cta:hover{background:rgba(255,77,77,.18)}
 </style>
@@ -31,7 +31,7 @@
     <a class="btn" style="padding:4px 12px;font-size:12.5px;{{ 'border-color:var(--accent);color:var(--accent2)' if not filters.brand_id }}" href="/ui/takedowns?state={{ filters.state }}">All brands <b>{{ brand_total }}</b></a>
     {% for b in brand_chips %}<a class="btn" style="padding:4px 12px;font-size:12.5px;{{ 'border-color:var(--accent);color:var(--accent2)' if filters.brand_id == b.id }}" href="/ui/takedowns?state={{ filters.state }}&brand_id={{ b.id }}">{{ b.name }} <b>{{ b.count }}</b></a>{% endfor %}
   </div>{% endif %}
-  <form method="get" action="/ui/takedowns" class="actions" style="margin-bottom:8px">
+  <form method="get" action="/ui/takedowns" class="actions mfoldable" style="margin-bottom:8px">
     <div><label for="t-brand">Brand</label><select id="t-brand" name="brand_id" onchange="this.form.submit()"><option value="">all</option>{% for b in brands %}<option value="{{ b.id }}" {{ 'selected' if filters.brand_id==b.id }}>{{ b.name }}</option>{% endfor %}</select></div>
     <div><label for="t-state">Takedown state</label><select id="t-state" name="state" onchange="this.form.submit()"><option value="">all</option>{% for st in ['none'] + TakedownStates %}<option value="{{ st }}" {{ 'selected' if filters.state==st }}>{{ st|state_label }}</option>{% endfor %}<option value="stale" {{ 'selected' if filters.state=='stale' }}>no answer for 7+ days</option></select></div>
     <div><button type="submit">Apply</button></div>

@@ -734,7 +734,7 @@
   const $ = id => document.getElementById(id);
   const chapters = [...document.querySelectorAll('.ch')];
   const segs = [...document.querySelectorAll('#rail .seg')];
-  const header = document.querySelector('header');
+  const header = document.querySelector('header.topbar');
   const rail = $('rail');
   let railTop = -1;
   const fitRail = () => { const t = header ? header.offsetHeight : 0; if (t !== railTop) { railTop = t; rail.style.top = t + 'px'; } };
