@@ -230,18 +230,6 @@
   <div style="display:flex;flex-wrap:wrap;gap:8px">{% for b in unscanned[:6] %}<a class="btn primary" href="/ui/brands/{{ b.id }}#scan">▶ <bdi>{{ b.name }}</bdi> — set up &amp; start the first scan</a>{% endfor %}</div>
 </div>
 {% endif %}
-{% if todo %}
-<div class="panel" style="margin-bottom:14px;border-color:rgba(255,159,28,.55)" id="action-required">
-  <h2 style="margin-top:0;color:var(--high)">Action required <span class="muted">· {{ todo }} item(s)</span></h2>
-  <div class="actions" style="gap:10px">
-    {% if k.findings_open %}<a class="btn" href="/ui/findings?state=open{{ bq }}"><b data-k="findings_open">{{ k.findings_open }}</b> finding(s) awaiting your verdict →</a>{% endif %}
-    {% if k.confirmed_no_takedown %}<a class="btn" href="/ui/takedowns?state=none{{ bq }}" style="border-color:var(--crit);color:var(--crit)"><b data-k="confirmed_no_takedown">{{ k.confirmed_no_takedown }}</b> confirmed phishing site(s) with no takedown request →</a>{% endif %}
-    {% if k.takedowns_draft %}<a class="btn" href="/ui/takedowns?state=unsent{{ bq }}"><b data-k="takedowns_draft">{{ k.takedowns_draft }}</b> takedown draft(s) not sent yet →</a>{% endif %}
-    {% if k.takedowns_stale %}<a class="btn" href="/ui/takedowns?state=stale{{ bq }}" style="border-color:var(--high);color:var(--high)"><b data-k="takedowns_stale">{{ k.takedowns_stale }}</b> sent, no answer for 7+ days →</a>{% endif %}
-    {% if k.confirmed_unmapped %}<a class="btn" href="/ui/campaigns{{ bq0 }}#confirmed"><b data-k="confirmed_unmapped">{{ k.confirmed_unmapped }}</b> confirmed site(s) whose infrastructure is not mapped →</a>{% endif %}
-  </div>
-</div>
-{% endif %}
 
 <div class="geotabs" role="tablist" aria-label="Which map">
   <button type="button" role="tab" id="tab-geo" aria-selected="true" aria-controls="geo"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.6 2.5 3.9 5.5 3.9 9s-1.3 6.5-3.9 9c-2.6-2.5-3.9-5.5-3.9-9S9.4 5.5 12 3z"/></svg></span><span class="tx">Attack map<span class="n">where the fakes are hosted</span></span></button>
@@ -270,6 +258,20 @@
     <div class="panel" id="mapviews"><h2 style="margin:0">All confirmed sites</h2><div class="sm-skel"><span><span class="radar"></span> drawing the map…</span></div></div>
   </div>
 </section>
+
+{# what waits on the analyst, under the map #}
+{% if todo %}
+<div class="panel" style="margin:14px 0 0;border-color:rgba(255,159,28,.55)" id="action-required">
+  <h2 style="margin-top:0;color:var(--high)">Action required <span class="muted">· {{ todo }} item(s)</span></h2>
+  <div class="actions" style="gap:10px">
+    {% if k.findings_open %}<a class="btn" href="/ui/findings?state=open{{ bq }}"><b data-k="findings_open">{{ k.findings_open }}</b> finding(s) awaiting your verdict →</a>{% endif %}
+    {% if k.confirmed_no_takedown %}<a class="btn" href="/ui/takedowns?state=none{{ bq }}" style="border-color:var(--crit);color:var(--crit)"><b data-k="confirmed_no_takedown">{{ k.confirmed_no_takedown }}</b> confirmed phishing site(s) with no takedown request →</a>{% endif %}
+    {% if k.takedowns_draft %}<a class="btn" href="/ui/takedowns?state=unsent{{ bq }}"><b data-k="takedowns_draft">{{ k.takedowns_draft }}</b> takedown draft(s) not sent yet →</a>{% endif %}
+    {% if k.takedowns_stale %}<a class="btn" href="/ui/takedowns?state=stale{{ bq }}" style="border-color:var(--high);color:var(--high)"><b data-k="takedowns_stale">{{ k.takedowns_stale }}</b> sent, no answer for 7+ days →</a>{% endif %}
+    {% if k.confirmed_unmapped %}<a class="btn" href="/ui/campaigns{{ bq0 }}#confirmed"><b data-k="confirmed_unmapped">{{ k.confirmed_unmapped }}</b> confirmed site(s) whose infrastructure is not mapped →</a>{% endif %}
+  </div>
+</div>
+{% endif %}
 
 {# ================================================================ what waits #}
 <div class="row2">

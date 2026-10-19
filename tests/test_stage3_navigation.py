@@ -108,7 +108,7 @@ def test_the_dashboard_leads_with_what_waits(engine, tmp_path):
         c, ui = _api(app), _ui(app)
         brand, rows = _brand(c, app)
         page = ui.get("/ui/dashboard", params={"brand_id": brand["id"]}).text
-        assert page.index('id="action-required"') < page.index('id="geo"') < page.index('id="new-24h"')
+        assert page.index('id="geo"') < page.index('id="action-required"') < page.index('id="new-24h"')  # the map first, then what waits
         assert 'data-k="findings_open"' in page.split('id="action-required"')[1][:3000]  # refreshed every 20 s
         assert 'id="maptog"' in page and 'id="tab-infra"' in page
         crit = [r for r in rows.values() if r["severity"] in ("critical", "high")]
