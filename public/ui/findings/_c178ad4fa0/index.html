@@ -360,7 +360,7 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
   }
 </style>
 <div class="fhead">
-  <h1>FINDINGS <span class="muted">· 4 match</span></h1>
+  <h1>FINDINGS <span class="muted">· 3 match</span></h1>
   <span class="keys" title="keyboard shortcuts"><kbd>j</kbd><kbd>k</kbd> move · <kbd>x</kbd> select · <kbd>c</kbd> confirm · <kbd>d</kbd> dismiss · <kbd>/</kbd> search · <button type="button" id="keysbtn" class="small" aria-label="keyboard shortcuts">?</button></span>
 </div>
 <p class="intro">A finding is a look-alike that scored Medium or higher and waits for an analyst&#39;s verdict. Everything below the threshold stays on the Watchlist and is re-checked on a schedule.</p>
@@ -371,7 +371,7 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
   <a class="crit " href="?state=open&severity=critical&amp;brand_id=eb019060-41b6-4160-871c-14094ad558a4"><span class="v" data-count="7">0</span><span class="l">critical</span></a>
   <a class="hi " href="?state=open&severity=high&amp;brand_id=eb019060-41b6-4160-871c-14094ad558a4"><span class="v" data-count="1">0</span><span class="l">high</span></a>
   <a class="med " href="?state=open&severity=medium&amp;brand_id=eb019060-41b6-4160-871c-14094ad558a4"><span class="v" data-count="0">0</span><span class="l">medium</span></a>
-  <a class="on" href="?state=open&since=24h&amp;brand_id=eb019060-41b6-4160-871c-14094ad558a4"><span class="v" data-count="4">0</span><span class="l">new in 24h</span></a>
+  <a class="on" href="?state=open&since=24h&amp;brand_id=eb019060-41b6-4160-871c-14094ad558a4"><span class="v" data-count="3">0</span><span class="l">new in 24h</span></a>
   <a class="ok " href="?state=confirmed&amp;brand_id=eb019060-41b6-4160-871c-14094ad558a4"><span class="v" data-count="28">0</span><span class="l">confirmed</span></a>
   <a class="" href="?state=dismissed&amp;brand_id=eb019060-41b6-4160-871c-14094ad558a4"><span class="v" data-count="2">0</span><span class="l">dismissed</span></a>
   
@@ -394,7 +394,7 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
       <div><label for="f-kind">Kind</label><select id="f-kind" name="kind"><option value="">all</option><option value="phishing" >phishing</option><option value="shop" >suspicious shop</option><option value="social" >fake social account</option><option value="ai_answer" >AI answer</option></select></div>
       <div><label for="f-since">Found</label><select id="f-since" name="since"><option value="">any time</option><option value="24h" selected>last 24 hours</option><option value="7d" >last 7 days</option><option value="visit" >since my last visit</option></select></div>
       <div><label for="f-sort">Sort by</label><select id="f-sort" name="sort"><option value="severity" selected>severity, then score</option><option value="score" >score</option><option value="newest" >newest first</option><option value="oldest" >oldest first</option><option value="confidence" >confidence</option></select></div>
-      <div class="go"><button type="submit" class="primary">Apply</button><a class="btn" href="/ui/findings/_9e35fa5890/" title="back to the open queue">Reset</a></div>
+      <div class="go"><button type="submit" class="primary">Apply</button><a class="btn" href="/ui/findings?brand_id=eb019060-41b6-4160-871c-14094ad558a4" title="back to the open queue">Reset</a></div>
       <div><label class="shotsw" title="a screenshot next to every site (off by default: the list stays short)"><input type="checkbox" id="t-shots"> show screenshots</label></div>
     </form>
     
@@ -445,19 +445,6 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
         <td class="mono small muted"><time datetime="2026-10-18T07:29:25.679268" data-local title="2026-10-18T07:29:25.679268 UTC">2026-10-18 07:29</time></td>
       </tr>
       
-      <tr class="sevrow critical" data-host="shopnova-refund.net" data-id="6fc97f7b-606c-4e8f-89dd-19b57358c6ff">
-        <td class="selcol"><input type="checkbox" class="sel" name="ids" value="6fc97f7b-606c-4e8f-89dd-19b57358c6ff" form="bulkform" aria-label="select shopnova-refund.net" title="select for a verdict on many at once"></td>
-        <td class="shotcol"><img class="bigshot" data-src="/_r/600495f586e323.png" alt="screenshot of shopnova-refund.net" title="click to enlarge" data-host="shopnova-refund.net" data-href="/ui/findings/6fc97f7b-606c-4e8f-89dd-19b57358c6ff/"></td>
-        <td><span class="badge sev-critical">critical</span><div style="margin-top:4px"><span class="badge" style="border:1px solid rgba(230,237,245,.35);color:var(--text);background:rgba(230,237,245,.05)" title="the kit hides from scanners: BrandWatch revealed the real page with its cloaking probes">CLOAKED KIT</span></div></td>
-        <td><a href="/ui/findings/6fc97f7b-606c-4e8f-89dd-19b57358c6ff/" class="flink"><span class="mono" dir="ltr">shopnova-refund.net</span></a><div class="small muted">URL path · found by Facebook pages / Instagram profiles · <a href="/ui/findings/6fc97f7b-606c-4e8f-89dd-19b57358c6ff/#network" title="site & network investigation: servers, WHOIS history, urlscan">network</a> · <a href="/ui/candidates/c1a549d4-c861-446e-8919-15dc44930f73/" title="domain timeline on the watchlist">timeline</a></div></td>
-        <td class="mono" style="white-space:nowrap">89<span class="scorebar"><i data-w="89"></i></span>
-          <span style="margin-left:6px"><a class="pill" href="https://www.virustotal.com/gui/domain/shopnova-refund.net" target="_blank" rel="noreferrer noopener" title="not in VirusTotal yet — unknown is never treated as clean" style="font-size:10px;color:var(--muted)">VT —</a></span></td>
-        <td><div class="ring sm" data-p="100" style="--c:var(--accent)" title="confidence in the evidence: 100%"><div>100</div></div></td>
-        <td class="small" style="max-width:360px"><span class="pill g-visual" title="favicon mmh3 -2029202433 equals the brand&#39;s favicon hash · +22 pts">identical favicon</span> <span class="pill g-visual" title="homepage screenshot is 99% similar to the brand&#39;s (pHash) · +18 pts">looks like the real site</span> <span class="pill g-infrastructure" title="shares server 203.0.113.102 with known phishing of this brand · +15 pts">shares a server with phishing</span> <span class="pill g-infrastructure" title="shares infrastructure with an investigated campaign of this brand · +15 pts">linked to a mapped attacker</span> <a href="/ui/findings/6fc97f7b-606c-4e8f-89dd-19b57358c6ff/" class="muted small">+11 more</a></td>
-        <td><span class="badge state st-open" title="a finding no analyst has judged yet">awaiting verdict</span></td>
-        <td class="mono small muted"><time datetime="2026-10-18T06:29:19.925092" data-local title="2026-10-18T06:29:19.925092 UTC">2026-10-18 06:29</time></td>
-      </tr>
-      
       <tr class="sevrow high" data-host="help@shopnova-care.net" data-id="de838d76-5b19-4caf-9212-8d9a60589653">
         <td class="selcol"><input type="checkbox" class="sel" name="ids" value="de838d76-5b19-4caf-9212-8d9a60589653" form="bulkform" aria-label="select help@shopnova-care.net" title="select for a verdict on many at once"></td>
         <td class="shotcol"><div class="noshot">no screenshot (the page did not load)</div></td>
@@ -474,8 +461,8 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
       </tbody>
     </table>
     
-<div class="muted small" style="margin-top:8px">4 in total</div>
-    <div class="small muted" style="margin-top:8px">Download these 4: <a href="/ui/findings?brand_id=eb019060-41b6-4160-871c-14094ad558a4&amp;state=open&amp;since=24h&amp;sort=severity&fmt=csv">CSV</a> · <a href="/ui/findings?brand_id=eb019060-41b6-4160-871c-14094ad558a4&amp;state=open&amp;since=24h&amp;sort=severity&fmt=json">JSON</a> <span>(the same filters, every page)</span></div>
+<div class="muted small" style="margin-top:8px">3 in total</div>
+    <div class="small muted" style="margin-top:8px">Download these 3: <a href="/ui/findings?brand_id=eb019060-41b6-4160-871c-14094ad558a4&amp;state=open&amp;since=24h&amp;sort=severity&fmt=csv">CSV</a> · <a href="/ui/findings?brand_id=eb019060-41b6-4160-871c-14094ad558a4&amp;state=open&amp;since=24h&amp;sort=severity&fmt=json">JSON</a> <span>(the same filters, every page)</span></div>
     
   </div>
 </div>

@@ -320,11 +320,11 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
 <p class="intro">The append-only audit trail: who did what, when, old → new, and why. The database itself refuses to edit or delete it.</p>
 
 <div class="kpis">
-  <div class="kpi"><div class="v" data-count="200">0</div><div class="l">events (latest)</div></div>
+  <div class="kpi"><div class="v" data-count="193">0</div><div class="l">events (latest)</div></div>
   <div class="kpi"><div class="v" data-count="52">0</div><div class="l">analyst actions</div></div>
-  <div class="kpi"><div class="v" data-count="148">0</div><div class="l">system actions</div></div>
+  <div class="kpi"><div class="v" data-count="141">0</div><div class="l">system actions</div></div>
   <div class="kpi"><div class="v" data-count="25">0</div><div class="l">verdicts recorded</div></div>
-  <div class="kpi"><div class="v" data-count="9">0</div><div class="l">logins (24h)</div></div>
+  <div class="kpi"><div class="v" data-count="6">0</div><div class="l">logins (24h)</div></div>
 </div>
 
 <form method="get" action="/ui/activity/" class="afilters" style="margin-top:14px">
@@ -344,7 +344,7 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
 
 <div class="grid actg" style="grid-template-columns:2.2fr 1fr;margin-top:14px">
   <div class="panel">
-    <div class="small muted" style="margin-bottom:6px">2723 events</div>
+    <div class="small muted" style="margin-bottom:6px">2730 events</div>
     <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px" id="chips">
       <button type="button" class="chip on" data-cat="notable" title="everything except sign-ins" aria-pressed="true">notable</button>
       <button type="button" class="chip" data-cat="*" aria-pressed="false">all</button>
@@ -357,12 +357,12 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
       <div class="ev " data-cat="user" data-notable="0" style="--r:0;display:none">
         <div class="av " title="admin">AD</div>
         <div>
-          <div class="what"><span class="muted">admin</span> <b>user</b> · login <span class="pill" title="15 consecutive events, first 2026-10-18 21:18">×15</span>
+          <div class="what"><span class="muted">admin</span> <b>user</b> · login <span class="pill" title="22 consecutive events, first 2026-10-18 21:18">×22</span>
             
             <span class="muted small">user bc089017</span></div>
           
         </div>
-        <div class="when"><time datetime="2026-10-19T06:11:35.569127+00:00" data-local title="2026-10-19T06:11:35.569127+00:00 UTC">2026-10-19 06:11</time><div><a class="small" href="/ui/activity/_d2793a420a/" title="every event about this user">history</a></div></div>
+        <div class="when"><time datetime="2026-10-19T06:44:55.725067+00:00" data-local title="2026-10-19T06:44:55.725067+00:00 UTC">2026-10-19 06:44</time><div><a class="small" href="/ui/activity/_d2793a420a/" title="every event about this user">history</a></div></div>
       </div>
       
       <div class="day" data-day="2026-10-18">2026-10-18</div>
@@ -3398,118 +3398,6 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
       </div>
       
       
-      <div class="ev " data-cat="notification" data-notable="1" style="--r:30">
-        <div class="av sys" title="system">SYS</div>
-        <div>
-          <div class="what"><span class="muted">system</span> <b>notification</b> · sent
-            
-            <span class="muted small">notification koinpilot.io</span></div>
-          
-          
-          <div class="diff"><span class="new">channel: log · subject: [BrandWatch] CRITICAL rescored: koinpilot.io impersonates CoinPilot · kind: finding</span>
-            </div>
-          
-        </div>
-        <div class="when"><time datetime="2026-10-14T09:49:03.744975+00:00" data-local title="2026-10-14T09:49:03.744975+00:00 UTC">2026-10-14 09:49</time><div><a class="small" href="/ui/activity?object_id=4aa4555a-8a52-4bab-a6da-8427753c97d3" title="every event about this notification">history</a></div></div>
-      </div>
-      
-      
-      <div class="ev " data-cat="finding" data-notable="1" style="--r:30">
-        <div class="av sys" title="system">SYS</div>
-        <div>
-          <div class="what"><span class="muted">system</span> <b>finding</b> · rescored
-            
-            <span class="muted small">finding <a href="/ui/findings/4aa4555a-8a52-4bab-a6da-8427753c97d3/" class="mono">koinpilot.io ↗</a></span></div>
-          
-          
-          <div class="diff"><span class="old">severity: critical · confidence: 90.0</span> → <span class="new">severity: critical · score: 75 · confidence: 100.0 · scoring version: v7-f1ba3ebf</span>
-            <div style="color:var(--text);opacity:.8;margin-top:2px">“12 signals fired; rules: [&#39;pixel_clone_login&#39;, &#39;campaign_linked_login&#39;, &#39;affiliate_redirect_verdict&#39;, &#39;redirect_service_verdict&#39;]; already confirmed by an analyst — score history appended”</div></div>
-          
-        </div>
-        <div class="when"><time datetime="2026-10-14T09:49:03.730855+00:00" data-local title="2026-10-14T09:49:03.730855+00:00 UTC">2026-10-14 09:49</time><div><a class="small" href="/ui/activity?object_id=4aa4555a-8a52-4bab-a6da-8427753c97d3" title="every event about this finding">history</a></div></div>
-      </div>
-      
-      
-      <div class="ev " data-cat="notification" data-notable="1" style="--r:30">
-        <div class="av sys" title="system">SYS</div>
-        <div>
-          <div class="what"><span class="muted">system</span> <b>notification</b> · sent
-            
-            <span class="muted small">notification vaultpay-verify.com</span></div>
-          
-          
-          <div class="diff"><span class="new">channel: log · subject: [BrandWatch] CRITICAL rescored: vaultpay-verify.com impersonates VaultPay · kind: finding</span>
-            </div>
-          
-        </div>
-        <div class="when"><time datetime="2026-10-14T09:49:03.484665+00:00" data-local title="2026-10-14T09:49:03.484665+00:00 UTC">2026-10-14 09:49</time><div><a class="small" href="/ui/activity?object_id=9e972300-3ba9-4bc8-9db8-d56527f3cc8e" title="every event about this notification">history</a></div></div>
-      </div>
-      
-      
-      <div class="ev " data-cat="finding" data-notable="1" style="--r:30">
-        <div class="av sys" title="system">SYS</div>
-        <div>
-          <div class="what"><span class="muted">system</span> <b>finding</b> · rescored
-            
-            <span class="muted small">finding <a href="/ui/findings/9e972300-3ba9-4bc8-9db8-d56527f3cc8e/" class="mono">vaultpay-verify.com ↗</a></span></div>
-          
-          
-          <div class="diff"><span class="old">severity: critical · confidence: 90.0</span> → <span class="new">severity: critical · score: 77 · confidence: 100.0 · scoring version: v7-f1ba3ebf</span>
-            <div style="color:var(--text);opacity:.8;margin-top:2px">“16 signals fired; rules: [&#39;pixel_clone_login&#39;, &#39;brand_title_login&#39;, &#39;campaign_linked_login&#39;, &#39;looks_like_brand_verdict&#39;]; already confirmed by an analyst — score history appended”</div></div>
-          
-        </div>
-        <div class="when"><time datetime="2026-10-14T09:49:03.474227+00:00" data-local title="2026-10-14T09:49:03.474227+00:00 UTC">2026-10-14 09:49</time><div><a class="small" href="/ui/activity?object_id=9e972300-3ba9-4bc8-9db8-d56527f3cc8e" title="every event about this finding">history</a></div></div>
-      </div>
-      
-      
-      <div class="ev " data-cat="notification" data-notable="1" style="--r:30">
-        <div class="av sys" title="system">SYS</div>
-        <div>
-          <div class="what"><span class="muted">system</span> <b>notification</b> · sent
-            
-            <span class="muted small">notification cooinpilot.io</span></div>
-          
-          
-          <div class="diff"><span class="new">channel: log · subject: [BrandWatch] CRITICAL rescored: cooinpilot.io impersonates CoinPilot · kind: finding</span>
-            </div>
-          
-        </div>
-        <div class="when"><time datetime="2026-10-14T09:49:03.148625+00:00" data-local title="2026-10-14T09:49:03.148625+00:00 UTC">2026-10-14 09:49</time><div><a class="small" href="/ui/activity?object_id=6a5a2896-2bbf-4f37-b51a-6df99b0d48fe" title="every event about this notification">history</a></div></div>
-      </div>
-      
-      
-      <div class="ev " data-cat="finding" data-notable="1" style="--r:30">
-        <div class="av sys" title="system">SYS</div>
-        <div>
-          <div class="what"><span class="muted">system</span> <b>finding</b> · rescored
-            
-            <span class="muted small">finding <a href="/ui/findings/6a5a2896-2bbf-4f37-b51a-6df99b0d48fe/" class="mono">cooinpilot.io ↗</a></span></div>
-          
-          
-          <div class="diff"><span class="old">severity: critical · confidence: 90.0</span> → <span class="new">severity: critical · score: 75 · confidence: 100.0 · scoring version: v7-f1ba3ebf</span>
-            <div style="color:var(--text);opacity:.8;margin-top:2px">“12 signals fired; rules: [&#39;pixel_clone_login&#39;, &#39;campaign_linked_login&#39;, &#39;affiliate_redirect_verdict&#39;, &#39;redirect_service_verdict&#39;]; already confirmed by an analyst — score history appended”</div></div>
-          
-        </div>
-        <div class="when"><time datetime="2026-10-14T09:49:03.083009+00:00" data-local title="2026-10-14T09:49:03.083009+00:00 UTC">2026-10-14 09:49</time><div><a class="small" href="/ui/activity?object_id=6a5a2896-2bbf-4f37-b51a-6df99b0d48fe" title="every event about this finding">history</a></div></div>
-      </div>
-      
-      
-      <div class="ev " data-cat="notification" data-notable="1" style="--r:30">
-        <div class="av sys" title="system">SYS</div>
-        <div>
-          <div class="what"><span class="muted">system</span> <b>notification</b> · sent
-            
-            <span class="muted small">notification fd5a72c5</span></div>
-          
-          
-          <div class="diff"><span class="new">channel: log · subject: [BrandWatch] CRITICAL rescored: coinplot.io impersonates CoinPilot · kind: finding</span>
-            </div>
-          
-        </div>
-        <div class="when"><time datetime="2026-10-14T09:49:01.478860+00:00" data-local title="2026-10-14T09:49:01.478860+00:00 UTC">2026-10-14 09:49</time><div><a class="small" href="/ui/activity?object_id=fd5a72c5-532f-4614-a113-c4d848d99888" title="every event about this notification">history</a></div></div>
-      </div>
-      
-      
     </div>
     <div class="more"><button type="button" id="more" style="display:none">Show older events</button>
       
@@ -3520,38 +3408,38 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
       <h2>By category</h2>
       
       
-      <div class="hbar"><span>user</span><div class="bar"><i data-w="100"></i></div><b>111</b></div>
+      <div class="hbar"><span>user</span><div class="bar"><i data-w="100"></i></div><b>118</b></div>
       
-      <div class="hbar"><span>finding</span><div class="bar"><i data-w="43"></i></div><b>48</b></div>
+      <div class="hbar"><span>finding</span><div class="bar"><i data-w="38"></i></div><b>45</b></div>
       
-      <div class="hbar"><span>intel</span><div class="bar"><i data-w="24"></i></div><b>27</b></div>
+      <div class="hbar"><span>intel</span><div class="bar"><i data-w="23"></i></div><b>27</b></div>
       
-      <div class="hbar"><span>report</span><div class="bar"><i data-w="23"></i></div><b>25</b></div>
+      <div class="hbar"><span>report</span><div class="bar"><i data-w="21"></i></div><b>25</b></div>
       
-      <div class="hbar"><span>investigation</span><div class="bar"><i data-w="23"></i></div><b>25</b></div>
+      <div class="hbar"><span>investigation</span><div class="bar"><i data-w="21"></i></div><b>25</b></div>
       
-      <div class="hbar"><span>notification</span><div class="bar"><i data-w="22"></i></div><b>24</b></div>
+      <div class="hbar"><span>campaign</span><div class="bar"><i data-w="20"></i></div><b>24</b></div>
       
-      <div class="hbar"><span>campaign</span><div class="bar"><i data-w="22"></i></div><b>24</b></div>
+      <div class="hbar"><span>notification</span><div class="bar"><i data-w="17"></i></div><b>20</b></div>
       
       <div class="hbar"><span>Brand use</span><div class="bar"><i data-w="8"></i></div><b>9</b></div>
       
     </div>
     <div class="panel" style="margin-top:14px">
       <h2>Activity · 14 days</h2>
-      <svg class="spark" data-spark='{"series": [{"color": "#35C7F2", "values": [0, 0, 0, 0, 0, 0, 0, 0, 143, 0, 0, 0, 56, 1]}]}'></svg>
+      <svg class="spark" data-spark='{"series": [{"color": "#35C7F2", "values": [0, 0, 0, 0, 0, 0, 0, 0, 136, 0, 0, 0, 56, 1]}]}'></svg>
     </div>
     <div class="panel" style="margin-top:14px">
       <h2>Most active</h2>
       
       <div style="display:grid;grid-template-columns:1fr 40px;gap:8px;align-items:center;margin:8px 0">
         <div><div class="small mono">admin</div><div class="bar" style="height:6px;margin-top:3px"><i data-w="100"></i></div></div>
-        <div class="mono small right">177</div>
+        <div class="mono small right">184</div>
       </div>
       
       <div style="display:grid;grid-template-columns:1fr 40px;gap:8px;align-items:center;margin:8px 0">
-        <div><div class="small mono">system</div><div class="bar" style="height:6px;margin-top:3px"><i data-w="69"></i></div></div>
-        <div class="mono small right">123</div>
+        <div><div class="small mono">system</div><div class="bar" style="height:6px;margin-top:3px"><i data-w="63"></i></div></div>
+        <div class="mono small right">116</div>
       </div>
       
     </div>

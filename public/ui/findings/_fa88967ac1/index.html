@@ -360,20 +360,20 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
   }
 </style>
 <div class="fhead">
-  <h1>FINDINGS <span class="muted">· 1 open</span></h1>
+  <h1>FINDINGS <span class="muted">· 0 match</span></h1>
   <span class="keys" title="keyboard shortcuts"><kbd>j</kbd><kbd>k</kbd> move · <kbd>x</kbd> select · <kbd>c</kbd> confirm · <kbd>d</kbd> dismiss · <kbd>/</kbd> search · <button type="button" id="keysbtn" class="small" aria-label="keyboard shortcuts">?</button></span>
 </div>
 <p class="intro">A finding is a look-alike that scored Medium or higher and waits for an analyst&#39;s verdict. Everything below the threshold stays on the Watchlist and is re-checked on a schedule.</p>
 
 
 <div class="qtiles" aria-label="Queue">
-  <a class="cy on" href="?state=open&amp;brand_id=a7b5cb5c-e4a0-495d-b6c9-3ac5209ac3b2"><span class="v" data-count="1">0</span><span class="l">awaiting verdict</span></a>
-  <a class="crit " href="?state=open&severity=critical&amp;brand_id=a7b5cb5c-e4a0-495d-b6c9-3ac5209ac3b2"><span class="v" data-count="1">0</span><span class="l">critical</span></a>
-  <a class="hi " href="?state=open&severity=high&amp;brand_id=a7b5cb5c-e4a0-495d-b6c9-3ac5209ac3b2"><span class="v" data-count="0">0</span><span class="l">high</span></a>
-  <a class="med " href="?state=open&severity=medium&amp;brand_id=a7b5cb5c-e4a0-495d-b6c9-3ac5209ac3b2"><span class="v" data-count="0">0</span><span class="l">medium</span></a>
-  <a class="" href="?state=open&since=24h&amp;brand_id=a7b5cb5c-e4a0-495d-b6c9-3ac5209ac3b2"><span class="v" data-count="1">0</span><span class="l">new in 24h</span></a>
-  <a class="ok " href="?state=confirmed&amp;brand_id=a7b5cb5c-e4a0-495d-b6c9-3ac5209ac3b2"><span class="v" data-count="4">0</span><span class="l">confirmed</span></a>
-  <a class="" href="?state=dismissed&amp;brand_id=a7b5cb5c-e4a0-495d-b6c9-3ac5209ac3b2"><span class="v" data-count="0">0</span><span class="l">dismissed</span></a>
+  <a class="cy " href="?state=open"><span class="v" data-count="9">0</span><span class="l">awaiting verdict</span></a>
+  <a class="crit " href="?state=open&severity=critical"><span class="v" data-count="8">0</span><span class="l">critical</span></a>
+  <a class="hi " href="?state=open&severity=high"><span class="v" data-count="1">0</span><span class="l">high</span></a>
+  <a class="med on" href="?state=open&severity=medium"><span class="v" data-count="0">0</span><span class="l">medium</span></a>
+  <a class="" href="?state=open&since=24h"><span class="v" data-count="4">0</span><span class="l">new in 24h</span></a>
+  <a class="ok " href="?state=confirmed"><span class="v" data-count="39">0</span><span class="l">confirmed</span></a>
+  <a class="" href="?state=dismissed"><span class="v" data-count="2">0</span><span class="l">dismissed</span></a>
   
 </div>
 
@@ -382,73 +382,42 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
     
     
     <div class="bchips">
-      <a class="btn " href="/ui/findings/_4fa8d27562/">All brands <b>9</b></a>
-      <a class="btn " href="/ui/findings/_7421370595/"><bdi>ShopNova</bdi> <b>8</b></a><a class="btn " href="/ui/findings/_535d803084/"><bdi>ShopNova · Israel</bdi> <b>2</b></a><a class="btn " href="/ui/findings/_1916fcf463/"><bdi>CoinPilot</bdi> <b>0</b></a><a class="btn on" href="/ui/findings/_2dccfe6086/"><bdi>VaultPay</bdi> <b>1</b></a>
+      <a class="btn on" href="/ui/findings?brand_id=&amp;state=open&amp;severity=medium&amp;kind=&amp;q=&amp;since=&amp;sort=severity">All brands <b>0</b></a>
+      <a class="btn " href="/ui/findings?brand_id=eb019060-41b6-4160-871c-14094ad558a4&amp;state=open&amp;severity=medium&amp;kind=&amp;q=&amp;since=&amp;sort=severity"><bdi>ShopNova</bdi> <b>0</b></a><a class="btn " href="/ui/findings?brand_id=1909c3e0-295d-4d38-bb7e-a2b05c9287d4&amp;state=open&amp;severity=medium&amp;kind=&amp;q=&amp;since=&amp;sort=severity"><bdi>ShopNova · Israel</bdi> <b>0</b></a><a class="btn " href="/ui/findings?brand_id=f46bffed-4795-4cdd-ad8f-abd3d26fcc60&amp;state=open&amp;severity=medium&amp;kind=&amp;q=&amp;since=&amp;sort=severity"><bdi>CoinPilot</bdi> <b>0</b></a><a class="btn " href="/ui/findings?brand_id=a7b5cb5c-e4a0-495d-b6c9-3ac5209ac3b2&amp;state=open&amp;severity=medium&amp;kind=&amp;q=&amp;since=&amp;sort=severity"><bdi>VaultPay</bdi> <b>0</b></a>
     </div>
     <form method="get" action="/ui/findings/" class="filters" id="filters">
-      <input type="hidden" name="brand_id" value="a7b5cb5c-e4a0-495d-b6c9-3ac5209ac3b2">
+      <input type="hidden" name="brand_id" value="">
       <div class="wide"><label for="q">Search host</label><input id="q" name="q" value="" placeholder="part of a host name, e.g. login" autocomplete="off" maxlength="120"></div>
       <div><label for="f-state">State</label><select id="f-state" name="state"><option value="">all</option><option value="open" selected>awaiting verdict</option><option value="confirmed" >confirmed phishing</option><option value="dismissed" >dismissed</option><option value="snoozed" >snoozed</option></select></div>
       
-      <div><label for="f-sev">Severity</label><select id="f-sev" name="severity"><option value="">all</option><option value="low" >low</option><option value="medium" >medium</option><option value="high" >high</option><option value="critical" >critical</option></select></div>
+      <div><label for="f-sev">Severity</label><select id="f-sev" name="severity"><option value="">all</option><option value="low" >low</option><option value="medium" selected>medium</option><option value="high" >high</option><option value="critical" >critical</option></select></div>
       <div><label for="f-kind">Kind</label><select id="f-kind" name="kind"><option value="">all</option><option value="phishing" >phishing</option><option value="shop" >suspicious shop</option><option value="social" >fake social account</option><option value="ai_answer" >AI answer</option></select></div>
       <div><label for="f-since">Found</label><select id="f-since" name="since"><option value="">any time</option><option value="24h" >last 24 hours</option><option value="7d" >last 7 days</option><option value="visit" >since my last visit</option></select></div>
       <div><label for="f-sort">Sort by</label><select id="f-sort" name="sort"><option value="severity" selected>severity, then score</option><option value="score" >score</option><option value="newest" >newest first</option><option value="oldest" >oldest first</option><option value="confidence" >confidence</option></select></div>
-      <div class="go"><button type="submit" class="primary">Apply</button></div>
+      <div class="go"><button type="submit" class="primary">Apply</button><a class="btn" href="/ui/findings/" title="back to the open queue">Reset</a></div>
       <div><label class="shotsw" title="a screenshot next to every site (off by default: the list stays short)"><input type="checkbox" id="t-shots"> show screenshots</label></div>
     </form>
     
     
     
     
-    <form id="bulkform" method="post" action="/ui/findings/bulk" class="bulkbar" hidden>
-      <input type="hidden" name="next" value="/ui/findings?brand_id=a7b5cb5c-e4a0-495d-b6c9-3ac5209ac3b2">
-      <b id="bulkn">0 selected</b>
-      <div class="row">
-        <input name="reason" list="reasons" placeholder="reason (optional, kept in the audit log)" maxlength="2000" aria-label="reason">
-        <datalist id="reasons"><option value="cloned login page"><option value="legitimate site, not a look-alike"><option value="parked domain"><option value="domain expired, no site"><option value="not about the brand"><option value="duplicate of another finding"></datalist>
-        <button type="submit" name="action" value="confirm" class="primary" data-confirm="Confirm {n} finding(s) as phishing? They move to Attack infrastructure; map and investigate them there with MAP ALL and INVESTIGATE ALL." data-confirm-count=".sel:checked" data-confirm-title="Confirm phishing" data-confirm-ok="✓ Confirm phishing">✓ Confirm phishing</button>
-        <label class="chk" title="why it is not phishing — kept with the verdict and used to train the classifier">as <select name="verdict" aria-label="verdict when dismissing"><option value="legitimate">a legitimate site</option><option value="suspicious">suspicious, but not phishing</option><option value="unknown">cannot tell</option></select></label>
-        <label class="chk" title="the registrable domain of each dismissed finding is allowlisted for its brand: no scan flags it, or a subdomain of it, again"><input type="checkbox" name="whitelist"> also allowlist the domain</label>
-        <button type="submit" name="action" value="dismiss" data-confirm="Dismiss {n} finding(s) as not phishing? They leave the open list; the verdict is kept and teaches the classifier." data-confirm-count=".sel:checked" data-confirm-title="Not phishing" data-confirm-ok="✕ Dismiss them" data-confirm-danger>✕ Not phishing</button>
-        <button type="button" id="bulkclear" class="small">clear</button>
-      </div>
-    </form>
     
-    <table id="ftable" class="rwd">
-      <thead><tr><th class="selcol"><input type="checkbox" id="selall" aria-label="select every finding on this page" title="select every finding on this page"></th><th class="shotcol">Screenshot</th><th>Severity</th><th>Host</th><th>Score</th><th>Conf.</th><th>Signals</th><th>State</th><th>Found</th></tr></thead>
-      <tbody>
-      
-      <tr class="sevrow critical" data-host="account-review-center.com" data-id="b8ee9a9b-16e7-4c1f-be0b-6756491abd64">
-        <td class="selcol"><input type="checkbox" class="sel" name="ids" value="b8ee9a9b-16e7-4c1f-be0b-6756491abd64" form="bulkform" aria-label="select account-review-center.com" title="select for a verdict on many at once"></td>
-        <td class="shotcol"><img class="bigshot" data-src="/_r/63b7ec860ba3dd.png" alt="screenshot of account-review-center.com" title="click to enlarge" data-host="account-review-center.com" data-href="/ui/findings/b8ee9a9b-16e7-4c1f-be0b-6756491abd64/"></td>
-        <td><span class="badge sev-critical">critical</span></td>
-        <td><a href="/ui/findings/b8ee9a9b-16e7-4c1f-be0b-6756491abd64/" class="flink"><span class="mono" dir="ltr">account-review-center.com</span></a><div class="small muted">domain name · found by Facebook / Instagram ads · <a href="/ui/findings/b8ee9a9b-16e7-4c1f-be0b-6756491abd64/#network" title="site & network investigation: servers, WHOIS history, urlscan">network</a> · <a href="/ui/candidates/51cc1b96-5331-43c9-af84-b8c0fa977125/" title="domain timeline on the watchlist">timeline</a></div></td>
-        <td class="mono" style="white-space:nowrap">75<span class="scorebar"><i data-w="75"></i></span>
-          <span style="margin-left:6px"><a class="pill" href="https://www.virustotal.com/gui/domain/account-review-center.com" target="_blank" rel="noreferrer noopener" title="not in VirusTotal yet — unknown is never treated as clean" style="font-size:10px;color:var(--muted)">VT —</a></span></td>
-        <td><div class="ring sm" data-p="100" style="--c:var(--accent)" title="confidence in the evidence: 100%"><div>100</div></div></td>
-        <td class="small" style="max-width:360px"><span class="pill g-visual" title="favicon mmh3 1401845590 equals the brand&#39;s favicon hash · +22 pts">identical favicon</span> <span class="pill g-visual" title="homepage screenshot is 100% similar to the brand&#39;s (pHash) · +18 pts">looks like the real site</span> <span class="pill g-infrastructure" title="shares infrastructure with an investigated campaign of this brand · +15 pts">linked to a mapped attacker</span> <span class="pill g-infrastructure" title="tracking id UA-777001-1 also present on known phishing pages · +15 pts">same tracking ID as phishing</span> <a href="/ui/findings/b8ee9a9b-16e7-4c1f-be0b-6756491abd64/" class="muted small">+10 more</a></td>
-        <td><span class="badge state st-open" title="a finding no analyst has judged yet">awaiting verdict</span></td>
-        <td class="mono small muted"><time datetime="2026-10-18T17:10:05.060931" data-local title="2026-10-18T17:10:05.060931 UTC">2026-10-18 17:10</time></td>
-      </tr>
-      
-      </tbody>
-    </table>
     
-<div class="muted small" style="margin-top:8px">1 in total</div>
-    <div class="small muted" style="margin-top:8px">Download these 1: <a href="/ui/findings?brand_id=a7b5cb5c-e4a0-495d-b6c9-3ac5209ac3b2&amp;state=open&amp;sort=severity&fmt=csv">CSV</a> · <a href="/ui/findings?brand_id=a7b5cb5c-e4a0-495d-b6c9-3ac5209ac3b2&amp;state=open&amp;sort=severity&fmt=json">JSON</a> <span>(the same filters, every page)</span></div>
+    
+    <p class="muted">Nothing matches these filters. <a href="/ui/findings/">Back to the open queue</a> — 9 findings wait for a verdict.</p>
+    
     
   </div>
 </div>
 
 <details class="fstats" id="fstats">
-  <summary><h2 style="margin:0">Statistics <span class="muted">· across open findings of the chosen brand</span></h2><span class="tog o">show ▾</span><span class="tog c">hide ▴</span></summary>
+  <summary><h2 style="margin:0">Statistics <span class="muted">· across open findings</span></h2><span class="tog o">show ▾</span><span class="tog c">hide ▴</span></summary>
 <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(260px,1fr))">
   <div class="panel">
     <h2>Open by severity <span class="muted">· Medium ≥ 25 · High ≥ 50 · Critical ≥ 75</span></h2>
     <div class="donut-wrap">
-      <svg class="donut" data-donut='[{"color": "#FF4D4D", "key": "critical", "label": "critical", "value": 1}]' data-center="open"></svg>
-      <div class="legend"><div><i style="background:#FF4D4D"></i>critical<b>1</b></div>
+      <svg class="donut" data-donut='[{"color": "#FF4D4D", "key": "critical", "label": "critical", "value": 8}, {"color": "#FF9F1C", "key": "high", "label": "high", "value": 1}]' data-center="open"></svg>
+      <div class="legend"><div><i style="background:#FF4D4D"></i>critical<b>8</b></div><div><i style="background:#FF9F1C"></i>high<b>1</b></div>
         </div>
     </div>
   </div>
@@ -456,17 +425,31 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
     <h2>Why things are flagged <span class="muted">· signals fired per group across open findings</span></h2>
     
     
-    <div class="hbar"><span>Behaviour</span><div class="bar"><i data-w="100"></i></div><b>25</b></div>
+    <div class="hbar"><span>Behaviour</span><div class="bar"><i data-w="100"></i></div><b>134</b></div>
     
-    <div class="hbar"><span>Visual</span><div class="bar"><i data-w="100"></i></div><b>25</b></div>
+    <div class="hbar"><span>Visual</span><div class="bar"><i data-w="92"></i></div><b>123</b></div>
     
-    <div class="hbar"><span>Infrastructure</span><div class="bar"><i data-w="64"></i></div><b>16</b></div>
+    <div class="hbar"><span>Infrastructure</span><div class="bar"><i data-w="58"></i></div><b>78</b></div>
     
-    <div class="hbar"><span>Identity</span><div class="bar"><i data-w="28"></i></div><b>7</b></div>
+    <div class="hbar"><span>Identity</span><div class="bar"><i data-w="47"></i></div><b>63</b></div>
     
-    <div class="hbar"><span>Reputation</span><div class="bar"><i data-w="12"></i></div><b>3</b></div>
+    <div class="hbar"><span>Freshness</span><div class="bar"><i data-w="28"></i></div><b>37</b></div>
     
-    <div class="hbar"><span>Freshness</span><div class="bar"><i data-w="8"></i></div><b>2</b></div>
+    <div class="hbar"><span>Reputation</span><div class="bar"><i data-w="14"></i></div><b>19</b></div>
+    
+    <div class="hbar"><span>Seller</span><div class="bar"><i data-w="13"></i></div><b>17</b></div>
+    
+    <div class="hbar"><span>Contact &amp; policies</span><div class="bar"><i data-w="9"></i></div><b>12</b></div>
+    
+    <div class="hbar"><span>Offer</span><div class="bar"><i data-w="7"></i></div><b>10</b></div>
+    
+    <div class="hbar"><span>Evasion</span><div class="bar"><i data-w="4"></i></div><b>5</b></div>
+    
+    <div class="hbar"><span>AI reading</span><div class="bar"><i data-w="3"></i></div><b>4</b></div>
+    
+    <div class="hbar"><span>Brand use</span><div class="bar"><i data-w="1"></i></div><b>2</b></div>
+    
+    <div class="hbar"><span>Proof</span><div class="bar"><i data-w="1"></i></div><b>2</b></div>
     
     
   </div>
@@ -476,75 +459,75 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
       
       <i data-h="0" style="--c:#2ECC71" title="0–9: 0"><span>0</span></i>
       <i data-h="0" style="--c:#2ECC71" title="10–19: 0"><span>10</span></i>
-      <i data-h="0" style="--c:#F5C518" title="20–29: 0"><span>20</span></i>
-      <i data-h="0" style="--c:#F5C518" title="30–39: 0"><span>30</span></i>
+      <i data-h="22" style="--c:#F5C518" title="20–29: 4"><b>4</b><span>20</span></i>
+      <i data-h="6" style="--c:#F5C518" title="30–39: 1"><b>1</b><span>30</span></i>
       <i data-h="0" style="--c:#F5C518" title="40–49: 0"><span>40</span></i>
-      <i data-h="0" style="--c:#FF9F1C" title="50–59: 0"><span>50</span></i>
-      <i data-h="0" style="--c:#FF9F1C" title="60–69: 0"><span>60</span></i>
-      <i data-h="100" style="--c:#FF4D4D" title="70–79: 4"><b>4</b><span>70</span></i>
-      <i data-h="25" style="--c:#FF4D4D" title="80–89: 1"><b>1</b><span>80</span></i>
-      <i data-h="0" style="--c:#FF4D4D" title="90–99: 0"><span>90</span></i>
+      <i data-h="22" style="--c:#FF9F1C" title="50–59: 4"><b>4</b><span>50</span></i>
+      <i data-h="11" style="--c:#FF9F1C" title="60–69: 2"><b>2</b><span>60</span></i>
+      <i data-h="100" style="--c:#FF4D4D" title="70–79: 18"><b>18</b><span>70</span></i>
+      <i data-h="78" style="--c:#FF4D4D" title="80–89: 14"><b>14</b><span>80</span></i>
+      <i data-h="28" style="--c:#FF4D4D" title="90–99: 5"><b>5</b><span>90</span></i>
     </div>
   </div>
   <div class="panel">
     <h2>New findings · 14 days</h2>
-    <svg class="spark" data-spark='{"series": [{"color": "#35C7F2", "values": [0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 1, 0]}]}'></svg>
+    <svg class="spark" data-spark='{"series": [{"color": "#35C7F2", "values": [0, 0, 0, 0, 0, 0, 30, 0, 15, 0, 0, 0, 5, 0]}]}'></svg>
     <div class="small muted" style="display:flex;justify-content:space-between;margin-top:6px"><span>14 days ago</span><span>today · 0</span></div>
     <h2>Surface <span class="muted">· where the brand appears: domain name · subdomain · URL path</span></h2>
-    <div class="stack"><i data-w="100.0" style="background:#35C7F2" title="domain name: 5"></i></div>
-    <div class="small muted" style="margin-top:6px"><span style="color:#35C7F2">■</span> domain name 5 &nbsp;</div>
+    <div class="stack"><i data-w="77.1" style="background:#35C7F2" title="domain name: 37"></i><i data-w="14.6" style="background:#8A97A8" title="content: 7"></i><i data-w="8.3" style="background:#1a5f78" title="URL path: 4"></i></div>
+    <div class="small muted" style="margin-top:6px"><span style="color:#35C7F2">■</span> domain name 37 &nbsp;<span style="color:#8A97A8">■</span> content 7 &nbsp;<span style="color:#1a5f78">■</span> URL path 4 &nbsp;</div>
   </div>
   <div class="panel">
     <h2>Top fired signals</h2>
     
     <div style="display:grid;grid-template-columns:1fr 34px;gap:8px;align-items:center;margin:6px 0">
-      <div><div class="small" title="title_claims_brand">page title claims the brand</div><div class="bar" style="height:6px;margin-top:3px"><i data-w="100"></i></div></div>
-      <div class="mono small right">5</div>
-    </div>
-    
-    <div style="display:grid;grid-template-columns:1fr 34px;gap:8px;align-items:center;margin:6px 0">
-      <div><div class="small" title="favicon_exact">identical favicon</div><div class="bar" style="height:6px;margin-top:3px"><i data-w="100"></i></div></div>
-      <div class="mono small right">5</div>
-    </div>
-    
-    <div style="display:grid;grid-template-columns:1fr 34px;gap:8px;align-items:center;margin:6px 0">
-      <div><div class="small" title="looks_like_brand_ge_85">looks 85%+ like the real site</div><div class="bar" style="height:6px;margin-top:3px"><i data-w="100"></i></div></div>
-      <div class="mono small right">5</div>
-    </div>
-    
-    <div style="display:grid;grid-template-columns:1fr 34px;gap:8px;align-items:center;margin:6px 0">
-      <div><div class="small" title="screenshot_similarity_ge_90">looks like the real site</div><div class="bar" style="height:6px;margin-top:3px"><i data-w="100"></i></div></div>
-      <div class="mono small right">5</div>
-    </div>
-    
-    <div style="display:grid;grid-template-columns:1fr 34px;gap:8px;align-items:center;margin:6px 0">
-      <div><div class="small" title="palette_match">same colours</div><div class="bar" style="height:6px;margin-top:3px"><i data-w="100"></i></div></div>
-      <div class="mono small right">5</div>
-    </div>
-    
-    <div style="display:grid;grid-template-columns:1fr 34px;gap:8px;align-items:center;margin:6px 0">
-      <div><div class="small" title="login_dom_similarity">cloned login form</div><div class="bar" style="height:6px;margin-top:3px"><i data-w="100"></i></div></div>
-      <div class="mono small right">5</div>
-    </div>
-    
-    <div style="display:grid;grid-template-columns:1fr 34px;gap:8px;align-items:center;margin:6px 0">
-      <div><div class="small" title="credential_form">asks for a password</div><div class="bar" style="height:6px;margin-top:3px"><i data-w="100"></i></div></div>
-      <div class="mono small right">5</div>
-    </div>
-    
-    <div style="display:grid;grid-template-columns:1fr 34px;gap:8px;align-items:center;margin:6px 0">
       <div><div class="small" title="brand_keywords_in_content">brand words in the text</div><div class="bar" style="height:6px;margin-top:3px"><i data-w="100"></i></div></div>
-      <div class="mono small right">5</div>
+      <div class="mono small right">33</div>
     </div>
     
     <div style="display:grid;grid-template-columns:1fr 34px;gap:8px;align-items:center;margin:6px 0">
-      <div><div class="small" title="lure_language">urgent lure wording</div><div class="bar" style="height:6px;margin-top:3px"><i data-w="100"></i></div></div>
-      <div class="mono small right">5</div>
+      <div><div class="small" title="favicon_exact">identical favicon</div><div class="bar" style="height:6px;margin-top:3px"><i data-w="88"></i></div></div>
+      <div class="mono small right">29</div>
     </div>
     
     <div style="display:grid;grid-template-columns:1fr 34px;gap:8px;align-items:center;margin:6px 0">
-      <div><div class="small" title="external_form_action">sends data elsewhere</div><div class="bar" style="height:6px;margin-top:3px"><i data-w="100"></i></div></div>
-      <div class="mono small right">5</div>
+      <div><div class="small" title="login_dom_similarity">cloned login form</div><div class="bar" style="height:6px;margin-top:3px"><i data-w="85"></i></div></div>
+      <div class="mono small right">28</div>
+    </div>
+    
+    <div style="display:grid;grid-template-columns:1fr 34px;gap:8px;align-items:center;margin:6px 0">
+      <div><div class="small" title="credential_form">asks for a password</div><div class="bar" style="height:6px;margin-top:3px"><i data-w="85"></i></div></div>
+      <div class="mono small right">28</div>
+    </div>
+    
+    <div style="display:grid;grid-template-columns:1fr 34px;gap:8px;align-items:center;margin:6px 0">
+      <div><div class="small" title="screenshot_similarity_ge_90">looks like the real site</div><div class="bar" style="height:6px;margin-top:3px"><i data-w="82"></i></div></div>
+      <div class="mono small right">27</div>
+    </div>
+    
+    <div style="display:grid;grid-template-columns:1fr 34px;gap:8px;align-items:center;margin:6px 0">
+      <div><div class="small" title="palette_match">same colours</div><div class="bar" style="height:6px;margin-top:3px"><i data-w="82"></i></div></div>
+      <div class="mono small right">27</div>
+    </div>
+    
+    <div style="display:grid;grid-template-columns:1fr 34px;gap:8px;align-items:center;margin:6px 0">
+      <div><div class="small" title="title_claims_brand">page title claims the brand</div><div class="bar" style="height:6px;margin-top:3px"><i data-w="79"></i></div></div>
+      <div class="mono small right">26</div>
+    </div>
+    
+    <div style="display:grid;grid-template-columns:1fr 34px;gap:8px;align-items:center;margin:6px 0">
+      <div><div class="small" title="brand_exact_in_domain">brand name in the domain</div><div class="bar" style="height:6px;margin-top:3px"><i data-w="70"></i></div></div>
+      <div class="mono small right">23</div>
+    </div>
+    
+    <div style="display:grid;grid-template-columns:1fr 34px;gap:8px;align-items:center;margin:6px 0">
+      <div><div class="small" title="combosquat">brand + extra word</div><div class="bar" style="height:6px;margin-top:3px"><i data-w="67"></i></div></div>
+      <div class="mono small right">22</div>
+    </div>
+    
+    <div style="display:grid;grid-template-columns:1fr 34px;gap:8px;align-items:center;margin:6px 0">
+      <div><div class="small" title="lure_language">urgent lure wording</div><div class="bar" style="height:6px;margin-top:3px"><i data-w="67"></i></div></div>
+      <div class="mono small right">22</div>
     </div>
     
     

@@ -360,7 +360,7 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
   }
 </style>
 <div class="fhead">
-  <h1>FINDINGS <span class="muted">· 1 match</span></h1>
+  <h1>FINDINGS <span class="muted">· 0 match</span></h1>
   <span class="keys" title="keyboard shortcuts"><kbd>j</kbd><kbd>k</kbd> move · <kbd>x</kbd> select · <kbd>c</kbd> confirm · <kbd>d</kbd> dismiss · <kbd>/</kbd> search · <button type="button" id="keysbtn" class="small" aria-label="keyboard shortcuts">?</button></span>
 </div>
 <p class="intro">A finding is a look-alike that scored Medium or higher and waits for an analyst&#39;s verdict. Everything below the threshold stays on the Watchlist and is re-checked on a schedule.</p>
@@ -369,9 +369,9 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
 <div class="qtiles" aria-label="Queue">
   <a class="cy " href="?state=open"><span class="v" data-count="9">0</span><span class="l">awaiting verdict</span></a>
   <a class="crit " href="?state=open&severity=critical"><span class="v" data-count="8">0</span><span class="l">critical</span></a>
-  <a class="hi on" href="?state=open&severity=high"><span class="v" data-count="1">0</span><span class="l">high</span></a>
+  <a class="hi " href="?state=open&severity=high"><span class="v" data-count="1">0</span><span class="l">high</span></a>
   <a class="med " href="?state=open&severity=medium"><span class="v" data-count="0">0</span><span class="l">medium</span></a>
-  <a class="" href="?state=open&since=24h"><span class="v" data-count="5">0</span><span class="l">new in 24h</span></a>
+  <a class="" href="?state=open&since=24h"><span class="v" data-count="4">0</span><span class="l">new in 24h</span></a>
   <a class="ok " href="?state=confirmed"><span class="v" data-count="39">0</span><span class="l">confirmed</span></a>
   <a class="" href="?state=dismissed"><span class="v" data-count="2">0</span><span class="l">dismissed</span></a>
   
@@ -382,15 +382,15 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
     
     
     <div class="bchips">
-      <a class="btn on" href="/ui/findings/_cd6494a0ba/">All brands <b>1</b></a>
-      <a class="btn " href="/ui/findings/_8ad3235eca/"><bdi>ShopNova</bdi> <b>1</b></a><a class="btn " href="/ui/findings/_2c8081ad40/"><bdi>ShopNova · Israel</bdi> <b>0</b></a><a class="btn " href="/ui/findings/_024801b9bc/"><bdi>CoinPilot</bdi> <b>0</b></a><a class="btn " href="/ui/findings/_24120f4c14/"><bdi>VaultPay</bdi> <b>0</b></a>
+      <a class="btn on" href="/ui/findings?brand_id=&amp;state=open&amp;severity=low&amp;kind=&amp;q=&amp;since=&amp;sort=severity">All brands <b>0</b></a>
+      <a class="btn " href="/ui/findings?brand_id=eb019060-41b6-4160-871c-14094ad558a4&amp;state=open&amp;severity=low&amp;kind=&amp;q=&amp;since=&amp;sort=severity"><bdi>ShopNova</bdi> <b>0</b></a><a class="btn " href="/ui/findings?brand_id=1909c3e0-295d-4d38-bb7e-a2b05c9287d4&amp;state=open&amp;severity=low&amp;kind=&amp;q=&amp;since=&amp;sort=severity"><bdi>ShopNova · Israel</bdi> <b>0</b></a><a class="btn " href="/ui/findings?brand_id=f46bffed-4795-4cdd-ad8f-abd3d26fcc60&amp;state=open&amp;severity=low&amp;kind=&amp;q=&amp;since=&amp;sort=severity"><bdi>CoinPilot</bdi> <b>0</b></a><a class="btn " href="/ui/findings?brand_id=a7b5cb5c-e4a0-495d-b6c9-3ac5209ac3b2&amp;state=open&amp;severity=low&amp;kind=&amp;q=&amp;since=&amp;sort=severity"><bdi>VaultPay</bdi> <b>0</b></a>
     </div>
     <form method="get" action="/ui/findings/" class="filters" id="filters">
       <input type="hidden" name="brand_id" value="">
       <div class="wide"><label for="q">Search host</label><input id="q" name="q" value="" placeholder="part of a host name, e.g. login" autocomplete="off" maxlength="120"></div>
       <div><label for="f-state">State</label><select id="f-state" name="state"><option value="">all</option><option value="open" selected>awaiting verdict</option><option value="confirmed" >confirmed phishing</option><option value="dismissed" >dismissed</option><option value="snoozed" >snoozed</option></select></div>
       
-      <div><label for="f-sev">Severity</label><select id="f-sev" name="severity"><option value="">all</option><option value="low" >low</option><option value="medium" >medium</option><option value="high" selected>high</option><option value="critical" >critical</option></select></div>
+      <div><label for="f-sev">Severity</label><select id="f-sev" name="severity"><option value="">all</option><option value="low" selected>low</option><option value="medium" >medium</option><option value="high" >high</option><option value="critical" >critical</option></select></div>
       <div><label for="f-kind">Kind</label><select id="f-kind" name="kind"><option value="">all</option><option value="phishing" >phishing</option><option value="shop" >suspicious shop</option><option value="social" >fake social account</option><option value="ai_answer" >AI answer</option></select></div>
       <div><label for="f-since">Found</label><select id="f-since" name="since"><option value="">any time</option><option value="24h" >last 24 hours</option><option value="7d" >last 7 days</option><option value="visit" >since my last visit</option></select></div>
       <div><label for="f-sort">Sort by</label><select id="f-sort" name="sort"><option value="severity" selected>severity, then score</option><option value="score" >score</option><option value="newest" >newest first</option><option value="oldest" >oldest first</option><option value="confidence" >confidence</option></select></div>
@@ -401,42 +401,11 @@ img.shot{width:100%;border:1px solid var(--border);border-radius:6px;background:
     
     
     
-    <form id="bulkform" method="post" action="/ui/findings/bulk" class="bulkbar" hidden>
-      <input type="hidden" name="next" value="/ui/findings?severity=high">
-      <b id="bulkn">0 selected</b>
-      <div class="row">
-        <input name="reason" list="reasons" placeholder="reason (optional, kept in the audit log)" maxlength="2000" aria-label="reason">
-        <datalist id="reasons"><option value="cloned login page"><option value="legitimate site, not a look-alike"><option value="parked domain"><option value="domain expired, no site"><option value="not about the brand"><option value="duplicate of another finding"></datalist>
-        <button type="submit" name="action" value="confirm" class="primary" data-confirm="Confirm {n} finding(s) as phishing? They move to Attack infrastructure; map and investigate them there with MAP ALL and INVESTIGATE ALL." data-confirm-count=".sel:checked" data-confirm-title="Confirm phishing" data-confirm-ok="✓ Confirm phishing">✓ Confirm phishing</button>
-        <label class="chk" title="why it is not phishing — kept with the verdict and used to train the classifier">as <select name="verdict" aria-label="verdict when dismissing"><option value="legitimate">a legitimate site</option><option value="suspicious">suspicious, but not phishing</option><option value="unknown">cannot tell</option></select></label>
-        <label class="chk" title="the registrable domain of each dismissed finding is allowlisted for its brand: no scan flags it, or a subdomain of it, again"><input type="checkbox" name="whitelist"> also allowlist the domain</label>
-        <button type="submit" name="action" value="dismiss" data-confirm="Dismiss {n} finding(s) as not phishing? They leave the open list; the verdict is kept and teaches the classifier." data-confirm-count=".sel:checked" data-confirm-title="Not phishing" data-confirm-ok="✕ Dismiss them" data-confirm-danger>✕ Not phishing</button>
-        <button type="button" id="bulkclear" class="small">clear</button>
-      </div>
-    </form>
     
-    <table id="ftable" class="rwd">
-      <thead><tr><th class="selcol"><input type="checkbox" id="selall" aria-label="select every finding on this page" title="select every finding on this page"></th><th class="shotcol">Screenshot</th><th>Severity</th><th>Host</th><th>Score</th><th>Conf.</th><th>Signals</th><th>State</th><th>Found</th></tr></thead>
-      <tbody>
-      
-      <tr class="sevrow high" data-host="help@shopnova-care.net" data-id="de838d76-5b19-4caf-9212-8d9a60589653">
-        <td class="selcol"><input type="checkbox" class="sel" name="ids" value="de838d76-5b19-4caf-9212-8d9a60589653" form="bulkform" aria-label="select help@shopnova-care.net" title="select for a verdict on many at once"></td>
-        <td class="shotcol"><div class="noshot">no screenshot (the page did not load)</div></td>
-        <td><span class="badge sev-high">high</span><div style="margin-top:4px"><span class="badge" style="border:1px solid var(--accent);color:var(--accent2)" title="a contact an AI assistant gives for the brand that is not on its website">AI answer</span></div></td>
-        <td><a href="/ui/findings/de838d76-5b19-4caf-9212-8d9a60589653/" class="flink"><span class="mono" dir="ltr">help@shopnova-care.net</span></a> <span class="pill" style="font-size:10.5px;padding:0 7px" title="the brand this finding is about"><bdi>ShopNova</bdi></span><div class="small muted">content · found by AI answer (ChatGPT / Gemini / Google AI Mode) · <a href="/ui/findings/de838d76-5b19-4caf-9212-8d9a60589653/#aianswer" title="what the assistants said and what the pages say">answers</a> · <a href="/ui/candidates/e8314377-bba0-4c1d-b458-94a1304d87d5/" title="domain timeline on the watchlist">timeline</a></div></td>
-        <td class="mono" style="white-space:nowrap">70<span class="scorebar"><i data-w="70"></i></span>
-          </td>
-        <td><div class="ring sm" data-p="75" style="--c:var(--muted)" title="confidence in the evidence: 75%"><div>75</div></div></td>
-        <td class="small" style="max-width:360px"><span class="pill g-" title="Gemini gave the e-mail help@shopnova-care.net — it is on none of ShopNova&#39;s pages · +40 pts">not on the brand&#39;s site</span> <span class="pill g-" title="2 page(s) the AI cited were opened: none of them carries help@shopnova-care.net · +15 pts">the cited page does not say it</span> <span class="pill g-" title="asked for the proof, the AI took it back · +15 pts">the AI took it back</span> </td>
-        <td><span class="badge state st-open" title="a finding no analyst has judged yet">awaiting verdict</span></td>
-        <td class="mono small muted"><time datetime="2026-10-18T07:29:25.715979" data-local title="2026-10-18T07:29:25.715979 UTC">2026-10-18 07:29</time></td>
-      </tr>
-      
-      </tbody>
-    </table>
     
-<div class="muted small" style="margin-top:8px">1 in total</div>
-    <div class="small muted" style="margin-top:8px">Download these 1: <a href="/ui/findings?state=open&amp;severity=high&amp;sort=severity&fmt=csv">CSV</a> · <a href="/ui/findings?state=open&amp;severity=high&amp;sort=severity&fmt=json">JSON</a> <span>(the same filters, every page)</span></div>
+    
+    <p class="muted">Nothing matches these filters. <a href="/ui/findings/">Back to the open queue</a> — 9 findings wait for a verdict.</p>
+    
     
   </div>
 </div>
