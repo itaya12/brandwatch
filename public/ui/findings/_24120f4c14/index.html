@@ -319,6 +319,23 @@ button:not(.ghost):not(.fold):not(.menu):not(.chip):hover::after,.btn:not(.ghost
   font:11px/1.4 var(--mono);color:var(--text);white-space:nowrap;
   box-shadow:0 10px 30px rgba(0,0,0,.5);transition:opacity .12s}
 .sparktip.on{opacity:1}
+/* where a domain was found: one small tile per kind of source. The three outside services wear the colour people
+   know them by (Google's blue, ChatGPT's green, Facebook's blue); our own sources use the palette. */
+.srcic{display:inline-grid;place-items:center;width:22px;height:22px;flex:none;border-radius:6px;vertical-align:middle;
+  font:800 12.5px/1 var(--sans);border:1px solid rgba(255,255,255,.1);box-shadow:0 1px 0 rgba(0,0,0,.3)}
+.srcic svg{width:13px;height:13px}
+.srcic.s-google{background:#fff;color:#4285F4;font-size:14px}
+.srcic.s-ai{background:#10A37F;color:#fff}
+.srcic.s-social,.srcic.s-meta_ads{background:#1877F2;color:#fff;font-size:15px;font-family:Arial,var(--sans)}
+.srcic.s-meta_ads{box-shadow:inset 0 -3px 0 #F5C518}
+.srcic.s-cert{background:color-mix(in srgb,var(--med) 16%,transparent);color:var(--med)}
+.srcic.s-lookalike{background:color-mix(in srgb,var(--high) 16%,transparent);color:var(--high);font-size:11px}
+.srcic.s-urlscan{background:color-mix(in srgb,var(--accent) 16%,transparent);color:var(--accent2)}
+.srcic.s-analyst{background:color-mix(in srgb,var(--op5) 18%,transparent);color:var(--op5)}
+.srcic.s-nrd{background:color-mix(in srgb,var(--low) 16%,transparent);color:var(--low)}
+.srcic.s-pivot{background:color-mix(in srgb,var(--accent) 16%,transparent);color:var(--accent2)}
+.srcic.s-redirect{background:color-mix(in srgb,var(--op5) 18%,transparent);color:var(--op5)}
+.srcs{display:inline-flex;gap:4px;align-items:center;vertical-align:middle}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
 </style>
 <script>
@@ -410,6 +427,19 @@ window.BW = (function () {
   #ftable tr.cur td{background:rgba(53,199,242,.09);box-shadow:inset 3px 0 0 var(--accent)}
   .bigshot{width:220px;height:138px;object-fit:cover;object-position:top;border:1px solid var(--border);border-radius:6px;background:#000;cursor:zoom-in;display:block}
   .noshot{width:220px;height:138px;border:1px dashed var(--border);border-radius:6px;display:flex;align-items:center;justify-content:center;text-align:center;padding:10px;font-size:11.5px;color:var(--muted)}
+  /* the host line: where it was found (one tile per source), the host, the brand */
+  .hrow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;min-width:0}
+  .hrow .flink{font-size:14px;font-weight:600;min-width:0;overflow-wrap:anywhere}
+  .hrow .pill.bp{font-size:11px;padding:1px 8px}
+  .fmeta{margin-top:5px;line-height:1.5}
+  .fmeta a{white-space:nowrap}
+  #ftable .fwhen,#ftable .stc{white-space:nowrap;width:1%}
+  #ftable .sevc{width:1%;min-width:118px}
+  #ftable .sevc .badge{display:inline-block;white-space:normal;max-width:130px;text-align:center}
+  #ftable .scc{white-space:nowrap}
+  #ftable .scc .pill{display:block;width:max-content;margin:5px 0 0}
+  @media (min-width:701px){ #ftable .hcell{min-width:250px}}
+  #ftable .scorebar{width:64px}
   .selcol{width:28px}
   .selcol input{width:16px;height:16px;margin:0;cursor:pointer}
   /* the bulk bar sits under the sticky header (z-index 20 in main{z-index:1} slid under it before) */
@@ -458,7 +488,7 @@ window.BW = (function () {
   <a class="crit " href="?state=open&severity=critical&amp;brand_id=a7b5cb5c-e4a0-495d-b6c9-3ac5209ac3b2"><span class="v" data-count="1">0</span><span class="l">critical</span></a>
   <a class="hi on" href="?state=open&severity=high&amp;brand_id=a7b5cb5c-e4a0-495d-b6c9-3ac5209ac3b2"><span class="v" data-count="0">0</span><span class="l">high</span></a>
   <a class="med " href="?state=open&severity=medium&amp;brand_id=a7b5cb5c-e4a0-495d-b6c9-3ac5209ac3b2"><span class="v" data-count="0">0</span><span class="l">medium</span></a>
-  <a class="" href="?state=open&since=24h&amp;brand_id=a7b5cb5c-e4a0-495d-b6c9-3ac5209ac3b2"><span class="v" data-count="1">0</span><span class="l">new in 24h</span></a>
+  <a class="" href="?state=open&since=24h&amp;brand_id=a7b5cb5c-e4a0-495d-b6c9-3ac5209ac3b2"><span class="v" data-count="0">0</span><span class="l">new in 24h</span></a>
   <a class="" href="?state=confirmed&amp;brand_id=a7b5cb5c-e4a0-495d-b6c9-3ac5209ac3b2"><span class="v" data-count="4">0</span><span class="l">confirmed</span></a>
   <a class="" href="?state=dismissed&amp;brand_id=a7b5cb5c-e4a0-495d-b6c9-3ac5209ac3b2"><span class="v" data-count="0">0</span><span class="l">dismissed</span></a>
   
@@ -734,8 +764,12 @@ window.BW = (function () {
   // server timestamps are UTC: <time datetime="…" data-local> (the |ts filter) and [data-local="…"] show the viewer's local time
   const utc = iso => /T\d\d:\d\d/.test(iso) && !/(Z|[+-]\d\d:?\d\d)$/.test(iso) ? iso + 'Z' : iso;
   const fmt = new Intl.DateTimeFormat(undefined, {year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'});
+  // inside .ts-short (a narrow column) a date of this year leaves the year out
+  const fmtShort = new Intl.DateTimeFormat(undefined, {month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'}), thisYear = new Date().getFullYear();
   document.querySelectorAll('[data-local]').forEach(el => { const raw = el.getAttribute('datetime') || el.dataset.local; if (!raw) return;
-    const d = new Date(utc(raw)); if (isNaN(d)) return; el.textContent = fmt.format(d); if (!el.title) el.title = raw.replace('T', ' ').slice(0, 19) + ' UTC'; });
+    const d = new Date(utc(raw)); if (isNaN(d)) return;
+    el.textContent = (el.closest('.ts-short') && d.getFullYear() === thisYear ? fmtShort : fmt).format(d);
+    if (!el.title) el.title = raw.replace('T', ' ').slice(0, 19) + ' UTC'; });
 })();
 </script>
 <script>

@@ -319,6 +319,23 @@ button:not(.ghost):not(.fold):not(.menu):not(.chip):hover::after,.btn:not(.ghost
   font:11px/1.4 var(--mono);color:var(--text);white-space:nowrap;
   box-shadow:0 10px 30px rgba(0,0,0,.5);transition:opacity .12s}
 .sparktip.on{opacity:1}
+/* where a domain was found: one small tile per kind of source. The three outside services wear the colour people
+   know them by (Google's blue, ChatGPT's green, Facebook's blue); our own sources use the palette. */
+.srcic{display:inline-grid;place-items:center;width:22px;height:22px;flex:none;border-radius:6px;vertical-align:middle;
+  font:800 12.5px/1 var(--sans);border:1px solid rgba(255,255,255,.1);box-shadow:0 1px 0 rgba(0,0,0,.3)}
+.srcic svg{width:13px;height:13px}
+.srcic.s-google{background:#fff;color:#4285F4;font-size:14px}
+.srcic.s-ai{background:#10A37F;color:#fff}
+.srcic.s-social,.srcic.s-meta_ads{background:#1877F2;color:#fff;font-size:15px;font-family:Arial,var(--sans)}
+.srcic.s-meta_ads{box-shadow:inset 0 -3px 0 #F5C518}
+.srcic.s-cert{background:color-mix(in srgb,var(--med) 16%,transparent);color:var(--med)}
+.srcic.s-lookalike{background:color-mix(in srgb,var(--high) 16%,transparent);color:var(--high);font-size:11px}
+.srcic.s-urlscan{background:color-mix(in srgb,var(--accent) 16%,transparent);color:var(--accent2)}
+.srcic.s-analyst{background:color-mix(in srgb,var(--op5) 18%,transparent);color:var(--op5)}
+.srcic.s-nrd{background:color-mix(in srgb,var(--low) 16%,transparent);color:var(--low)}
+.srcic.s-pivot{background:color-mix(in srgb,var(--accent) 16%,transparent);color:var(--accent2)}
+.srcic.s-redirect{background:color-mix(in srgb,var(--op5) 18%,transparent);color:var(--op5)}
+.srcs{display:inline-flex;gap:4px;align-items:center;vertical-align:middle}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
 </style>
 <script>
@@ -409,6 +426,21 @@ window.BW = (function () {
   .bulkbar[hidden]{display:none}
   .bulkbar input[name=reason]{flex:1;min-width:180px;margin:0}
   .why{font-size:12px;color:var(--muted);max-width:280px}
+  .why .srcs{display:flex}
+  /* the table fits a laptop screen: long names wrap, the finding is a badge with its state under it, the two actions stack */
+  #ctable .dom{min-width:190px;max-width:260px;overflow-wrap:anywhere}
+  #ctable .why{max-width:210px}
+  #ctable .prio{max-width:40px!important}
+  #ctable td.pr{white-space:nowrap;padding-right:14px}
+  #ctable .fnd{white-space:nowrap}
+  #ctable .acts{white-space:nowrap}
+  #ctable .acts form{display:block!important;margin:0 0 4px}
+  #ctable .acts button{width:100%}
+  /* first seen, last seen and the next re-check in one narrow column: three short lines that never wrap */
+  .seen{font:11.5px/1.55 var(--mono);color:var(--muted);white-space:nowrap}
+  .seen span{display:inline-block;width:44px;color:var(--muted);opacity:.7;text-transform:uppercase;font-size:11px;letter-spacing:.04em}
+  .seen time{color:var(--text2)}
+  .seen .nx b{font-weight:500;color:var(--accent2)}
   .why b{color:var(--text);font-weight:500}
   .pager{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:10px}.pager .off{opacity:.4;pointer-events:none}
   .wstats summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:8px;margin:18px 0 8px}
@@ -467,23 +499,20 @@ window.BW = (function () {
   </form>
   
   <table id="ctable" class="rwd">
-    <thead><tr><th class="selcol"><input type="checkbox" id="selall" aria-label="select every domain on this page"></th><th>Domain</th><th>Brand</th><th>Why it is here</th><th>State</th><th>Finding</th><th>Priority</th><th>First seen</th><th>Last seen</th><th>Next scan</th><th class="right">Scans</th><th>Actions</th></tr></thead>
+    <thead><tr><th class="selcol"><input type="checkbox" id="selall" aria-label="select every domain on this page"></th><th>Domain</th><th>Why it is here</th><th>State</th><th>Finding</th><th>Priority</th><th>Seen</th><th>Actions</th></tr></thead>
     <tbody>
     
     <tr class="wrow" style="--sc:#8A97A8" data-host="shopnova-eu.com">
       <td class="selcol"><input type="checkbox" class="sel" name="ids" value="d25b56ef-f7ee-48c2-aae9-543efa44b68b" form="bulkform" aria-label="select shopnova-eu.com"></td>
-      <td><a href="/ui/candidates/d25b56ef-f7ee-48c2-aae9-543efa44b68b/"><span class="mono" dir="ltr">shopnova-eu.com</span></a><div class="small muted">domain name</div></td>
-      <td class="small"><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/"><bdi>ShopNova</bdi></a></td>
-      <td class="why"><b>Infrastructure map</b> <span title="pivot:brand pattern in hostname">brand pattern in hostname</span></td>
+      <td class="dom"><a href="/ui/candidates/d25b56ef-f7ee-48c2-aae9-543efa44b68b/"><span class="mono" dir="ltr">shopnova-eu.com</span></a><div class="small muted"><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/" title="the brand it imitates"><bdi>ShopNova</bdi></a> · domain name</div></td>
+      <td class="why"><span class="srcs" style="margin:0 0 3px"><span class="srcic s-pivot" title="found by Analyst URL scan" role="img" aria-label="Infrastructure map"><svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="4" cy="4.5" r="1.9"/><circle cx="12" cy="4.5" r="1.9"/><circle cx="8" cy="12" r="1.9"/><path d="M5.6 5.6l1.6 4.6M10.4 5.6l-1.6 4.6M5.9 4.5h4.2"/></svg></span></span><b>Infrastructure map</b> <span title="pivot:brand pattern in hostname">brand pattern in hostname</span></td>
       <td><span class="badge state st-new" title="just discovered, not visited yet">new</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="60" style="max-width:60px"></span> 20</td>
-      <td class="mono small muted"><time datetime="2026-10-14T09:53:04.410815" data-local title="2026-10-14T09:53:04.410815 UTC">2026-10-14 09:53</time></td>
-      <td class="mono small muted"><time datetime="2026-10-14T09:53:04.410815" data-local title="2026-10-14T09:53:04.410815 UTC">2026-10-14 09:53</time></td>
-      <td class="mono small" >—</td>
-      <td class="right mono">0</td>
+      <td class="fnd"><span class="muted small">—</span></td>
+      <td class="mono small pr"><span class="prio" data-w="60" style="max-width:60px"></span> 20</td>
+      <td class="seen ts-short"><div><span>first</span><time datetime="2026-10-14T09:53:04.410815" data-local title="2026-10-14T09:53:04.410815 UTC">2026-10-14 09:53</time></div><div><span>last</span><time datetime="2026-10-14T09:53:04.410815" data-local title="2026-10-14T09:53:04.410815 UTC">2026-10-14 09:53</time></div>
+        <div class="nx"><span>next</span>—</div><div><span>scans</span>0</div></td>
       
-      <td style="white-space:nowrap">
+      <td class="acts">
         
         <form method="post" action="/ui/candidates/d25b56ef-f7ee-48c2-aae9-543efa44b68b/dismiss" style="display:inline"
               data-confirm="Known legit: remove shopnova-eu.com from the watchlist and allowlist its domain for ShopNova?&#10;&#10;It (and its subdomains) will never be flagged again. You can undo this on the brand page → whitelist."
@@ -499,18 +528,15 @@ window.BW = (function () {
     
     <tr class="wrow" style="--sc:#8A97A8" data-host="coinpilott.io">
       <td class="selcol"><input type="checkbox" class="sel" name="ids" value="4952e586-bee9-47e8-95e6-b2e6bd2d687e" form="bulkform" aria-label="select coinpilott.io"></td>
-      <td><a href="/ui/candidates/4952e586-bee9-47e8-95e6-b2e6bd2d687e/"><span class="mono" dir="ltr">coinpilott.io</span></a><div class="small muted">domain name</div></td>
-      <td class="small"><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/"><bdi>ShopNova</bdi></a></td>
-      <td class="why"><b>Infrastructure map</b> <span title="pivot:shares cert with the campaign">shares cert with the campaign</span></td>
+      <td class="dom"><a href="/ui/candidates/4952e586-bee9-47e8-95e6-b2e6bd2d687e/"><span class="mono" dir="ltr">coinpilott.io</span></a><div class="small muted"><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/" title="the brand it imitates"><bdi>ShopNova</bdi></a> · domain name</div></td>
+      <td class="why"><span class="srcs" style="margin:0 0 3px"><span class="srcic s-pivot" title="found by Analyst URL scan" role="img" aria-label="Infrastructure map"><svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="4" cy="4.5" r="1.9"/><circle cx="12" cy="4.5" r="1.9"/><circle cx="8" cy="12" r="1.9"/><path d="M5.6 5.6l1.6 4.6M10.4 5.6l-1.6 4.6M5.9 4.5h4.2"/></svg></span></span><b>Infrastructure map</b> <span title="pivot:shares cert with the campaign">shares cert with the campaign</span></td>
       <td><span class="badge state st-new" title="just discovered, not visited yet">new</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="60" style="max-width:60px"></span> 20</td>
-      <td class="mono small muted"><time datetime="2026-10-14T09:53:04.395092" data-local title="2026-10-14T09:53:04.395092 UTC">2026-10-14 09:53</time></td>
-      <td class="mono small muted"><time datetime="2026-10-14T09:53:04.395092" data-local title="2026-10-14T09:53:04.395092 UTC">2026-10-14 09:53</time></td>
-      <td class="mono small" >—</td>
-      <td class="right mono">0</td>
+      <td class="fnd"><span class="muted small">—</span></td>
+      <td class="mono small pr"><span class="prio" data-w="60" style="max-width:60px"></span> 20</td>
+      <td class="seen ts-short"><div><span>first</span><time datetime="2026-10-14T09:53:04.395092" data-local title="2026-10-14T09:53:04.395092 UTC">2026-10-14 09:53</time></div><div><span>last</span><time datetime="2026-10-14T09:53:04.395092" data-local title="2026-10-14T09:53:04.395092 UTC">2026-10-14 09:53</time></div>
+        <div class="nx"><span>next</span>—</div><div><span>scans</span>0</div></td>
       
-      <td style="white-space:nowrap">
+      <td class="acts">
         
         <form method="post" action="/ui/candidates/4952e586-bee9-47e8-95e6-b2e6bd2d687e/dismiss" style="display:inline"
               data-confirm="Known legit: remove coinpilott.io from the watchlist and allowlist its domain for ShopNova?&#10;&#10;It (and its subdomains) will never be flagged again. You can undo this on the brand page → whitelist."
@@ -526,18 +552,15 @@ window.BW = (function () {
     
     <tr class="wrow" style="--sc:#8A97A8" data-host="coinpllot.io">
       <td class="selcol"><input type="checkbox" class="sel" name="ids" value="123efcdb-fbb0-4b2d-9575-72eb36b84466" form="bulkform" aria-label="select coinpllot.io"></td>
-      <td><a href="/ui/candidates/123efcdb-fbb0-4b2d-9575-72eb36b84466/"><span class="mono" dir="ltr">coinpllot.io</span></a><div class="small muted">domain name</div></td>
-      <td class="small"><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/"><bdi>ShopNova</bdi></a></td>
-      <td class="why"><b>Infrastructure map</b> <span title="pivot:shares cert with the campaign">shares cert with the campaign</span></td>
+      <td class="dom"><a href="/ui/candidates/123efcdb-fbb0-4b2d-9575-72eb36b84466/"><span class="mono" dir="ltr">coinpllot.io</span></a><div class="small muted"><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/" title="the brand it imitates"><bdi>ShopNova</bdi></a> · domain name</div></td>
+      <td class="why"><span class="srcs" style="margin:0 0 3px"><span class="srcic s-pivot" title="found by Analyst URL scan" role="img" aria-label="Infrastructure map"><svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="4" cy="4.5" r="1.9"/><circle cx="12" cy="4.5" r="1.9"/><circle cx="8" cy="12" r="1.9"/><path d="M5.6 5.6l1.6 4.6M10.4 5.6l-1.6 4.6M5.9 4.5h4.2"/></svg></span></span><b>Infrastructure map</b> <span title="pivot:shares cert with the campaign">shares cert with the campaign</span></td>
       <td><span class="badge state st-new" title="just discovered, not visited yet">new</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="60" style="max-width:60px"></span> 20</td>
-      <td class="mono small muted"><time datetime="2026-10-14T09:53:04.395092" data-local title="2026-10-14T09:53:04.395092 UTC">2026-10-14 09:53</time></td>
-      <td class="mono small muted"><time datetime="2026-10-14T09:53:04.395092" data-local title="2026-10-14T09:53:04.395092 UTC">2026-10-14 09:53</time></td>
-      <td class="mono small" >—</td>
-      <td class="right mono">0</td>
+      <td class="fnd"><span class="muted small">—</span></td>
+      <td class="mono small pr"><span class="prio" data-w="60" style="max-width:60px"></span> 20</td>
+      <td class="seen ts-short"><div><span>first</span><time datetime="2026-10-14T09:53:04.395092" data-local title="2026-10-14T09:53:04.395092 UTC">2026-10-14 09:53</time></div><div><span>last</span><time datetime="2026-10-14T09:53:04.395092" data-local title="2026-10-14T09:53:04.395092 UTC">2026-10-14 09:53</time></div>
+        <div class="nx"><span>next</span>—</div><div><span>scans</span>0</div></td>
       
-      <td style="white-space:nowrap">
+      <td class="acts">
         
         <form method="post" action="/ui/candidates/123efcdb-fbb0-4b2d-9575-72eb36b84466/dismiss" style="display:inline"
               data-confirm="Known legit: remove coinpllot.io from the watchlist and allowlist its domain for ShopNova?&#10;&#10;It (and its subdomains) will never be flagged again. You can undo this on the brand page → whitelist."
@@ -553,18 +576,15 @@ window.BW = (function () {
     
     <tr class="wrow" style="--sc:#8A97A8" data-host="coin-pilot.io">
       <td class="selcol"><input type="checkbox" class="sel" name="ids" value="34a395c5-524a-4108-9917-e124040166d9" form="bulkform" aria-label="select coin-pilot.io"></td>
-      <td><a href="/ui/candidates/34a395c5-524a-4108-9917-e124040166d9/"><span class="mono" dir="ltr">coin-pilot.io</span></a><div class="small muted">domain name</div></td>
-      <td class="small"><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/"><bdi>ShopNova</bdi></a></td>
-      <td class="why"><b>Infrastructure map</b> <span title="pivot:shares cert with the campaign">shares cert with the campaign</span></td>
+      <td class="dom"><a href="/ui/candidates/34a395c5-524a-4108-9917-e124040166d9/"><span class="mono" dir="ltr">coin-pilot.io</span></a><div class="small muted"><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/" title="the brand it imitates"><bdi>ShopNova</bdi></a> · domain name</div></td>
+      <td class="why"><span class="srcs" style="margin:0 0 3px"><span class="srcic s-pivot" title="found by Analyst URL scan" role="img" aria-label="Infrastructure map"><svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="4" cy="4.5" r="1.9"/><circle cx="12" cy="4.5" r="1.9"/><circle cx="8" cy="12" r="1.9"/><path d="M5.6 5.6l1.6 4.6M10.4 5.6l-1.6 4.6M5.9 4.5h4.2"/></svg></span></span><b>Infrastructure map</b> <span title="pivot:shares cert with the campaign">shares cert with the campaign</span></td>
       <td><span class="badge state st-new" title="just discovered, not visited yet">new</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="60" style="max-width:60px"></span> 20</td>
-      <td class="mono small muted"><time datetime="2026-10-14T09:53:04.395092" data-local title="2026-10-14T09:53:04.395092 UTC">2026-10-14 09:53</time></td>
-      <td class="mono small muted"><time datetime="2026-10-14T09:53:04.395092" data-local title="2026-10-14T09:53:04.395092 UTC">2026-10-14 09:53</time></td>
-      <td class="mono small" >—</td>
-      <td class="right mono">0</td>
+      <td class="fnd"><span class="muted small">—</span></td>
+      <td class="mono small pr"><span class="prio" data-w="60" style="max-width:60px"></span> 20</td>
+      <td class="seen ts-short"><div><span>first</span><time datetime="2026-10-14T09:53:04.395092" data-local title="2026-10-14T09:53:04.395092 UTC">2026-10-14 09:53</time></div><div><span>last</span><time datetime="2026-10-14T09:53:04.395092" data-local title="2026-10-14T09:53:04.395092 UTC">2026-10-14 09:53</time></div>
+        <div class="nx"><span>next</span>—</div><div><span>scans</span>0</div></td>
       
-      <td style="white-space:nowrap">
+      <td class="acts">
         
         <form method="post" action="/ui/candidates/34a395c5-524a-4108-9917-e124040166d9/dismiss" style="display:inline"
               data-confirm="Known legit: remove coin-pilot.io from the watchlist and allowlist its domain for ShopNova?&#10;&#10;It (and its subdomains) will never be flagged again. You can undo this on the brand page → whitelist."
@@ -580,18 +600,15 @@ window.BW = (function () {
     
     <tr class="wrow" style="--sc:#8A97A8" data-host="vaultpay-login.com">
       <td class="selcol"><input type="checkbox" class="sel" name="ids" value="90326556-116b-4edb-ad02-26d53e01a006" form="bulkform" aria-label="select vaultpay-login.com"></td>
-      <td><a href="/ui/candidates/90326556-116b-4edb-ad02-26d53e01a006/"><span class="mono" dir="ltr">vaultpay-login.com</span></a><div class="small muted">domain name</div></td>
-      <td class="small"><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/"><bdi>ShopNova</bdi></a></td>
-      <td class="why"><b>Infrastructure map</b> <span title="pivot:shares cert with the campaign">shares cert with the campaign</span></td>
+      <td class="dom"><a href="/ui/candidates/90326556-116b-4edb-ad02-26d53e01a006/"><span class="mono" dir="ltr">vaultpay-login.com</span></a><div class="small muted"><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/" title="the brand it imitates"><bdi>ShopNova</bdi></a> · domain name</div></td>
+      <td class="why"><span class="srcs" style="margin:0 0 3px"><span class="srcic s-pivot" title="found by Analyst URL scan" role="img" aria-label="Infrastructure map"><svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="4" cy="4.5" r="1.9"/><circle cx="12" cy="4.5" r="1.9"/><circle cx="8" cy="12" r="1.9"/><path d="M5.6 5.6l1.6 4.6M10.4 5.6l-1.6 4.6M5.9 4.5h4.2"/></svg></span></span><b>Infrastructure map</b> <span title="pivot:shares cert with the campaign">shares cert with the campaign</span></td>
       <td><span class="badge state st-new" title="just discovered, not visited yet">new</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="60" style="max-width:60px"></span> 20</td>
-      <td class="mono small muted"><time datetime="2026-10-14T09:53:04.395092" data-local title="2026-10-14T09:53:04.395092 UTC">2026-10-14 09:53</time></td>
-      <td class="mono small muted"><time datetime="2026-10-14T09:53:04.395092" data-local title="2026-10-14T09:53:04.395092 UTC">2026-10-14 09:53</time></td>
-      <td class="mono small" >—</td>
-      <td class="right mono">0</td>
+      <td class="fnd"><span class="muted small">—</span></td>
+      <td class="mono small pr"><span class="prio" data-w="60" style="max-width:60px"></span> 20</td>
+      <td class="seen ts-short"><div><span>first</span><time datetime="2026-10-14T09:53:04.395092" data-local title="2026-10-14T09:53:04.395092 UTC">2026-10-14 09:53</time></div><div><span>last</span><time datetime="2026-10-14T09:53:04.395092" data-local title="2026-10-14T09:53:04.395092 UTC">2026-10-14 09:53</time></div>
+        <div class="nx"><span>next</span>—</div><div><span>scans</span>0</div></td>
       
-      <td style="white-space:nowrap">
+      <td class="acts">
         
         <form method="post" action="/ui/candidates/90326556-116b-4edb-ad02-26d53e01a006/dismiss" style="display:inline"
               data-confirm="Known legit: remove vaultpay-login.com from the watchlist and allowlist its domain for ShopNova?&#10;&#10;It (and its subdomains) will never be flagged again. You can undo this on the brand page → whitelist."
@@ -607,18 +624,15 @@ window.BW = (function () {
     
     <tr class="wrow" style="--sc:#8A97A8" data-host="vaultpay-secure.net">
       <td class="selcol"><input type="checkbox" class="sel" name="ids" value="ed249af2-ab24-44a7-bd07-501c8a441887" form="bulkform" aria-label="select vaultpay-secure.net"></td>
-      <td><a href="/ui/candidates/ed249af2-ab24-44a7-bd07-501c8a441887/"><span class="mono" dir="ltr">vaultpay-secure.net</span></a><div class="small muted">domain name</div></td>
-      <td class="small"><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/"><bdi>ShopNova</bdi></a></td>
-      <td class="why"><b>Infrastructure map</b> <span title="pivot:shares cert with the campaign">shares cert with the campaign</span></td>
+      <td class="dom"><a href="/ui/candidates/ed249af2-ab24-44a7-bd07-501c8a441887/"><span class="mono" dir="ltr">vaultpay-secure.net</span></a><div class="small muted"><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/" title="the brand it imitates"><bdi>ShopNova</bdi></a> · domain name</div></td>
+      <td class="why"><span class="srcs" style="margin:0 0 3px"><span class="srcic s-pivot" title="found by Analyst URL scan" role="img" aria-label="Infrastructure map"><svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="4" cy="4.5" r="1.9"/><circle cx="12" cy="4.5" r="1.9"/><circle cx="8" cy="12" r="1.9"/><path d="M5.6 5.6l1.6 4.6M10.4 5.6l-1.6 4.6M5.9 4.5h4.2"/></svg></span></span><b>Infrastructure map</b> <span title="pivot:shares cert with the campaign">shares cert with the campaign</span></td>
       <td><span class="badge state st-new" title="just discovered, not visited yet">new</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="60" style="max-width:60px"></span> 20</td>
-      <td class="mono small muted"><time datetime="2026-10-14T09:53:04.395092" data-local title="2026-10-14T09:53:04.395092 UTC">2026-10-14 09:53</time></td>
-      <td class="mono small muted"><time datetime="2026-10-14T09:53:04.395092" data-local title="2026-10-14T09:53:04.395092 UTC">2026-10-14 09:53</time></td>
-      <td class="mono small" >—</td>
-      <td class="right mono">0</td>
+      <td class="fnd"><span class="muted small">—</span></td>
+      <td class="mono small pr"><span class="prio" data-w="60" style="max-width:60px"></span> 20</td>
+      <td class="seen ts-short"><div><span>first</span><time datetime="2026-10-14T09:53:04.395092" data-local title="2026-10-14T09:53:04.395092 UTC">2026-10-14 09:53</time></div><div><span>last</span><time datetime="2026-10-14T09:53:04.395092" data-local title="2026-10-14T09:53:04.395092 UTC">2026-10-14 09:53</time></div>
+        <div class="nx"><span>next</span>—</div><div><span>scans</span>0</div></td>
       
-      <td style="white-space:nowrap">
+      <td class="acts">
         
         <form method="post" action="/ui/candidates/ed249af2-ab24-44a7-bd07-501c8a441887/dismiss" style="display:inline"
               data-confirm="Known legit: remove vaultpay-secure.net from the watchlist and allowlist its domain for ShopNova?&#10;&#10;It (and its subdomains) will never be flagged again. You can undo this on the brand page → whitelist."
@@ -634,18 +648,15 @@ window.BW = (function () {
     
     <tr class="wrow" style="--sc:#8A97A8" data-host="vault-pay.co">
       <td class="selcol"><input type="checkbox" class="sel" name="ids" value="4f4fd33c-9cc1-4682-9d7f-a381682dd39a" form="bulkform" aria-label="select vault-pay.co"></td>
-      <td><a href="/ui/candidates/4f4fd33c-9cc1-4682-9d7f-a381682dd39a/"><span class="mono" dir="ltr">vault-pay.co</span></a><div class="small muted">domain name</div></td>
-      <td class="small"><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/"><bdi>ShopNova</bdi></a></td>
-      <td class="why"><b>Infrastructure map</b> <span title="pivot:shares cert with the campaign">shares cert with the campaign</span></td>
+      <td class="dom"><a href="/ui/candidates/4f4fd33c-9cc1-4682-9d7f-a381682dd39a/"><span class="mono" dir="ltr">vault-pay.co</span></a><div class="small muted"><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/" title="the brand it imitates"><bdi>ShopNova</bdi></a> · domain name</div></td>
+      <td class="why"><span class="srcs" style="margin:0 0 3px"><span class="srcic s-pivot" title="found by Analyst URL scan" role="img" aria-label="Infrastructure map"><svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="4" cy="4.5" r="1.9"/><circle cx="12" cy="4.5" r="1.9"/><circle cx="8" cy="12" r="1.9"/><path d="M5.6 5.6l1.6 4.6M10.4 5.6l-1.6 4.6M5.9 4.5h4.2"/></svg></span></span><b>Infrastructure map</b> <span title="pivot:shares cert with the campaign">shares cert with the campaign</span></td>
       <td><span class="badge state st-new" title="just discovered, not visited yet">new</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="60" style="max-width:60px"></span> 20</td>
-      <td class="mono small muted"><time datetime="2026-10-14T09:53:04.395092" data-local title="2026-10-14T09:53:04.395092 UTC">2026-10-14 09:53</time></td>
-      <td class="mono small muted"><time datetime="2026-10-14T09:53:04.395092" data-local title="2026-10-14T09:53:04.395092 UTC">2026-10-14 09:53</time></td>
-      <td class="mono small" >—</td>
-      <td class="right mono">0</td>
+      <td class="fnd"><span class="muted small">—</span></td>
+      <td class="mono small pr"><span class="prio" data-w="60" style="max-width:60px"></span> 20</td>
+      <td class="seen ts-short"><div><span>first</span><time datetime="2026-10-14T09:53:04.395092" data-local title="2026-10-14T09:53:04.395092 UTC">2026-10-14 09:53</time></div><div><span>last</span><time datetime="2026-10-14T09:53:04.395092" data-local title="2026-10-14T09:53:04.395092 UTC">2026-10-14 09:53</time></div>
+        <div class="nx"><span>next</span>—</div><div><span>scans</span>0</div></td>
       
-      <td style="white-space:nowrap">
+      <td class="acts">
         
         <form method="post" action="/ui/candidates/4f4fd33c-9cc1-4682-9d7f-a381682dd39a/dismiss" style="display:inline"
               data-confirm="Known legit: remove vault-pay.co from the watchlist and allowlist its domain for ShopNova?&#10;&#10;It (and its subdomains) will never be flagged again. You can undo this on the brand page → whitelist."
@@ -661,18 +672,15 @@ window.BW = (function () {
     
     <tr class="wrow" style="--sc:#8A97A8" data-host="vaultpay-verify.com">
       <td class="selcol"><input type="checkbox" class="sel" name="ids" value="181f56a2-5e4e-4949-b6d2-be4bf8082f32" form="bulkform" aria-label="select vaultpay-verify.com"></td>
-      <td><a href="/ui/candidates/181f56a2-5e4e-4949-b6d2-be4bf8082f32/"><span class="mono" dir="ltr">vaultpay-verify.com</span></a><div class="small muted">domain name</div></td>
-      <td class="small"><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/"><bdi>ShopNova</bdi></a></td>
-      <td class="why"><b>Infrastructure map</b> <span title="pivot:shares cert with the campaign">shares cert with the campaign</span></td>
+      <td class="dom"><a href="/ui/candidates/181f56a2-5e4e-4949-b6d2-be4bf8082f32/"><span class="mono" dir="ltr">vaultpay-verify.com</span></a><div class="small muted"><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/" title="the brand it imitates"><bdi>ShopNova</bdi></a> · domain name</div></td>
+      <td class="why"><span class="srcs" style="margin:0 0 3px"><span class="srcic s-pivot" title="found by Analyst URL scan" role="img" aria-label="Infrastructure map"><svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="4" cy="4.5" r="1.9"/><circle cx="12" cy="4.5" r="1.9"/><circle cx="8" cy="12" r="1.9"/><path d="M5.6 5.6l1.6 4.6M10.4 5.6l-1.6 4.6M5.9 4.5h4.2"/></svg></span></span><b>Infrastructure map</b> <span title="pivot:shares cert with the campaign">shares cert with the campaign</span></td>
       <td><span class="badge state st-new" title="just discovered, not visited yet">new</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="60" style="max-width:60px"></span> 20</td>
-      <td class="mono small muted"><time datetime="2026-10-14T09:53:04.395092" data-local title="2026-10-14T09:53:04.395092 UTC">2026-10-14 09:53</time></td>
-      <td class="mono small muted"><time datetime="2026-10-14T09:53:04.395092" data-local title="2026-10-14T09:53:04.395092 UTC">2026-10-14 09:53</time></td>
-      <td class="mono small" >—</td>
-      <td class="right mono">0</td>
+      <td class="fnd"><span class="muted small">—</span></td>
+      <td class="mono small pr"><span class="prio" data-w="60" style="max-width:60px"></span> 20</td>
+      <td class="seen ts-short"><div><span>first</span><time datetime="2026-10-14T09:53:04.395092" data-local title="2026-10-14T09:53:04.395092 UTC">2026-10-14 09:53</time></div><div><span>last</span><time datetime="2026-10-14T09:53:04.395092" data-local title="2026-10-14T09:53:04.395092 UTC">2026-10-14 09:53</time></div>
+        <div class="nx"><span>next</span>—</div><div><span>scans</span>0</div></td>
       
-      <td style="white-space:nowrap">
+      <td class="acts">
         
         <form method="post" action="/ui/candidates/181f56a2-5e4e-4949-b6d2-be4bf8082f32/dismiss" style="display:inline"
               data-confirm="Known legit: remove vaultpay-verify.com from the watchlist and allowlist its domain for ShopNova?&#10;&#10;It (and its subdomains) will never be flagged again. You can undo this on the brand page → whitelist."
@@ -688,18 +696,15 @@ window.BW = (function () {
     
     <tr class="wrow" style="--sc:#8A97A8" data-host="coinpilot-bot.io">
       <td class="selcol"><input type="checkbox" class="sel" name="ids" value="14a14d64-6604-41ea-838b-f51c4f34aa83" form="bulkform" aria-label="select coinpilot-bot.io"></td>
-      <td><a href="/ui/candidates/14a14d64-6604-41ea-838b-f51c4f34aa83/"><span class="mono" dir="ltr">coinpilot-bot.io</span></a><div class="small muted">domain name</div></td>
-      <td class="small"><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/"><bdi>ShopNova</bdi></a></td>
-      <td class="why"><b>Infrastructure map</b> <span title="pivot:shares cert with the campaign">shares cert with the campaign</span></td>
+      <td class="dom"><a href="/ui/candidates/14a14d64-6604-41ea-838b-f51c4f34aa83/"><span class="mono" dir="ltr">coinpilot-bot.io</span></a><div class="small muted"><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/" title="the brand it imitates"><bdi>ShopNova</bdi></a> · domain name</div></td>
+      <td class="why"><span class="srcs" style="margin:0 0 3px"><span class="srcic s-pivot" title="found by Analyst URL scan" role="img" aria-label="Infrastructure map"><svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="4" cy="4.5" r="1.9"/><circle cx="12" cy="4.5" r="1.9"/><circle cx="8" cy="12" r="1.9"/><path d="M5.6 5.6l1.6 4.6M10.4 5.6l-1.6 4.6M5.9 4.5h4.2"/></svg></span></span><b>Infrastructure map</b> <span title="pivot:shares cert with the campaign">shares cert with the campaign</span></td>
       <td><span class="badge state st-new" title="just discovered, not visited yet">new</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="60" style="max-width:60px"></span> 20</td>
-      <td class="mono small muted"><time datetime="2026-10-14T09:53:04.395092" data-local title="2026-10-14T09:53:04.395092 UTC">2026-10-14 09:53</time></td>
-      <td class="mono small muted"><time datetime="2026-10-14T09:53:04.395092" data-local title="2026-10-14T09:53:04.395092 UTC">2026-10-14 09:53</time></td>
-      <td class="mono small" >—</td>
-      <td class="right mono">0</td>
+      <td class="fnd"><span class="muted small">—</span></td>
+      <td class="mono small pr"><span class="prio" data-w="60" style="max-width:60px"></span> 20</td>
+      <td class="seen ts-short"><div><span>first</span><time datetime="2026-10-14T09:53:04.395092" data-local title="2026-10-14T09:53:04.395092 UTC">2026-10-14 09:53</time></div><div><span>last</span><time datetime="2026-10-14T09:53:04.395092" data-local title="2026-10-14T09:53:04.395092 UTC">2026-10-14 09:53</time></div>
+        <div class="nx"><span>next</span>—</div><div><span>scans</span>0</div></td>
       
-      <td style="white-space:nowrap">
+      <td class="acts">
         
         <form method="post" action="/ui/candidates/14a14d64-6604-41ea-838b-f51c4f34aa83/dismiss" style="display:inline"
               data-confirm="Known legit: remove coinpilot-bot.io from the watchlist and allowlist its domain for ShopNova?&#10;&#10;It (and its subdomains) will never be flagged again. You can undo this on the brand page → whitelist."
@@ -715,18 +720,15 @@ window.BW = (function () {
     
     <tr class="wrow" style="--sc:#8A97A8" data-host="coinplot.io">
       <td class="selcol"><input type="checkbox" class="sel" name="ids" value="c6729bdc-7a71-44dc-8aec-24e28fd5c4c4" form="bulkform" aria-label="select coinplot.io"></td>
-      <td><a href="/ui/candidates/c6729bdc-7a71-44dc-8aec-24e28fd5c4c4/"><span class="mono" dir="ltr">coinplot.io</span></a><div class="small muted">domain name</div></td>
-      <td class="small"><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/"><bdi>ShopNova</bdi></a></td>
-      <td class="why"><b>Infrastructure map</b> <span title="pivot:shares cert with the campaign">shares cert with the campaign</span></td>
+      <td class="dom"><a href="/ui/candidates/c6729bdc-7a71-44dc-8aec-24e28fd5c4c4/"><span class="mono" dir="ltr">coinplot.io</span></a><div class="small muted"><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/" title="the brand it imitates"><bdi>ShopNova</bdi></a> · domain name</div></td>
+      <td class="why"><span class="srcs" style="margin:0 0 3px"><span class="srcic s-pivot" title="found by Analyst URL scan" role="img" aria-label="Infrastructure map"><svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="4" cy="4.5" r="1.9"/><circle cx="12" cy="4.5" r="1.9"/><circle cx="8" cy="12" r="1.9"/><path d="M5.6 5.6l1.6 4.6M10.4 5.6l-1.6 4.6M5.9 4.5h4.2"/></svg></span></span><b>Infrastructure map</b> <span title="pivot:shares cert with the campaign">shares cert with the campaign</span></td>
       <td><span class="badge state st-new" title="just discovered, not visited yet">new</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="60" style="max-width:60px"></span> 20</td>
-      <td class="mono small muted"><time datetime="2026-10-14T09:53:04.395092" data-local title="2026-10-14T09:53:04.395092 UTC">2026-10-14 09:53</time></td>
-      <td class="mono small muted"><time datetime="2026-10-14T09:53:04.395092" data-local title="2026-10-14T09:53:04.395092 UTC">2026-10-14 09:53</time></td>
-      <td class="mono small" >—</td>
-      <td class="right mono">0</td>
+      <td class="fnd"><span class="muted small">—</span></td>
+      <td class="mono small pr"><span class="prio" data-w="60" style="max-width:60px"></span> 20</td>
+      <td class="seen ts-short"><div><span>first</span><time datetime="2026-10-14T09:53:04.395092" data-local title="2026-10-14T09:53:04.395092 UTC">2026-10-14 09:53</time></div><div><span>last</span><time datetime="2026-10-14T09:53:04.395092" data-local title="2026-10-14T09:53:04.395092 UTC">2026-10-14 09:53</time></div>
+        <div class="nx"><span>next</span>—</div><div><span>scans</span>0</div></td>
       
-      <td style="white-space:nowrap">
+      <td class="acts">
         
         <form method="post" action="/ui/candidates/c6729bdc-7a71-44dc-8aec-24e28fd5c4c4/dismiss" style="display:inline"
               data-confirm="Known legit: remove coinplot.io from the watchlist and allowlist its domain for ShopNova?&#10;&#10;It (and its subdomains) will never be flagged again. You can undo this on the brand page → whitelist."
@@ -742,18 +744,15 @@ window.BW = (function () {
     
     <tr class="wrow" style="--sc:#8A97A8" data-host="cooinpilot.io">
       <td class="selcol"><input type="checkbox" class="sel" name="ids" value="f3c2e3c5-8743-4723-8d7b-b3d4b6ed835a" form="bulkform" aria-label="select cooinpilot.io"></td>
-      <td><a href="/ui/candidates/f3c2e3c5-8743-4723-8d7b-b3d4b6ed835a/"><span class="mono" dir="ltr">cooinpilot.io</span></a><div class="small muted">domain name</div></td>
-      <td class="small"><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/"><bdi>ShopNova</bdi></a></td>
-      <td class="why"><b>Infrastructure map</b> <span title="pivot:shares cert with the campaign">shares cert with the campaign</span></td>
+      <td class="dom"><a href="/ui/candidates/f3c2e3c5-8743-4723-8d7b-b3d4b6ed835a/"><span class="mono" dir="ltr">cooinpilot.io</span></a><div class="small muted"><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/" title="the brand it imitates"><bdi>ShopNova</bdi></a> · domain name</div></td>
+      <td class="why"><span class="srcs" style="margin:0 0 3px"><span class="srcic s-pivot" title="found by Analyst URL scan" role="img" aria-label="Infrastructure map"><svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="4" cy="4.5" r="1.9"/><circle cx="12" cy="4.5" r="1.9"/><circle cx="8" cy="12" r="1.9"/><path d="M5.6 5.6l1.6 4.6M10.4 5.6l-1.6 4.6M5.9 4.5h4.2"/></svg></span></span><b>Infrastructure map</b> <span title="pivot:shares cert with the campaign">shares cert with the campaign</span></td>
       <td><span class="badge state st-new" title="just discovered, not visited yet">new</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="60" style="max-width:60px"></span> 20</td>
-      <td class="mono small muted"><time datetime="2026-10-14T09:53:04.395092" data-local title="2026-10-14T09:53:04.395092 UTC">2026-10-14 09:53</time></td>
-      <td class="mono small muted"><time datetime="2026-10-14T09:53:04.395092" data-local title="2026-10-14T09:53:04.395092 UTC">2026-10-14 09:53</time></td>
-      <td class="mono small" >—</td>
-      <td class="right mono">0</td>
+      <td class="fnd"><span class="muted small">—</span></td>
+      <td class="mono small pr"><span class="prio" data-w="60" style="max-width:60px"></span> 20</td>
+      <td class="seen ts-short"><div><span>first</span><time datetime="2026-10-14T09:53:04.395092" data-local title="2026-10-14T09:53:04.395092 UTC">2026-10-14 09:53</time></div><div><span>last</span><time datetime="2026-10-14T09:53:04.395092" data-local title="2026-10-14T09:53:04.395092 UTC">2026-10-14 09:53</time></div>
+        <div class="nx"><span>next</span>—</div><div><span>scans</span>0</div></td>
       
-      <td style="white-space:nowrap">
+      <td class="acts">
         
         <form method="post" action="/ui/candidates/f3c2e3c5-8743-4723-8d7b-b3d4b6ed835a/dismiss" style="display:inline"
               data-confirm="Known legit: remove cooinpilot.io from the watchlist and allowlist its domain for ShopNova?&#10;&#10;It (and its subdomains) will never be flagged again. You can undo this on the brand page → whitelist."
@@ -769,18 +768,15 @@ window.BW = (function () {
     
     <tr class="wrow" style="--sc:#8A97A8" data-host="koinpilot.io">
       <td class="selcol"><input type="checkbox" class="sel" name="ids" value="6bce9476-6d0f-42b5-89ff-56ad19ec289a" form="bulkform" aria-label="select koinpilot.io"></td>
-      <td><a href="/ui/candidates/6bce9476-6d0f-42b5-89ff-56ad19ec289a/"><span class="mono" dir="ltr">koinpilot.io</span></a><div class="small muted">domain name</div></td>
-      <td class="small"><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/"><bdi>ShopNova</bdi></a></td>
-      <td class="why"><b>Infrastructure map</b> <span title="pivot:shares cert with the campaign">shares cert with the campaign</span></td>
+      <td class="dom"><a href="/ui/candidates/6bce9476-6d0f-42b5-89ff-56ad19ec289a/"><span class="mono" dir="ltr">koinpilot.io</span></a><div class="small muted"><a href="/ui/brands/eb019060-41b6-4160-871c-14094ad558a4/" title="the brand it imitates"><bdi>ShopNova</bdi></a> · domain name</div></td>
+      <td class="why"><span class="srcs" style="margin:0 0 3px"><span class="srcic s-pivot" title="found by Analyst URL scan" role="img" aria-label="Infrastructure map"><svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="4" cy="4.5" r="1.9"/><circle cx="12" cy="4.5" r="1.9"/><circle cx="8" cy="12" r="1.9"/><path d="M5.6 5.6l1.6 4.6M10.4 5.6l-1.6 4.6M5.9 4.5h4.2"/></svg></span></span><b>Infrastructure map</b> <span title="pivot:shares cert with the campaign">shares cert with the campaign</span></td>
       <td><span class="badge state st-new" title="just discovered, not visited yet">new</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="60" style="max-width:60px"></span> 20</td>
-      <td class="mono small muted"><time datetime="2026-10-14T09:53:04.395092" data-local title="2026-10-14T09:53:04.395092 UTC">2026-10-14 09:53</time></td>
-      <td class="mono small muted"><time datetime="2026-10-14T09:53:04.395092" data-local title="2026-10-14T09:53:04.395092 UTC">2026-10-14 09:53</time></td>
-      <td class="mono small" >—</td>
-      <td class="right mono">0</td>
+      <td class="fnd"><span class="muted small">—</span></td>
+      <td class="mono small pr"><span class="prio" data-w="60" style="max-width:60px"></span> 20</td>
+      <td class="seen ts-short"><div><span>first</span><time datetime="2026-10-14T09:53:04.395092" data-local title="2026-10-14T09:53:04.395092 UTC">2026-10-14 09:53</time></div><div><span>last</span><time datetime="2026-10-14T09:53:04.395092" data-local title="2026-10-14T09:53:04.395092 UTC">2026-10-14 09:53</time></div>
+        <div class="nx"><span>next</span>—</div><div><span>scans</span>0</div></td>
       
-      <td style="white-space:nowrap">
+      <td class="acts">
         
         <form method="post" action="/ui/candidates/6bce9476-6d0f-42b5-89ff-56ad19ec289a/dismiss" style="display:inline"
               data-confirm="Known legit: remove koinpilot.io from the watchlist and allowlist its domain for ShopNova?&#10;&#10;It (and its subdomains) will never be flagged again. You can undo this on the brand page → whitelist."
@@ -948,8 +944,12 @@ window.BW = (function () {
   // server timestamps are UTC: <time datetime="…" data-local> (the |ts filter) and [data-local="…"] show the viewer's local time
   const utc = iso => /T\d\d:\d\d/.test(iso) && !/(Z|[+-]\d\d:?\d\d)$/.test(iso) ? iso + 'Z' : iso;
   const fmt = new Intl.DateTimeFormat(undefined, {year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'});
+  // inside .ts-short (a narrow column) a date of this year leaves the year out
+  const fmtShort = new Intl.DateTimeFormat(undefined, {month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'}), thisYear = new Date().getFullYear();
   document.querySelectorAll('[data-local]').forEach(el => { const raw = el.getAttribute('datetime') || el.dataset.local; if (!raw) return;
-    const d = new Date(utc(raw)); if (isNaN(d)) return; el.textContent = fmt.format(d); if (!el.title) el.title = raw.replace('T', ' ').slice(0, 19) + ' UTC'; });
+    const d = new Date(utc(raw)); if (isNaN(d)) return;
+    el.textContent = (el.closest('.ts-short') && d.getFullYear() === thisYear ? fmtShort : fmt).format(d);
+    if (!el.title) el.title = raw.replace('T', ' ').slice(0, 19) + ' UTC'; });
 })();
 </script>
 <script>

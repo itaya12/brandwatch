@@ -321,6 +321,23 @@ button:not(.ghost):not(.fold):not(.menu):not(.chip):hover::after,.btn:not(.ghost
   font:11px/1.4 var(--mono);color:var(--text);white-space:nowrap;
   box-shadow:0 10px 30px rgba(0,0,0,.5);transition:opacity .12s}
 .sparktip.on{opacity:1}
+/* where a domain was found: one small tile per kind of source. The three outside services wear the colour people
+   know them by (Google's blue, ChatGPT's green, Facebook's blue); our own sources use the palette. */
+.srcic{display:inline-grid;place-items:center;width:22px;height:22px;flex:none;border-radius:6px;vertical-align:middle;
+  font:800 12.5px/1 var(--sans);border:1px solid rgba(255,255,255,.1);box-shadow:0 1px 0 rgba(0,0,0,.3)}
+.srcic svg{width:13px;height:13px}
+.srcic.s-google{background:#fff;color:#4285F4;font-size:14px}
+.srcic.s-ai{background:#10A37F;color:#fff}
+.srcic.s-social,.srcic.s-meta_ads{background:#1877F2;color:#fff;font-size:15px;font-family:Arial,var(--sans)}
+.srcic.s-meta_ads{box-shadow:inset 0 -3px 0 #F5C518}
+.srcic.s-cert{background:color-mix(in srgb,var(--med) 16%,transparent);color:var(--med)}
+.srcic.s-lookalike{background:color-mix(in srgb,var(--high) 16%,transparent);color:var(--high);font-size:11px}
+.srcic.s-urlscan{background:color-mix(in srgb,var(--accent) 16%,transparent);color:var(--accent2)}
+.srcic.s-analyst{background:color-mix(in srgb,var(--op5) 18%,transparent);color:var(--op5)}
+.srcic.s-nrd{background:color-mix(in srgb,var(--low) 16%,transparent);color:var(--low)}
+.srcic.s-pivot{background:color-mix(in srgb,var(--accent) 16%,transparent);color:var(--accent2)}
+.srcic.s-redirect{background:color-mix(in srgb,var(--op5) 18%,transparent);color:var(--op5)}
+.srcs{display:inline-flex;gap:4px;align-items:center;vertical-align:middle}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
 </style>
 <script>
@@ -1246,7 +1263,7 @@ window.BW = (function () {
 <div class="sx-proof" aria-label="Numbers read from the code">
   <a href="#about"><b>50</b> signals in 7 groups</a>
   <a href="#about"><b>26</b> data providers</a>
-  <a href="#about"><b>661</b> automated tests</a>
+  <a href="#about"><b>664</b> automated tests</a>
   <a href="#ch-takedown"><b>26</b> report portals</a>
   <a href="#about"><b>$0</b> demo · no API keys</a>
 </div>
@@ -1524,7 +1541,7 @@ First observed    : 2026-10-12T06:41:46.604012</div>
     <div class="kpi vi rv" style="--t:160"><div class="v" data-to="26">0</div><div class="l">providers in 15 fallback chains</div></div>
     <div class="kpi ok rv" style="--t:240"><div class="v" data-to="65">0</div><div class="l">recorded golden scenarios</div></div>
     <div class="kpi rv" style="--t:320"><div class="v" data-to="10">0</div><div class="l">DB-enforced immutable tables</div></div>
-    <div class="kpi mg rv" style="--t:400"><div class="v" data-to="661">0</div><div class="l">automated tests in 73 files</div></div>
+    <div class="kpi mg rv" style="--t:400"><div class="v" data-to="664">0</div><div class="l">automated tests in 74 files</div></div>
     <div class="kpi rv" style="--t:480"><div class="v" data-to="97">0</div><div class="l">REST API operations (<a href="/docs" target="_blank">OpenAPI</a>)</div></div>
     <div class="kpi rv" style="--t:560"><div class="v" data-to="16">0</div><div class="l">Alembic migrations · SQLite &amp; PostgreSQL</div></div>
   </div>
@@ -1950,7 +1967,7 @@ First observed    : 2026-10-12T06:41:46.604012</div>
           <p>Every query is workspace-scoped; RBAC (admin / analyst / viewer) is identical in the UI and the API.</p>
           <div class="mod">keys.py · config/secrets.py · tenancy.py · api/auth.py</div></div>
         <div class="card" id="tests"><h3>Tests &amp; CI</h3>
-          <p>661 test functions in 73 files: schema and trigger enforcement, SSRF cases, provider resilience, every UI page, the golden gate. CI runs lint, test-sqlite, test-postgres, including migrations up and down on PostgreSQL 16.</p>
+          <p>664 test functions in 74 files: schema and trigger enforcement, SSRF cases, provider resilience, every UI page, the golden gate. CI runs lint, test-sqlite, test-postgres, including migrations up and down on PostgreSQL 16.</p>
           <div class="mod">tests/ · .github/workflows/ci.yml</div></div>
       </div>
       <h2>Trust &amp; safety</h2>
@@ -2190,8 +2207,12 @@ First observed    : 2026-10-12T06:41:46.604012</div>
   // server timestamps are UTC: <time datetime="…" data-local> (the |ts filter) and [data-local="…"] show the viewer's local time
   const utc = iso => /T\d\d:\d\d/.test(iso) && !/(Z|[+-]\d\d:?\d\d)$/.test(iso) ? iso + 'Z' : iso;
   const fmt = new Intl.DateTimeFormat(undefined, {year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'});
+  // inside .ts-short (a narrow column) a date of this year leaves the year out
+  const fmtShort = new Intl.DateTimeFormat(undefined, {month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'}), thisYear = new Date().getFullYear();
   document.querySelectorAll('[data-local]').forEach(el => { const raw = el.getAttribute('datetime') || el.dataset.local; if (!raw) return;
-    const d = new Date(utc(raw)); if (isNaN(d)) return; el.textContent = fmt.format(d); if (!el.title) el.title = raw.replace('T', ' ').slice(0, 19) + ' UTC'; });
+    const d = new Date(utc(raw)); if (isNaN(d)) return;
+    el.textContent = (el.closest('.ts-short') && d.getFullYear() === thisYear ? fmtShort : fmt).format(d);
+    if (!el.title) el.title = raw.replace('T', ' ').slice(0, 19) + ' UTC'; });
 })();
 </script>
 <script>

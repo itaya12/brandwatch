@@ -319,6 +319,23 @@ button:not(.ghost):not(.fold):not(.menu):not(.chip):hover::after,.btn:not(.ghost
   font:11px/1.4 var(--mono);color:var(--text);white-space:nowrap;
   box-shadow:0 10px 30px rgba(0,0,0,.5);transition:opacity .12s}
 .sparktip.on{opacity:1}
+/* where a domain was found: one small tile per kind of source. The three outside services wear the colour people
+   know them by (Google's blue, ChatGPT's green, Facebook's blue); our own sources use the palette. */
+.srcic{display:inline-grid;place-items:center;width:22px;height:22px;flex:none;border-radius:6px;vertical-align:middle;
+  font:800 12.5px/1 var(--sans);border:1px solid rgba(255,255,255,.1);box-shadow:0 1px 0 rgba(0,0,0,.3)}
+.srcic svg{width:13px;height:13px}
+.srcic.s-google{background:#fff;color:#4285F4;font-size:14px}
+.srcic.s-ai{background:#10A37F;color:#fff}
+.srcic.s-social,.srcic.s-meta_ads{background:#1877F2;color:#fff;font-size:15px;font-family:Arial,var(--sans)}
+.srcic.s-meta_ads{box-shadow:inset 0 -3px 0 #F5C518}
+.srcic.s-cert{background:color-mix(in srgb,var(--med) 16%,transparent);color:var(--med)}
+.srcic.s-lookalike{background:color-mix(in srgb,var(--high) 16%,transparent);color:var(--high);font-size:11px}
+.srcic.s-urlscan{background:color-mix(in srgb,var(--accent) 16%,transparent);color:var(--accent2)}
+.srcic.s-analyst{background:color-mix(in srgb,var(--op5) 18%,transparent);color:var(--op5)}
+.srcic.s-nrd{background:color-mix(in srgb,var(--low) 16%,transparent);color:var(--low)}
+.srcic.s-pivot{background:color-mix(in srgb,var(--accent) 16%,transparent);color:var(--accent2)}
+.srcic.s-redirect{background:color-mix(in srgb,var(--op5) 18%,transparent);color:var(--op5)}
+.srcs{display:inline-flex;gap:4px;align-items:center;vertical-align:middle}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
 </style>
 <script>
@@ -410,6 +427,19 @@ window.BW = (function () {
   #ftable tr.cur td{background:rgba(53,199,242,.09);box-shadow:inset 3px 0 0 var(--accent)}
   .bigshot{width:220px;height:138px;object-fit:cover;object-position:top;border:1px solid var(--border);border-radius:6px;background:#000;cursor:zoom-in;display:block}
   .noshot{width:220px;height:138px;border:1px dashed var(--border);border-radius:6px;display:flex;align-items:center;justify-content:center;text-align:center;padding:10px;font-size:11.5px;color:var(--muted)}
+  /* the host line: where it was found (one tile per source), the host, the brand */
+  .hrow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;min-width:0}
+  .hrow .flink{font-size:14px;font-weight:600;min-width:0;overflow-wrap:anywhere}
+  .hrow .pill.bp{font-size:11px;padding:1px 8px}
+  .fmeta{margin-top:5px;line-height:1.5}
+  .fmeta a{white-space:nowrap}
+  #ftable .fwhen,#ftable .stc{white-space:nowrap;width:1%}
+  #ftable .sevc{width:1%;min-width:118px}
+  #ftable .sevc .badge{display:inline-block;white-space:normal;max-width:130px;text-align:center}
+  #ftable .scc{white-space:nowrap}
+  #ftable .scc .pill{display:block;width:max-content;margin:5px 0 0}
+  @media (min-width:701px){ #ftable .hcell{min-width:250px}}
+  #ftable .scorebar{width:64px}
   .selcol{width:28px}
   .selcol input{width:16px;height:16px;margin:0;cursor:pointer}
   /* the bulk bar sits under the sticky header (z-index 20 in main{z-index:1} slid under it before) */
@@ -509,92 +539,99 @@ window.BW = (function () {
       <tr class="sevrow critical" data-host="coinpilot-bot.io" data-id="63381bcd-78de-4d7a-b9e2-cd7b4a59a00d">
         <td class="selcol"></td>
         <td class="shotcol"><img class="bigshot" data-src="/_r/643ac25efbb839.png" alt="screenshot of coinpilot-bot.io" title="click to enlarge" data-host="coinpilot-bot.io" data-href="/ui/findings/63381bcd-78de-4d7a-b9e2-cd7b4a59a00d/"></td>
-        <td><span class="badge sev-critical">critical</span></td>
-        <td><a href="/ui/findings/63381bcd-78de-4d7a-b9e2-cd7b4a59a00d/" class="flink"><span class="mono" dir="ltr">coinpilot-bot.io</span></a><div class="small muted">domain name · found by Analyst URL scan · <a href="/ui/findings/63381bcd-78de-4d7a-b9e2-cd7b4a59a00d/#network" title="site & network investigation: servers, WHOIS history, urlscan">network</a> · <a href="/ui/candidates/355ef55e-070f-4310-a8ef-32d052f976f2" title="domain timeline on the watchlist">timeline</a></div></td>
-        <td class="mono" style="white-space:nowrap">75<span class="scorebar"><i data-w="75"></i></span>
+        <td class="sevc"><span class="badge sev-critical">critical</span></td>
+        
+        <td class="hcell"><div class="hrow"><span class="srcs"><span class="srcic s-analyst" title="found by Analyst URL scan" role="img" aria-label="Analyst scan"><svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 2.5l9 4.8-4 1.3-1.6 3.9z" fill="currentColor"/></svg></span></span><a href="/ui/findings/63381bcd-78de-4d7a-b9e2-cd7b4a59a00d/" class="flink"><span class="mono" dir="ltr">coinpilot-bot.io</span></a></div><div class="small muted fmeta">Analyst scan · domain name · <a href="/ui/findings/63381bcd-78de-4d7a-b9e2-cd7b4a59a00d/#network" title="site & network investigation: servers, WHOIS history, urlscan">network</a> · <a href="/ui/candidates/355ef55e-070f-4310-a8ef-32d052f976f2" title="domain timeline on the watchlist">timeline</a></div></td>
+        <td class="mono scc">75<span class="scorebar"><i data-w="75"></i></span>
           <span style="margin-left:6px"><a class="pill" href="https://www.virustotal.com/gui/domain/coinpilot-bot.io" target="_blank" rel="noreferrer noopener" title="not in VirusTotal yet — unknown is never treated as clean" style="font-size:10px;color:var(--muted)">VT —</a></span></td>
         <td><div class="ring sm" data-p="90" style="--c:var(--accent)" title="confidence in the evidence: 90%"><div>90</div></div></td>
-        <td class="small" style="max-width:360px"><span class="pill g-behavior" title="the visit ends on the brand&#39;s own site after a link with atid=51803: the commission goes to the owner of that id · +25 pts">forwards with an affiliate id</span> <span class="pill g-visual" title="favicon mmh3 1130316202 equals the brand&#39;s favicon hash · +22 pts">identical favicon</span> <span class="pill g-infrastructure" title="the visit goes through go-linkz.click on its way to the brand&#39;s own site: the destination can be changed at any time · +20 pts">forwards through another host</span> <span class="pill g-visual" title="homepage screenshot is 100% similar to the brand&#39;s (pHash) · +18 pts">looks like the real site</span> <a href="/ui/findings/63381bcd-78de-4d7a-b9e2-cd7b4a59a00d/" class="muted small">+8 more</a></td>
-        <td><span class="badge state st-confirmed" title="an analyst confirmed it as phishing">confirmed phishing</span></td>
-        <td class="mono small muted"><time datetime="2026-10-14T09:46:23.402243" data-local title="2026-10-14T09:46:23.402243 UTC">2026-10-14 09:46</time></td>
+        <td class="small" style="max-width:260px"><span class="pill g-behavior" title="the visit ends on the brand&#39;s own site after a link with atid=51803: the commission goes to the owner of that id · +25 pts">forwards with an affiliate id</span> <span class="pill g-visual" title="favicon mmh3 1130316202 equals the brand&#39;s favicon hash · +22 pts">identical favicon</span> <span class="pill g-infrastructure" title="the visit goes through go-linkz.click on its way to the brand&#39;s own site: the destination can be changed at any time · +20 pts">forwards through another host</span> <span class="pill g-visual" title="homepage screenshot is 100% similar to the brand&#39;s (pHash) · +18 pts">looks like the real site</span> <a href="/ui/findings/63381bcd-78de-4d7a-b9e2-cd7b4a59a00d/" class="muted small">+8 more</a></td>
+        <td class="stc"><span class="badge state st-confirmed" title="an analyst confirmed it as phishing">confirmed phishing</span></td>
+        <td class="mono small muted fwhen ts-short"><time datetime="2026-10-14T09:46:23.402243" data-local title="2026-10-14T09:46:23.402243 UTC">2026-10-14 09:46</time></td>
       </tr>
       
       <tr class="sevrow critical" data-host="coin-pilot.io" data-id="2fdd823a-9baa-49d3-82b8-e1ce0bda2c44">
         <td class="selcol"></td>
         <td class="shotcol"><img class="bigshot" data-src="/_r/3a24d0231055cf.png" alt="screenshot of coin-pilot.io" title="click to enlarge" data-host="coin-pilot.io" data-href="/ui/findings/2fdd823a-9baa-49d3-82b8-e1ce0bda2c44/"></td>
-        <td><span class="badge sev-critical">critical</span></td>
-        <td><a href="/ui/findings/2fdd823a-9baa-49d3-82b8-e1ce0bda2c44/" class="flink"><span class="mono" dir="ltr">coin-pilot.io</span></a><div class="small muted">domain name · found by Look-alike names, Analyst URL scan · <a href="/ui/findings/2fdd823a-9baa-49d3-82b8-e1ce0bda2c44/#network" title="site & network investigation: servers, WHOIS history, urlscan">network</a> · <a href="/ui/candidates/6cc60d8a-89b1-4570-a18b-f24b773645ca" title="domain timeline on the watchlist">timeline</a></div></td>
-        <td class="mono" style="white-space:nowrap">75<span class="scorebar"><i data-w="75"></i></span>
+        <td class="sevc"><span class="badge sev-critical">critical</span></td>
+        
+        <td class="hcell"><div class="hrow"><span class="srcs"><span class="srcic s-lookalike" title="found by Look-alike names" role="img" aria-label="Look-alike name">Aa</span><span class="srcic s-analyst" title="found by Analyst URL scan" role="img" aria-label="Analyst scan"><svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 2.5l9 4.8-4 1.3-1.6 3.9z" fill="currentColor"/></svg></span></span><a href="/ui/findings/2fdd823a-9baa-49d3-82b8-e1ce0bda2c44/" class="flink"><span class="mono" dir="ltr">coin-pilot.io</span></a></div><div class="small muted fmeta">Look-alike name · Analyst scan · domain name · <a href="/ui/findings/2fdd823a-9baa-49d3-82b8-e1ce0bda2c44/#network" title="site & network investigation: servers, WHOIS history, urlscan">network</a> · <a href="/ui/candidates/6cc60d8a-89b1-4570-a18b-f24b773645ca" title="domain timeline on the watchlist">timeline</a></div></td>
+        <td class="mono scc">75<span class="scorebar"><i data-w="75"></i></span>
           <span style="margin-left:6px"><a class="pill" href="https://www.virustotal.com/gui/domain/coin-pilot.io" target="_blank" rel="noreferrer noopener" title="VirusTotal: 7 engine(s) flag it" style="font-size:10px;border-color:var(--crit);color:var(--crit)">VT 7</a></span></td>
         <td><div class="ring sm" data-p="100" style="--c:var(--accent)" title="confidence in the evidence: 100%"><div>100</div></div></td>
-        <td class="small" style="max-width:360px"><span class="pill g-behavior" title="the visit ends on the brand&#39;s own site after a link with atid=51803: the commission goes to the owner of that id · +25 pts">forwards with an affiliate id</span> <span class="pill g-visual" title="favicon mmh3 1130316202 equals the brand&#39;s favicon hash · +22 pts">identical favicon</span> <span class="pill g-infrastructure" title="the visit goes through go-linkz.click on its way to the brand&#39;s own site: the destination can be changed at any time · +20 pts">forwards through another host</span> <span class="pill g-visual" title="homepage screenshot is 100% similar to the brand&#39;s (pHash) · +18 pts">looks like the real site</span> <a href="/ui/findings/2fdd823a-9baa-49d3-82b8-e1ce0bda2c44/" class="muted small">+9 more</a></td>
-        <td><span class="badge state st-confirmed" title="an analyst confirmed it as phishing">confirmed phishing</span></td>
-        <td class="mono small muted"><time datetime="2026-10-14T09:46:23.198153" data-local title="2026-10-14T09:46:23.198153 UTC">2026-10-14 09:46</time></td>
+        <td class="small" style="max-width:260px"><span class="pill g-behavior" title="the visit ends on the brand&#39;s own site after a link with atid=51803: the commission goes to the owner of that id · +25 pts">forwards with an affiliate id</span> <span class="pill g-visual" title="favicon mmh3 1130316202 equals the brand&#39;s favicon hash · +22 pts">identical favicon</span> <span class="pill g-infrastructure" title="the visit goes through go-linkz.click on its way to the brand&#39;s own site: the destination can be changed at any time · +20 pts">forwards through another host</span> <span class="pill g-visual" title="homepage screenshot is 100% similar to the brand&#39;s (pHash) · +18 pts">looks like the real site</span> <a href="/ui/findings/2fdd823a-9baa-49d3-82b8-e1ce0bda2c44/" class="muted small">+9 more</a></td>
+        <td class="stc"><span class="badge state st-confirmed" title="an analyst confirmed it as phishing">confirmed phishing</span></td>
+        <td class="mono small muted fwhen ts-short"><time datetime="2026-10-14T09:46:23.198153" data-local title="2026-10-14T09:46:23.198153 UTC">2026-10-14 09:46</time></td>
       </tr>
       
       <tr class="sevrow critical" data-host="cooinpilot.io" data-id="6a5a2896-2bbf-4f37-b51a-6df99b0d48fe">
         <td class="selcol"></td>
         <td class="shotcol"><img class="bigshot" data-src="/_r/5e95448c8938ba.png" alt="screenshot of cooinpilot.io" title="click to enlarge" data-host="cooinpilot.io" data-href="/ui/findings/6a5a2896-2bbf-4f37-b51a-6df99b0d48fe/"></td>
-        <td><span class="badge sev-critical">critical</span></td>
-        <td><a href="/ui/findings/6a5a2896-2bbf-4f37-b51a-6df99b0d48fe/" class="flink"><span class="mono" dir="ltr">cooinpilot.io</span></a><div class="small muted">domain name · found by Look-alike names, Analyst URL scan · <a href="/ui/findings/6a5a2896-2bbf-4f37-b51a-6df99b0d48fe/#network" title="site & network investigation: servers, WHOIS history, urlscan">network</a> · <a href="/ui/candidates/16fd217e-5a2d-467e-bffc-c2d7617c63ba" title="domain timeline on the watchlist">timeline</a></div></td>
-        <td class="mono" style="white-space:nowrap">75<span class="scorebar"><i data-w="75"></i></span>
+        <td class="sevc"><span class="badge sev-critical">critical</span></td>
+        
+        <td class="hcell"><div class="hrow"><span class="srcs"><span class="srcic s-lookalike" title="found by Look-alike names" role="img" aria-label="Look-alike name">Aa</span><span class="srcic s-analyst" title="found by Analyst URL scan" role="img" aria-label="Analyst scan"><svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 2.5l9 4.8-4 1.3-1.6 3.9z" fill="currentColor"/></svg></span></span><a href="/ui/findings/6a5a2896-2bbf-4f37-b51a-6df99b0d48fe/" class="flink"><span class="mono" dir="ltr">cooinpilot.io</span></a></div><div class="small muted fmeta">Look-alike name · Analyst scan · domain name · <a href="/ui/findings/6a5a2896-2bbf-4f37-b51a-6df99b0d48fe/#network" title="site & network investigation: servers, WHOIS history, urlscan">network</a> · <a href="/ui/candidates/16fd217e-5a2d-467e-bffc-c2d7617c63ba" title="domain timeline on the watchlist">timeline</a></div></td>
+        <td class="mono scc">75<span class="scorebar"><i data-w="75"></i></span>
           <span style="margin-left:6px"><a class="pill" href="https://www.virustotal.com/gui/domain/cooinpilot.io" target="_blank" rel="noreferrer noopener" title="not in VirusTotal yet — unknown is never treated as clean" style="font-size:10px;color:var(--muted)">VT —</a></span></td>
         <td><div class="ring sm" data-p="100" style="--c:var(--accent)" title="confidence in the evidence: 100%"><div>100</div></div></td>
-        <td class="small" style="max-width:360px"><span class="pill g-behavior" title="the visit ends on the brand&#39;s own site after a link with atid=51803: the commission goes to the owner of that id · +25 pts">forwards with an affiliate id</span> <span class="pill g-visual" title="favicon mmh3 1130316202 equals the brand&#39;s favicon hash · +22 pts">identical favicon</span> <span class="pill g-infrastructure" title="the visit goes through go-linkz.click on its way to the brand&#39;s own site: the destination can be changed at any time · +20 pts">forwards through another host</span> <span class="pill g-visual" title="homepage screenshot is 100% similar to the brand&#39;s (pHash) · +18 pts">looks like the real site</span> <a href="/ui/findings/6a5a2896-2bbf-4f37-b51a-6df99b0d48fe/" class="muted small">+8 more</a></td>
-        <td><span class="badge state st-confirmed" title="an analyst confirmed it as phishing">confirmed phishing</span></td>
-        <td class="mono small muted"><time datetime="2026-10-14T09:46:23.035965" data-local title="2026-10-14T09:46:23.035965 UTC">2026-10-14 09:46</time></td>
+        <td class="small" style="max-width:260px"><span class="pill g-behavior" title="the visit ends on the brand&#39;s own site after a link with atid=51803: the commission goes to the owner of that id · +25 pts">forwards with an affiliate id</span> <span class="pill g-visual" title="favicon mmh3 1130316202 equals the brand&#39;s favicon hash · +22 pts">identical favicon</span> <span class="pill g-infrastructure" title="the visit goes through go-linkz.click on its way to the brand&#39;s own site: the destination can be changed at any time · +20 pts">forwards through another host</span> <span class="pill g-visual" title="homepage screenshot is 100% similar to the brand&#39;s (pHash) · +18 pts">looks like the real site</span> <a href="/ui/findings/6a5a2896-2bbf-4f37-b51a-6df99b0d48fe/" class="muted small">+8 more</a></td>
+        <td class="stc"><span class="badge state st-confirmed" title="an analyst confirmed it as phishing">confirmed phishing</span></td>
+        <td class="mono small muted fwhen ts-short"><time datetime="2026-10-14T09:46:23.035965" data-local title="2026-10-14T09:46:23.035965 UTC">2026-10-14 09:46</time></td>
       </tr>
       
       <tr class="sevrow critical" data-host="koinpilot.io" data-id="4aa4555a-8a52-4bab-a6da-8427753c97d3">
         <td class="selcol"></td>
         <td class="shotcol"><img class="bigshot" data-src="/_r/1acf4999e0015a.png" alt="screenshot of koinpilot.io" title="click to enlarge" data-host="koinpilot.io" data-href="/ui/findings/4aa4555a-8a52-4bab-a6da-8427753c97d3/"></td>
-        <td><span class="badge sev-critical">critical</span></td>
-        <td><a href="/ui/findings/4aa4555a-8a52-4bab-a6da-8427753c97d3/" class="flink"><span class="mono" dir="ltr">koinpilot.io</span></a><div class="small muted">domain name · found by Look-alike names, Analyst URL scan · <a href="/ui/findings/4aa4555a-8a52-4bab-a6da-8427753c97d3/#network" title="site & network investigation: servers, WHOIS history, urlscan">network</a> · <a href="/ui/candidates/7e12f7d1-aeb9-4965-9803-6bf701035829" title="domain timeline on the watchlist">timeline</a></div></td>
-        <td class="mono" style="white-space:nowrap">75<span class="scorebar"><i data-w="75"></i></span>
+        <td class="sevc"><span class="badge sev-critical">critical</span></td>
+        
+        <td class="hcell"><div class="hrow"><span class="srcs"><span class="srcic s-lookalike" title="found by Look-alike names" role="img" aria-label="Look-alike name">Aa</span><span class="srcic s-analyst" title="found by Analyst URL scan" role="img" aria-label="Analyst scan"><svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 2.5l9 4.8-4 1.3-1.6 3.9z" fill="currentColor"/></svg></span></span><a href="/ui/findings/4aa4555a-8a52-4bab-a6da-8427753c97d3/" class="flink"><span class="mono" dir="ltr">koinpilot.io</span></a></div><div class="small muted fmeta">Look-alike name · Analyst scan · domain name · <a href="/ui/findings/4aa4555a-8a52-4bab-a6da-8427753c97d3/#network" title="site & network investigation: servers, WHOIS history, urlscan">network</a> · <a href="/ui/candidates/7e12f7d1-aeb9-4965-9803-6bf701035829" title="domain timeline on the watchlist">timeline</a></div></td>
+        <td class="mono scc">75<span class="scorebar"><i data-w="75"></i></span>
           <span style="margin-left:6px"><a class="pill" href="https://www.virustotal.com/gui/domain/koinpilot.io" target="_blank" rel="noreferrer noopener" title="not in VirusTotal yet — unknown is never treated as clean" style="font-size:10px;color:var(--muted)">VT —</a></span></td>
         <td><div class="ring sm" data-p="100" style="--c:var(--accent)" title="confidence in the evidence: 100%"><div>100</div></div></td>
-        <td class="small" style="max-width:360px"><span class="pill g-behavior" title="the visit ends on the brand&#39;s own site after a link with atid=51803: the commission goes to the owner of that id · +25 pts">forwards with an affiliate id</span> <span class="pill g-visual" title="favicon mmh3 1130316202 equals the brand&#39;s favicon hash · +22 pts">identical favicon</span> <span class="pill g-infrastructure" title="the visit goes through go-linkz.click on its way to the brand&#39;s own site: the destination can be changed at any time · +20 pts">forwards through another host</span> <span class="pill g-visual" title="homepage screenshot is 100% similar to the brand&#39;s (pHash) · +18 pts">looks like the real site</span> <a href="/ui/findings/4aa4555a-8a52-4bab-a6da-8427753c97d3/" class="muted small">+8 more</a></td>
-        <td><span class="badge state st-confirmed" title="an analyst confirmed it as phishing">confirmed phishing</span></td>
-        <td class="mono small muted"><time datetime="2026-10-14T09:46:22.930930" data-local title="2026-10-14T09:46:22.930930 UTC">2026-10-14 09:46</time></td>
+        <td class="small" style="max-width:260px"><span class="pill g-behavior" title="the visit ends on the brand&#39;s own site after a link with atid=51803: the commission goes to the owner of that id · +25 pts">forwards with an affiliate id</span> <span class="pill g-visual" title="favicon mmh3 1130316202 equals the brand&#39;s favicon hash · +22 pts">identical favicon</span> <span class="pill g-infrastructure" title="the visit goes through go-linkz.click on its way to the brand&#39;s own site: the destination can be changed at any time · +20 pts">forwards through another host</span> <span class="pill g-visual" title="homepage screenshot is 100% similar to the brand&#39;s (pHash) · +18 pts">looks like the real site</span> <a href="/ui/findings/4aa4555a-8a52-4bab-a6da-8427753c97d3/" class="muted small">+8 more</a></td>
+        <td class="stc"><span class="badge state st-confirmed" title="an analyst confirmed it as phishing">confirmed phishing</span></td>
+        <td class="mono small muted fwhen ts-short"><time datetime="2026-10-14T09:46:22.930930" data-local title="2026-10-14T09:46:22.930930 UTC">2026-10-14 09:46</time></td>
       </tr>
       
       <tr class="sevrow critical" data-host="coinplot.io" data-id="fd5a72c5-532f-4614-a113-c4d848d99888">
         <td class="selcol"></td>
         <td class="shotcol"><img class="bigshot" data-src="/_r/ce8659abee340b.png" alt="screenshot of coinplot.io" title="click to enlarge" data-host="coinplot.io" data-href="/ui/findings/fd5a72c5-532f-4614-a113-c4d848d99888/"></td>
-        <td><span class="badge sev-critical">critical</span></td>
-        <td><a href="/ui/findings/fd5a72c5-532f-4614-a113-c4d848d99888/" class="flink"><span class="mono" dir="ltr">coinplot.io</span></a><div class="small muted">domain name · found by Look-alike names, Analyst URL scan · <a href="/ui/findings/fd5a72c5-532f-4614-a113-c4d848d99888/#network" title="site & network investigation: servers, WHOIS history, urlscan">network</a> · <a href="/ui/candidates/13813872-2b40-452f-8269-d59decee0e2a" title="domain timeline on the watchlist">timeline</a></div></td>
-        <td class="mono" style="white-space:nowrap">75<span class="scorebar"><i data-w="75"></i></span>
+        <td class="sevc"><span class="badge sev-critical">critical</span></td>
+        
+        <td class="hcell"><div class="hrow"><span class="srcs"><span class="srcic s-lookalike" title="found by Look-alike names" role="img" aria-label="Look-alike name">Aa</span><span class="srcic s-analyst" title="found by Analyst URL scan" role="img" aria-label="Analyst scan"><svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 2.5l9 4.8-4 1.3-1.6 3.9z" fill="currentColor"/></svg></span></span><a href="/ui/findings/fd5a72c5-532f-4614-a113-c4d848d99888/" class="flink"><span class="mono" dir="ltr">coinplot.io</span></a></div><div class="small muted fmeta">Look-alike name · Analyst scan · domain name · <a href="/ui/findings/fd5a72c5-532f-4614-a113-c4d848d99888/#network" title="site & network investigation: servers, WHOIS history, urlscan">network</a> · <a href="/ui/candidates/13813872-2b40-452f-8269-d59decee0e2a" title="domain timeline on the watchlist">timeline</a></div></td>
+        <td class="mono scc">75<span class="scorebar"><i data-w="75"></i></span>
           <span style="margin-left:6px"><a class="pill" href="https://www.virustotal.com/gui/domain/coinplot.io" target="_blank" rel="noreferrer noopener" title="VirusTotal: 7 engine(s) flag it" style="font-size:10px;border-color:var(--crit);color:var(--crit)">VT 7</a></span></td>
         <td><div class="ring sm" data-p="100" style="--c:var(--accent)" title="confidence in the evidence: 100%"><div>100</div></div></td>
-        <td class="small" style="max-width:360px"><span class="pill g-behavior" title="the visit ends on the brand&#39;s own site after a link with atid=51803: the commission goes to the owner of that id · +25 pts">forwards with an affiliate id</span> <span class="pill g-visual" title="favicon mmh3 1130316202 equals the brand&#39;s favicon hash · +22 pts">identical favicon</span> <span class="pill g-infrastructure" title="the visit goes through go-linkz.click on its way to the brand&#39;s own site: the destination can be changed at any time · +20 pts">forwards through another host</span> <span class="pill g-visual" title="homepage screenshot is 100% similar to the brand&#39;s (pHash) · +18 pts">looks like the real site</span> <a href="/ui/findings/fd5a72c5-532f-4614-a113-c4d848d99888/" class="muted small">+9 more</a></td>
-        <td><span class="badge state st-confirmed" title="an analyst confirmed it as phishing">confirmed phishing</span></td>
-        <td class="mono small muted"><time datetime="2026-10-14T09:46:22.840184" data-local title="2026-10-14T09:46:22.840184 UTC">2026-10-14 09:46</time></td>
+        <td class="small" style="max-width:260px"><span class="pill g-behavior" title="the visit ends on the brand&#39;s own site after a link with atid=51803: the commission goes to the owner of that id · +25 pts">forwards with an affiliate id</span> <span class="pill g-visual" title="favicon mmh3 1130316202 equals the brand&#39;s favicon hash · +22 pts">identical favicon</span> <span class="pill g-infrastructure" title="the visit goes through go-linkz.click on its way to the brand&#39;s own site: the destination can be changed at any time · +20 pts">forwards through another host</span> <span class="pill g-visual" title="homepage screenshot is 100% similar to the brand&#39;s (pHash) · +18 pts">looks like the real site</span> <a href="/ui/findings/fd5a72c5-532f-4614-a113-c4d848d99888/" class="muted small">+9 more</a></td>
+        <td class="stc"><span class="badge state st-confirmed" title="an analyst confirmed it as phishing">confirmed phishing</span></td>
+        <td class="mono small muted fwhen ts-short"><time datetime="2026-10-14T09:46:22.840184" data-local title="2026-10-14T09:46:22.840184 UTC">2026-10-14 09:46</time></td>
       </tr>
       
       <tr class="sevrow critical" data-host="coinpllot.io" data-id="198e2d54-3884-47d5-a887-1d328cce77c2">
         <td class="selcol"></td>
         <td class="shotcol"><img class="bigshot" data-src="/_r/8f0f5ca423d662.png" alt="screenshot of coinpllot.io" title="click to enlarge" data-host="coinpllot.io" data-href="/ui/findings/198e2d54-3884-47d5-a887-1d328cce77c2/"></td>
-        <td><span class="badge sev-critical">critical</span></td>
-        <td><a href="/ui/findings/198e2d54-3884-47d5-a887-1d328cce77c2/" class="flink"><span class="mono" dir="ltr">coinpllot.io</span></a><div class="small muted">domain name · found by Look-alike names, Analyst URL scan · <a href="/ui/findings/198e2d54-3884-47d5-a887-1d328cce77c2/#network" title="site & network investigation: servers, WHOIS history, urlscan">network</a> · <a href="/ui/candidates/eb8cef60-5d0a-4620-90c5-bd119c958ff5" title="domain timeline on the watchlist">timeline</a></div></td>
-        <td class="mono" style="white-space:nowrap">75<span class="scorebar"><i data-w="75"></i></span>
+        <td class="sevc"><span class="badge sev-critical">critical</span></td>
+        
+        <td class="hcell"><div class="hrow"><span class="srcs"><span class="srcic s-lookalike" title="found by Look-alike names" role="img" aria-label="Look-alike name">Aa</span><span class="srcic s-analyst" title="found by Analyst URL scan" role="img" aria-label="Analyst scan"><svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 2.5l9 4.8-4 1.3-1.6 3.9z" fill="currentColor"/></svg></span></span><a href="/ui/findings/198e2d54-3884-47d5-a887-1d328cce77c2/" class="flink"><span class="mono" dir="ltr">coinpllot.io</span></a></div><div class="small muted fmeta">Look-alike name · Analyst scan · domain name · <a href="/ui/findings/198e2d54-3884-47d5-a887-1d328cce77c2/#network" title="site & network investigation: servers, WHOIS history, urlscan">network</a> · <a href="/ui/candidates/eb8cef60-5d0a-4620-90c5-bd119c958ff5" title="domain timeline on the watchlist">timeline</a></div></td>
+        <td class="mono scc">75<span class="scorebar"><i data-w="75"></i></span>
           <span style="margin-left:6px"><a class="pill" href="https://www.virustotal.com/gui/domain/coinpllot.io" target="_blank" rel="noreferrer noopener" title="not in VirusTotal yet — unknown is never treated as clean" style="font-size:10px;color:var(--muted)">VT —</a></span></td>
         <td><div class="ring sm" data-p="100" style="--c:var(--accent)" title="confidence in the evidence: 100%"><div>100</div></div></td>
-        <td class="small" style="max-width:360px"><span class="pill g-behavior" title="the visit ends on the brand&#39;s own site after a link with atid=51803: the commission goes to the owner of that id · +25 pts">forwards with an affiliate id</span> <span class="pill g-visual" title="favicon mmh3 1130316202 equals the brand&#39;s favicon hash · +22 pts">identical favicon</span> <span class="pill g-infrastructure" title="the visit goes through go-linkz.click on its way to the brand&#39;s own site: the destination can be changed at any time · +20 pts">forwards through another host</span> <span class="pill g-visual" title="homepage screenshot is 100% similar to the brand&#39;s (pHash) · +18 pts">looks like the real site</span> <a href="/ui/findings/198e2d54-3884-47d5-a887-1d328cce77c2/" class="muted small">+8 more</a></td>
-        <td><span class="badge state st-confirmed" title="an analyst confirmed it as phishing">confirmed phishing</span></td>
-        <td class="mono small muted"><time datetime="2026-10-14T09:46:22.662398" data-local title="2026-10-14T09:46:22.662398 UTC">2026-10-14 09:46</time></td>
+        <td class="small" style="max-width:260px"><span class="pill g-behavior" title="the visit ends on the brand&#39;s own site after a link with atid=51803: the commission goes to the owner of that id · +25 pts">forwards with an affiliate id</span> <span class="pill g-visual" title="favicon mmh3 1130316202 equals the brand&#39;s favicon hash · +22 pts">identical favicon</span> <span class="pill g-infrastructure" title="the visit goes through go-linkz.click on its way to the brand&#39;s own site: the destination can be changed at any time · +20 pts">forwards through another host</span> <span class="pill g-visual" title="homepage screenshot is 100% similar to the brand&#39;s (pHash) · +18 pts">looks like the real site</span> <a href="/ui/findings/198e2d54-3884-47d5-a887-1d328cce77c2/" class="muted small">+8 more</a></td>
+        <td class="stc"><span class="badge state st-confirmed" title="an analyst confirmed it as phishing">confirmed phishing</span></td>
+        <td class="mono small muted fwhen ts-short"><time datetime="2026-10-14T09:46:22.662398" data-local title="2026-10-14T09:46:22.662398 UTC">2026-10-14 09:46</time></td>
       </tr>
       
       <tr class="sevrow critical" data-host="coinpilott.io" data-id="5da0ffd7-d892-4cfd-9f55-c87b543dfac7">
         <td class="selcol"></td>
         <td class="shotcol"><img class="bigshot" data-src="/_r/bb3e00bdd6019d.png" alt="screenshot of coinpilott.io" title="click to enlarge" data-host="coinpilott.io" data-href="/ui/findings/5da0ffd7-d892-4cfd-9f55-c87b543dfac7/"></td>
-        <td><span class="badge sev-critical">critical</span></td>
-        <td><a href="/ui/findings/5da0ffd7-d892-4cfd-9f55-c87b543dfac7/" class="flink"><span class="mono" dir="ltr">coinpilott.io</span></a><div class="small muted">domain name · found by Look-alike names, Analyst URL scan · <a href="/ui/findings/5da0ffd7-d892-4cfd-9f55-c87b543dfac7/#network" title="site & network investigation: servers, WHOIS history, urlscan">network</a> · <a href="/ui/candidates/f6f651e4-797f-4887-8cfd-dbc5a6362f5e" title="domain timeline on the watchlist">timeline</a></div></td>
-        <td class="mono" style="white-space:nowrap">75<span class="scorebar"><i data-w="75"></i></span>
+        <td class="sevc"><span class="badge sev-critical">critical</span></td>
+        
+        <td class="hcell"><div class="hrow"><span class="srcs"><span class="srcic s-lookalike" title="found by Look-alike names" role="img" aria-label="Look-alike name">Aa</span><span class="srcic s-analyst" title="found by Analyst URL scan" role="img" aria-label="Analyst scan"><svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 2.5l9 4.8-4 1.3-1.6 3.9z" fill="currentColor"/></svg></span></span><a href="/ui/findings/5da0ffd7-d892-4cfd-9f55-c87b543dfac7/" class="flink"><span class="mono" dir="ltr">coinpilott.io</span></a></div><div class="small muted fmeta">Look-alike name · Analyst scan · domain name · <a href="/ui/findings/5da0ffd7-d892-4cfd-9f55-c87b543dfac7/#network" title="site & network investigation: servers, WHOIS history, urlscan">network</a> · <a href="/ui/candidates/f6f651e4-797f-4887-8cfd-dbc5a6362f5e" title="domain timeline on the watchlist">timeline</a></div></td>
+        <td class="mono scc">75<span class="scorebar"><i data-w="75"></i></span>
           <span style="margin-left:6px"><a class="pill" href="https://www.virustotal.com/gui/domain/coinpilott.io" target="_blank" rel="noreferrer noopener" title="not in VirusTotal yet — unknown is never treated as clean" style="font-size:10px;color:var(--muted)">VT —</a></span></td>
         <td><div class="ring sm" data-p="100" style="--c:var(--accent)" title="confidence in the evidence: 100%"><div>100</div></div></td>
-        <td class="small" style="max-width:360px"><span class="pill g-behavior" title="the visit ends on the brand&#39;s own site after a link with atid=51803: the commission goes to the owner of that id · +25 pts">forwards with an affiliate id</span> <span class="pill g-visual" title="favicon mmh3 1130316202 equals the brand&#39;s favicon hash · +22 pts">identical favicon</span> <span class="pill g-infrastructure" title="the visit goes through go-linkz.click on its way to the brand&#39;s own site: the destination can be changed at any time · +20 pts">forwards through another host</span> <span class="pill g-visual" title="homepage screenshot is 100% similar to the brand&#39;s (pHash) · +18 pts">looks like the real site</span> <a href="/ui/findings/5da0ffd7-d892-4cfd-9f55-c87b543dfac7/" class="muted small">+9 more</a></td>
-        <td><span class="badge state st-confirmed" title="an analyst confirmed it as phishing">confirmed phishing</span></td>
-        <td class="mono small muted"><time datetime="2026-10-14T09:46:22.441871" data-local title="2026-10-14T09:46:22.441871 UTC">2026-10-14 09:46</time></td>
+        <td class="small" style="max-width:260px"><span class="pill g-behavior" title="the visit ends on the brand&#39;s own site after a link with atid=51803: the commission goes to the owner of that id · +25 pts">forwards with an affiliate id</span> <span class="pill g-visual" title="favicon mmh3 1130316202 equals the brand&#39;s favicon hash · +22 pts">identical favicon</span> <span class="pill g-infrastructure" title="the visit goes through go-linkz.click on its way to the brand&#39;s own site: the destination can be changed at any time · +20 pts">forwards through another host</span> <span class="pill g-visual" title="homepage screenshot is 100% similar to the brand&#39;s (pHash) · +18 pts">looks like the real site</span> <a href="/ui/findings/5da0ffd7-d892-4cfd-9f55-c87b543dfac7/" class="muted small">+9 more</a></td>
+        <td class="stc"><span class="badge state st-confirmed" title="an analyst confirmed it as phishing">confirmed phishing</span></td>
+        <td class="mono small muted fwhen ts-short"><time datetime="2026-10-14T09:46:22.441871" data-local title="2026-10-14T09:46:22.441871 UTC">2026-10-14 09:46</time></td>
       </tr>
       
       </tbody>
@@ -841,8 +878,12 @@ window.BW = (function () {
   // server timestamps are UTC: <time datetime="…" data-local> (the |ts filter) and [data-local="…"] show the viewer's local time
   const utc = iso => /T\d\d:\d\d/.test(iso) && !/(Z|[+-]\d\d:?\d\d)$/.test(iso) ? iso + 'Z' : iso;
   const fmt = new Intl.DateTimeFormat(undefined, {year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'});
+  // inside .ts-short (a narrow column) a date of this year leaves the year out
+  const fmtShort = new Intl.DateTimeFormat(undefined, {month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'}), thisYear = new Date().getFullYear();
   document.querySelectorAll('[data-local]').forEach(el => { const raw = el.getAttribute('datetime') || el.dataset.local; if (!raw) return;
-    const d = new Date(utc(raw)); if (isNaN(d)) return; el.textContent = fmt.format(d); if (!el.title) el.title = raw.replace('T', ' ').slice(0, 19) + ' UTC'; });
+    const d = new Date(utc(raw)); if (isNaN(d)) return;
+    el.textContent = (el.closest('.ts-short') && d.getFullYear() === thisYear ? fmtShort : fmt).format(d);
+    if (!el.title) el.title = raw.replace('T', ' ').slice(0, 19) + ' UTC'; });
 })();
 </script>
 <script>

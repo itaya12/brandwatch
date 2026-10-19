@@ -319,6 +319,23 @@ button:not(.ghost):not(.fold):not(.menu):not(.chip):hover::after,.btn:not(.ghost
   font:11px/1.4 var(--mono);color:var(--text);white-space:nowrap;
   box-shadow:0 10px 30px rgba(0,0,0,.5);transition:opacity .12s}
 .sparktip.on{opacity:1}
+/* where a domain was found: one small tile per kind of source. The three outside services wear the colour people
+   know them by (Google's blue, ChatGPT's green, Facebook's blue); our own sources use the palette. */
+.srcic{display:inline-grid;place-items:center;width:22px;height:22px;flex:none;border-radius:6px;vertical-align:middle;
+  font:800 12.5px/1 var(--sans);border:1px solid rgba(255,255,255,.1);box-shadow:0 1px 0 rgba(0,0,0,.3)}
+.srcic svg{width:13px;height:13px}
+.srcic.s-google{background:#fff;color:#4285F4;font-size:14px}
+.srcic.s-ai{background:#10A37F;color:#fff}
+.srcic.s-social,.srcic.s-meta_ads{background:#1877F2;color:#fff;font-size:15px;font-family:Arial,var(--sans)}
+.srcic.s-meta_ads{box-shadow:inset 0 -3px 0 #F5C518}
+.srcic.s-cert{background:color-mix(in srgb,var(--med) 16%,transparent);color:var(--med)}
+.srcic.s-lookalike{background:color-mix(in srgb,var(--high) 16%,transparent);color:var(--high);font-size:11px}
+.srcic.s-urlscan{background:color-mix(in srgb,var(--accent) 16%,transparent);color:var(--accent2)}
+.srcic.s-analyst{background:color-mix(in srgb,var(--op5) 18%,transparent);color:var(--op5)}
+.srcic.s-nrd{background:color-mix(in srgb,var(--low) 16%,transparent);color:var(--low)}
+.srcic.s-pivot{background:color-mix(in srgb,var(--accent) 16%,transparent);color:var(--accent2)}
+.srcic.s-redirect{background:color-mix(in srgb,var(--op5) 18%,transparent);color:var(--op5)}
+.srcs{display:inline-flex;gap:4px;align-items:center;vertical-align:middle}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
 </style>
 <script>
@@ -410,6 +427,19 @@ window.BW = (function () {
   #ftable tr.cur td{background:rgba(53,199,242,.09);box-shadow:inset 3px 0 0 var(--accent)}
   .bigshot{width:220px;height:138px;object-fit:cover;object-position:top;border:1px solid var(--border);border-radius:6px;background:#000;cursor:zoom-in;display:block}
   .noshot{width:220px;height:138px;border:1px dashed var(--border);border-radius:6px;display:flex;align-items:center;justify-content:center;text-align:center;padding:10px;font-size:11.5px;color:var(--muted)}
+  /* the host line: where it was found (one tile per source), the host, the brand */
+  .hrow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;min-width:0}
+  .hrow .flink{font-size:14px;font-weight:600;min-width:0;overflow-wrap:anywhere}
+  .hrow .pill.bp{font-size:11px;padding:1px 8px}
+  .fmeta{margin-top:5px;line-height:1.5}
+  .fmeta a{white-space:nowrap}
+  #ftable .fwhen,#ftable .stc{white-space:nowrap;width:1%}
+  #ftable .sevc{width:1%;min-width:118px}
+  #ftable .sevc .badge{display:inline-block;white-space:normal;max-width:130px;text-align:center}
+  #ftable .scc{white-space:nowrap}
+  #ftable .scc .pill{display:block;width:max-content;margin:5px 0 0}
+  @media (min-width:701px){ #ftable .hcell{min-width:250px}}
+  #ftable .scorebar{width:64px}
   .selcol{width:28px}
   .selcol input{width:16px;height:16px;margin:0;cursor:pointer}
   /* the bulk bar sits under the sticky header (z-index 20 in main{z-index:1} slid under it before) */
@@ -458,7 +488,7 @@ window.BW = (function () {
   <a class="crit " href="?state=open&severity=critical&amp;brand_id=a7b5cb5c-e4a0-495d-b6c9-3ac5209ac3b2"><span class="v" data-count="1">0</span><span class="l">critical</span></a>
   <a class="hi " href="?state=open&severity=high&amp;brand_id=a7b5cb5c-e4a0-495d-b6c9-3ac5209ac3b2"><span class="v" data-count="0">0</span><span class="l">high</span></a>
   <a class="med " href="?state=open&severity=medium&amp;brand_id=a7b5cb5c-e4a0-495d-b6c9-3ac5209ac3b2"><span class="v" data-count="0">0</span><span class="l">medium</span></a>
-  <a class="" href="?state=open&since=24h&amp;brand_id=a7b5cb5c-e4a0-495d-b6c9-3ac5209ac3b2"><span class="v" data-count="1">0</span><span class="l">new in 24h</span></a>
+  <a class="" href="?state=open&since=24h&amp;brand_id=a7b5cb5c-e4a0-495d-b6c9-3ac5209ac3b2"><span class="v" data-count="0">0</span><span class="l">new in 24h</span></a>
   <a class="on" href="?state=confirmed&amp;brand_id=a7b5cb5c-e4a0-495d-b6c9-3ac5209ac3b2"><span class="v" data-count="4">0</span><span class="l">confirmed</span></a>
   <a class="" href="?state=dismissed&amp;brand_id=a7b5cb5c-e4a0-495d-b6c9-3ac5209ac3b2"><span class="v" data-count="0">0</span><span class="l">dismissed</span></a>
   
@@ -509,53 +539,57 @@ window.BW = (function () {
       <tr class="sevrow critical" data-host="vaultpay-login.com" data-id="be5f0a7c-d96e-4260-b413-a70d917bbfe9">
         <td class="selcol"></td>
         <td class="shotcol"><img class="bigshot" data-src="/_r/e1c8c7f57f136b.png" alt="screenshot of vaultpay-login.com" title="click to enlarge" data-host="vaultpay-login.com" data-href="/ui/findings/be5f0a7c-d96e-4260-b413-a70d917bbfe9/"></td>
-        <td><span class="badge sev-critical">critical</span></td>
-        <td><a href="/ui/findings/be5f0a7c-d96e-4260-b413-a70d917bbfe9/" class="flink"><span class="mono" dir="ltr">vaultpay-login.com</span></a><div class="small muted">domain name · found by Look-alike names, Analyst URL scan · <a href="/ui/findings/be5f0a7c-d96e-4260-b413-a70d917bbfe9/#network" title="site & network investigation: servers, WHOIS history, urlscan">network</a> · <a href="/ui/candidates/d84a6c1d-94dd-4dc4-96e6-e63136de1233" title="domain timeline on the watchlist">timeline</a></div></td>
-        <td class="mono" style="white-space:nowrap">87<span class="scorebar"><i data-w="87"></i></span>
+        <td class="sevc"><span class="badge sev-critical">critical</span></td>
+        
+        <td class="hcell"><div class="hrow"><span class="srcs"><span class="srcic s-lookalike" title="found by Look-alike names" role="img" aria-label="Look-alike name">Aa</span><span class="srcic s-analyst" title="found by Analyst URL scan" role="img" aria-label="Analyst scan"><svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 2.5l9 4.8-4 1.3-1.6 3.9z" fill="currentColor"/></svg></span></span><a href="/ui/findings/be5f0a7c-d96e-4260-b413-a70d917bbfe9/" class="flink"><span class="mono" dir="ltr">vaultpay-login.com</span></a></div><div class="small muted fmeta">Look-alike name · Analyst scan · domain name · <a href="/ui/findings/be5f0a7c-d96e-4260-b413-a70d917bbfe9/#network" title="site & network investigation: servers, WHOIS history, urlscan">network</a> · <a href="/ui/candidates/d84a6c1d-94dd-4dc4-96e6-e63136de1233" title="domain timeline on the watchlist">timeline</a></div></td>
+        <td class="mono scc">87<span class="scorebar"><i data-w="87"></i></span>
           <span style="margin-left:6px"><a class="pill" href="https://www.virustotal.com/gui/domain/vaultpay-login.com" target="_blank" rel="noreferrer noopener" title="VirusTotal: 7 engine(s) flag it" style="font-size:10px;border-color:var(--crit);color:var(--crit)">VT 7</a></span></td>
         <td><div class="ring sm" data-p="100" style="--c:var(--accent)" title="confidence in the evidence: 100%"><div>100</div></div></td>
-        <td class="small" style="max-width:360px"><span class="pill g-visual" title="favicon mmh3 1401845590 equals the brand&#39;s favicon hash · +22 pts">identical favicon</span> <span class="pill g-visual" title="homepage screenshot is 100% similar to the brand&#39;s (pHash) · +18 pts">looks like the real site</span> <span class="pill g-infrastructure" title="shares server 198.51.100.77 with known phishing of this brand · +15 pts">shares a server with phishing</span> <span class="pill g-reputation" title="already flagged as phishing — Google Safe Browsing lists it as social engineering (phishing) · +15 pts">already flagged as phishing</span> <a href="/ui/findings/be5f0a7c-d96e-4260-b413-a70d917bbfe9/" class="muted small">+15 more</a></td>
-        <td><span class="badge state st-confirmed" title="an analyst confirmed it as phishing">confirmed phishing</span></td>
-        <td class="mono small muted"><time datetime="2026-10-14T09:46:24.329229" data-local title="2026-10-14T09:46:24.329229 UTC">2026-10-14 09:46</time></td>
+        <td class="small" style="max-width:260px"><span class="pill g-visual" title="favicon mmh3 1401845590 equals the brand&#39;s favicon hash · +22 pts">identical favicon</span> <span class="pill g-visual" title="homepage screenshot is 100% similar to the brand&#39;s (pHash) · +18 pts">looks like the real site</span> <span class="pill g-infrastructure" title="shares server 198.51.100.77 with known phishing of this brand · +15 pts">shares a server with phishing</span> <span class="pill g-reputation" title="already flagged as phishing — Google Safe Browsing lists it as social engineering (phishing) · +15 pts">already flagged as phishing</span> <a href="/ui/findings/be5f0a7c-d96e-4260-b413-a70d917bbfe9/" class="muted small">+15 more</a></td>
+        <td class="stc"><span class="badge state st-confirmed" title="an analyst confirmed it as phishing">confirmed phishing</span></td>
+        <td class="mono small muted fwhen ts-short"><time datetime="2026-10-14T09:46:24.329229" data-local title="2026-10-14T09:46:24.329229 UTC">2026-10-14 09:46</time></td>
       </tr>
       
       <tr class="sevrow critical" data-host="vaultpay-verify.com" data-id="9e972300-3ba9-4bc8-9db8-d56527f3cc8e">
         <td class="selcol"></td>
         <td class="shotcol"><img class="bigshot" data-src="/_r/ba0480e113d0a7.png" alt="screenshot of vaultpay-verify.com" title="click to enlarge" data-host="vaultpay-verify.com" data-href="/ui/findings/9e972300-3ba9-4bc8-9db8-d56527f3cc8e/"></td>
-        <td><span class="badge sev-critical">critical</span></td>
-        <td><a href="/ui/findings/9e972300-3ba9-4bc8-9db8-d56527f3cc8e/" class="flink"><span class="mono" dir="ltr">vaultpay-verify.com</span></a><div class="small muted">domain name · found by Look-alike names, Analyst URL scan · <a href="/ui/findings/9e972300-3ba9-4bc8-9db8-d56527f3cc8e/#network" title="site & network investigation: servers, WHOIS history, urlscan">network</a> · <a href="/ui/candidates/e3cc31e3-7c57-4441-8b21-2c4d87d61df2" title="domain timeline on the watchlist">timeline</a></div></td>
-        <td class="mono" style="white-space:nowrap">77<span class="scorebar"><i data-w="77"></i></span>
+        <td class="sevc"><span class="badge sev-critical">critical</span></td>
+        
+        <td class="hcell"><div class="hrow"><span class="srcs"><span class="srcic s-lookalike" title="found by Look-alike names" role="img" aria-label="Look-alike name">Aa</span><span class="srcic s-analyst" title="found by Analyst URL scan" role="img" aria-label="Analyst scan"><svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 2.5l9 4.8-4 1.3-1.6 3.9z" fill="currentColor"/></svg></span></span><a href="/ui/findings/9e972300-3ba9-4bc8-9db8-d56527f3cc8e/" class="flink"><span class="mono" dir="ltr">vaultpay-verify.com</span></a></div><div class="small muted fmeta">Look-alike name · Analyst scan · domain name · <a href="/ui/findings/9e972300-3ba9-4bc8-9db8-d56527f3cc8e/#network" title="site & network investigation: servers, WHOIS history, urlscan">network</a> · <a href="/ui/candidates/e3cc31e3-7c57-4441-8b21-2c4d87d61df2" title="domain timeline on the watchlist">timeline</a></div></td>
+        <td class="mono scc">77<span class="scorebar"><i data-w="77"></i></span>
           <span style="margin-left:6px"><a class="pill" href="https://www.virustotal.com/gui/domain/vaultpay-verify.com" target="_blank" rel="noreferrer noopener" title="not in VirusTotal yet — unknown is never treated as clean" style="font-size:10px;color:var(--muted)">VT —</a></span></td>
         <td><div class="ring sm" data-p="100" style="--c:var(--accent)" title="confidence in the evidence: 100%"><div>100</div></div></td>
-        <td class="small" style="max-width:360px"><span class="pill g-visual" title="favicon mmh3 1401845590 equals the brand&#39;s favicon hash · +22 pts">identical favicon</span> <span class="pill g-visual" title="homepage screenshot is 100% similar to the brand&#39;s (pHash) · +18 pts">looks like the real site</span> <span class="pill g-infrastructure" title="shares server 198.51.100.77 with known phishing of this brand · +15 pts">shares a server with phishing</span> <span class="pill g-infrastructure" title="shares infrastructure with an investigated campaign of this brand · +15 pts">linked to a mapped attacker</span> <a href="/ui/findings/9e972300-3ba9-4bc8-9db8-d56527f3cc8e/" class="muted small">+12 more</a></td>
-        <td><span class="badge state st-confirmed" title="an analyst confirmed it as phishing">confirmed phishing</span></td>
-        <td class="mono small muted"><time datetime="2026-10-14T09:46:24.713463" data-local title="2026-10-14T09:46:24.713463 UTC">2026-10-14 09:46</time></td>
+        <td class="small" style="max-width:260px"><span class="pill g-visual" title="favicon mmh3 1401845590 equals the brand&#39;s favicon hash · +22 pts">identical favicon</span> <span class="pill g-visual" title="homepage screenshot is 100% similar to the brand&#39;s (pHash) · +18 pts">looks like the real site</span> <span class="pill g-infrastructure" title="shares server 198.51.100.77 with known phishing of this brand · +15 pts">shares a server with phishing</span> <span class="pill g-infrastructure" title="shares infrastructure with an investigated campaign of this brand · +15 pts">linked to a mapped attacker</span> <a href="/ui/findings/9e972300-3ba9-4bc8-9db8-d56527f3cc8e/" class="muted small">+12 more</a></td>
+        <td class="stc"><span class="badge state st-confirmed" title="an analyst confirmed it as phishing">confirmed phishing</span></td>
+        <td class="mono small muted fwhen ts-short"><time datetime="2026-10-14T09:46:24.713463" data-local title="2026-10-14T09:46:24.713463 UTC">2026-10-14 09:46</time></td>
       </tr>
       
       <tr class="sevrow critical" data-host="vaultpay-secure.net" data-id="f65ec535-db25-4b14-a8d0-76442a4b4e6e">
         <td class="selcol"></td>
         <td class="shotcol"><img class="bigshot" data-src="/_r/80fea38a400d11.png" alt="screenshot of vaultpay-secure.net" title="click to enlarge" data-host="vaultpay-secure.net" data-href="/ui/findings/f65ec535-db25-4b14-a8d0-76442a4b4e6e/"></td>
-        <td><span class="badge sev-critical">critical</span></td>
-        <td><a href="/ui/findings/f65ec535-db25-4b14-a8d0-76442a4b4e6e/" class="flink"><span class="mono" dir="ltr">vaultpay-secure.net</span></a><div class="small muted">domain name · found by Analyst URL scan · <a href="/ui/findings/f65ec535-db25-4b14-a8d0-76442a4b4e6e/#network" title="site & network investigation: servers, WHOIS history, urlscan">network</a> · <a href="/ui/candidates/22827f9a-8fb0-446b-b059-9665320be86e" title="domain timeline on the watchlist">timeline</a></div></td>
-        <td class="mono" style="white-space:nowrap">77<span class="scorebar"><i data-w="77"></i></span>
+        <td class="sevc"><span class="badge sev-critical">critical</span></td>
+        
+        <td class="hcell"><div class="hrow"><span class="srcs"><span class="srcic s-analyst" title="found by Analyst URL scan" role="img" aria-label="Analyst scan"><svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 2.5l9 4.8-4 1.3-1.6 3.9z" fill="currentColor"/></svg></span></span><a href="/ui/findings/f65ec535-db25-4b14-a8d0-76442a4b4e6e/" class="flink"><span class="mono" dir="ltr">vaultpay-secure.net</span></a></div><div class="small muted fmeta">Analyst scan · domain name · <a href="/ui/findings/f65ec535-db25-4b14-a8d0-76442a4b4e6e/#network" title="site & network investigation: servers, WHOIS history, urlscan">network</a> · <a href="/ui/candidates/22827f9a-8fb0-446b-b059-9665320be86e" title="domain timeline on the watchlist">timeline</a></div></td>
+        <td class="mono scc">77<span class="scorebar"><i data-w="77"></i></span>
           <span style="margin-left:6px"><a class="pill" href="https://www.virustotal.com/gui/domain/vaultpay-secure.net" target="_blank" rel="noreferrer noopener" title="not in VirusTotal yet — unknown is never treated as clean" style="font-size:10px;color:var(--muted)">VT —</a></span></td>
         <td><div class="ring sm" data-p="90" style="--c:var(--accent)" title="confidence in the evidence: 90%"><div>90</div></div></td>
-        <td class="small" style="max-width:360px"><span class="pill g-visual" title="favicon mmh3 1401845590 equals the brand&#39;s favicon hash · +22 pts">identical favicon</span> <span class="pill g-visual" title="homepage screenshot is 100% similar to the brand&#39;s (pHash) · +18 pts">looks like the real site</span> <span class="pill g-infrastructure" title="shares server 198.51.100.77 with known phishing of this brand · +15 pts">shares a server with phishing</span> <span class="pill g-infrastructure" title="tracking id UA-777001-1 also present on known phishing pages · +15 pts">same tracking ID as phishing</span> <a href="/ui/findings/f65ec535-db25-4b14-a8d0-76442a4b4e6e/" class="muted small">+11 more</a></td>
-        <td><span class="badge state st-confirmed" title="an analyst confirmed it as phishing">confirmed phishing</span></td>
-        <td class="mono small muted"><time datetime="2026-10-14T09:46:24.483973" data-local title="2026-10-14T09:46:24.483973 UTC">2026-10-14 09:46</time></td>
+        <td class="small" style="max-width:260px"><span class="pill g-visual" title="favicon mmh3 1401845590 equals the brand&#39;s favicon hash · +22 pts">identical favicon</span> <span class="pill g-visual" title="homepage screenshot is 100% similar to the brand&#39;s (pHash) · +18 pts">looks like the real site</span> <span class="pill g-infrastructure" title="shares server 198.51.100.77 with known phishing of this brand · +15 pts">shares a server with phishing</span> <span class="pill g-infrastructure" title="tracking id UA-777001-1 also present on known phishing pages · +15 pts">same tracking ID as phishing</span> <a href="/ui/findings/f65ec535-db25-4b14-a8d0-76442a4b4e6e/" class="muted small">+11 more</a></td>
+        <td class="stc"><span class="badge state st-confirmed" title="an analyst confirmed it as phishing">confirmed phishing</span></td>
+        <td class="mono small muted fwhen ts-short"><time datetime="2026-10-14T09:46:24.483973" data-local title="2026-10-14T09:46:24.483973 UTC">2026-10-14 09:46</time></td>
       </tr>
       
       <tr class="sevrow critical" data-host="vault-pay.co" data-id="ab239662-2d39-4d17-aeaf-c1b7d3575bd7">
         <td class="selcol"></td>
         <td class="shotcol"><img class="bigshot" data-src="/_r/15a5f151ccfb3b.png" alt="screenshot of vault-pay.co" title="click to enlarge" data-host="vault-pay.co" data-href="/ui/findings/ab239662-2d39-4d17-aeaf-c1b7d3575bd7/"></td>
-        <td><span class="badge sev-critical">critical</span></td>
-        <td><a href="/ui/findings/ab239662-2d39-4d17-aeaf-c1b7d3575bd7/" class="flink"><span class="mono" dir="ltr">vault-pay.co</span></a><div class="small muted">domain name · found by Analyst URL scan · <a href="/ui/findings/ab239662-2d39-4d17-aeaf-c1b7d3575bd7/#network" title="site & network investigation: servers, WHOIS history, urlscan">network</a> · <a href="/ui/candidates/a7925088-f723-4632-92d0-fc2a3c632cbb" title="domain timeline on the watchlist">timeline</a></div></td>
-        <td class="mono" style="white-space:nowrap">75<span class="scorebar"><i data-w="75"></i></span>
+        <td class="sevc"><span class="badge sev-critical">critical</span></td>
+        
+        <td class="hcell"><div class="hrow"><span class="srcs"><span class="srcic s-analyst" title="found by Analyst URL scan" role="img" aria-label="Analyst scan"><svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 2.5l9 4.8-4 1.3-1.6 3.9z" fill="currentColor"/></svg></span></span><a href="/ui/findings/ab239662-2d39-4d17-aeaf-c1b7d3575bd7/" class="flink"><span class="mono" dir="ltr">vault-pay.co</span></a></div><div class="small muted fmeta">Analyst scan · domain name · <a href="/ui/findings/ab239662-2d39-4d17-aeaf-c1b7d3575bd7/#network" title="site & network investigation: servers, WHOIS history, urlscan">network</a> · <a href="/ui/candidates/a7925088-f723-4632-92d0-fc2a3c632cbb" title="domain timeline on the watchlist">timeline</a></div></td>
+        <td class="mono scc">75<span class="scorebar"><i data-w="75"></i></span>
           <span style="margin-left:6px"><a class="pill" href="https://www.virustotal.com/gui/domain/vault-pay.co" target="_blank" rel="noreferrer noopener" title="not in VirusTotal yet — unknown is never treated as clean" style="font-size:10px;color:var(--muted)">VT —</a></span></td>
         <td><div class="ring sm" data-p="90" style="--c:var(--accent)" title="confidence in the evidence: 90%"><div>90</div></div></td>
-        <td class="small" style="max-width:360px"><span class="pill g-visual" title="favicon mmh3 1401845590 equals the brand&#39;s favicon hash · +22 pts">identical favicon</span> <span class="pill g-visual" title="homepage screenshot is 100% similar to the brand&#39;s (pHash) · +18 pts">looks like the real site</span> <span class="pill g-infrastructure" title="shares server 198.51.100.77 with known phishing of this brand · +15 pts">shares a server with phishing</span> <span class="pill g-infrastructure" title="tracking id UA-777001-1 also present on known phishing pages · +15 pts">same tracking ID as phishing</span> <a href="/ui/findings/ab239662-2d39-4d17-aeaf-c1b7d3575bd7/" class="muted small">+10 more</a></td>
-        <td><span class="badge state st-confirmed" title="an analyst confirmed it as phishing">confirmed phishing</span></td>
-        <td class="mono small muted"><time datetime="2026-10-14T09:46:24.585432" data-local title="2026-10-14T09:46:24.585432 UTC">2026-10-14 09:46</time></td>
+        <td class="small" style="max-width:260px"><span class="pill g-visual" title="favicon mmh3 1401845590 equals the brand&#39;s favicon hash · +22 pts">identical favicon</span> <span class="pill g-visual" title="homepage screenshot is 100% similar to the brand&#39;s (pHash) · +18 pts">looks like the real site</span> <span class="pill g-infrastructure" title="shares server 198.51.100.77 with known phishing of this brand · +15 pts">shares a server with phishing</span> <span class="pill g-infrastructure" title="tracking id UA-777001-1 also present on known phishing pages · +15 pts">same tracking ID as phishing</span> <a href="/ui/findings/ab239662-2d39-4d17-aeaf-c1b7d3575bd7/" class="muted small">+10 more</a></td>
+        <td class="stc"><span class="badge state st-confirmed" title="an analyst confirmed it as phishing">confirmed phishing</span></td>
+        <td class="mono small muted fwhen ts-short"><time datetime="2026-10-14T09:46:24.585432" data-local title="2026-10-14T09:46:24.585432 UTC">2026-10-14 09:46</time></td>
       </tr>
       
       </tbody>
@@ -804,8 +838,12 @@ window.BW = (function () {
   // server timestamps are UTC: <time datetime="…" data-local> (the |ts filter) and [data-local="…"] show the viewer's local time
   const utc = iso => /T\d\d:\d\d/.test(iso) && !/(Z|[+-]\d\d:?\d\d)$/.test(iso) ? iso + 'Z' : iso;
   const fmt = new Intl.DateTimeFormat(undefined, {year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'});
+  // inside .ts-short (a narrow column) a date of this year leaves the year out
+  const fmtShort = new Intl.DateTimeFormat(undefined, {month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'}), thisYear = new Date().getFullYear();
   document.querySelectorAll('[data-local]').forEach(el => { const raw = el.getAttribute('datetime') || el.dataset.local; if (!raw) return;
-    const d = new Date(utc(raw)); if (isNaN(d)) return; el.textContent = fmt.format(d); if (!el.title) el.title = raw.replace('T', ' ').slice(0, 19) + ' UTC'; });
+    const d = new Date(utc(raw)); if (isNaN(d)) return;
+    el.textContent = (el.closest('.ts-short') && d.getFullYear() === thisYear ? fmtShort : fmt).format(d);
+    if (!el.title) el.title = raw.replace('T', ' ').slice(0, 19) + ' UTC'; });
 })();
 </script>
 <script>

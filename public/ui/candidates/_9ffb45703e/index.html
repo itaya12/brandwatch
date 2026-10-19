@@ -319,6 +319,23 @@ button:not(.ghost):not(.fold):not(.menu):not(.chip):hover::after,.btn:not(.ghost
   font:11px/1.4 var(--mono);color:var(--text);white-space:nowrap;
   box-shadow:0 10px 30px rgba(0,0,0,.5);transition:opacity .12s}
 .sparktip.on{opacity:1}
+/* where a domain was found: one small tile per kind of source. The three outside services wear the colour people
+   know them by (Google's blue, ChatGPT's green, Facebook's blue); our own sources use the palette. */
+.srcic{display:inline-grid;place-items:center;width:22px;height:22px;flex:none;border-radius:6px;vertical-align:middle;
+  font:800 12.5px/1 var(--sans);border:1px solid rgba(255,255,255,.1);box-shadow:0 1px 0 rgba(0,0,0,.3)}
+.srcic svg{width:13px;height:13px}
+.srcic.s-google{background:#fff;color:#4285F4;font-size:14px}
+.srcic.s-ai{background:#10A37F;color:#fff}
+.srcic.s-social,.srcic.s-meta_ads{background:#1877F2;color:#fff;font-size:15px;font-family:Arial,var(--sans)}
+.srcic.s-meta_ads{box-shadow:inset 0 -3px 0 #F5C518}
+.srcic.s-cert{background:color-mix(in srgb,var(--med) 16%,transparent);color:var(--med)}
+.srcic.s-lookalike{background:color-mix(in srgb,var(--high) 16%,transparent);color:var(--high);font-size:11px}
+.srcic.s-urlscan{background:color-mix(in srgb,var(--accent) 16%,transparent);color:var(--accent2)}
+.srcic.s-analyst{background:color-mix(in srgb,var(--op5) 18%,transparent);color:var(--op5)}
+.srcic.s-nrd{background:color-mix(in srgb,var(--low) 16%,transparent);color:var(--low)}
+.srcic.s-pivot{background:color-mix(in srgb,var(--accent) 16%,transparent);color:var(--accent2)}
+.srcic.s-redirect{background:color-mix(in srgb,var(--op5) 18%,transparent);color:var(--op5)}
+.srcs{display:inline-flex;gap:4px;align-items:center;vertical-align:middle}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
 </style>
 <script>
@@ -409,6 +426,21 @@ window.BW = (function () {
   .bulkbar[hidden]{display:none}
   .bulkbar input[name=reason]{flex:1;min-width:180px;margin:0}
   .why{font-size:12px;color:var(--muted);max-width:280px}
+  .why .srcs{display:flex}
+  /* the table fits a laptop screen: long names wrap, the finding is a badge with its state under it, the two actions stack */
+  #ctable .dom{min-width:190px;max-width:260px;overflow-wrap:anywhere}
+  #ctable .why{max-width:210px}
+  #ctable .prio{max-width:40px!important}
+  #ctable td.pr{white-space:nowrap;padding-right:14px}
+  #ctable .fnd{white-space:nowrap}
+  #ctable .acts{white-space:nowrap}
+  #ctable .acts form{display:block!important;margin:0 0 4px}
+  #ctable .acts button{width:100%}
+  /* first seen, last seen and the next re-check in one narrow column: three short lines that never wrap */
+  .seen{font:11.5px/1.55 var(--mono);color:var(--muted);white-space:nowrap}
+  .seen span{display:inline-block;width:44px;color:var(--muted);opacity:.7;text-transform:uppercase;font-size:11px;letter-spacing:.04em}
+  .seen time{color:var(--text2)}
+  .seen .nx b{font-weight:500;color:var(--accent2)}
   .why b{color:var(--text);font-weight:500}
   .pager{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:10px}.pager .off{opacity:.4;pointer-events:none}
   .wstats summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:8px;margin:18px 0 8px}
@@ -467,23 +499,20 @@ window.BW = (function () {
   </form>
   
   <table id="ctable" class="rwd">
-    <thead><tr><th class="selcol"><input type="checkbox" id="selall" aria-label="select every domain on this page"></th><th>Domain</th><th>Brand</th><th>Why it is here</th><th>State</th><th>Finding</th><th>Priority</th><th>First seen</th><th>Last seen</th><th>Next scan</th><th class="right">Scans</th><th>Actions</th></tr></thead>
+    <thead><tr><th class="selcol"><input type="checkbox" id="selall" aria-label="select every domain on this page"></th><th>Domain</th><th>Why it is here</th><th>State</th><th>Finding</th><th>Priority</th><th>Seen</th><th>Actions</th></tr></thead>
     <tbody>
     
     <tr class="wrow" style="--sc:#8A97A8" data-host="shopnova-eu.com">
       <td class="selcol"><input type="checkbox" class="sel" name="ids" value="0db67eeb-267f-42c8-a83d-b5675bcc52e8" form="bulkform" aria-label="select shopnova-eu.com"></td>
-      <td><a href="/ui/candidates/0db67eeb-267f-42c8-a83d-b5675bcc52e8/"><span class="mono" dir="ltr">shopnova-eu.com</span></a><div class="small muted">domain name</div></td>
-      <td class="small"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/"><bdi>CoinPilot</bdi></a></td>
-      <td class="why"><b>Infrastructure map</b> <span title="pivot:shares cert with the campaign">shares cert with the campaign</span></td>
+      <td class="dom"><a href="/ui/candidates/0db67eeb-267f-42c8-a83d-b5675bcc52e8/"><span class="mono" dir="ltr">shopnova-eu.com</span></a><div class="small muted"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/" title="the brand it imitates"><bdi>CoinPilot</bdi></a> · domain name</div></td>
+      <td class="why"><span class="srcs" style="margin:0 0 3px"><span class="srcic s-pivot" title="found by Analyst URL scan" role="img" aria-label="Infrastructure map"><svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="4" cy="4.5" r="1.9"/><circle cx="12" cy="4.5" r="1.9"/><circle cx="8" cy="12" r="1.9"/><path d="M5.6 5.6l1.6 4.6M10.4 5.6l-1.6 4.6M5.9 4.5h4.2"/></svg></span></span><b>Infrastructure map</b> <span title="pivot:shares cert with the campaign">shares cert with the campaign</span></td>
       <td><span class="badge state st-new" title="just discovered, not visited yet">new</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="60" style="max-width:60px"></span> 20</td>
-      <td class="mono small muted"><time datetime="2026-10-14T09:46:28.537412" data-local title="2026-10-14T09:46:28.537412 UTC">2026-10-14 09:46</time></td>
-      <td class="mono small muted"><time datetime="2026-10-14T09:46:28.537412" data-local title="2026-10-14T09:46:28.537412 UTC">2026-10-14 09:46</time></td>
-      <td class="mono small" >—</td>
-      <td class="right mono">0</td>
+      <td class="fnd"><span class="muted small">—</span></td>
+      <td class="mono small pr"><span class="prio" data-w="60" style="max-width:60px"></span> 20</td>
+      <td class="seen ts-short"><div><span>first</span><time datetime="2026-10-14T09:46:28.537412" data-local title="2026-10-14T09:46:28.537412 UTC">2026-10-14 09:46</time></div><div><span>last</span><time datetime="2026-10-14T09:46:28.537412" data-local title="2026-10-14T09:46:28.537412 UTC">2026-10-14 09:46</time></div>
+        <div class="nx"><span>next</span>—</div><div><span>scans</span>0</div></td>
       
-      <td style="white-space:nowrap">
+      <td class="acts">
         
         <form method="post" action="/ui/candidates/0db67eeb-267f-42c8-a83d-b5675bcc52e8/dismiss" style="display:inline"
               data-confirm="Known legit: remove shopnova-eu.com from the watchlist and allowlist its domain for CoinPilot?&#10;&#10;It (and its subdomains) will never be flagged again. You can undo this on the brand page → whitelist."
@@ -499,18 +528,15 @@ window.BW = (function () {
     
     <tr class="wrow" style="--sc:#8A97A8" data-host="vaultpay-verify.com">
       <td class="selcol"><input type="checkbox" class="sel" name="ids" value="35743234-5c63-4fac-85a0-53d5d79d9276" form="bulkform" aria-label="select vaultpay-verify.com"></td>
-      <td><a href="/ui/candidates/35743234-5c63-4fac-85a0-53d5d79d9276/"><span class="mono" dir="ltr">vaultpay-verify.com</span></a><div class="small muted">domain name</div></td>
-      <td class="small"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/"><bdi>CoinPilot</bdi></a></td>
-      <td class="why"><b>Infrastructure map</b> <span title="pivot:shares cert with the campaign">shares cert with the campaign</span></td>
+      <td class="dom"><a href="/ui/candidates/35743234-5c63-4fac-85a0-53d5d79d9276/"><span class="mono" dir="ltr">vaultpay-verify.com</span></a><div class="small muted"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/" title="the brand it imitates"><bdi>CoinPilot</bdi></a> · domain name</div></td>
+      <td class="why"><span class="srcs" style="margin:0 0 3px"><span class="srcic s-pivot" title="found by Analyst URL scan" role="img" aria-label="Infrastructure map"><svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="4" cy="4.5" r="1.9"/><circle cx="12" cy="4.5" r="1.9"/><circle cx="8" cy="12" r="1.9"/><path d="M5.6 5.6l1.6 4.6M10.4 5.6l-1.6 4.6M5.9 4.5h4.2"/></svg></span></span><b>Infrastructure map</b> <span title="pivot:shares cert with the campaign">shares cert with the campaign</span></td>
       <td><span class="badge state st-new" title="just discovered, not visited yet">new</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="60" style="max-width:60px"></span> 20</td>
-      <td class="mono small muted"><time datetime="2026-10-14T09:46:28.535897" data-local title="2026-10-14T09:46:28.535897 UTC">2026-10-14 09:46</time></td>
-      <td class="mono small muted"><time datetime="2026-10-14T09:46:28.535897" data-local title="2026-10-14T09:46:28.535897 UTC">2026-10-14 09:46</time></td>
-      <td class="mono small" >—</td>
-      <td class="right mono">0</td>
+      <td class="fnd"><span class="muted small">—</span></td>
+      <td class="mono small pr"><span class="prio" data-w="60" style="max-width:60px"></span> 20</td>
+      <td class="seen ts-short"><div><span>first</span><time datetime="2026-10-14T09:46:28.535897" data-local title="2026-10-14T09:46:28.535897 UTC">2026-10-14 09:46</time></div><div><span>last</span><time datetime="2026-10-14T09:46:28.535897" data-local title="2026-10-14T09:46:28.535897 UTC">2026-10-14 09:46</time></div>
+        <div class="nx"><span>next</span>—</div><div><span>scans</span>0</div></td>
       
-      <td style="white-space:nowrap">
+      <td class="acts">
         
         <form method="post" action="/ui/candidates/35743234-5c63-4fac-85a0-53d5d79d9276/dismiss" style="display:inline"
               data-confirm="Known legit: remove vaultpay-verify.com from the watchlist and allowlist its domain for CoinPilot?&#10;&#10;It (and its subdomains) will never be flagged again. You can undo this on the brand page → whitelist."
@@ -526,18 +552,15 @@ window.BW = (function () {
     
     <tr class="wrow" style="--sc:#8A97A8" data-host="vault-pay.co">
       <td class="selcol"><input type="checkbox" class="sel" name="ids" value="fc2a9924-807c-4350-afbd-367169ed6058" form="bulkform" aria-label="select vault-pay.co"></td>
-      <td><a href="/ui/candidates/fc2a9924-807c-4350-afbd-367169ed6058/"><span class="mono" dir="ltr">vault-pay.co</span></a><div class="small muted">domain name</div></td>
-      <td class="small"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/"><bdi>CoinPilot</bdi></a></td>
-      <td class="why"><b>Infrastructure map</b> <span title="pivot:shares cert with the campaign">shares cert with the campaign</span></td>
+      <td class="dom"><a href="/ui/candidates/fc2a9924-807c-4350-afbd-367169ed6058/"><span class="mono" dir="ltr">vault-pay.co</span></a><div class="small muted"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/" title="the brand it imitates"><bdi>CoinPilot</bdi></a> · domain name</div></td>
+      <td class="why"><span class="srcs" style="margin:0 0 3px"><span class="srcic s-pivot" title="found by Analyst URL scan" role="img" aria-label="Infrastructure map"><svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="4" cy="4.5" r="1.9"/><circle cx="12" cy="4.5" r="1.9"/><circle cx="8" cy="12" r="1.9"/><path d="M5.6 5.6l1.6 4.6M10.4 5.6l-1.6 4.6M5.9 4.5h4.2"/></svg></span></span><b>Infrastructure map</b> <span title="pivot:shares cert with the campaign">shares cert with the campaign</span></td>
       <td><span class="badge state st-new" title="just discovered, not visited yet">new</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="60" style="max-width:60px"></span> 20</td>
-      <td class="mono small muted"><time datetime="2026-10-14T09:46:28.535175" data-local title="2026-10-14T09:46:28.535175 UTC">2026-10-14 09:46</time></td>
-      <td class="mono small muted"><time datetime="2026-10-14T09:46:28.535175" data-local title="2026-10-14T09:46:28.535175 UTC">2026-10-14 09:46</time></td>
-      <td class="mono small" >—</td>
-      <td class="right mono">0</td>
+      <td class="fnd"><span class="muted small">—</span></td>
+      <td class="mono small pr"><span class="prio" data-w="60" style="max-width:60px"></span> 20</td>
+      <td class="seen ts-short"><div><span>first</span><time datetime="2026-10-14T09:46:28.535175" data-local title="2026-10-14T09:46:28.535175 UTC">2026-10-14 09:46</time></div><div><span>last</span><time datetime="2026-10-14T09:46:28.535175" data-local title="2026-10-14T09:46:28.535175 UTC">2026-10-14 09:46</time></div>
+        <div class="nx"><span>next</span>—</div><div><span>scans</span>0</div></td>
       
-      <td style="white-space:nowrap">
+      <td class="acts">
         
         <form method="post" action="/ui/candidates/fc2a9924-807c-4350-afbd-367169ed6058/dismiss" style="display:inline"
               data-confirm="Known legit: remove vault-pay.co from the watchlist and allowlist its domain for CoinPilot?&#10;&#10;It (and its subdomains) will never be flagged again. You can undo this on the brand page → whitelist."
@@ -553,18 +576,15 @@ window.BW = (function () {
     
     <tr class="wrow" style="--sc:#8A97A8" data-host="shopnowa.com">
       <td class="selcol"><input type="checkbox" class="sel" name="ids" value="5a484f92-9264-44b8-967d-0dbdf9cf8b72" form="bulkform" aria-label="select shopnowa.com"></td>
-      <td><a href="/ui/candidates/5a484f92-9264-44b8-967d-0dbdf9cf8b72/"><span class="mono" dir="ltr">shopnowa.com</span></a><div class="small muted">domain name</div></td>
-      <td class="small"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/"><bdi>CoinPilot</bdi></a></td>
-      <td class="why"><b>Infrastructure map</b> <span title="pivot:shares cert with the campaign">shares cert with the campaign</span></td>
+      <td class="dom"><a href="/ui/candidates/5a484f92-9264-44b8-967d-0dbdf9cf8b72/"><span class="mono" dir="ltr">shopnowa.com</span></a><div class="small muted"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/" title="the brand it imitates"><bdi>CoinPilot</bdi></a> · domain name</div></td>
+      <td class="why"><span class="srcs" style="margin:0 0 3px"><span class="srcic s-pivot" title="found by Analyst URL scan" role="img" aria-label="Infrastructure map"><svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="4" cy="4.5" r="1.9"/><circle cx="12" cy="4.5" r="1.9"/><circle cx="8" cy="12" r="1.9"/><path d="M5.6 5.6l1.6 4.6M10.4 5.6l-1.6 4.6M5.9 4.5h4.2"/></svg></span></span><b>Infrastructure map</b> <span title="pivot:shares cert with the campaign">shares cert with the campaign</span></td>
       <td><span class="badge state st-new" title="just discovered, not visited yet">new</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="60" style="max-width:60px"></span> 20</td>
-      <td class="mono small muted"><time datetime="2026-10-14T09:46:28.525774" data-local title="2026-10-14T09:46:28.525774 UTC">2026-10-14 09:46</time></td>
-      <td class="mono small muted"><time datetime="2026-10-14T09:46:28.525774" data-local title="2026-10-14T09:46:28.525774 UTC">2026-10-14 09:46</time></td>
-      <td class="mono small" >—</td>
-      <td class="right mono">0</td>
+      <td class="fnd"><span class="muted small">—</span></td>
+      <td class="mono small pr"><span class="prio" data-w="60" style="max-width:60px"></span> 20</td>
+      <td class="seen ts-short"><div><span>first</span><time datetime="2026-10-14T09:46:28.525774" data-local title="2026-10-14T09:46:28.525774 UTC">2026-10-14 09:46</time></div><div><span>last</span><time datetime="2026-10-14T09:46:28.525774" data-local title="2026-10-14T09:46:28.525774 UTC">2026-10-14 09:46</time></div>
+        <div class="nx"><span>next</span>—</div><div><span>scans</span>0</div></td>
       
-      <td style="white-space:nowrap">
+      <td class="acts">
         
         <form method="post" action="/ui/candidates/5a484f92-9264-44b8-967d-0dbdf9cf8b72/dismiss" style="display:inline"
               data-confirm="Known legit: remove shopnowa.com from the watchlist and allowlist its domain for CoinPilot?&#10;&#10;It (and its subdomains) will never be flagged again. You can undo this on the brand page → whitelist."
@@ -580,18 +600,15 @@ window.BW = (function () {
     
     <tr class="wrow" style="--sc:#8A97A8" data-host="shoqnova.com">
       <td class="selcol"><input type="checkbox" class="sel" name="ids" value="72dfa4a6-5273-4899-976c-9567d2395fe2" form="bulkform" aria-label="select shoqnova.com"></td>
-      <td><a href="/ui/candidates/72dfa4a6-5273-4899-976c-9567d2395fe2/"><span class="mono" dir="ltr">shoqnova.com</span></a><div class="small muted">domain name</div></td>
-      <td class="small"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/"><bdi>CoinPilot</bdi></a></td>
-      <td class="why"><b>Infrastructure map</b> <span title="pivot:shares cert with the campaign">shares cert with the campaign</span></td>
+      <td class="dom"><a href="/ui/candidates/72dfa4a6-5273-4899-976c-9567d2395fe2/"><span class="mono" dir="ltr">shoqnova.com</span></a><div class="small muted"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/" title="the brand it imitates"><bdi>CoinPilot</bdi></a> · domain name</div></td>
+      <td class="why"><span class="srcs" style="margin:0 0 3px"><span class="srcic s-pivot" title="found by Analyst URL scan" role="img" aria-label="Infrastructure map"><svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="4" cy="4.5" r="1.9"/><circle cx="12" cy="4.5" r="1.9"/><circle cx="8" cy="12" r="1.9"/><path d="M5.6 5.6l1.6 4.6M10.4 5.6l-1.6 4.6M5.9 4.5h4.2"/></svg></span></span><b>Infrastructure map</b> <span title="pivot:shares cert with the campaign">shares cert with the campaign</span></td>
       <td><span class="badge state st-new" title="just discovered, not visited yet">new</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="60" style="max-width:60px"></span> 20</td>
-      <td class="mono small muted"><time datetime="2026-10-14T09:46:28.525774" data-local title="2026-10-14T09:46:28.525774 UTC">2026-10-14 09:46</time></td>
-      <td class="mono small muted"><time datetime="2026-10-14T09:46:28.525774" data-local title="2026-10-14T09:46:28.525774 UTC">2026-10-14 09:46</time></td>
-      <td class="mono small" >—</td>
-      <td class="right mono">0</td>
+      <td class="fnd"><span class="muted small">—</span></td>
+      <td class="mono small pr"><span class="prio" data-w="60" style="max-width:60px"></span> 20</td>
+      <td class="seen ts-short"><div><span>first</span><time datetime="2026-10-14T09:46:28.525774" data-local title="2026-10-14T09:46:28.525774 UTC">2026-10-14 09:46</time></div><div><span>last</span><time datetime="2026-10-14T09:46:28.525774" data-local title="2026-10-14T09:46:28.525774 UTC">2026-10-14 09:46</time></div>
+        <div class="nx"><span>next</span>—</div><div><span>scans</span>0</div></td>
       
-      <td style="white-space:nowrap">
+      <td class="acts">
         
         <form method="post" action="/ui/candidates/72dfa4a6-5273-4899-976c-9567d2395fe2/dismiss" style="display:inline"
               data-confirm="Known legit: remove shoqnova.com from the watchlist and allowlist its domain for CoinPilot?&#10;&#10;It (and its subdomains) will never be flagged again. You can undo this on the brand page → whitelist."
@@ -607,18 +624,15 @@ window.BW = (function () {
     
     <tr class="wrow" style="--sc:#8A97A8" data-host="vaultpay-login.com">
       <td class="selcol"><input type="checkbox" class="sel" name="ids" value="380fc15a-9a2f-4cb8-945b-04dc5f85abdd" form="bulkform" aria-label="select vaultpay-login.com"></td>
-      <td><a href="/ui/candidates/380fc15a-9a2f-4cb8-945b-04dc5f85abdd/"><span class="mono" dir="ltr">vaultpay-login.com</span></a><div class="small muted">domain name</div></td>
-      <td class="small"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/"><bdi>CoinPilot</bdi></a></td>
-      <td class="why"><b>Infrastructure map</b> <span title="pivot:shares cert with the campaign">shares cert with the campaign</span></td>
+      <td class="dom"><a href="/ui/candidates/380fc15a-9a2f-4cb8-945b-04dc5f85abdd/"><span class="mono" dir="ltr">vaultpay-login.com</span></a><div class="small muted"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/" title="the brand it imitates"><bdi>CoinPilot</bdi></a> · domain name</div></td>
+      <td class="why"><span class="srcs" style="margin:0 0 3px"><span class="srcic s-pivot" title="found by Analyst URL scan" role="img" aria-label="Infrastructure map"><svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="4" cy="4.5" r="1.9"/><circle cx="12" cy="4.5" r="1.9"/><circle cx="8" cy="12" r="1.9"/><path d="M5.6 5.6l1.6 4.6M10.4 5.6l-1.6 4.6M5.9 4.5h4.2"/></svg></span></span><b>Infrastructure map</b> <span title="pivot:shares cert with the campaign">shares cert with the campaign</span></td>
       <td><span class="badge state st-new" title="just discovered, not visited yet">new</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="60" style="max-width:60px"></span> 20</td>
-      <td class="mono small muted"><time datetime="2026-10-14T09:46:28.525774" data-local title="2026-10-14T09:46:28.525774 UTC">2026-10-14 09:46</time></td>
-      <td class="mono small muted"><time datetime="2026-10-14T09:46:28.525774" data-local title="2026-10-14T09:46:28.525774 UTC">2026-10-14 09:46</time></td>
-      <td class="mono small" >—</td>
-      <td class="right mono">0</td>
+      <td class="fnd"><span class="muted small">—</span></td>
+      <td class="mono small pr"><span class="prio" data-w="60" style="max-width:60px"></span> 20</td>
+      <td class="seen ts-short"><div><span>first</span><time datetime="2026-10-14T09:46:28.525774" data-local title="2026-10-14T09:46:28.525774 UTC">2026-10-14 09:46</time></div><div><span>last</span><time datetime="2026-10-14T09:46:28.525774" data-local title="2026-10-14T09:46:28.525774 UTC">2026-10-14 09:46</time></div>
+        <div class="nx"><span>next</span>—</div><div><span>scans</span>0</div></td>
       
-      <td style="white-space:nowrap">
+      <td class="acts">
         
         <form method="post" action="/ui/candidates/380fc15a-9a2f-4cb8-945b-04dc5f85abdd/dismiss" style="display:inline"
               data-confirm="Known legit: remove vaultpay-login.com from the watchlist and allowlist its domain for CoinPilot?&#10;&#10;It (and its subdomains) will never be flagged again. You can undo this on the brand page → whitelist."
@@ -634,18 +648,15 @@ window.BW = (function () {
     
     <tr class="wrow" style="--sc:#8A97A8" data-host="vaultpay-secure.net">
       <td class="selcol"><input type="checkbox" class="sel" name="ids" value="74212e6a-6989-4fec-af47-6f83e26e1f07" form="bulkform" aria-label="select vaultpay-secure.net"></td>
-      <td><a href="/ui/candidates/74212e6a-6989-4fec-af47-6f83e26e1f07/"><span class="mono" dir="ltr">vaultpay-secure.net</span></a><div class="small muted">domain name</div></td>
-      <td class="small"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/"><bdi>CoinPilot</bdi></a></td>
-      <td class="why"><b>Infrastructure map</b> <span title="pivot:shares cert with the campaign">shares cert with the campaign</span></td>
+      <td class="dom"><a href="/ui/candidates/74212e6a-6989-4fec-af47-6f83e26e1f07/"><span class="mono" dir="ltr">vaultpay-secure.net</span></a><div class="small muted"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/" title="the brand it imitates"><bdi>CoinPilot</bdi></a> · domain name</div></td>
+      <td class="why"><span class="srcs" style="margin:0 0 3px"><span class="srcic s-pivot" title="found by Analyst URL scan" role="img" aria-label="Infrastructure map"><svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="4" cy="4.5" r="1.9"/><circle cx="12" cy="4.5" r="1.9"/><circle cx="8" cy="12" r="1.9"/><path d="M5.6 5.6l1.6 4.6M10.4 5.6l-1.6 4.6M5.9 4.5h4.2"/></svg></span></span><b>Infrastructure map</b> <span title="pivot:shares cert with the campaign">shares cert with the campaign</span></td>
       <td><span class="badge state st-new" title="just discovered, not visited yet">new</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="60" style="max-width:60px"></span> 20</td>
-      <td class="mono small muted"><time datetime="2026-10-14T09:46:28.525774" data-local title="2026-10-14T09:46:28.525774 UTC">2026-10-14 09:46</time></td>
-      <td class="mono small muted"><time datetime="2026-10-14T09:46:28.525774" data-local title="2026-10-14T09:46:28.525774 UTC">2026-10-14 09:46</time></td>
-      <td class="mono small" >—</td>
-      <td class="right mono">0</td>
+      <td class="fnd"><span class="muted small">—</span></td>
+      <td class="mono small pr"><span class="prio" data-w="60" style="max-width:60px"></span> 20</td>
+      <td class="seen ts-short"><div><span>first</span><time datetime="2026-10-14T09:46:28.525774" data-local title="2026-10-14T09:46:28.525774 UTC">2026-10-14 09:46</time></div><div><span>last</span><time datetime="2026-10-14T09:46:28.525774" data-local title="2026-10-14T09:46:28.525774 UTC">2026-10-14 09:46</time></div>
+        <div class="nx"><span>next</span>—</div><div><span>scans</span>0</div></td>
       
-      <td style="white-space:nowrap">
+      <td class="acts">
         
         <form method="post" action="/ui/candidates/74212e6a-6989-4fec-af47-6f83e26e1f07/dismiss" style="display:inline"
               data-confirm="Known legit: remove vaultpay-secure.net from the watchlist and allowlist its domain for CoinPilot?&#10;&#10;It (and its subdomains) will never be flagged again. You can undo this on the brand page → whitelist."
@@ -661,18 +672,15 @@ window.BW = (function () {
     
     <tr class="wrow" style="--sc:#3a4658" data-host="xn--c0inplot-xkb.io">
       <td class="selcol"></td>
-      <td><a href="/ui/candidates/0cbb42eb-0cc8-4380-8040-3bb7d6cc5623"><span class="mono" dir="ltr">c0inpılot.io</span> <span class="pill" style="font-size:10px" title="written with look-alike Unicode characters; the real (punycode) name is xn--c0inplot-xkb.io">homoglyph</span></a><div class="small muted">domain name</div></td>
-      <td class="small"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/"><bdi>CoinPilot</bdi></a></td>
-      <td class="why"><b>Look-alike names</b> <span class="mono" dir="ltr">homoglyph:coinpilot.io</span></td>
+      <td class="dom"><a href="/ui/candidates/0cbb42eb-0cc8-4380-8040-3bb7d6cc5623"><span class="mono" dir="ltr">c0inpılot.io</span> <span class="pill" style="font-size:10px" title="written with look-alike Unicode characters; the real (punycode) name is xn--c0inplot-xkb.io">homoglyph</span></a><div class="small muted"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/" title="the brand it imitates"><bdi>CoinPilot</bdi></a> · domain name</div></td>
+      <td class="why"><span class="srcs" style="margin:0 0 3px"><span class="srcic s-lookalike" title="found by Look-alike names" role="img" aria-label="Look-alike name">Aa</span></span><b>Look-alike names</b> <span class="mono" dir="ltr">homoglyph:coinpilot.io</span></td>
       <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
-      <td class="mono small muted"><time datetime="2026-10-14T09:48:51.661358" data-local title="2026-10-14T09:48:51.661358 UTC">2026-10-14 09:48</time></td>
-      <td class="mono small muted"><time datetime="2026-10-14T09:49:22.306925" data-local title="2026-10-14T09:49:22.306925 UTC">2026-10-14 09:49</time></td>
-      <td class="mono small" >—</td>
-      <td class="right mono">1</td>
+      <td class="fnd"><span class="muted small">—</span></td>
+      <td class="mono small pr"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
+      <td class="seen ts-short"><div><span>first</span><time datetime="2026-10-14T09:48:51.661358" data-local title="2026-10-14T09:48:51.661358 UTC">2026-10-14 09:48</time></div><div><span>last</span><time datetime="2026-10-14T09:49:22.306925" data-local title="2026-10-14T09:49:22.306925 UTC">2026-10-14 09:49</time></div>
+        <div class="nx"><span>next</span>—</div><div><span>scans</span>1</div></td>
       
-      <td style="white-space:nowrap">
+      <td class="acts">
         
         <form method="post" action="/ui/candidates/0cbb42eb-0cc8-4380-8040-3bb7d6cc5623/rescan" style="display:inline" data-busy="Queued…"><input type="hidden" name="next" value="/ui/candidates?brand_id=f46bffed-4795-4cdd-ad8f-abd3d26fcc60&amp;state=&amp;q="><button type="submit" class="small" title="fetch and score this site again now; you stay on the list">Rescan</button></form>
       </td>
@@ -681,18 +689,15 @@ window.BW = (function () {
     
     <tr class="wrow" style="--sc:#3a4658" data-host="coinpilotbot.io">
       <td class="selcol"></td>
-      <td><a href="/ui/candidates/b76f5fda-38b1-4479-8a53-27b155e30f89"><span class="mono" dir="ltr">coinpilotbot.io</span></a><div class="small muted">domain name</div></td>
-      <td class="small"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/"><bdi>CoinPilot</bdi></a></td>
-      <td class="why"><b>Look-alike names</b> <span class="mono" dir="ltr">dictionary:coinpilot.io</span></td>
+      <td class="dom"><a href="/ui/candidates/b76f5fda-38b1-4479-8a53-27b155e30f89"><span class="mono" dir="ltr">coinpilotbot.io</span></a><div class="small muted"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/" title="the brand it imitates"><bdi>CoinPilot</bdi></a> · domain name</div></td>
+      <td class="why"><span class="srcs" style="margin:0 0 3px"><span class="srcic s-lookalike" title="found by Look-alike names" role="img" aria-label="Look-alike name">Aa</span></span><b>Look-alike names</b> <span class="mono" dir="ltr">dictionary:coinpilot.io</span></td>
       <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
-      <td class="mono small muted"><time datetime="2026-10-14T09:48:51.661358" data-local title="2026-10-14T09:48:51.661358 UTC">2026-10-14 09:48</time></td>
-      <td class="mono small muted"><time datetime="2026-10-14T09:49:22.264799" data-local title="2026-10-14T09:49:22.264799 UTC">2026-10-14 09:49</time></td>
-      <td class="mono small" >—</td>
-      <td class="right mono">1</td>
+      <td class="fnd"><span class="muted small">—</span></td>
+      <td class="mono small pr"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
+      <td class="seen ts-short"><div><span>first</span><time datetime="2026-10-14T09:48:51.661358" data-local title="2026-10-14T09:48:51.661358 UTC">2026-10-14 09:48</time></div><div><span>last</span><time datetime="2026-10-14T09:49:22.264799" data-local title="2026-10-14T09:49:22.264799 UTC">2026-10-14 09:49</time></div>
+        <div class="nx"><span>next</span>—</div><div><span>scans</span>1</div></td>
       
-      <td style="white-space:nowrap">
+      <td class="acts">
         
         <form method="post" action="/ui/candidates/b76f5fda-38b1-4479-8a53-27b155e30f89/rescan" style="display:inline" data-busy="Queued…"><input type="hidden" name="next" value="/ui/candidates?brand_id=f46bffed-4795-4cdd-ad8f-abd3d26fcc60&amp;state=&amp;q="><button type="submit" class="small" title="fetch and score this site again now; you stay on the list">Rescan</button></form>
       </td>
@@ -701,18 +706,15 @@ window.BW = (function () {
     
     <tr class="wrow" style="--sc:#3a4658" data-host="xn--c0inplot-wud.io">
       <td class="selcol"></td>
-      <td><a href="/ui/candidates/b7f79927-16f2-45b1-a672-c3466f5dbeab"><span class="mono" dir="ltr">c0inpɨlot.io</span> <span class="pill" style="font-size:10px" title="written with look-alike Unicode characters; the real (punycode) name is xn--c0inplot-wud.io">homoglyph</span></a><div class="small muted">domain name</div></td>
-      <td class="small"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/"><bdi>CoinPilot</bdi></a></td>
-      <td class="why"><b>Look-alike names</b> <span class="mono" dir="ltr">homoglyph:coinpilot.io</span></td>
+      <td class="dom"><a href="/ui/candidates/b7f79927-16f2-45b1-a672-c3466f5dbeab"><span class="mono" dir="ltr">c0inpɨlot.io</span> <span class="pill" style="font-size:10px" title="written with look-alike Unicode characters; the real (punycode) name is xn--c0inplot-wud.io">homoglyph</span></a><div class="small muted"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/" title="the brand it imitates"><bdi>CoinPilot</bdi></a> · domain name</div></td>
+      <td class="why"><span class="srcs" style="margin:0 0 3px"><span class="srcic s-lookalike" title="found by Look-alike names" role="img" aria-label="Look-alike name">Aa</span></span><b>Look-alike names</b> <span class="mono" dir="ltr">homoglyph:coinpilot.io</span></td>
       <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
-      <td class="mono small muted"><time datetime="2026-10-14T09:48:51.658818" data-local title="2026-10-14T09:48:51.658818 UTC">2026-10-14 09:48</time></td>
-      <td class="mono small muted"><time datetime="2026-10-14T09:49:22.232071" data-local title="2026-10-14T09:49:22.232071 UTC">2026-10-14 09:49</time></td>
-      <td class="mono small" >—</td>
-      <td class="right mono">1</td>
+      <td class="fnd"><span class="muted small">—</span></td>
+      <td class="mono small pr"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
+      <td class="seen ts-short"><div><span>first</span><time datetime="2026-10-14T09:48:51.658818" data-local title="2026-10-14T09:48:51.658818 UTC">2026-10-14 09:48</time></div><div><span>last</span><time datetime="2026-10-14T09:49:22.232071" data-local title="2026-10-14T09:49:22.232071 UTC">2026-10-14 09:49</time></div>
+        <div class="nx"><span>next</span>—</div><div><span>scans</span>1</div></td>
       
-      <td style="white-space:nowrap">
+      <td class="acts">
         
         <form method="post" action="/ui/candidates/b7f79927-16f2-45b1-a672-c3466f5dbeab/rescan" style="display:inline" data-busy="Queued…"><input type="hidden" name="next" value="/ui/candidates?brand_id=f46bffed-4795-4cdd-ad8f-abd3d26fcc60&amp;state=&amp;q="><button type="submit" class="small" title="fetch and score this site again now; you stay on the list">Rescan</button></form>
       </td>
@@ -721,18 +723,15 @@ window.BW = (function () {
     
     <tr class="wrow" style="--sc:#3a4658" data-host="botscoinpilot.io">
       <td class="selcol"></td>
-      <td><a href="/ui/candidates/325e2ce1-fc92-4167-b113-9f8b30fcf9b7"><span class="mono" dir="ltr">botscoinpilot.io</span></a><div class="small muted">domain name</div></td>
-      <td class="small"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/"><bdi>CoinPilot</bdi></a></td>
-      <td class="why"><b>Look-alike names</b> <span class="mono" dir="ltr">dictionary:coinpilot.io</span></td>
+      <td class="dom"><a href="/ui/candidates/325e2ce1-fc92-4167-b113-9f8b30fcf9b7"><span class="mono" dir="ltr">botscoinpilot.io</span></a><div class="small muted"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/" title="the brand it imitates"><bdi>CoinPilot</bdi></a> · domain name</div></td>
+      <td class="why"><span class="srcs" style="margin:0 0 3px"><span class="srcic s-lookalike" title="found by Look-alike names" role="img" aria-label="Look-alike name">Aa</span></span><b>Look-alike names</b> <span class="mono" dir="ltr">dictionary:coinpilot.io</span></td>
       <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
-      <td class="mono small muted"><time datetime="2026-10-14T09:48:51.654865" data-local title="2026-10-14T09:48:51.654865 UTC">2026-10-14 09:48</time></td>
-      <td class="mono small muted"><time datetime="2026-10-14T09:49:22.195079" data-local title="2026-10-14T09:49:22.195079 UTC">2026-10-14 09:49</time></td>
-      <td class="mono small" >—</td>
-      <td class="right mono">1</td>
+      <td class="fnd"><span class="muted small">—</span></td>
+      <td class="mono small pr"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
+      <td class="seen ts-short"><div><span>first</span><time datetime="2026-10-14T09:48:51.654865" data-local title="2026-10-14T09:48:51.654865 UTC">2026-10-14 09:48</time></div><div><span>last</span><time datetime="2026-10-14T09:49:22.195079" data-local title="2026-10-14T09:49:22.195079 UTC">2026-10-14 09:49</time></div>
+        <div class="nx"><span>next</span>—</div><div><span>scans</span>1</div></td>
       
-      <td style="white-space:nowrap">
+      <td class="acts">
         
         <form method="post" action="/ui/candidates/325e2ce1-fc92-4167-b113-9f8b30fcf9b7/rescan" style="display:inline" data-busy="Queued…"><input type="hidden" name="next" value="/ui/candidates?brand_id=f46bffed-4795-4cdd-ad8f-abd3d26fcc60&amp;state=&amp;q="><button type="submit" class="small" title="fetch and score this site again now; you stay on the list">Rescan</button></form>
       </td>
@@ -741,18 +740,15 @@ window.BW = (function () {
     
     <tr class="wrow" style="--sc:#3a4658" data-host="xn--c0inplot-wjb.io">
       <td class="selcol"></td>
-      <td><a href="/ui/candidates/7b673679-59b6-4213-8389-8ac3d67283a5"><span class="mono" dir="ltr">c0inpĭlot.io</span> <span class="pill" style="font-size:10px" title="written with look-alike Unicode characters; the real (punycode) name is xn--c0inplot-wjb.io">homoglyph</span></a><div class="small muted">domain name</div></td>
-      <td class="small"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/"><bdi>CoinPilot</bdi></a></td>
-      <td class="why"><b>Look-alike names</b> <span class="mono" dir="ltr">homoglyph:coinpilot.io</span></td>
+      <td class="dom"><a href="/ui/candidates/7b673679-59b6-4213-8389-8ac3d67283a5"><span class="mono" dir="ltr">c0inpĭlot.io</span> <span class="pill" style="font-size:10px" title="written with look-alike Unicode characters; the real (punycode) name is xn--c0inplot-wjb.io">homoglyph</span></a><div class="small muted"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/" title="the brand it imitates"><bdi>CoinPilot</bdi></a> · domain name</div></td>
+      <td class="why"><span class="srcs" style="margin:0 0 3px"><span class="srcic s-lookalike" title="found by Look-alike names" role="img" aria-label="Look-alike name">Aa</span></span><b>Look-alike names</b> <span class="mono" dir="ltr">homoglyph:coinpilot.io</span></td>
       <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
-      <td class="mono small muted"><time datetime="2026-10-14T09:48:51.650130" data-local title="2026-10-14T09:48:51.650130 UTC">2026-10-14 09:48</time></td>
-      <td class="mono small muted"><time datetime="2026-10-14T09:49:22.131237" data-local title="2026-10-14T09:49:22.131237 UTC">2026-10-14 09:49</time></td>
-      <td class="mono small" >—</td>
-      <td class="right mono">1</td>
+      <td class="fnd"><span class="muted small">—</span></td>
+      <td class="mono small pr"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
+      <td class="seen ts-short"><div><span>first</span><time datetime="2026-10-14T09:48:51.650130" data-local title="2026-10-14T09:48:51.650130 UTC">2026-10-14 09:48</time></div><div><span>last</span><time datetime="2026-10-14T09:49:22.131237" data-local title="2026-10-14T09:49:22.131237 UTC">2026-10-14 09:49</time></div>
+        <div class="nx"><span>next</span>—</div><div><span>scans</span>1</div></td>
       
-      <td style="white-space:nowrap">
+      <td class="acts">
         
         <form method="post" action="/ui/candidates/7b673679-59b6-4213-8389-8ac3d67283a5/rescan" style="display:inline" data-busy="Queued…"><input type="hidden" name="next" value="/ui/candidates?brand_id=f46bffed-4795-4cdd-ad8f-abd3d26fcc60&amp;state=&amp;q="><button type="submit" class="small" title="fetch and score this site again now; you stay on the list">Rescan</button></form>
       </td>
@@ -761,18 +757,15 @@ window.BW = (function () {
     
     <tr class="wrow" style="--sc:#3a4658" data-host="bot-coinpilot.io">
       <td class="selcol"></td>
-      <td><a href="/ui/candidates/856a3801-9acc-42f8-9318-380b5def7d99"><span class="mono" dir="ltr">bot-coinpilot.io</span></a><div class="small muted">domain name</div></td>
-      <td class="small"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/"><bdi>CoinPilot</bdi></a></td>
-      <td class="why"><b>Look-alike names</b> <span class="mono" dir="ltr">dictionary:coinpilot.io</span></td>
+      <td class="dom"><a href="/ui/candidates/856a3801-9acc-42f8-9318-380b5def7d99"><span class="mono" dir="ltr">bot-coinpilot.io</span></a><div class="small muted"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/" title="the brand it imitates"><bdi>CoinPilot</bdi></a> · domain name</div></td>
+      <td class="why"><span class="srcs" style="margin:0 0 3px"><span class="srcic s-lookalike" title="found by Look-alike names" role="img" aria-label="Look-alike name">Aa</span></span><b>Look-alike names</b> <span class="mono" dir="ltr">dictionary:coinpilot.io</span></td>
       <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
-      <td class="mono small muted"><time datetime="2026-10-14T09:48:51.649120" data-local title="2026-10-14T09:48:51.649120 UTC">2026-10-14 09:48</time></td>
-      <td class="mono small muted"><time datetime="2026-10-14T09:49:22.065090" data-local title="2026-10-14T09:49:22.065090 UTC">2026-10-14 09:49</time></td>
-      <td class="mono small" >—</td>
-      <td class="right mono">1</td>
+      <td class="fnd"><span class="muted small">—</span></td>
+      <td class="mono small pr"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
+      <td class="seen ts-short"><div><span>first</span><time datetime="2026-10-14T09:48:51.649120" data-local title="2026-10-14T09:48:51.649120 UTC">2026-10-14 09:48</time></div><div><span>last</span><time datetime="2026-10-14T09:49:22.065090" data-local title="2026-10-14T09:49:22.065090 UTC">2026-10-14 09:49</time></div>
+        <div class="nx"><span>next</span>—</div><div><span>scans</span>1</div></td>
       
-      <td style="white-space:nowrap">
+      <td class="acts">
         
         <form method="post" action="/ui/candidates/856a3801-9acc-42f8-9318-380b5def7d99/rescan" style="display:inline" data-busy="Queued…"><input type="hidden" name="next" value="/ui/candidates?brand_id=f46bffed-4795-4cdd-ad8f-abd3d26fcc60&amp;state=&amp;q="><button type="submit" class="small" title="fetch and score this site again now; you stay on the list">Rescan</button></form>
       </td>
@@ -781,18 +774,15 @@ window.BW = (function () {
     
     <tr class="wrow" style="--sc:#3a4658" data-host="xn--c0inplot-vib.io">
       <td class="selcol"></td>
-      <td><a href="/ui/candidates/a0f9529b-bcbe-437d-b45a-fcc194daff22"><span class="mono" dir="ltr">c0inpĩlot.io</span> <span class="pill" style="font-size:10px" title="written with look-alike Unicode characters; the real (punycode) name is xn--c0inplot-vib.io">homoglyph</span></a><div class="small muted">domain name</div></td>
-      <td class="small"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/"><bdi>CoinPilot</bdi></a></td>
-      <td class="why"><b>Look-alike names</b> <span class="mono" dir="ltr">homoglyph:coinpilot.io</span></td>
+      <td class="dom"><a href="/ui/candidates/a0f9529b-bcbe-437d-b45a-fcc194daff22"><span class="mono" dir="ltr">c0inpĩlot.io</span> <span class="pill" style="font-size:10px" title="written with look-alike Unicode characters; the real (punycode) name is xn--c0inplot-vib.io">homoglyph</span></a><div class="small muted"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/" title="the brand it imitates"><bdi>CoinPilot</bdi></a> · domain name</div></td>
+      <td class="why"><span class="srcs" style="margin:0 0 3px"><span class="srcic s-lookalike" title="found by Look-alike names" role="img" aria-label="Look-alike name">Aa</span></span><b>Look-alike names</b> <span class="mono" dir="ltr">homoglyph:coinpilot.io</span></td>
       <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
-      <td class="mono small muted"><time datetime="2026-10-14T09:48:51.643106" data-local title="2026-10-14T09:48:51.643106 UTC">2026-10-14 09:48</time></td>
-      <td class="mono small muted"><time datetime="2026-10-14T09:49:22.040177" data-local title="2026-10-14T09:49:22.040177 UTC">2026-10-14 09:49</time></td>
-      <td class="mono small" >—</td>
-      <td class="right mono">1</td>
+      <td class="fnd"><span class="muted small">—</span></td>
+      <td class="mono small pr"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
+      <td class="seen ts-short"><div><span>first</span><time datetime="2026-10-14T09:48:51.643106" data-local title="2026-10-14T09:48:51.643106 UTC">2026-10-14 09:48</time></div><div><span>last</span><time datetime="2026-10-14T09:49:22.040177" data-local title="2026-10-14T09:49:22.040177 UTC">2026-10-14 09:49</time></div>
+        <div class="nx"><span>next</span>—</div><div><span>scans</span>1</div></td>
       
-      <td style="white-space:nowrap">
+      <td class="acts">
         
         <form method="post" action="/ui/candidates/a0f9529b-bcbe-437d-b45a-fcc194daff22/rescan" style="display:inline" data-busy="Queued…"><input type="hidden" name="next" value="/ui/candidates?brand_id=f46bffed-4795-4cdd-ad8f-abd3d26fcc60&amp;state=&amp;q="><button type="submit" class="small" title="fetch and score this site again now; you stay on the list">Rescan</button></form>
       </td>
@@ -801,18 +791,15 @@ window.BW = (function () {
     
     <tr class="wrow" style="--sc:#3a4658" data-host="tradingcoinpilot.io">
       <td class="selcol"></td>
-      <td><a href="/ui/candidates/cef3b4f6-fd6f-4bd7-a4a7-f4983fa60017"><span class="mono" dir="ltr">tradingcoinpilot.io</span></a><div class="small muted">domain name</div></td>
-      <td class="small"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/"><bdi>CoinPilot</bdi></a></td>
-      <td class="why"><b>Look-alike names</b> <span class="mono" dir="ltr">dictionary:coinpilot.io</span></td>
+      <td class="dom"><a href="/ui/candidates/cef3b4f6-fd6f-4bd7-a4a7-f4983fa60017"><span class="mono" dir="ltr">tradingcoinpilot.io</span></a><div class="small muted"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/" title="the brand it imitates"><bdi>CoinPilot</bdi></a> · domain name</div></td>
+      <td class="why"><span class="srcs" style="margin:0 0 3px"><span class="srcic s-lookalike" title="found by Look-alike names" role="img" aria-label="Look-alike name">Aa</span></span><b>Look-alike names</b> <span class="mono" dir="ltr">dictionary:coinpilot.io</span></td>
       <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
-      <td class="mono small muted"><time datetime="2026-10-14T09:48:51.637244" data-local title="2026-10-14T09:48:51.637244 UTC">2026-10-14 09:48</time></td>
-      <td class="mono small muted"><time datetime="2026-10-14T09:49:22.020902" data-local title="2026-10-14T09:49:22.020902 UTC">2026-10-14 09:49</time></td>
-      <td class="mono small" >—</td>
-      <td class="right mono">1</td>
+      <td class="fnd"><span class="muted small">—</span></td>
+      <td class="mono small pr"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
+      <td class="seen ts-short"><div><span>first</span><time datetime="2026-10-14T09:48:51.637244" data-local title="2026-10-14T09:48:51.637244 UTC">2026-10-14 09:48</time></div><div><span>last</span><time datetime="2026-10-14T09:49:22.020902" data-local title="2026-10-14T09:49:22.020902 UTC">2026-10-14 09:49</time></div>
+        <div class="nx"><span>next</span>—</div><div><span>scans</span>1</div></td>
       
-      <td style="white-space:nowrap">
+      <td class="acts">
         
         <form method="post" action="/ui/candidates/cef3b4f6-fd6f-4bd7-a4a7-f4983fa60017/rescan" style="display:inline" data-busy="Queued…"><input type="hidden" name="next" value="/ui/candidates?brand_id=f46bffed-4795-4cdd-ad8f-abd3d26fcc60&amp;state=&amp;q="><button type="submit" class="small" title="fetch and score this site again now; you stay on the list">Rescan</button></form>
       </td>
@@ -821,18 +808,15 @@ window.BW = (function () {
     
     <tr class="wrow" style="--sc:#3a4658" data-host="xn--c0inplot-tqc.io">
       <td class="selcol"></td>
-      <td><a href="/ui/candidates/f68032d3-c96a-4c17-91b3-19784c5f2bde"><span class="mono" dir="ltr">c0inpǐlot.io</span> <span class="pill" style="font-size:10px" title="written with look-alike Unicode characters; the real (punycode) name is xn--c0inplot-tqc.io">homoglyph</span></a><div class="small muted">domain name</div></td>
-      <td class="small"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/"><bdi>CoinPilot</bdi></a></td>
-      <td class="why"><b>Look-alike names</b> <span class="mono" dir="ltr">homoglyph:coinpilot.io</span></td>
+      <td class="dom"><a href="/ui/candidates/f68032d3-c96a-4c17-91b3-19784c5f2bde"><span class="mono" dir="ltr">c0inpǐlot.io</span> <span class="pill" style="font-size:10px" title="written with look-alike Unicode characters; the real (punycode) name is xn--c0inplot-tqc.io">homoglyph</span></a><div class="small muted"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/" title="the brand it imitates"><bdi>CoinPilot</bdi></a> · domain name</div></td>
+      <td class="why"><span class="srcs" style="margin:0 0 3px"><span class="srcic s-lookalike" title="found by Look-alike names" role="img" aria-label="Look-alike name">Aa</span></span><b>Look-alike names</b> <span class="mono" dir="ltr">homoglyph:coinpilot.io</span></td>
       <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
-      <td class="mono small muted"><time datetime="2026-10-14T09:48:51.626778" data-local title="2026-10-14T09:48:51.626778 UTC">2026-10-14 09:48</time></td>
-      <td class="mono small muted"><time datetime="2026-10-14T09:49:22.014444" data-local title="2026-10-14T09:49:22.014444 UTC">2026-10-14 09:49</time></td>
-      <td class="mono small" >—</td>
-      <td class="right mono">1</td>
+      <td class="fnd"><span class="muted small">—</span></td>
+      <td class="mono small pr"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
+      <td class="seen ts-short"><div><span>first</span><time datetime="2026-10-14T09:48:51.626778" data-local title="2026-10-14T09:48:51.626778 UTC">2026-10-14 09:48</time></div><div><span>last</span><time datetime="2026-10-14T09:49:22.014444" data-local title="2026-10-14T09:49:22.014444 UTC">2026-10-14 09:49</time></div>
+        <div class="nx"><span>next</span>—</div><div><span>scans</span>1</div></td>
       
-      <td style="white-space:nowrap">
+      <td class="acts">
         
         <form method="post" action="/ui/candidates/f68032d3-c96a-4c17-91b3-19784c5f2bde/rescan" style="display:inline" data-busy="Queued…"><input type="hidden" name="next" value="/ui/candidates?brand_id=f46bffed-4795-4cdd-ad8f-abd3d26fcc60&amp;state=&amp;q="><button type="submit" class="small" title="fetch and score this site again now; you stay on the list">Rescan</button></form>
       </td>
@@ -841,18 +825,15 @@ window.BW = (function () {
     
     <tr class="wrow" style="--sc:#3a4658" data-host="trading-coinpilot.io">
       <td class="selcol"></td>
-      <td><a href="/ui/candidates/03ab1bd6-c509-4859-bc95-049c8bbf8538"><span class="mono" dir="ltr">trading-coinpilot.io</span></a><div class="small muted">domain name</div></td>
-      <td class="small"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/"><bdi>CoinPilot</bdi></a></td>
-      <td class="why"><b>Look-alike names</b> <span class="mono" dir="ltr">dictionary:coinpilot.io</span></td>
+      <td class="dom"><a href="/ui/candidates/03ab1bd6-c509-4859-bc95-049c8bbf8538"><span class="mono" dir="ltr">trading-coinpilot.io</span></a><div class="small muted"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/" title="the brand it imitates"><bdi>CoinPilot</bdi></a> · domain name</div></td>
+      <td class="why"><span class="srcs" style="margin:0 0 3px"><span class="srcic s-lookalike" title="found by Look-alike names" role="img" aria-label="Look-alike name">Aa</span></span><b>Look-alike names</b> <span class="mono" dir="ltr">dictionary:coinpilot.io</span></td>
       <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
-      <td class="mono small muted"><time datetime="2026-10-14T09:48:51.626778" data-local title="2026-10-14T09:48:51.626778 UTC">2026-10-14 09:48</time></td>
-      <td class="mono small muted"><time datetime="2026-10-14T09:49:21.981064" data-local title="2026-10-14T09:49:21.981064 UTC">2026-10-14 09:49</time></td>
-      <td class="mono small" >—</td>
-      <td class="right mono">1</td>
+      <td class="fnd"><span class="muted small">—</span></td>
+      <td class="mono small pr"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
+      <td class="seen ts-short"><div><span>first</span><time datetime="2026-10-14T09:48:51.626778" data-local title="2026-10-14T09:48:51.626778 UTC">2026-10-14 09:48</time></div><div><span>last</span><time datetime="2026-10-14T09:49:21.981064" data-local title="2026-10-14T09:49:21.981064 UTC">2026-10-14 09:49</time></div>
+        <div class="nx"><span>next</span>—</div><div><span>scans</span>1</div></td>
       
-      <td style="white-space:nowrap">
+      <td class="acts">
         
         <form method="post" action="/ui/candidates/03ab1bd6-c509-4859-bc95-049c8bbf8538/rescan" style="display:inline" data-busy="Queued…"><input type="hidden" name="next" value="/ui/candidates?brand_id=f46bffed-4795-4cdd-ad8f-abd3d26fcc60&amp;state=&amp;q="><button type="submit" class="small" title="fetch and score this site again now; you stay on the list">Rescan</button></form>
       </td>
@@ -861,18 +842,15 @@ window.BW = (function () {
     
     <tr class="wrow" style="--sc:#3a4658" data-host="xn--c0inplot-p2a.io">
       <td class="selcol"></td>
-      <td><a href="/ui/candidates/02d066cd-a162-437a-8785-1ccc683bfc44"><span class="mono" dir="ltr">c0inpîlot.io</span> <span class="pill" style="font-size:10px" title="written with look-alike Unicode characters; the real (punycode) name is xn--c0inplot-p2a.io">homoglyph</span></a><div class="small muted">domain name</div></td>
-      <td class="small"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/"><bdi>CoinPilot</bdi></a></td>
-      <td class="why"><b>Look-alike names</b> <span class="mono" dir="ltr">homoglyph:coinpilot.io</span></td>
+      <td class="dom"><a href="/ui/candidates/02d066cd-a162-437a-8785-1ccc683bfc44"><span class="mono" dir="ltr">c0inpîlot.io</span> <span class="pill" style="font-size:10px" title="written with look-alike Unicode characters; the real (punycode) name is xn--c0inplot-p2a.io">homoglyph</span></a><div class="small muted"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/" title="the brand it imitates"><bdi>CoinPilot</bdi></a> · domain name</div></td>
+      <td class="why"><span class="srcs" style="margin:0 0 3px"><span class="srcic s-lookalike" title="found by Look-alike names" role="img" aria-label="Look-alike name">Aa</span></span><b>Look-alike names</b> <span class="mono" dir="ltr">homoglyph:coinpilot.io</span></td>
       <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
-      <td class="mono small muted"><time datetime="2026-10-14T09:48:51.622348" data-local title="2026-10-14T09:48:51.622348 UTC">2026-10-14 09:48</time></td>
-      <td class="mono small muted"><time datetime="2026-10-14T09:49:21.948067" data-local title="2026-10-14T09:49:21.948067 UTC">2026-10-14 09:49</time></td>
-      <td class="mono small" >—</td>
-      <td class="right mono">1</td>
+      <td class="fnd"><span class="muted small">—</span></td>
+      <td class="mono small pr"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
+      <td class="seen ts-short"><div><span>first</span><time datetime="2026-10-14T09:48:51.622348" data-local title="2026-10-14T09:48:51.622348 UTC">2026-10-14 09:48</time></div><div><span>last</span><time datetime="2026-10-14T09:49:21.948067" data-local title="2026-10-14T09:49:21.948067 UTC">2026-10-14 09:49</time></div>
+        <div class="nx"><span>next</span>—</div><div><span>scans</span>1</div></td>
       
-      <td style="white-space:nowrap">
+      <td class="acts">
         
         <form method="post" action="/ui/candidates/02d066cd-a162-437a-8785-1ccc683bfc44/rescan" style="display:inline" data-busy="Queued…"><input type="hidden" name="next" value="/ui/candidates?brand_id=f46bffed-4795-4cdd-ad8f-abd3d26fcc60&amp;state=&amp;q="><button type="submit" class="small" title="fetch and score this site again now; you stay on the list">Rescan</button></form>
       </td>
@@ -881,18 +859,15 @@ window.BW = (function () {
     
     <tr class="wrow" style="--sc:#3a4658" data-host="coinpilottrading.io">
       <td class="selcol"></td>
-      <td><a href="/ui/candidates/b87b2555-2882-4857-8885-d6b0940bec48"><span class="mono" dir="ltr">coinpilottrading.io</span></a><div class="small muted">domain name</div></td>
-      <td class="small"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/"><bdi>CoinPilot</bdi></a></td>
-      <td class="why"><b>Look-alike names</b> <span class="mono" dir="ltr">dictionary:coinpilot.io</span></td>
+      <td class="dom"><a href="/ui/candidates/b87b2555-2882-4857-8885-d6b0940bec48"><span class="mono" dir="ltr">coinpilottrading.io</span></a><div class="small muted"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/" title="the brand it imitates"><bdi>CoinPilot</bdi></a> · domain name</div></td>
+      <td class="why"><span class="srcs" style="margin:0 0 3px"><span class="srcic s-lookalike" title="found by Look-alike names" role="img" aria-label="Look-alike name">Aa</span></span><b>Look-alike names</b> <span class="mono" dir="ltr">dictionary:coinpilot.io</span></td>
       <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
-      <td class="mono small muted"><time datetime="2026-10-14T09:48:51.609266" data-local title="2026-10-14T09:48:51.609266 UTC">2026-10-14 09:48</time></td>
-      <td class="mono small muted"><time datetime="2026-10-14T09:49:21.931520" data-local title="2026-10-14T09:49:21.931520 UTC">2026-10-14 09:49</time></td>
-      <td class="mono small" >—</td>
-      <td class="right mono">1</td>
+      <td class="fnd"><span class="muted small">—</span></td>
+      <td class="mono small pr"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
+      <td class="seen ts-short"><div><span>first</span><time datetime="2026-10-14T09:48:51.609266" data-local title="2026-10-14T09:48:51.609266 UTC">2026-10-14 09:48</time></div><div><span>last</span><time datetime="2026-10-14T09:49:21.931520" data-local title="2026-10-14T09:49:21.931520 UTC">2026-10-14 09:49</time></div>
+        <div class="nx"><span>next</span>—</div><div><span>scans</span>1</div></td>
       
-      <td style="white-space:nowrap">
+      <td class="acts">
         
         <form method="post" action="/ui/candidates/b87b2555-2882-4857-8885-d6b0940bec48/rescan" style="display:inline" data-busy="Queued…"><input type="hidden" name="next" value="/ui/candidates?brand_id=f46bffed-4795-4cdd-ad8f-abd3d26fcc60&amp;state=&amp;q="><button type="submit" class="small" title="fetch and score this site again now; you stay on the list">Rescan</button></form>
       </td>
@@ -901,18 +876,15 @@ window.BW = (function () {
     
     <tr class="wrow" style="--sc:#3a4658" data-host="xn--c0inplot-k80d.io">
       <td class="selcol"></td>
-      <td><a href="/ui/candidates/3ea8ff3e-8b96-4531-8756-51f1a5249719"><span class="mono" dir="ltr">c0inpịlot.io</span> <span class="pill" style="font-size:10px" title="written with look-alike Unicode characters; the real (punycode) name is xn--c0inplot-k80d.io">homoglyph</span></a><div class="small muted">domain name</div></td>
-      <td class="small"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/"><bdi>CoinPilot</bdi></a></td>
-      <td class="why"><b>Look-alike names</b> <span class="mono" dir="ltr">homoglyph:coinpilot.io</span></td>
+      <td class="dom"><a href="/ui/candidates/3ea8ff3e-8b96-4531-8756-51f1a5249719"><span class="mono" dir="ltr">c0inpịlot.io</span> <span class="pill" style="font-size:10px" title="written with look-alike Unicode characters; the real (punycode) name is xn--c0inplot-k80d.io">homoglyph</span></a><div class="small muted"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/" title="the brand it imitates"><bdi>CoinPilot</bdi></a> · domain name</div></td>
+      <td class="why"><span class="srcs" style="margin:0 0 3px"><span class="srcic s-lookalike" title="found by Look-alike names" role="img" aria-label="Look-alike name">Aa</span></span><b>Look-alike names</b> <span class="mono" dir="ltr">homoglyph:coinpilot.io</span></td>
       <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
-      <td class="mono small muted"><time datetime="2026-10-14T09:48:51.609266" data-local title="2026-10-14T09:48:51.609266 UTC">2026-10-14 09:48</time></td>
-      <td class="mono small muted"><time datetime="2026-10-14T09:49:21.901541" data-local title="2026-10-14T09:49:21.901541 UTC">2026-10-14 09:49</time></td>
-      <td class="mono small" >—</td>
-      <td class="right mono">1</td>
+      <td class="fnd"><span class="muted small">—</span></td>
+      <td class="mono small pr"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
+      <td class="seen ts-short"><div><span>first</span><time datetime="2026-10-14T09:48:51.609266" data-local title="2026-10-14T09:48:51.609266 UTC">2026-10-14 09:48</time></div><div><span>last</span><time datetime="2026-10-14T09:49:21.901541" data-local title="2026-10-14T09:49:21.901541 UTC">2026-10-14 09:49</time></div>
+        <div class="nx"><span>next</span>—</div><div><span>scans</span>1</div></td>
       
-      <td style="white-space:nowrap">
+      <td class="acts">
         
         <form method="post" action="/ui/candidates/3ea8ff3e-8b96-4531-8756-51f1a5249719/rescan" style="display:inline" data-busy="Queued…"><input type="hidden" name="next" value="/ui/candidates?brand_id=f46bffed-4795-4cdd-ad8f-abd3d26fcc60&amp;state=&amp;q="><button type="submit" class="small" title="fetch and score this site again now; you stay on the list">Rescan</button></form>
       </td>
@@ -921,18 +893,15 @@ window.BW = (function () {
     
     <tr class="wrow" style="--sc:#3a4658" data-host="coinpilot-trading.io">
       <td class="selcol"></td>
-      <td><a href="/ui/candidates/9432a581-da7a-4825-8a49-313ebbba08f6"><span class="mono" dir="ltr">coinpilot-trading.io</span></a><div class="small muted">domain name</div></td>
-      <td class="small"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/"><bdi>CoinPilot</bdi></a></td>
-      <td class="why"><b>Look-alike names</b> <span class="mono" dir="ltr">dictionary:coinpilot.io</span></td>
+      <td class="dom"><a href="/ui/candidates/9432a581-da7a-4825-8a49-313ebbba08f6"><span class="mono" dir="ltr">coinpilot-trading.io</span></a><div class="small muted"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/" title="the brand it imitates"><bdi>CoinPilot</bdi></a> · domain name</div></td>
+      <td class="why"><span class="srcs" style="margin:0 0 3px"><span class="srcic s-lookalike" title="found by Look-alike names" role="img" aria-label="Look-alike name">Aa</span></span><b>Look-alike names</b> <span class="mono" dir="ltr">dictionary:coinpilot.io</span></td>
       <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
-      <td class="mono small muted"><time datetime="2026-10-14T09:48:51.609266" data-local title="2026-10-14T09:48:51.609266 UTC">2026-10-14 09:48</time></td>
-      <td class="mono small muted"><time datetime="2026-10-14T09:49:21.873078" data-local title="2026-10-14T09:49:21.873078 UTC">2026-10-14 09:49</time></td>
-      <td class="mono small" >—</td>
-      <td class="right mono">1</td>
+      <td class="fnd"><span class="muted small">—</span></td>
+      <td class="mono small pr"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
+      <td class="seen ts-short"><div><span>first</span><time datetime="2026-10-14T09:48:51.609266" data-local title="2026-10-14T09:48:51.609266 UTC">2026-10-14 09:48</time></div><div><span>last</span><time datetime="2026-10-14T09:49:21.873078" data-local title="2026-10-14T09:49:21.873078 UTC">2026-10-14 09:49</time></div>
+        <div class="nx"><span>next</span>—</div><div><span>scans</span>1</div></td>
       
-      <td style="white-space:nowrap">
+      <td class="acts">
         
         <form method="post" action="/ui/candidates/9432a581-da7a-4825-8a49-313ebbba08f6/rescan" style="display:inline" data-busy="Queued…"><input type="hidden" name="next" value="/ui/candidates?brand_id=f46bffed-4795-4cdd-ad8f-abd3d26fcc60&amp;state=&amp;q="><button type="submit" class="small" title="fetch and score this site again now; you stay on the list">Rescan</button></form>
       </td>
@@ -941,18 +910,15 @@ window.BW = (function () {
     
     <tr class="wrow" style="--sc:#3a4658" data-host="xn--c0inplot-g2a.io">
       <td class="selcol"></td>
-      <td><a href="/ui/candidates/dbb45c77-9f5f-4c3a-aabe-83676e920095"><span class="mono" dir="ltr">c0inpílot.io</span> <span class="pill" style="font-size:10px" title="written with look-alike Unicode characters; the real (punycode) name is xn--c0inplot-g2a.io">homoglyph</span></a><div class="small muted">domain name</div></td>
-      <td class="small"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/"><bdi>CoinPilot</bdi></a></td>
-      <td class="why"><b>Look-alike names</b> <span class="mono" dir="ltr">homoglyph:coinpilot.io</span></td>
+      <td class="dom"><a href="/ui/candidates/dbb45c77-9f5f-4c3a-aabe-83676e920095"><span class="mono" dir="ltr">c0inpílot.io</span> <span class="pill" style="font-size:10px" title="written with look-alike Unicode characters; the real (punycode) name is xn--c0inplot-g2a.io">homoglyph</span></a><div class="small muted"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/" title="the brand it imitates"><bdi>CoinPilot</bdi></a> · domain name</div></td>
+      <td class="why"><span class="srcs" style="margin:0 0 3px"><span class="srcic s-lookalike" title="found by Look-alike names" role="img" aria-label="Look-alike name">Aa</span></span><b>Look-alike names</b> <span class="mono" dir="ltr">homoglyph:coinpilot.io</span></td>
       <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
-      <td class="mono small muted"><time datetime="2026-10-14T09:48:51.609266" data-local title="2026-10-14T09:48:51.609266 UTC">2026-10-14 09:48</time></td>
-      <td class="mono small muted"><time datetime="2026-10-14T09:49:21.844666" data-local title="2026-10-14T09:49:21.844666 UTC">2026-10-14 09:49</time></td>
-      <td class="mono small" >—</td>
-      <td class="right mono">1</td>
+      <td class="fnd"><span class="muted small">—</span></td>
+      <td class="mono small pr"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
+      <td class="seen ts-short"><div><span>first</span><time datetime="2026-10-14T09:48:51.609266" data-local title="2026-10-14T09:48:51.609266 UTC">2026-10-14 09:48</time></div><div><span>last</span><time datetime="2026-10-14T09:49:21.844666" data-local title="2026-10-14T09:49:21.844666 UTC">2026-10-14 09:49</time></div>
+        <div class="nx"><span>next</span>—</div><div><span>scans</span>1</div></td>
       
-      <td style="white-space:nowrap">
+      <td class="acts">
         
         <form method="post" action="/ui/candidates/dbb45c77-9f5f-4c3a-aabe-83676e920095/rescan" style="display:inline" data-busy="Queued…"><input type="hidden" name="next" value="/ui/candidates?brand_id=f46bffed-4795-4cdd-ad8f-abd3d26fcc60&amp;state=&amp;q="><button type="submit" class="small" title="fetch and score this site again now; you stay on the list">Rescan</button></form>
       </td>
@@ -961,18 +927,15 @@ window.BW = (function () {
     
     <tr class="wrow" style="--sc:#3a4658" data-host="coinpilot-register.io">
       <td class="selcol"></td>
-      <td><a href="/ui/candidates/43f0052f-951d-44d7-9e85-a12106821683"><span class="mono" dir="ltr">coinpilot-register.io</span></a><div class="small muted">domain name</div></td>
-      <td class="small"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/"><bdi>CoinPilot</bdi></a></td>
-      <td class="why"><b>Look-alike names</b> <span class="mono" dir="ltr">dictionary:coinpilot.io</span></td>
+      <td class="dom"><a href="/ui/candidates/43f0052f-951d-44d7-9e85-a12106821683"><span class="mono" dir="ltr">coinpilot-register.io</span></a><div class="small muted"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/" title="the brand it imitates"><bdi>CoinPilot</bdi></a> · domain name</div></td>
+      <td class="why"><span class="srcs" style="margin:0 0 3px"><span class="srcic s-lookalike" title="found by Look-alike names" role="img" aria-label="Look-alike name">Aa</span></span><b>Look-alike names</b> <span class="mono" dir="ltr">dictionary:coinpilot.io</span></td>
       <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
-      <td class="mono small muted"><time datetime="2026-10-14T09:48:51.605817" data-local title="2026-10-14T09:48:51.605817 UTC">2026-10-14 09:48</time></td>
-      <td class="mono small muted"><time datetime="2026-10-14T09:49:21.778062" data-local title="2026-10-14T09:49:21.778062 UTC">2026-10-14 09:49</time></td>
-      <td class="mono small" >—</td>
-      <td class="right mono">1</td>
+      <td class="fnd"><span class="muted small">—</span></td>
+      <td class="mono small pr"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
+      <td class="seen ts-short"><div><span>first</span><time datetime="2026-10-14T09:48:51.605817" data-local title="2026-10-14T09:48:51.605817 UTC">2026-10-14 09:48</time></div><div><span>last</span><time datetime="2026-10-14T09:49:21.778062" data-local title="2026-10-14T09:49:21.778062 UTC">2026-10-14 09:49</time></div>
+        <div class="nx"><span>next</span>—</div><div><span>scans</span>1</div></td>
       
-      <td style="white-space:nowrap">
+      <td class="acts">
         
         <form method="post" action="/ui/candidates/43f0052f-951d-44d7-9e85-a12106821683/rescan" style="display:inline" data-busy="Queued…"><input type="hidden" name="next" value="/ui/candidates?brand_id=f46bffed-4795-4cdd-ad8f-abd3d26fcc60&amp;state=&amp;q="><button type="submit" class="small" title="fetch and score this site again now; you stay on the list">Rescan</button></form>
       </td>
@@ -981,18 +944,15 @@ window.BW = (function () {
     
     <tr class="wrow" style="--sc:#3a4658" data-host="xn--c0inplot-fvd.io">
       <td class="selcol"></td>
-      <td><a href="/ui/candidates/2f4a720d-7cee-4bd1-ab11-bf842776ef21"><span class="mono" dir="ltr">c0inpɪlot.io</span> <span class="pill" style="font-size:10px" title="written with look-alike Unicode characters; the real (punycode) name is xn--c0inplot-fvd.io">homoglyph</span></a><div class="small muted">domain name</div></td>
-      <td class="small"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/"><bdi>CoinPilot</bdi></a></td>
-      <td class="why"><b>Look-alike names</b> <span class="mono" dir="ltr">homoglyph:coinpilot.io</span></td>
+      <td class="dom"><a href="/ui/candidates/2f4a720d-7cee-4bd1-ab11-bf842776ef21"><span class="mono" dir="ltr">c0inpɪlot.io</span> <span class="pill" style="font-size:10px" title="written with look-alike Unicode characters; the real (punycode) name is xn--c0inplot-fvd.io">homoglyph</span></a><div class="small muted"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/" title="the brand it imitates"><bdi>CoinPilot</bdi></a> · domain name</div></td>
+      <td class="why"><span class="srcs" style="margin:0 0 3px"><span class="srcic s-lookalike" title="found by Look-alike names" role="img" aria-label="Look-alike name">Aa</span></span><b>Look-alike names</b> <span class="mono" dir="ltr">homoglyph:coinpilot.io</span></td>
       <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
-      <td class="mono small muted"><time datetime="2026-10-14T09:48:51.589025" data-local title="2026-10-14T09:48:51.589025 UTC">2026-10-14 09:48</time></td>
-      <td class="mono small muted"><time datetime="2026-10-14T09:49:21.747641" data-local title="2026-10-14T09:49:21.747641 UTC">2026-10-14 09:49</time></td>
-      <td class="mono small" >—</td>
-      <td class="right mono">1</td>
+      <td class="fnd"><span class="muted small">—</span></td>
+      <td class="mono small pr"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
+      <td class="seen ts-short"><div><span>first</span><time datetime="2026-10-14T09:48:51.589025" data-local title="2026-10-14T09:48:51.589025 UTC">2026-10-14 09:48</time></div><div><span>last</span><time datetime="2026-10-14T09:49:21.747641" data-local title="2026-10-14T09:49:21.747641 UTC">2026-10-14 09:49</time></div>
+        <div class="nx"><span>next</span>—</div><div><span>scans</span>1</div></td>
       
-      <td style="white-space:nowrap">
+      <td class="acts">
         
         <form method="post" action="/ui/candidates/2f4a720d-7cee-4bd1-ab11-bf842776ef21/rescan" style="display:inline" data-busy="Queued…"><input type="hidden" name="next" value="/ui/candidates?brand_id=f46bffed-4795-4cdd-ad8f-abd3d26fcc60&amp;state=&amp;q="><button type="submit" class="small" title="fetch and score this site again now; you stay on the list">Rescan</button></form>
       </td>
@@ -1001,18 +961,15 @@ window.BW = (function () {
     
     <tr class="wrow" style="--sc:#3a4658" data-host="register-coinpilot.io">
       <td class="selcol"></td>
-      <td><a href="/ui/candidates/a1238a17-237d-432f-ac4d-bf42e7243bd5"><span class="mono" dir="ltr">register-coinpilot.io</span></a><div class="small muted">domain name</div></td>
-      <td class="small"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/"><bdi>CoinPilot</bdi></a></td>
-      <td class="why"><b>Look-alike names</b> <span class="mono" dir="ltr">dictionary:coinpilot.io</span></td>
+      <td class="dom"><a href="/ui/candidates/a1238a17-237d-432f-ac4d-bf42e7243bd5"><span class="mono" dir="ltr">register-coinpilot.io</span></a><div class="small muted"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/" title="the brand it imitates"><bdi>CoinPilot</bdi></a> · domain name</div></td>
+      <td class="why"><span class="srcs" style="margin:0 0 3px"><span class="srcic s-lookalike" title="found by Look-alike names" role="img" aria-label="Look-alike name">Aa</span></span><b>Look-alike names</b> <span class="mono" dir="ltr">dictionary:coinpilot.io</span></td>
       <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
-      <td class="mono small muted"><time datetime="2026-10-14T09:48:51.589025" data-local title="2026-10-14T09:48:51.589025 UTC">2026-10-14 09:48</time></td>
-      <td class="mono small muted"><time datetime="2026-10-14T09:49:21.721829" data-local title="2026-10-14T09:49:21.721829 UTC">2026-10-14 09:49</time></td>
-      <td class="mono small" >—</td>
-      <td class="right mono">1</td>
+      <td class="fnd"><span class="muted small">—</span></td>
+      <td class="mono small pr"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
+      <td class="seen ts-short"><div><span>first</span><time datetime="2026-10-14T09:48:51.589025" data-local title="2026-10-14T09:48:51.589025 UTC">2026-10-14 09:48</time></div><div><span>last</span><time datetime="2026-10-14T09:49:21.721829" data-local title="2026-10-14T09:49:21.721829 UTC">2026-10-14 09:49</time></div>
+        <div class="nx"><span>next</span>—</div><div><span>scans</span>1</div></td>
       
-      <td style="white-space:nowrap">
+      <td class="acts">
         
         <form method="post" action="/ui/candidates/a1238a17-237d-432f-ac4d-bf42e7243bd5/rescan" style="display:inline" data-busy="Queued…"><input type="hidden" name="next" value="/ui/candidates?brand_id=f46bffed-4795-4cdd-ad8f-abd3d26fcc60&amp;state=&amp;q="><button type="submit" class="small" title="fetch and score this site again now; you stay on the list">Rescan</button></form>
       </td>
@@ -1021,18 +978,15 @@ window.BW = (function () {
     
     <tr class="wrow" style="--sc:#3a4658" data-host="xn--c0inplot-fkb.io">
       <td class="selcol"></td>
-      <td><a href="/ui/candidates/0edeb409-789a-41b7-8058-280f49cae568"><span class="mono" dir="ltr">c0inpįlot.io</span> <span class="pill" style="font-size:10px" title="written with look-alike Unicode characters; the real (punycode) name is xn--c0inplot-fkb.io">homoglyph</span></a><div class="small muted">domain name</div></td>
-      <td class="small"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/"><bdi>CoinPilot</bdi></a></td>
-      <td class="why"><b>Look-alike names</b> <span class="mono" dir="ltr">homoglyph:coinpilot.io</span></td>
+      <td class="dom"><a href="/ui/candidates/0edeb409-789a-41b7-8058-280f49cae568"><span class="mono" dir="ltr">c0inpįlot.io</span> <span class="pill" style="font-size:10px" title="written with look-alike Unicode characters; the real (punycode) name is xn--c0inplot-fkb.io">homoglyph</span></a><div class="small muted"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/" title="the brand it imitates"><bdi>CoinPilot</bdi></a> · domain name</div></td>
+      <td class="why"><span class="srcs" style="margin:0 0 3px"><span class="srcic s-lookalike" title="found by Look-alike names" role="img" aria-label="Look-alike name">Aa</span></span><b>Look-alike names</b> <span class="mono" dir="ltr">homoglyph:coinpilot.io</span></td>
       <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
-      <td class="mono small muted"><time datetime="2026-10-14T09:48:51.589025" data-local title="2026-10-14T09:48:51.589025 UTC">2026-10-14 09:48</time></td>
-      <td class="mono small muted"><time datetime="2026-10-14T09:49:21.689267" data-local title="2026-10-14T09:49:21.689267 UTC">2026-10-14 09:49</time></td>
-      <td class="mono small" >—</td>
-      <td class="right mono">1</td>
+      <td class="fnd"><span class="muted small">—</span></td>
+      <td class="mono small pr"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
+      <td class="seen ts-short"><div><span>first</span><time datetime="2026-10-14T09:48:51.589025" data-local title="2026-10-14T09:48:51.589025 UTC">2026-10-14 09:48</time></div><div><span>last</span><time datetime="2026-10-14T09:49:21.689267" data-local title="2026-10-14T09:49:21.689267 UTC">2026-10-14 09:49</time></div>
+        <div class="nx"><span>next</span>—</div><div><span>scans</span>1</div></td>
       
-      <td style="white-space:nowrap">
+      <td class="acts">
         
         <form method="post" action="/ui/candidates/0edeb409-789a-41b7-8058-280f49cae568/rescan" style="display:inline" data-busy="Queued…"><input type="hidden" name="next" value="/ui/candidates?brand_id=f46bffed-4795-4cdd-ad8f-abd3d26fcc60&amp;state=&amp;q="><button type="submit" class="small" title="fetch and score this site again now; you stay on the list">Rescan</button></form>
       </td>
@@ -1041,18 +995,15 @@ window.BW = (function () {
     
     <tr class="wrow" style="--sc:#3a4658" data-host="coinpilotregister.io">
       <td class="selcol"></td>
-      <td><a href="/ui/candidates/4ada8a51-e007-4135-9656-f9bcedc76145"><span class="mono" dir="ltr">coinpilotregister.io</span></a><div class="small muted">domain name</div></td>
-      <td class="small"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/"><bdi>CoinPilot</bdi></a></td>
-      <td class="why"><b>Look-alike names</b> <span class="mono" dir="ltr">dictionary:coinpilot.io</span></td>
+      <td class="dom"><a href="/ui/candidates/4ada8a51-e007-4135-9656-f9bcedc76145"><span class="mono" dir="ltr">coinpilotregister.io</span></a><div class="small muted"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/" title="the brand it imitates"><bdi>CoinPilot</bdi></a> · domain name</div></td>
+      <td class="why"><span class="srcs" style="margin:0 0 3px"><span class="srcic s-lookalike" title="found by Look-alike names" role="img" aria-label="Look-alike name">Aa</span></span><b>Look-alike names</b> <span class="mono" dir="ltr">dictionary:coinpilot.io</span></td>
       <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
-      <td class="mono small muted"><time datetime="2026-10-14T09:48:51.589025" data-local title="2026-10-14T09:48:51.589025 UTC">2026-10-14 09:48</time></td>
-      <td class="mono small muted"><time datetime="2026-10-14T09:49:21.638052" data-local title="2026-10-14T09:49:21.638052 UTC">2026-10-14 09:49</time></td>
-      <td class="mono small" >—</td>
-      <td class="right mono">1</td>
+      <td class="fnd"><span class="muted small">—</span></td>
+      <td class="mono small pr"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
+      <td class="seen ts-short"><div><span>first</span><time datetime="2026-10-14T09:48:51.589025" data-local title="2026-10-14T09:48:51.589025 UTC">2026-10-14 09:48</time></div><div><span>last</span><time datetime="2026-10-14T09:49:21.638052" data-local title="2026-10-14T09:49:21.638052 UTC">2026-10-14 09:49</time></div>
+        <div class="nx"><span>next</span>—</div><div><span>scans</span>1</div></td>
       
-      <td style="white-space:nowrap">
+      <td class="acts">
         
         <form method="post" action="/ui/candidates/4ada8a51-e007-4135-9656-f9bcedc76145/rescan" style="display:inline" data-busy="Queued…"><input type="hidden" name="next" value="/ui/candidates?brand_id=f46bffed-4795-4cdd-ad8f-abd3d26fcc60&amp;state=&amp;q="><button type="submit" class="small" title="fetch and score this site again now; you stay on the list">Rescan</button></form>
       </td>
@@ -1061,18 +1012,15 @@ window.BW = (function () {
     
     <tr class="wrow" style="--sc:#3a4658" data-host="xn--c0inplot-ejb.io">
       <td class="selcol"></td>
-      <td><a href="/ui/candidates/2d895fd5-7277-4153-a528-1285f0fb4d12"><span class="mono" dir="ltr">c0inpīlot.io</span> <span class="pill" style="font-size:10px" title="written with look-alike Unicode characters; the real (punycode) name is xn--c0inplot-ejb.io">homoglyph</span></a><div class="small muted">domain name</div></td>
-      <td class="small"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/"><bdi>CoinPilot</bdi></a></td>
-      <td class="why"><b>Look-alike names</b> <span class="mono" dir="ltr">homoglyph:coinpilot.io</span></td>
+      <td class="dom"><a href="/ui/candidates/2d895fd5-7277-4153-a528-1285f0fb4d12"><span class="mono" dir="ltr">c0inpīlot.io</span> <span class="pill" style="font-size:10px" title="written with look-alike Unicode characters; the real (punycode) name is xn--c0inplot-ejb.io">homoglyph</span></a><div class="small muted"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/" title="the brand it imitates"><bdi>CoinPilot</bdi></a> · domain name</div></td>
+      <td class="why"><span class="srcs" style="margin:0 0 3px"><span class="srcic s-lookalike" title="found by Look-alike names" role="img" aria-label="Look-alike name">Aa</span></span><b>Look-alike names</b> <span class="mono" dir="ltr">homoglyph:coinpilot.io</span></td>
       <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
-      <td class="mono small muted"><time datetime="2026-10-14T09:48:51.589025" data-local title="2026-10-14T09:48:51.589025 UTC">2026-10-14 09:48</time></td>
-      <td class="mono small muted"><time datetime="2026-10-14T09:49:21.613223" data-local title="2026-10-14T09:49:21.613223 UTC">2026-10-14 09:49</time></td>
-      <td class="mono small" >—</td>
-      <td class="right mono">1</td>
+      <td class="fnd"><span class="muted small">—</span></td>
+      <td class="mono small pr"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
+      <td class="seen ts-short"><div><span>first</span><time datetime="2026-10-14T09:48:51.589025" data-local title="2026-10-14T09:48:51.589025 UTC">2026-10-14 09:48</time></div><div><span>last</span><time datetime="2026-10-14T09:49:21.613223" data-local title="2026-10-14T09:49:21.613223 UTC">2026-10-14 09:49</time></div>
+        <div class="nx"><span>next</span>—</div><div><span>scans</span>1</div></td>
       
-      <td style="white-space:nowrap">
+      <td class="acts">
         
         <form method="post" action="/ui/candidates/2d895fd5-7277-4153-a528-1285f0fb4d12/rescan" style="display:inline" data-busy="Queued…"><input type="hidden" name="next" value="/ui/candidates?brand_id=f46bffed-4795-4cdd-ad8f-abd3d26fcc60&amp;state=&amp;q="><button type="submit" class="small" title="fetch and score this site again now; you stay on the list">Rescan</button></form>
       </td>
@@ -1081,18 +1029,15 @@ window.BW = (function () {
     
     <tr class="wrow" style="--sc:#3a4658" data-host="registercoinpilot.io">
       <td class="selcol"></td>
-      <td><a href="/ui/candidates/702cbe93-7823-4676-a8d0-6948f452915d"><span class="mono" dir="ltr">registercoinpilot.io</span></a><div class="small muted">domain name</div></td>
-      <td class="small"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/"><bdi>CoinPilot</bdi></a></td>
-      <td class="why"><b>Look-alike names</b> <span class="mono" dir="ltr">dictionary:coinpilot.io</span></td>
+      <td class="dom"><a href="/ui/candidates/702cbe93-7823-4676-a8d0-6948f452915d"><span class="mono" dir="ltr">registercoinpilot.io</span></a><div class="small muted"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/" title="the brand it imitates"><bdi>CoinPilot</bdi></a> · domain name</div></td>
+      <td class="why"><span class="srcs" style="margin:0 0 3px"><span class="srcic s-lookalike" title="found by Look-alike names" role="img" aria-label="Look-alike name">Aa</span></span><b>Look-alike names</b> <span class="mono" dir="ltr">dictionary:coinpilot.io</span></td>
       <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
-      <td class="mono small muted"><time datetime="2026-10-14T09:48:51.589025" data-local title="2026-10-14T09:48:51.589025 UTC">2026-10-14 09:48</time></td>
-      <td class="mono small muted"><time datetime="2026-10-14T09:49:21.544950" data-local title="2026-10-14T09:49:21.544950 UTC">2026-10-14 09:49</time></td>
-      <td class="mono small" >—</td>
-      <td class="right mono">1</td>
+      <td class="fnd"><span class="muted small">—</span></td>
+      <td class="mono small pr"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
+      <td class="seen ts-short"><div><span>first</span><time datetime="2026-10-14T09:48:51.589025" data-local title="2026-10-14T09:48:51.589025 UTC">2026-10-14 09:48</time></div><div><span>last</span><time datetime="2026-10-14T09:49:21.544950" data-local title="2026-10-14T09:49:21.544950 UTC">2026-10-14 09:49</time></div>
+        <div class="nx"><span>next</span>—</div><div><span>scans</span>1</div></td>
       
-      <td style="white-space:nowrap">
+      <td class="acts">
         
         <form method="post" action="/ui/candidates/702cbe93-7823-4676-a8d0-6948f452915d/rescan" style="display:inline" data-busy="Queued…"><input type="hidden" name="next" value="/ui/candidates?brand_id=f46bffed-4795-4cdd-ad8f-abd3d26fcc60&amp;state=&amp;q="><button type="submit" class="small" title="fetch and score this site again now; you stay on the list">Rescan</button></form>
       </td>
@@ -1101,18 +1046,15 @@ window.BW = (function () {
     
     <tr class="wrow" style="--sc:#3a4658" data-host="xn--c0inplot-61a.io">
       <td class="selcol"></td>
-      <td><a href="/ui/candidates/c3c640ec-27c9-4d50-a311-1686be6ccdb9"><span class="mono" dir="ltr">c0inpìlot.io</span> <span class="pill" style="font-size:10px" title="written with look-alike Unicode characters; the real (punycode) name is xn--c0inplot-61a.io">homoglyph</span></a><div class="small muted">domain name</div></td>
-      <td class="small"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/"><bdi>CoinPilot</bdi></a></td>
-      <td class="why"><b>Look-alike names</b> <span class="mono" dir="ltr">homoglyph:coinpilot.io</span></td>
+      <td class="dom"><a href="/ui/candidates/c3c640ec-27c9-4d50-a311-1686be6ccdb9"><span class="mono" dir="ltr">c0inpìlot.io</span> <span class="pill" style="font-size:10px" title="written with look-alike Unicode characters; the real (punycode) name is xn--c0inplot-61a.io">homoglyph</span></a><div class="small muted"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/" title="the brand it imitates"><bdi>CoinPilot</bdi></a> · domain name</div></td>
+      <td class="why"><span class="srcs" style="margin:0 0 3px"><span class="srcic s-lookalike" title="found by Look-alike names" role="img" aria-label="Look-alike name">Aa</span></span><b>Look-alike names</b> <span class="mono" dir="ltr">homoglyph:coinpilot.io</span></td>
       <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
-      <td class="mono small muted"><time datetime="2026-10-14T09:48:51.572473" data-local title="2026-10-14T09:48:51.572473 UTC">2026-10-14 09:48</time></td>
-      <td class="mono small muted"><time datetime="2026-10-14T09:49:21.514247" data-local title="2026-10-14T09:49:21.514247 UTC">2026-10-14 09:49</time></td>
-      <td class="mono small" >—</td>
-      <td class="right mono">1</td>
+      <td class="fnd"><span class="muted small">—</span></td>
+      <td class="mono small pr"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
+      <td class="seen ts-short"><div><span>first</span><time datetime="2026-10-14T09:48:51.572473" data-local title="2026-10-14T09:48:51.572473 UTC">2026-10-14 09:48</time></div><div><span>last</span><time datetime="2026-10-14T09:49:21.514247" data-local title="2026-10-14T09:49:21.514247 UTC">2026-10-14 09:49</time></div>
+        <div class="nx"><span>next</span>—</div><div><span>scans</span>1</div></td>
       
-      <td style="white-space:nowrap">
+      <td class="acts">
         
         <form method="post" action="/ui/candidates/c3c640ec-27c9-4d50-a311-1686be6ccdb9/rescan" style="display:inline" data-busy="Queued…"><input type="hidden" name="next" value="/ui/candidates?brand_id=f46bffed-4795-4cdd-ad8f-abd3d26fcc60&amp;state=&amp;q="><button type="submit" class="small" title="fetch and score this site again now; you stay on the list">Rescan</button></form>
       </td>
@@ -1121,18 +1063,15 @@ window.BW = (function () {
     
     <tr class="wrow" style="--sc:#3a4658" data-host="signupcoinpilot.io">
       <td class="selcol"></td>
-      <td><a href="/ui/candidates/0c11f165-58e8-4972-8339-7ed2a74df5e0"><span class="mono" dir="ltr">signupcoinpilot.io</span></a><div class="small muted">domain name</div></td>
-      <td class="small"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/"><bdi>CoinPilot</bdi></a></td>
-      <td class="why"><b>Look-alike names</b> <span class="mono" dir="ltr">dictionary:coinpilot.io</span></td>
+      <td class="dom"><a href="/ui/candidates/0c11f165-58e8-4972-8339-7ed2a74df5e0"><span class="mono" dir="ltr">signupcoinpilot.io</span></a><div class="small muted"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/" title="the brand it imitates"><bdi>CoinPilot</bdi></a> · domain name</div></td>
+      <td class="why"><span class="srcs" style="margin:0 0 3px"><span class="srcic s-lookalike" title="found by Look-alike names" role="img" aria-label="Look-alike name">Aa</span></span><b>Look-alike names</b> <span class="mono" dir="ltr">dictionary:coinpilot.io</span></td>
       <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
-      <td class="mono small muted"><time datetime="2026-10-14T09:48:51.572473" data-local title="2026-10-14T09:48:51.572473 UTC">2026-10-14 09:48</time></td>
-      <td class="mono small muted"><time datetime="2026-10-14T09:49:21.499975" data-local title="2026-10-14T09:49:21.499975 UTC">2026-10-14 09:49</time></td>
-      <td class="mono small" >—</td>
-      <td class="right mono">1</td>
+      <td class="fnd"><span class="muted small">—</span></td>
+      <td class="mono small pr"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
+      <td class="seen ts-short"><div><span>first</span><time datetime="2026-10-14T09:48:51.572473" data-local title="2026-10-14T09:48:51.572473 UTC">2026-10-14 09:48</time></div><div><span>last</span><time datetime="2026-10-14T09:49:21.499975" data-local title="2026-10-14T09:49:21.499975 UTC">2026-10-14 09:49</time></div>
+        <div class="nx"><span>next</span>—</div><div><span>scans</span>1</div></td>
       
-      <td style="white-space:nowrap">
+      <td class="acts">
         
         <form method="post" action="/ui/candidates/0c11f165-58e8-4972-8339-7ed2a74df5e0/rescan" style="display:inline" data-busy="Queued…"><input type="hidden" name="next" value="/ui/candidates?brand_id=f46bffed-4795-4cdd-ad8f-abd3d26fcc60&amp;state=&amp;q="><button type="submit" class="small" title="fetch and score this site again now; you stay on the list">Rescan</button></form>
       </td>
@@ -1141,18 +1080,15 @@ window.BW = (function () {
     
     <tr class="wrow" style="--sc:#3a4658" data-host="xn--c0inplot-5ud.io">
       <td class="selcol"></td>
-      <td><a href="/ui/candidates/faee231c-afb9-4e1b-9529-c8a18a84a119"><span class="mono" dir="ltr">c0inpɩlot.io</span> <span class="pill" style="font-size:10px" title="written with look-alike Unicode characters; the real (punycode) name is xn--c0inplot-5ud.io">homoglyph</span></a><div class="small muted">domain name</div></td>
-      <td class="small"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/"><bdi>CoinPilot</bdi></a></td>
-      <td class="why"><b>Look-alike names</b> <span class="mono" dir="ltr">homoglyph:coinpilot.io</span></td>
+      <td class="dom"><a href="/ui/candidates/faee231c-afb9-4e1b-9529-c8a18a84a119"><span class="mono" dir="ltr">c0inpɩlot.io</span> <span class="pill" style="font-size:10px" title="written with look-alike Unicode characters; the real (punycode) name is xn--c0inplot-5ud.io">homoglyph</span></a><div class="small muted"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/" title="the brand it imitates"><bdi>CoinPilot</bdi></a> · domain name</div></td>
+      <td class="why"><span class="srcs" style="margin:0 0 3px"><span class="srcic s-lookalike" title="found by Look-alike names" role="img" aria-label="Look-alike name">Aa</span></span><b>Look-alike names</b> <span class="mono" dir="ltr">homoglyph:coinpilot.io</span></td>
       <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
-      <td class="mono small muted"><time datetime="2026-10-14T09:48:51.572473" data-local title="2026-10-14T09:48:51.572473 UTC">2026-10-14 09:48</time></td>
-      <td class="mono small muted"><time datetime="2026-10-14T09:49:21.476803" data-local title="2026-10-14T09:49:21.476803 UTC">2026-10-14 09:49</time></td>
-      <td class="mono small" >—</td>
-      <td class="right mono">1</td>
+      <td class="fnd"><span class="muted small">—</span></td>
+      <td class="mono small pr"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
+      <td class="seen ts-short"><div><span>first</span><time datetime="2026-10-14T09:48:51.572473" data-local title="2026-10-14T09:48:51.572473 UTC">2026-10-14 09:48</time></div><div><span>last</span><time datetime="2026-10-14T09:49:21.476803" data-local title="2026-10-14T09:49:21.476803 UTC">2026-10-14 09:49</time></div>
+        <div class="nx"><span>next</span>—</div><div><span>scans</span>1</div></td>
       
-      <td style="white-space:nowrap">
+      <td class="acts">
         
         <form method="post" action="/ui/candidates/faee231c-afb9-4e1b-9529-c8a18a84a119/rescan" style="display:inline" data-busy="Queued…"><input type="hidden" name="next" value="/ui/candidates?brand_id=f46bffed-4795-4cdd-ad8f-abd3d26fcc60&amp;state=&amp;q="><button type="submit" class="small" title="fetch and score this site again now; you stay on the list">Rescan</button></form>
       </td>
@@ -1161,18 +1097,15 @@ window.BW = (function () {
     
     <tr class="wrow" style="--sc:#3a4658" data-host="signup-coinpilot.io">
       <td class="selcol"></td>
-      <td><a href="/ui/candidates/f700783c-43ee-4357-a026-4bf06fc9db7f"><span class="mono" dir="ltr">signup-coinpilot.io</span></a><div class="small muted">domain name</div></td>
-      <td class="small"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/"><bdi>CoinPilot</bdi></a></td>
-      <td class="why"><b>Look-alike names</b> <span class="mono" dir="ltr">dictionary:coinpilot.io</span></td>
+      <td class="dom"><a href="/ui/candidates/f700783c-43ee-4357-a026-4bf06fc9db7f"><span class="mono" dir="ltr">signup-coinpilot.io</span></a><div class="small muted"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/" title="the brand it imitates"><bdi>CoinPilot</bdi></a> · domain name</div></td>
+      <td class="why"><span class="srcs" style="margin:0 0 3px"><span class="srcic s-lookalike" title="found by Look-alike names" role="img" aria-label="Look-alike name">Aa</span></span><b>Look-alike names</b> <span class="mono" dir="ltr">dictionary:coinpilot.io</span></td>
       <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
-      <td class="mono small muted"><time datetime="2026-10-14T09:48:51.572473" data-local title="2026-10-14T09:48:51.572473 UTC">2026-10-14 09:48</time></td>
-      <td class="mono small muted"><time datetime="2026-10-14T09:49:21.447981" data-local title="2026-10-14T09:49:21.447981 UTC">2026-10-14 09:49</time></td>
-      <td class="mono small" >—</td>
-      <td class="right mono">1</td>
+      <td class="fnd"><span class="muted small">—</span></td>
+      <td class="mono small pr"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
+      <td class="seen ts-short"><div><span>first</span><time datetime="2026-10-14T09:48:51.572473" data-local title="2026-10-14T09:48:51.572473 UTC">2026-10-14 09:48</time></div><div><span>last</span><time datetime="2026-10-14T09:49:21.447981" data-local title="2026-10-14T09:49:21.447981 UTC">2026-10-14 09:49</time></div>
+        <div class="nx"><span>next</span>—</div><div><span>scans</span>1</div></td>
       
-      <td style="white-space:nowrap">
+      <td class="acts">
         
         <form method="post" action="/ui/candidates/f700783c-43ee-4357-a026-4bf06fc9db7f/rescan" style="display:inline" data-busy="Queued…"><input type="hidden" name="next" value="/ui/candidates?brand_id=f46bffed-4795-4cdd-ad8f-abd3d26fcc60&amp;state=&amp;q="><button type="submit" class="small" title="fetch and score this site again now; you stay on the list">Rescan</button></form>
       </td>
@@ -1181,18 +1114,15 @@ window.BW = (function () {
     
     <tr class="wrow" style="--sc:#3a4658" data-host="xn--c0inplot-170d.io">
       <td class="selcol"></td>
-      <td><a href="/ui/candidates/13be6b20-248f-4195-93e2-6285a05526df"><span class="mono" dir="ltr">c0inpỉlot.io</span> <span class="pill" style="font-size:10px" title="written with look-alike Unicode characters; the real (punycode) name is xn--c0inplot-170d.io">homoglyph</span></a><div class="small muted">domain name</div></td>
-      <td class="small"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/"><bdi>CoinPilot</bdi></a></td>
-      <td class="why"><b>Look-alike names</b> <span class="mono" dir="ltr">homoglyph:coinpilot.io</span></td>
+      <td class="dom"><a href="/ui/candidates/13be6b20-248f-4195-93e2-6285a05526df"><span class="mono" dir="ltr">c0inpỉlot.io</span> <span class="pill" style="font-size:10px" title="written with look-alike Unicode characters; the real (punycode) name is xn--c0inplot-170d.io">homoglyph</span></a><div class="small muted"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/" title="the brand it imitates"><bdi>CoinPilot</bdi></a> · domain name</div></td>
+      <td class="why"><span class="srcs" style="margin:0 0 3px"><span class="srcic s-lookalike" title="found by Look-alike names" role="img" aria-label="Look-alike name">Aa</span></span><b>Look-alike names</b> <span class="mono" dir="ltr">homoglyph:coinpilot.io</span></td>
       <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
-      <td class="mono small muted"><time datetime="2026-10-14T09:48:51.572473" data-local title="2026-10-14T09:48:51.572473 UTC">2026-10-14 09:48</time></td>
-      <td class="mono small muted"><time datetime="2026-10-14T09:49:21.428587" data-local title="2026-10-14T09:49:21.428587 UTC">2026-10-14 09:49</time></td>
-      <td class="mono small" >—</td>
-      <td class="right mono">1</td>
+      <td class="fnd"><span class="muted small">—</span></td>
+      <td class="mono small pr"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
+      <td class="seen ts-short"><div><span>first</span><time datetime="2026-10-14T09:48:51.572473" data-local title="2026-10-14T09:48:51.572473 UTC">2026-10-14 09:48</time></div><div><span>last</span><time datetime="2026-10-14T09:49:21.428587" data-local title="2026-10-14T09:49:21.428587 UTC">2026-10-14 09:49</time></div>
+        <div class="nx"><span>next</span>—</div><div><span>scans</span>1</div></td>
       
-      <td style="white-space:nowrap">
+      <td class="acts">
         
         <form method="post" action="/ui/candidates/13be6b20-248f-4195-93e2-6285a05526df/rescan" style="display:inline" data-busy="Queued…"><input type="hidden" name="next" value="/ui/candidates?brand_id=f46bffed-4795-4cdd-ad8f-abd3d26fcc60&amp;state=&amp;q="><button type="submit" class="small" title="fetch and score this site again now; you stay on the list">Rescan</button></form>
       </td>
@@ -1201,18 +1131,15 @@ window.BW = (function () {
     
     <tr class="wrow" style="--sc:#3a4658" data-host="coinpilot-signup.io">
       <td class="selcol"></td>
-      <td><a href="/ui/candidates/0377e5b1-932a-4e4b-87d2-6bb04e01f28a"><span class="mono" dir="ltr">coinpilot-signup.io</span></a><div class="small muted">domain name</div></td>
-      <td class="small"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/"><bdi>CoinPilot</bdi></a></td>
-      <td class="why"><b>Look-alike names</b> <span class="mono" dir="ltr">dictionary:coinpilot.io</span></td>
+      <td class="dom"><a href="/ui/candidates/0377e5b1-932a-4e4b-87d2-6bb04e01f28a"><span class="mono" dir="ltr">coinpilot-signup.io</span></a><div class="small muted"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/" title="the brand it imitates"><bdi>CoinPilot</bdi></a> · domain name</div></td>
+      <td class="why"><span class="srcs" style="margin:0 0 3px"><span class="srcic s-lookalike" title="found by Look-alike names" role="img" aria-label="Look-alike name">Aa</span></span><b>Look-alike names</b> <span class="mono" dir="ltr">dictionary:coinpilot.io</span></td>
       <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
-      <td class="mono small muted"><time datetime="2026-10-14T09:48:51.568370" data-local title="2026-10-14T09:48:51.568370 UTC">2026-10-14 09:48</time></td>
-      <td class="mono small muted"><time datetime="2026-10-14T09:49:21.401903" data-local title="2026-10-14T09:49:21.401903 UTC">2026-10-14 09:49</time></td>
-      <td class="mono small" >—</td>
-      <td class="right mono">1</td>
+      <td class="fnd"><span class="muted small">—</span></td>
+      <td class="mono small pr"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
+      <td class="seen ts-short"><div><span>first</span><time datetime="2026-10-14T09:48:51.568370" data-local title="2026-10-14T09:48:51.568370 UTC">2026-10-14 09:48</time></div><div><span>last</span><time datetime="2026-10-14T09:49:21.401903" data-local title="2026-10-14T09:49:21.401903 UTC">2026-10-14 09:49</time></div>
+        <div class="nx"><span>next</span>—</div><div><span>scans</span>1</div></td>
       
-      <td style="white-space:nowrap">
+      <td class="acts">
         
         <form method="post" action="/ui/candidates/0377e5b1-932a-4e4b-87d2-6bb04e01f28a/rescan" style="display:inline" data-busy="Queued…"><input type="hidden" name="next" value="/ui/candidates?brand_id=f46bffed-4795-4cdd-ad8f-abd3d26fcc60&amp;state=&amp;q="><button type="submit" class="small" title="fetch and score this site again now; you stay on the list">Rescan</button></form>
       </td>
@@ -1221,18 +1148,15 @@ window.BW = (function () {
     
     <tr class="wrow" style="--sc:#3a4658" data-host="xn--c0inpiot-snb.io">
       <td class="selcol"></td>
-      <td><a href="/ui/candidates/f6c5ac73-51bb-4d2c-9d79-9397435ae00e"><span class="mono" dir="ltr">c0inpiļot.io</span> <span class="pill" style="font-size:10px" title="written with look-alike Unicode characters; the real (punycode) name is xn--c0inpiot-snb.io">homoglyph</span></a><div class="small muted">domain name</div></td>
-      <td class="small"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/"><bdi>CoinPilot</bdi></a></td>
-      <td class="why"><b>Look-alike names</b> <span class="mono" dir="ltr">homoglyph:coinpilot.io</span></td>
+      <td class="dom"><a href="/ui/candidates/f6c5ac73-51bb-4d2c-9d79-9397435ae00e"><span class="mono" dir="ltr">c0inpiļot.io</span> <span class="pill" style="font-size:10px" title="written with look-alike Unicode characters; the real (punycode) name is xn--c0inpiot-snb.io">homoglyph</span></a><div class="small muted"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/" title="the brand it imitates"><bdi>CoinPilot</bdi></a> · domain name</div></td>
+      <td class="why"><span class="srcs" style="margin:0 0 3px"><span class="srcic s-lookalike" title="found by Look-alike names" role="img" aria-label="Look-alike name">Aa</span></span><b>Look-alike names</b> <span class="mono" dir="ltr">homoglyph:coinpilot.io</span></td>
       <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
-      <td class="mono small muted"><time datetime="2026-10-14T09:48:51.558796" data-local title="2026-10-14T09:48:51.558796 UTC">2026-10-14 09:48</time></td>
-      <td class="mono small muted"><time datetime="2026-10-14T09:49:21.374027" data-local title="2026-10-14T09:49:21.374027 UTC">2026-10-14 09:49</time></td>
-      <td class="mono small" >—</td>
-      <td class="right mono">1</td>
+      <td class="fnd"><span class="muted small">—</span></td>
+      <td class="mono small pr"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
+      <td class="seen ts-short"><div><span>first</span><time datetime="2026-10-14T09:48:51.558796" data-local title="2026-10-14T09:48:51.558796 UTC">2026-10-14 09:48</time></div><div><span>last</span><time datetime="2026-10-14T09:49:21.374027" data-local title="2026-10-14T09:49:21.374027 UTC">2026-10-14 09:49</time></div>
+        <div class="nx"><span>next</span>—</div><div><span>scans</span>1</div></td>
       
-      <td style="white-space:nowrap">
+      <td class="acts">
         
         <form method="post" action="/ui/candidates/f6c5ac73-51bb-4d2c-9d79-9397435ae00e/rescan" style="display:inline" data-busy="Queued…"><input type="hidden" name="next" value="/ui/candidates?brand_id=f46bffed-4795-4cdd-ad8f-abd3d26fcc60&amp;state=&amp;q="><button type="submit" class="small" title="fetch and score this site again now; you stay on the list">Rescan</button></form>
       </td>
@@ -1241,18 +1165,15 @@ window.BW = (function () {
     
     <tr class="wrow" style="--sc:#3a4658" data-host="coinpilotsignup.io">
       <td class="selcol"></td>
-      <td><a href="/ui/candidates/1ae92db8-adaa-4011-a836-962f63d476a3"><span class="mono" dir="ltr">coinpilotsignup.io</span></a><div class="small muted">domain name</div></td>
-      <td class="small"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/"><bdi>CoinPilot</bdi></a></td>
-      <td class="why"><b>Look-alike names</b> <span class="mono" dir="ltr">dictionary:coinpilot.io</span></td>
+      <td class="dom"><a href="/ui/candidates/1ae92db8-adaa-4011-a836-962f63d476a3"><span class="mono" dir="ltr">coinpilotsignup.io</span></a><div class="small muted"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/" title="the brand it imitates"><bdi>CoinPilot</bdi></a> · domain name</div></td>
+      <td class="why"><span class="srcs" style="margin:0 0 3px"><span class="srcic s-lookalike" title="found by Look-alike names" role="img" aria-label="Look-alike name">Aa</span></span><b>Look-alike names</b> <span class="mono" dir="ltr">dictionary:coinpilot.io</span></td>
       <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
-      <td class="mono small muted"><time datetime="2026-10-14T09:48:51.558796" data-local title="2026-10-14T09:48:51.558796 UTC">2026-10-14 09:48</time></td>
-      <td class="mono small muted"><time datetime="2026-10-14T09:49:21.327594" data-local title="2026-10-14T09:49:21.327594 UTC">2026-10-14 09:49</time></td>
-      <td class="mono small" >—</td>
-      <td class="right mono">1</td>
+      <td class="fnd"><span class="muted small">—</span></td>
+      <td class="mono small pr"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
+      <td class="seen ts-short"><div><span>first</span><time datetime="2026-10-14T09:48:51.558796" data-local title="2026-10-14T09:48:51.558796 UTC">2026-10-14 09:48</time></div><div><span>last</span><time datetime="2026-10-14T09:49:21.327594" data-local title="2026-10-14T09:49:21.327594 UTC">2026-10-14 09:49</time></div>
+        <div class="nx"><span>next</span>—</div><div><span>scans</span>1</div></td>
       
-      <td style="white-space:nowrap">
+      <td class="acts">
         
         <form method="post" action="/ui/candidates/1ae92db8-adaa-4011-a836-962f63d476a3/rescan" style="display:inline" data-busy="Queued…"><input type="hidden" name="next" value="/ui/candidates?brand_id=f46bffed-4795-4cdd-ad8f-abd3d26fcc60&amp;state=&amp;q="><button type="submit" class="small" title="fetch and score this site again now; you stay on the list">Rescan</button></form>
       </td>
@@ -1261,18 +1182,15 @@ window.BW = (function () {
     
     <tr class="wrow" style="--sc:#3a4658" data-host="xn--c0inpiot-pvd.io">
       <td class="selcol"></td>
-      <td><a href="/ui/candidates/9c11896e-ecad-468c-84e7-42295a9c5f67"><span class="mono" dir="ltr">c0inpiɫot.io</span> <span class="pill" style="font-size:10px" title="written with look-alike Unicode characters; the real (punycode) name is xn--c0inpiot-pvd.io">homoglyph</span></a><div class="small muted">domain name</div></td>
-      <td class="small"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/"><bdi>CoinPilot</bdi></a></td>
-      <td class="why"><b>Look-alike names</b> <span class="mono" dir="ltr">homoglyph:coinpilot.io</span></td>
+      <td class="dom"><a href="/ui/candidates/9c11896e-ecad-468c-84e7-42295a9c5f67"><span class="mono" dir="ltr">c0inpiɫot.io</span> <span class="pill" style="font-size:10px" title="written with look-alike Unicode characters; the real (punycode) name is xn--c0inpiot-pvd.io">homoglyph</span></a><div class="small muted"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/" title="the brand it imitates"><bdi>CoinPilot</bdi></a> · domain name</div></td>
+      <td class="why"><span class="srcs" style="margin:0 0 3px"><span class="srcic s-lookalike" title="found by Look-alike names" role="img" aria-label="Look-alike name">Aa</span></span><b>Look-alike names</b> <span class="mono" dir="ltr">homoglyph:coinpilot.io</span></td>
       <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
-      <td class="mono small muted"><time datetime="2026-10-14T09:48:51.553763" data-local title="2026-10-14T09:48:51.553763 UTC">2026-10-14 09:48</time></td>
-      <td class="mono small muted"><time datetime="2026-10-14T09:49:21.297623" data-local title="2026-10-14T09:49:21.297623 UTC">2026-10-14 09:49</time></td>
-      <td class="mono small" >—</td>
-      <td class="right mono">1</td>
+      <td class="fnd"><span class="muted small">—</span></td>
+      <td class="mono small pr"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
+      <td class="seen ts-short"><div><span>first</span><time datetime="2026-10-14T09:48:51.553763" data-local title="2026-10-14T09:48:51.553763 UTC">2026-10-14 09:48</time></div><div><span>last</span><time datetime="2026-10-14T09:49:21.297623" data-local title="2026-10-14T09:49:21.297623 UTC">2026-10-14 09:49</time></div>
+        <div class="nx"><span>next</span>—</div><div><span>scans</span>1</div></td>
       
-      <td style="white-space:nowrap">
+      <td class="acts">
         
         <form method="post" action="/ui/candidates/9c11896e-ecad-468c-84e7-42295a9c5f67/rescan" style="display:inline" data-busy="Queued…"><input type="hidden" name="next" value="/ui/candidates?brand_id=f46bffed-4795-4cdd-ad8f-abd3d26fcc60&amp;state=&amp;q="><button type="submit" class="small" title="fetch and score this site again now; you stay on the list">Rescan</button></form>
       </td>
@@ -1281,18 +1199,15 @@ window.BW = (function () {
     
     <tr class="wrow" style="--sc:#3a4658" data-host="coinpilot-mail.io">
       <td class="selcol"></td>
-      <td><a href="/ui/candidates/a14f2c30-cac2-4abb-8ca3-2755b1541c07"><span class="mono" dir="ltr">coinpilot-mail.io</span></a><div class="small muted">domain name</div></td>
-      <td class="small"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/"><bdi>CoinPilot</bdi></a></td>
-      <td class="why"><b>Look-alike names</b> <span class="mono" dir="ltr">dictionary:coinpilot.io</span></td>
+      <td class="dom"><a href="/ui/candidates/a14f2c30-cac2-4abb-8ca3-2755b1541c07"><span class="mono" dir="ltr">coinpilot-mail.io</span></a><div class="small muted"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/" title="the brand it imitates"><bdi>CoinPilot</bdi></a> · domain name</div></td>
+      <td class="why"><span class="srcs" style="margin:0 0 3px"><span class="srcic s-lookalike" title="found by Look-alike names" role="img" aria-label="Look-alike name">Aa</span></span><b>Look-alike names</b> <span class="mono" dir="ltr">dictionary:coinpilot.io</span></td>
       <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
-      <td class="mono small muted"><time datetime="2026-10-14T09:48:51.539102" data-local title="2026-10-14T09:48:51.539102 UTC">2026-10-14 09:48</time></td>
-      <td class="mono small muted"><time datetime="2026-10-14T09:49:21.280506" data-local title="2026-10-14T09:49:21.280506 UTC">2026-10-14 09:49</time></td>
-      <td class="mono small" >—</td>
-      <td class="right mono">1</td>
+      <td class="fnd"><span class="muted small">—</span></td>
+      <td class="mono small pr"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
+      <td class="seen ts-short"><div><span>first</span><time datetime="2026-10-14T09:48:51.539102" data-local title="2026-10-14T09:48:51.539102 UTC">2026-10-14 09:48</time></div><div><span>last</span><time datetime="2026-10-14T09:49:21.280506" data-local title="2026-10-14T09:49:21.280506 UTC">2026-10-14 09:49</time></div>
+        <div class="nx"><span>next</span>—</div><div><span>scans</span>1</div></td>
       
-      <td style="white-space:nowrap">
+      <td class="acts">
         
         <form method="post" action="/ui/candidates/a14f2c30-cac2-4abb-8ca3-2755b1541c07/rescan" style="display:inline" data-busy="Queued…"><input type="hidden" name="next" value="/ui/candidates?brand_id=f46bffed-4795-4cdd-ad8f-abd3d26fcc60&amp;state=&amp;q="><button type="submit" class="small" title="fetch and score this site again now; you stay on the list">Rescan</button></form>
       </td>
@@ -1301,18 +1216,15 @@ window.BW = (function () {
     
     <tr class="wrow" style="--sc:#3a4658" data-host="xn--c0inpiot-cpb.io">
       <td class="selcol"></td>
-      <td><a href="/ui/candidates/40ec669c-a943-46f1-b60e-2d429ae8f688"><span class="mono" dir="ltr">c0inpiłot.io</span> <span class="pill" style="font-size:10px" title="written with look-alike Unicode characters; the real (punycode) name is xn--c0inpiot-cpb.io">homoglyph</span></a><div class="small muted">domain name</div></td>
-      <td class="small"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/"><bdi>CoinPilot</bdi></a></td>
-      <td class="why"><b>Look-alike names</b> <span class="mono" dir="ltr">homoglyph:coinpilot.io</span></td>
+      <td class="dom"><a href="/ui/candidates/40ec669c-a943-46f1-b60e-2d429ae8f688"><span class="mono" dir="ltr">c0inpiłot.io</span> <span class="pill" style="font-size:10px" title="written with look-alike Unicode characters; the real (punycode) name is xn--c0inpiot-cpb.io">homoglyph</span></a><div class="small muted"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/" title="the brand it imitates"><bdi>CoinPilot</bdi></a> · domain name</div></td>
+      <td class="why"><span class="srcs" style="margin:0 0 3px"><span class="srcic s-lookalike" title="found by Look-alike names" role="img" aria-label="Look-alike name">Aa</span></span><b>Look-alike names</b> <span class="mono" dir="ltr">homoglyph:coinpilot.io</span></td>
       <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
-      <td class="mono small muted"><time datetime="2026-10-14T09:48:51.539102" data-local title="2026-10-14T09:48:51.539102 UTC">2026-10-14 09:48</time></td>
-      <td class="mono small muted"><time datetime="2026-10-14T09:49:21.263757" data-local title="2026-10-14T09:49:21.263757 UTC">2026-10-14 09:49</time></td>
-      <td class="mono small" >—</td>
-      <td class="right mono">1</td>
+      <td class="fnd"><span class="muted small">—</span></td>
+      <td class="mono small pr"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
+      <td class="seen ts-short"><div><span>first</span><time datetime="2026-10-14T09:48:51.539102" data-local title="2026-10-14T09:48:51.539102 UTC">2026-10-14 09:48</time></div><div><span>last</span><time datetime="2026-10-14T09:49:21.263757" data-local title="2026-10-14T09:49:21.263757 UTC">2026-10-14 09:49</time></div>
+        <div class="nx"><span>next</span>—</div><div><span>scans</span>1</div></td>
       
-      <td style="white-space:nowrap">
+      <td class="acts">
         
         <form method="post" action="/ui/candidates/40ec669c-a943-46f1-b60e-2d429ae8f688/rescan" style="display:inline" data-busy="Queued…"><input type="hidden" name="next" value="/ui/candidates?brand_id=f46bffed-4795-4cdd-ad8f-abd3d26fcc60&amp;state=&amp;q="><button type="submit" class="small" title="fetch and score this site again now; you stay on the list">Rescan</button></form>
       </td>
@@ -1321,18 +1233,15 @@ window.BW = (function () {
     
     <tr class="wrow" style="--sc:#3a4658" data-host="coinpilotmail.io">
       <td class="selcol"></td>
-      <td><a href="/ui/candidates/a9869532-9fd6-48af-961d-9d2105209628"><span class="mono" dir="ltr">coinpilotmail.io</span></a><div class="small muted">domain name</div></td>
-      <td class="small"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/"><bdi>CoinPilot</bdi></a></td>
-      <td class="why"><b>Look-alike names</b> <span class="mono" dir="ltr">dictionary:coinpilot.io</span></td>
+      <td class="dom"><a href="/ui/candidates/a9869532-9fd6-48af-961d-9d2105209628"><span class="mono" dir="ltr">coinpilotmail.io</span></a><div class="small muted"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/" title="the brand it imitates"><bdi>CoinPilot</bdi></a> · domain name</div></td>
+      <td class="why"><span class="srcs" style="margin:0 0 3px"><span class="srcic s-lookalike" title="found by Look-alike names" role="img" aria-label="Look-alike name">Aa</span></span><b>Look-alike names</b> <span class="mono" dir="ltr">dictionary:coinpilot.io</span></td>
       <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
-      <td class="mono small muted"><time datetime="2026-10-14T09:48:51.539102" data-local title="2026-10-14T09:48:51.539102 UTC">2026-10-14 09:48</time></td>
-      <td class="mono small muted"><time datetime="2026-10-14T09:49:21.261657" data-local title="2026-10-14T09:49:21.261657 UTC">2026-10-14 09:49</time></td>
-      <td class="mono small" >—</td>
-      <td class="right mono">1</td>
+      <td class="fnd"><span class="muted small">—</span></td>
+      <td class="mono small pr"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
+      <td class="seen ts-short"><div><span>first</span><time datetime="2026-10-14T09:48:51.539102" data-local title="2026-10-14T09:48:51.539102 UTC">2026-10-14 09:48</time></div><div><span>last</span><time datetime="2026-10-14T09:49:21.261657" data-local title="2026-10-14T09:49:21.261657 UTC">2026-10-14 09:49</time></div>
+        <div class="nx"><span>next</span>—</div><div><span>scans</span>1</div></td>
       
-      <td style="white-space:nowrap">
+      <td class="acts">
         
         <form method="post" action="/ui/candidates/a9869532-9fd6-48af-961d-9d2105209628/rescan" style="display:inline" data-busy="Queued…"><input type="hidden" name="next" value="/ui/candidates?brand_id=f46bffed-4795-4cdd-ad8f-abd3d26fcc60&amp;state=&amp;q="><button type="submit" class="small" title="fetch and score this site again now; you stay on the list">Rescan</button></form>
       </td>
@@ -1341,18 +1250,15 @@ window.BW = (function () {
     
     <tr class="wrow" style="--sc:#3a4658" data-host="xn--c0inpiot-bob.io">
       <td class="selcol"></td>
-      <td><a href="/ui/candidates/adc907ae-1e60-4666-a537-b98d88a75ed1"><span class="mono" dir="ltr">c0inpiľot.io</span> <span class="pill" style="font-size:10px" title="written with look-alike Unicode characters; the real (punycode) name is xn--c0inpiot-bob.io">homoglyph</span></a><div class="small muted">domain name</div></td>
-      <td class="small"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/"><bdi>CoinPilot</bdi></a></td>
-      <td class="why"><b>Look-alike names</b> <span class="mono" dir="ltr">homoglyph:coinpilot.io</span></td>
+      <td class="dom"><a href="/ui/candidates/adc907ae-1e60-4666-a537-b98d88a75ed1"><span class="mono" dir="ltr">c0inpiľot.io</span> <span class="pill" style="font-size:10px" title="written with look-alike Unicode characters; the real (punycode) name is xn--c0inpiot-bob.io">homoglyph</span></a><div class="small muted"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/" title="the brand it imitates"><bdi>CoinPilot</bdi></a> · domain name</div></td>
+      <td class="why"><span class="srcs" style="margin:0 0 3px"><span class="srcic s-lookalike" title="found by Look-alike names" role="img" aria-label="Look-alike name">Aa</span></span><b>Look-alike names</b> <span class="mono" dir="ltr">homoglyph:coinpilot.io</span></td>
       <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
-      <td class="mono small muted"><time datetime="2026-10-14T09:48:51.523226" data-local title="2026-10-14T09:48:51.523226 UTC">2026-10-14 09:48</time></td>
-      <td class="mono small muted"><time datetime="2026-10-14T09:49:21.247756" data-local title="2026-10-14T09:49:21.247756 UTC">2026-10-14 09:49</time></td>
-      <td class="mono small" >—</td>
-      <td class="right mono">1</td>
+      <td class="fnd"><span class="muted small">—</span></td>
+      <td class="mono small pr"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
+      <td class="seen ts-short"><div><span>first</span><time datetime="2026-10-14T09:48:51.523226" data-local title="2026-10-14T09:48:51.523226 UTC">2026-10-14 09:48</time></div><div><span>last</span><time datetime="2026-10-14T09:49:21.247756" data-local title="2026-10-14T09:49:21.247756 UTC">2026-10-14 09:49</time></div>
+        <div class="nx"><span>next</span>—</div><div><span>scans</span>1</div></td>
       
-      <td style="white-space:nowrap">
+      <td class="acts">
         
         <form method="post" action="/ui/candidates/adc907ae-1e60-4666-a537-b98d88a75ed1/rescan" style="display:inline" data-busy="Queued…"><input type="hidden" name="next" value="/ui/candidates?brand_id=f46bffed-4795-4cdd-ad8f-abd3d26fcc60&amp;state=&amp;q="><button type="submit" class="small" title="fetch and score this site again now; you stay on the list">Rescan</button></form>
       </td>
@@ -1361,18 +1267,15 @@ window.BW = (function () {
     
     <tr class="wrow" style="--sc:#3a4658" data-host="mail-coinpilot.io">
       <td class="selcol"></td>
-      <td><a href="/ui/candidates/a23f5cd8-d0d2-4ca6-a835-f61e6b92ba5e"><span class="mono" dir="ltr">mail-coinpilot.io</span></a><div class="small muted">domain name</div></td>
-      <td class="small"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/"><bdi>CoinPilot</bdi></a></td>
-      <td class="why"><b>Look-alike names</b> <span class="mono" dir="ltr">dictionary:coinpilot.io</span></td>
+      <td class="dom"><a href="/ui/candidates/a23f5cd8-d0d2-4ca6-a835-f61e6b92ba5e"><span class="mono" dir="ltr">mail-coinpilot.io</span></a><div class="small muted"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/" title="the brand it imitates"><bdi>CoinPilot</bdi></a> · domain name</div></td>
+      <td class="why"><span class="srcs" style="margin:0 0 3px"><span class="srcic s-lookalike" title="found by Look-alike names" role="img" aria-label="Look-alike name">Aa</span></span><b>Look-alike names</b> <span class="mono" dir="ltr">dictionary:coinpilot.io</span></td>
       <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
-      <td class="mono small muted"><time datetime="2026-10-14T09:48:51.523226" data-local title="2026-10-14T09:48:51.523226 UTC">2026-10-14 09:48</time></td>
-      <td class="mono small muted"><time datetime="2026-10-14T09:49:21.236051" data-local title="2026-10-14T09:49:21.236051 UTC">2026-10-14 09:49</time></td>
-      <td class="mono small" >—</td>
-      <td class="right mono">1</td>
+      <td class="fnd"><span class="muted small">—</span></td>
+      <td class="mono small pr"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
+      <td class="seen ts-short"><div><span>first</span><time datetime="2026-10-14T09:48:51.523226" data-local title="2026-10-14T09:48:51.523226 UTC">2026-10-14 09:48</time></div><div><span>last</span><time datetime="2026-10-14T09:49:21.236051" data-local title="2026-10-14T09:49:21.236051 UTC">2026-10-14 09:49</time></div>
+        <div class="nx"><span>next</span>—</div><div><span>scans</span>1</div></td>
       
-      <td style="white-space:nowrap">
+      <td class="acts">
         
         <form method="post" action="/ui/candidates/a23f5cd8-d0d2-4ca6-a835-f61e6b92ba5e/rescan" style="display:inline" data-busy="Queued…"><input type="hidden" name="next" value="/ui/candidates?brand_id=f46bffed-4795-4cdd-ad8f-abd3d26fcc60&amp;state=&amp;q="><button type="submit" class="small" title="fetch and score this site again now; you stay on the list">Rescan</button></form>
       </td>
@@ -1381,18 +1284,15 @@ window.BW = (function () {
     
     <tr class="wrow" style="--sc:#3a4658" data-host="xn--c0inpiot-9mb.io">
       <td class="selcol"></td>
-      <td><a href="/ui/candidates/0a78021e-ec3d-4c65-9f57-695b2ac4368a"><span class="mono" dir="ltr">c0inpiĺot.io</span> <span class="pill" style="font-size:10px" title="written with look-alike Unicode characters; the real (punycode) name is xn--c0inpiot-9mb.io">homoglyph</span></a><div class="small muted">domain name</div></td>
-      <td class="small"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/"><bdi>CoinPilot</bdi></a></td>
-      <td class="why"><b>Look-alike names</b> <span class="mono" dir="ltr">homoglyph:coinpilot.io</span></td>
+      <td class="dom"><a href="/ui/candidates/0a78021e-ec3d-4c65-9f57-695b2ac4368a"><span class="mono" dir="ltr">c0inpiĺot.io</span> <span class="pill" style="font-size:10px" title="written with look-alike Unicode characters; the real (punycode) name is xn--c0inpiot-9mb.io">homoglyph</span></a><div class="small muted"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/" title="the brand it imitates"><bdi>CoinPilot</bdi></a> · domain name</div></td>
+      <td class="why"><span class="srcs" style="margin:0 0 3px"><span class="srcic s-lookalike" title="found by Look-alike names" role="img" aria-label="Look-alike name">Aa</span></span><b>Look-alike names</b> <span class="mono" dir="ltr">homoglyph:coinpilot.io</span></td>
       <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
-      <td class="mono small muted"><time datetime="2026-10-14T09:48:51.523226" data-local title="2026-10-14T09:48:51.523226 UTC">2026-10-14 09:48</time></td>
-      <td class="mono small muted"><time datetime="2026-10-14T09:49:21.213276" data-local title="2026-10-14T09:49:21.213276 UTC">2026-10-14 09:49</time></td>
-      <td class="mono small" >—</td>
-      <td class="right mono">1</td>
+      <td class="fnd"><span class="muted small">—</span></td>
+      <td class="mono small pr"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
+      <td class="seen ts-short"><div><span>first</span><time datetime="2026-10-14T09:48:51.523226" data-local title="2026-10-14T09:48:51.523226 UTC">2026-10-14 09:48</time></div><div><span>last</span><time datetime="2026-10-14T09:49:21.213276" data-local title="2026-10-14T09:49:21.213276 UTC">2026-10-14 09:49</time></div>
+        <div class="nx"><span>next</span>—</div><div><span>scans</span>1</div></td>
       
-      <td style="white-space:nowrap">
+      <td class="acts">
         
         <form method="post" action="/ui/candidates/0a78021e-ec3d-4c65-9f57-695b2ac4368a/rescan" style="display:inline" data-busy="Queued…"><input type="hidden" name="next" value="/ui/candidates?brand_id=f46bffed-4795-4cdd-ad8f-abd3d26fcc60&amp;state=&amp;q="><button type="submit" class="small" title="fetch and score this site again now; you stay on the list">Rescan</button></form>
       </td>
@@ -1401,18 +1301,15 @@ window.BW = (function () {
     
     <tr class="wrow" style="--sc:#3a4658" data-host="mailcoinpilot.io">
       <td class="selcol"></td>
-      <td><a href="/ui/candidates/dbf76b96-e2e1-4408-934f-4c3a5602cec8"><span class="mono" dir="ltr">mailcoinpilot.io</span></a><div class="small muted">domain name</div></td>
-      <td class="small"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/"><bdi>CoinPilot</bdi></a></td>
-      <td class="why"><b>Look-alike names</b> <span class="mono" dir="ltr">dictionary:coinpilot.io</span></td>
+      <td class="dom"><a href="/ui/candidates/dbf76b96-e2e1-4408-934f-4c3a5602cec8"><span class="mono" dir="ltr">mailcoinpilot.io</span></a><div class="small muted"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/" title="the brand it imitates"><bdi>CoinPilot</bdi></a> · domain name</div></td>
+      <td class="why"><span class="srcs" style="margin:0 0 3px"><span class="srcic s-lookalike" title="found by Look-alike names" role="img" aria-label="Look-alike name">Aa</span></span><b>Look-alike names</b> <span class="mono" dir="ltr">dictionary:coinpilot.io</span></td>
       <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
-      <td class="mono small muted"><time datetime="2026-10-14T09:48:51.520400" data-local title="2026-10-14T09:48:51.520400 UTC">2026-10-14 09:48</time></td>
-      <td class="mono small muted"><time datetime="2026-10-14T09:49:21.186834" data-local title="2026-10-14T09:49:21.186834 UTC">2026-10-14 09:49</time></td>
-      <td class="mono small" >—</td>
-      <td class="right mono">1</td>
+      <td class="fnd"><span class="muted small">—</span></td>
+      <td class="mono small pr"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
+      <td class="seen ts-short"><div><span>first</span><time datetime="2026-10-14T09:48:51.520400" data-local title="2026-10-14T09:48:51.520400 UTC">2026-10-14 09:48</time></div><div><span>last</span><time datetime="2026-10-14T09:49:21.186834" data-local title="2026-10-14T09:49:21.186834 UTC">2026-10-14 09:49</time></div>
+        <div class="nx"><span>next</span>—</div><div><span>scans</span>1</div></td>
       
-      <td style="white-space:nowrap">
+      <td class="acts">
         
         <form method="post" action="/ui/candidates/dbf76b96-e2e1-4408-934f-4c3a5602cec8/rescan" style="display:inline" data-busy="Queued…"><input type="hidden" name="next" value="/ui/candidates?brand_id=f46bffed-4795-4cdd-ad8f-abd3d26fcc60&amp;state=&amp;q="><button type="submit" class="small" title="fetch and score this site again now; you stay on the list">Rescan</button></form>
       </td>
@@ -1421,18 +1318,15 @@ window.BW = (function () {
     
     <tr class="wrow" style="--sc:#3a4658" data-host="xn--c0inpilt-t4a.io">
       <td class="selcol"></td>
-      <td><a href="/ui/candidates/72fe6ec9-9564-4cb8-b89d-4156b4599f0f"><span class="mono" dir="ltr">c0inpilöt.io</span> <span class="pill" style="font-size:10px" title="written with look-alike Unicode characters; the real (punycode) name is xn--c0inpilt-t4a.io">homoglyph</span></a><div class="small muted">domain name</div></td>
-      <td class="small"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/"><bdi>CoinPilot</bdi></a></td>
-      <td class="why"><b>Look-alike names</b> <span class="mono" dir="ltr">homoglyph:coinpilot.io</span></td>
+      <td class="dom"><a href="/ui/candidates/72fe6ec9-9564-4cb8-b89d-4156b4599f0f"><span class="mono" dir="ltr">c0inpilöt.io</span> <span class="pill" style="font-size:10px" title="written with look-alike Unicode characters; the real (punycode) name is xn--c0inpilt-t4a.io">homoglyph</span></a><div class="small muted"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/" title="the brand it imitates"><bdi>CoinPilot</bdi></a> · domain name</div></td>
+      <td class="why"><span class="srcs" style="margin:0 0 3px"><span class="srcic s-lookalike" title="found by Look-alike names" role="img" aria-label="Look-alike name">Aa</span></span><b>Look-alike names</b> <span class="mono" dir="ltr">homoglyph:coinpilot.io</span></td>
       <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
-      <td class="mono small muted"><time datetime="2026-10-14T09:48:51.508229" data-local title="2026-10-14T09:48:51.508229 UTC">2026-10-14 09:48</time></td>
-      <td class="mono small muted"><time datetime="2026-10-14T09:49:21.175660" data-local title="2026-10-14T09:49:21.175660 UTC">2026-10-14 09:49</time></td>
-      <td class="mono small" >—</td>
-      <td class="right mono">1</td>
+      <td class="fnd"><span class="muted small">—</span></td>
+      <td class="mono small pr"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
+      <td class="seen ts-short"><div><span>first</span><time datetime="2026-10-14T09:48:51.508229" data-local title="2026-10-14T09:48:51.508229 UTC">2026-10-14 09:48</time></div><div><span>last</span><time datetime="2026-10-14T09:49:21.175660" data-local title="2026-10-14T09:49:21.175660 UTC">2026-10-14 09:49</time></div>
+        <div class="nx"><span>next</span>—</div><div><span>scans</span>1</div></td>
       
-      <td style="white-space:nowrap">
+      <td class="acts">
         
         <form method="post" action="/ui/candidates/72fe6ec9-9564-4cb8-b89d-4156b4599f0f/rescan" style="display:inline" data-busy="Queued…"><input type="hidden" name="next" value="/ui/candidates?brand_id=f46bffed-4795-4cdd-ad8f-abd3d26fcc60&amp;state=&amp;q="><button type="submit" class="small" title="fetch and score this site again now; you stay on the list">Rescan</button></form>
       </td>
@@ -1441,18 +1335,15 @@ window.BW = (function () {
     
     <tr class="wrow" style="--sc:#3a4658" data-host="coinpilotapp.io">
       <td class="selcol"></td>
-      <td><a href="/ui/candidates/dcb2c24b-dd52-44f8-a48c-2f3cc3d446b7"><span class="mono" dir="ltr">coinpilotapp.io</span></a><div class="small muted">domain name</div></td>
-      <td class="small"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/"><bdi>CoinPilot</bdi></a></td>
-      <td class="why"><b>Look-alike names</b> <span class="mono" dir="ltr">dictionary:coinpilot.io</span></td>
+      <td class="dom"><a href="/ui/candidates/dcb2c24b-dd52-44f8-a48c-2f3cc3d446b7"><span class="mono" dir="ltr">coinpilotapp.io</span></a><div class="small muted"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/" title="the brand it imitates"><bdi>CoinPilot</bdi></a> · domain name</div></td>
+      <td class="why"><span class="srcs" style="margin:0 0 3px"><span class="srcic s-lookalike" title="found by Look-alike names" role="img" aria-label="Look-alike name">Aa</span></span><b>Look-alike names</b> <span class="mono" dir="ltr">dictionary:coinpilot.io</span></td>
       <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
-      <td class="mono small muted"><time datetime="2026-10-14T09:48:51.508229" data-local title="2026-10-14T09:48:51.508229 UTC">2026-10-14 09:48</time></td>
-      <td class="mono small muted"><time datetime="2026-10-14T09:49:21.148818" data-local title="2026-10-14T09:49:21.148818 UTC">2026-10-14 09:49</time></td>
-      <td class="mono small" >—</td>
-      <td class="right mono">1</td>
+      <td class="fnd"><span class="muted small">—</span></td>
+      <td class="mono small pr"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
+      <td class="seen ts-short"><div><span>first</span><time datetime="2026-10-14T09:48:51.508229" data-local title="2026-10-14T09:48:51.508229 UTC">2026-10-14 09:48</time></div><div><span>last</span><time datetime="2026-10-14T09:49:21.148818" data-local title="2026-10-14T09:49:21.148818 UTC">2026-10-14 09:49</time></div>
+        <div class="nx"><span>next</span>—</div><div><span>scans</span>1</div></td>
       
-      <td style="white-space:nowrap">
+      <td class="acts">
         
         <form method="post" action="/ui/candidates/dcb2c24b-dd52-44f8-a48c-2f3cc3d446b7/rescan" style="display:inline" data-busy="Queued…"><input type="hidden" name="next" value="/ui/candidates?brand_id=f46bffed-4795-4cdd-ad8f-abd3d26fcc60&amp;state=&amp;q="><button type="submit" class="small" title="fetch and score this site again now; you stay on the list">Rescan</button></form>
       </td>
@@ -1461,18 +1352,15 @@ window.BW = (function () {
     
     <tr class="wrow" style="--sc:#3a4658" data-host="xn--c0inpilt-sec.io">
       <td class="selcol"></td>
-      <td><a href="/ui/candidates/facaea5f-7638-474f-bc47-ae424cd0992e"><span class="mono" dir="ltr">c0inpilơt.io</span> <span class="pill" style="font-size:10px" title="written with look-alike Unicode characters; the real (punycode) name is xn--c0inpilt-sec.io">homoglyph</span></a><div class="small muted">domain name</div></td>
-      <td class="small"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/"><bdi>CoinPilot</bdi></a></td>
-      <td class="why"><b>Look-alike names</b> <span class="mono" dir="ltr">homoglyph:coinpilot.io</span></td>
+      <td class="dom"><a href="/ui/candidates/facaea5f-7638-474f-bc47-ae424cd0992e"><span class="mono" dir="ltr">c0inpilơt.io</span> <span class="pill" style="font-size:10px" title="written with look-alike Unicode characters; the real (punycode) name is xn--c0inpilt-sec.io">homoglyph</span></a><div class="small muted"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/" title="the brand it imitates"><bdi>CoinPilot</bdi></a> · domain name</div></td>
+      <td class="why"><span class="srcs" style="margin:0 0 3px"><span class="srcic s-lookalike" title="found by Look-alike names" role="img" aria-label="Look-alike name">Aa</span></span><b>Look-alike names</b> <span class="mono" dir="ltr">homoglyph:coinpilot.io</span></td>
       <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
-      <td class="mono small muted"><time datetime="2026-10-14T09:48:51.504726" data-local title="2026-10-14T09:48:51.504726 UTC">2026-10-14 09:48</time></td>
-      <td class="mono small muted"><time datetime="2026-10-14T09:49:21.141410" data-local title="2026-10-14T09:49:21.141410 UTC">2026-10-14 09:49</time></td>
-      <td class="mono small" >—</td>
-      <td class="right mono">1</td>
+      <td class="fnd"><span class="muted small">—</span></td>
+      <td class="mono small pr"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
+      <td class="seen ts-short"><div><span>first</span><time datetime="2026-10-14T09:48:51.504726" data-local title="2026-10-14T09:48:51.504726 UTC">2026-10-14 09:48</time></div><div><span>last</span><time datetime="2026-10-14T09:49:21.141410" data-local title="2026-10-14T09:49:21.141410 UTC">2026-10-14 09:49</time></div>
+        <div class="nx"><span>next</span>—</div><div><span>scans</span>1</div></td>
       
-      <td style="white-space:nowrap">
+      <td class="acts">
         
         <form method="post" action="/ui/candidates/facaea5f-7638-474f-bc47-ae424cd0992e/rescan" style="display:inline" data-busy="Queued…"><input type="hidden" name="next" value="/ui/candidates?brand_id=f46bffed-4795-4cdd-ad8f-abd3d26fcc60&amp;state=&amp;q="><button type="submit" class="small" title="fetch and score this site again now; you stay on the list">Rescan</button></form>
       </td>
@@ -1481,18 +1369,15 @@ window.BW = (function () {
     
     <tr class="wrow" style="--sc:#3a4658" data-host="coinpilot-app.io">
       <td class="selcol"></td>
-      <td><a href="/ui/candidates/1ddb425c-a9f8-46bb-9d8c-5641fdd0a79a"><span class="mono" dir="ltr">coinpilot-app.io</span></a><div class="small muted">domain name</div></td>
-      <td class="small"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/"><bdi>CoinPilot</bdi></a></td>
-      <td class="why"><b>Look-alike names</b> <span class="mono" dir="ltr">dictionary:coinpilot.io</span></td>
+      <td class="dom"><a href="/ui/candidates/1ddb425c-a9f8-46bb-9d8c-5641fdd0a79a"><span class="mono" dir="ltr">coinpilot-app.io</span></a><div class="small muted"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/" title="the brand it imitates"><bdi>CoinPilot</bdi></a> · domain name</div></td>
+      <td class="why"><span class="srcs" style="margin:0 0 3px"><span class="srcic s-lookalike" title="found by Look-alike names" role="img" aria-label="Look-alike name">Aa</span></span><b>Look-alike names</b> <span class="mono" dir="ltr">dictionary:coinpilot.io</span></td>
       <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
-      <td class="mono small muted"><time datetime="2026-10-14T09:48:51.496561" data-local title="2026-10-14T09:48:51.496561 UTC">2026-10-14 09:48</time></td>
-      <td class="mono small muted"><time datetime="2026-10-14T09:49:21.123312" data-local title="2026-10-14T09:49:21.123312 UTC">2026-10-14 09:49</time></td>
-      <td class="mono small" >—</td>
-      <td class="right mono">1</td>
+      <td class="fnd"><span class="muted small">—</span></td>
+      <td class="mono small pr"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
+      <td class="seen ts-short"><div><span>first</span><time datetime="2026-10-14T09:48:51.496561" data-local title="2026-10-14T09:48:51.496561 UTC">2026-10-14 09:48</time></div><div><span>last</span><time datetime="2026-10-14T09:49:21.123312" data-local title="2026-10-14T09:49:21.123312 UTC">2026-10-14 09:49</time></div>
+        <div class="nx"><span>next</span>—</div><div><span>scans</span>1</div></td>
       
-      <td style="white-space:nowrap">
+      <td class="acts">
         
         <form method="post" action="/ui/candidates/1ddb425c-a9f8-46bb-9d8c-5641fdd0a79a/rescan" style="display:inline" data-busy="Queued…"><input type="hidden" name="next" value="/ui/candidates?brand_id=f46bffed-4795-4cdd-ad8f-abd3d26fcc60&amp;state=&amp;q="><button type="submit" class="small" title="fetch and score this site again now; you stay on the list">Rescan</button></form>
       </td>
@@ -1501,18 +1386,15 @@ window.BW = (function () {
     
     <tr class="wrow" style="--sc:#3a4658" data-host="xn--c0inpilt-s3a.io">
       <td class="selcol"></td>
-      <td><a href="/ui/candidates/823a839c-b54f-40ed-9daf-57a4f115532e"><span class="mono" dir="ltr">c0inpilòt.io</span> <span class="pill" style="font-size:10px" title="written with look-alike Unicode characters; the real (punycode) name is xn--c0inpilt-s3a.io">homoglyph</span></a><div class="small muted">domain name</div></td>
-      <td class="small"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/"><bdi>CoinPilot</bdi></a></td>
-      <td class="why"><b>Look-alike names</b> <span class="mono" dir="ltr">homoglyph:coinpilot.io</span></td>
+      <td class="dom"><a href="/ui/candidates/823a839c-b54f-40ed-9daf-57a4f115532e"><span class="mono" dir="ltr">c0inpilòt.io</span> <span class="pill" style="font-size:10px" title="written with look-alike Unicode characters; the real (punycode) name is xn--c0inpilt-s3a.io">homoglyph</span></a><div class="small muted"><a href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/" title="the brand it imitates"><bdi>CoinPilot</bdi></a> · domain name</div></td>
+      <td class="why"><span class="srcs" style="margin:0 0 3px"><span class="srcic s-lookalike" title="found by Look-alike names" role="img" aria-label="Look-alike name">Aa</span></span><b>Look-alike names</b> <span class="mono" dir="ltr">homoglyph:coinpilot.io</span></td>
       <td><span class="badge state st-dismissed" title="dead, legitimate, whitelisted or dismissed by an analyst">dismissed</span></td>
-      <td><span class="muted small">—</span></td>
-      <td class="mono small" style="white-space:nowrap"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
-      <td class="mono small muted"><time datetime="2026-10-14T09:48:51.492527" data-local title="2026-10-14T09:48:51.492527 UTC">2026-10-14 09:48</time></td>
-      <td class="mono small muted"><time datetime="2026-10-14T09:49:21.078011" data-local title="2026-10-14T09:49:21.078011 UTC">2026-10-14 09:49</time></td>
-      <td class="mono small" >—</td>
-      <td class="right mono">1</td>
+      <td class="fnd"><span class="muted small">—</span></td>
+      <td class="mono small pr"><span class="prio" data-w="0" style="max-width:60px"></span> 0</td>
+      <td class="seen ts-short"><div><span>first</span><time datetime="2026-10-14T09:48:51.492527" data-local title="2026-10-14T09:48:51.492527 UTC">2026-10-14 09:48</time></div><div><span>last</span><time datetime="2026-10-14T09:49:21.078011" data-local title="2026-10-14T09:49:21.078011 UTC">2026-10-14 09:49</time></div>
+        <div class="nx"><span>next</span>—</div><div><span>scans</span>1</div></td>
       
-      <td style="white-space:nowrap">
+      <td class="acts">
         
         <form method="post" action="/ui/candidates/823a839c-b54f-40ed-9daf-57a4f115532e/rescan" style="display:inline" data-busy="Queued…"><input type="hidden" name="next" value="/ui/candidates?brand_id=f46bffed-4795-4cdd-ad8f-abd3d26fcc60&amp;state=&amp;q="><button type="submit" class="small" title="fetch and score this site again now; you stay on the list">Rescan</button></form>
       </td>
@@ -1676,8 +1558,12 @@ window.BW = (function () {
   // server timestamps are UTC: <time datetime="…" data-local> (the |ts filter) and [data-local="…"] show the viewer's local time
   const utc = iso => /T\d\d:\d\d/.test(iso) && !/(Z|[+-]\d\d:?\d\d)$/.test(iso) ? iso + 'Z' : iso;
   const fmt = new Intl.DateTimeFormat(undefined, {year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'});
+  // inside .ts-short (a narrow column) a date of this year leaves the year out
+  const fmtShort = new Intl.DateTimeFormat(undefined, {month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'}), thisYear = new Date().getFullYear();
   document.querySelectorAll('[data-local]').forEach(el => { const raw = el.getAttribute('datetime') || el.dataset.local; if (!raw) return;
-    const d = new Date(utc(raw)); if (isNaN(d)) return; el.textContent = fmt.format(d); if (!el.title) el.title = raw.replace('T', ' ').slice(0, 19) + ' UTC'; });
+    const d = new Date(utc(raw)); if (isNaN(d)) return;
+    el.textContent = (el.closest('.ts-short') && d.getFullYear() === thisYear ? fmtShort : fmt).format(d);
+    if (!el.title) el.title = raw.replace('T', ' ').slice(0, 19) + ' UTC'; });
 })();
 </script>
 <script>
