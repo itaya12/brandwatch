@@ -19,7 +19,7 @@
 
 <a href="https://nbse3h.s.gy/sSLDpR"><img src="https://img.youtube.com/vi/17dMOIzThgk/maxresdefault.jpg" alt="Video: a real BrandWatch case study" width="70%"></a>
 
-<a href="https://nbse3h.s.gy/M37Izw"><img src="docs/images/dashboard.png" alt="BrandWatch dashboard: the five-step pipeline and a live map of where the phishing kits are hosted" width="100%"></a>
+<a href="https://nbse3h.s.gy/M37Izw"><img src="docs/images/dashboard.png" alt="BrandWatch dashboard: the attack map with the open findings, takedowns and watchlist numbers on it" width="100%"></a>
 
 </div>
 
@@ -79,7 +79,7 @@ plain SVG/JS for the graphs and the globe, no front-end framework.
 ## A ten-minute demo
 
 1. `python scripts/seed_demo.py --reset` (≈ 90 s) — a clean, self-consistent ShopNova story.
-2. Sign in → **Dashboard**: the mission line and *How BrandWatch works · 5 steps*.
+2. Sign in → **Dashboard**: what needs a verdict or a takedown, and the attack map with the numbers on it.
 3. **Brands & Scans → ShopNova**: tick *include fingerprinting*, press **START SCAN**; the live
    console narrates every step, then *▶ replay highlights*.
 4. **Findings → shopnova-giftcard.com**: a cloaked kit that explains itself in two sentences; the
@@ -124,7 +124,7 @@ Optional real browser worker for live mode: `pip install -e ".[browser]"` then
 
 | Screen | What it answers |
 |---|---|
-| **Dashboard** (`/ui/dashboard`) | Live brand monitor: rotating 3D globe with arcs to where the kits are hosted, KPIs, threat level, score distribution, 14-day activity, which discovery stream actually finds phishing, pipeline stage stats, analyst metrics (precision, FP rate, MTTD, MTTC), budget meter, live event feed. |
+| **Dashboard** (`/ui/dashboard`) | Operations view, scan data only: what waits on the analyst, the attack map full width (flat map or 3D globe, routes to where the kits are hosted) with the key numbers on it, new Critical/High in 24 h, takedowns waiting (unsent and no answer for 7+ days), brands at a glance, threat level, score distribution, 14-day activity, which discovery stream finds phishing, fakes next to the real site, scans running now with the live feed, analyst metrics (precision, FP rate, MTTD, MTTC), next watchlist re-checks, and a one-line status bar (scheduler, spend and API caps, alert channels). |
 | **Findings → Explain Finding** | Fired signals with plain-language evidence, group caps, bonuses/penalties, combination rules, confidence breakdown, cloaking probe comparison, suspect-vs-official screenshots, observation timeline, immutable evidence table, AI second opinion and classifier probability (both advisory). |
 | **Attack infrastructure** | Interactive infrastructure graph, co-hosted triage (included/excluded + reason + AI verdict), actor profile (servers, certs, tracking ids, registrant, other brands hit), IOC export as CSV / JSON / STIX 2.1. |
 | **Watchlist** | Every watched domain by state, with its finding, an evidence timeline, forced rescans and one-click *known legit* dismissal. |

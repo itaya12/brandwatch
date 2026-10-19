@@ -73,8 +73,8 @@ def test_smart_landing_and_getting_started(engine, tmp_path):
         assert ui.get("/ui", follow_redirects=False).headers["location"] == "/ui/dashboard"
         dash = ui.get("/ui/dashboard").text
         assert (
-            'class="kpi lnk crit" href="/ui/findings?severity=critical' in dash
-        )  # KPI tiles are links now
+            'class="mk crit" href="/ui/findings?state=open&severity=critical' in dash
+        )  # the numbers on the map are links
 
 
 def test_brand_edit_name_domains_and_error_path(engine, tmp_path):
@@ -308,5 +308,5 @@ def test_whitelisting_a_flagged_host_closes_its_open_finding_and_activity_links_
         act = _ui(app).get("/ui/activity").text
         assert f'href="/ui/jobs/{job}"' in act
         dash = _ui(app).get("/ui/dashboard").text
-        tiles = dash.split('id="kpis"')[1].split('<div class="maptog"')[0]
-        assert tiles.count('data-k="') == 6  # the 20 s refresh updates tiles by key, not position
+        chips = dash.split('class="map-kpis"')[1].split('<div class="maptog"')[0]
+        assert chips.count('data-k="') == 6  # the 20 s refresh updates the map's numbers by key, not position

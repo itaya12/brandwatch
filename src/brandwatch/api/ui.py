@@ -1814,9 +1814,36 @@ def dashboard_page(
     new_stmt = findings_api.findings_query(session, user, brand_id=brand_id, state=FindingState.OPEN, since="24h", sort="newest")
     new_24h = [findings_api.finding_row(session, f) for f in session.scalars(
         new_stmt.where(Finding.severity.in_([Severity.CRITICAL, Severity.HIGH])).limit(8)).all()]  # fmt: skip
+    # the takedowns waiting on the analyst: not drafted / not sent, or sent a week ago with no answer — oldest first
+    now = datetime.now(UTC)
+    queue = []
+    for x in confirmed_sites(session, user, brand_id, brands):
+        t = x.get("takedown") or {}
+        st = x["takedown_state"]
+        sent = t.get("sent_at")
+        days = (now - datetime.fromisoformat(sent).replace(tzinfo=UTC)).days if sent else None
+        if st in ("none", "draft", "review", "approved", "reopened") or (st in ("sent", "acknowledged") and (days or 0) >= 7):
+            since = x.get("confirmed_at") or ""
+            queue.append({**x, "waiting_days": days, "why": "no request yet" if st == "none" else ("not sent yet" if days is None else f"no answer for {days} days"),
+                          "since": since})  # fmt: skip
+    queue.sort(key=lambda r: r["since"])
+    # brands at a glance (all brands only) and the next watchlist re-checks
+    from brandwatch.detection import schedule as sched_mod
+    from brandwatch.detection.runner import load_brand_config
+
+    brand_rows = []
+    if not brand_id:
+        brand_rows = ui_stats.brand_cards(session, user, brands)
+        for r in brand_rows:
+            row = session.get(Brand, uuid.UUID(str(r["id"])))
+            sc = sched_mod.load(row, load_brand_config(session, row.id).detection) if row is not None else None
+            r["schedule"] = sc.label if sc is not None and sc.enabled else None
+    upcoming = ui_stats.watchlist_stats(session, user, brand_id)["upcoming"][:5]
     return _render(
         request, "dashboard.html", user, d=data, brands=brands, active="dashboard",
         selected_brand=str(brand_id) if brand_id else "", unscanned=unscanned, new_24h=new_24h,
+        takedown_queue=queue[:6], takedown_queue_total=len(queue), brand_rows=brand_rows, upcoming=upcoming,
+        scheduler_interval=request.app.state.settings.scheduler_interval_seconds,
     )  # fmt: skip
 
 

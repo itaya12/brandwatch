@@ -9,57 +9,36 @@
     background:repeating-linear-gradient(0deg,rgba(53,199,242,.025) 0 1px,transparent 1px 3px),radial-gradient(ellipse at 50% 20%,rgba(53,199,242,.10),transparent 60%)}
   .dash > *{position:relative;z-index:1}
   .dash .num{font-family:Rajdhani,var(--mono);font-weight:700;letter-spacing:.02em}
-  .mid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px;align-items:stretch}
-  @media (max-width:1100px){.mid{grid-template-columns:minmax(0,1fr)}}
-  @media (max-width:1250px) and (min-width:901px){.hero2{grid-template-columns:minmax(0,1fr)}.globe-wrap{min-height:460px}}
-  /* hero */
-  .hero2{display:grid;grid-template-columns:minmax(0,1.08fr) minmax(0,1fr);gap:18px;align-items:center;margin-bottom:14px}
-  .hero2 .globe-wrap{height:560px;min-height:0}
-  .hero-text{display:flex;flex-direction:column;justify-content:center;padding:18px 6px 18px 4px}
-  .eyebrow{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;font:600 11px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
-  .eyebrow .demo{font-size:10px;color:var(--accent2);border-color:var(--accent);letter-spacing:.06em}
-  .headline{font-family:Rajdhani,var(--display);font-size:clamp(30px,3.3vw,46px);line-height:1.08;letter-spacing:.01em;font-weight:700;margin:12px 0 10px;color:var(--text);text-transform:none;display:block}
-  .headline::before{display:none}
-  .headline .hl{background:linear-gradient(90deg,var(--accent2),var(--accent));-webkit-background-clip:text;background-clip:text;color:transparent}
-  .sub{font-size:15px;line-height:1.55;color:#c9d3df;max-width:640px;margin:0 0 18px}
-  .flow{position:relative;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin-bottom:18px}
-  .fstep{position:relative;display:flex;flex-direction:column;gap:2px;padding:12px 12px 12px;border:1px solid var(--border);border-radius:12px;background:linear-gradient(180deg,rgba(18,26,43,.95),rgba(12,18,30,.95));color:var(--text);text-decoration:none;transition:border-color .2s,transform .2s}
-  .fstep:hover{border-color:var(--accent);transform:translateY(-2px)}
-  .fstep:not(:last-of-type)::after{content:"›";position:absolute;right:-9px;top:50%;transform:translateY(-50%);z-index:2;color:var(--accent);font:700 18px var(--mono);text-shadow:0 0 8px var(--bg)}
-  .fstep .fn{font:600 10px var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--accent2)}
-  .fstep b{font-size:30px;line-height:1.05;margin-top:2px}
-  .fstep .fl{font-size:12.5px;font-weight:600}
-  .fstep .fd{font-size:11px;color:var(--muted);line-height:1.35;margin-top:2px}
-  .flow .packet{position:absolute;left:0;bottom:-6px;width:60px;height:2px;border-radius:2px;background:linear-gradient(90deg,transparent,var(--accent2),transparent);animation:packet 3.6s linear infinite}
-  @keyframes packet{from{left:0}to{left:calc(100% - 60px)}}
-  .cta{display:flex;flex-wrap:wrap;gap:10px}
-  .btn.big{padding:11px 16px;font-size:14px;border-radius:10px}
-  /* caught in the act */
-  .cases{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(340px,100%),1fr));gap:12px}
-  .case{display:flex;flex-direction:column;border:1px solid var(--border);border-radius:12px;overflow:hidden;background:var(--panel2);color:var(--text);text-decoration:none;transition:border-color .2s,transform .2s}
-  .case:hover{border-color:var(--accent);transform:translateY(-2px)}
-  .pair{position:relative;display:grid;grid-template-columns:1fr 1fr;gap:2px;background:#000}
-  .pair figure{margin:0;position:relative}
-  .pair img{display:block;width:100%;aspect-ratio:16/10;object-fit:cover}
-  .pair figcaption{position:absolute;left:6px;bottom:6px;font:600 10px var(--mono);letter-spacing:.06em;padding:2px 6px;border-radius:6px;background:rgba(6,9,16,.82);color:var(--text);max-width:calc(100% - 12px);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-  .pair figure:first-child figcaption b{color:var(--crit)}.pair figure:last-child figcaption b{color:var(--low)}
-  .pair .sim{position:absolute;left:50%;top:8px;transform:translateX(-50%);font:700 11px var(--mono);padding:3px 9px;border-radius:999px;background:rgba(6,9,16,.85);border:1px solid var(--accent);color:var(--accent2)}
-  .cmeta{padding:12px 14px;display:flex;flex-direction:column;gap:6px}
-  .cmeta .badges{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
-  .cmeta .host{font-size:15px}
-  .cmeta p{margin:0;font-size:12.5px;line-height:1.5;color:#c9d3df;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
-  .cmeta .open{font-size:12px;color:var(--accent2);margin-top:auto}
-  .kpi{position:relative;overflow:hidden}
-  .kpi::after{content:"";position:absolute;right:-30px;top:-30px;width:90px;height:90px;border-radius:50%;background:radial-gradient(circle,rgba(53,199,242,.07),transparent 70%)}
-  .kpi .v{font-size:34px;line-height:1}
-  .kpi.crit .v{color:var(--crit)}
-  .kpi.hi .v{color:var(--high)}
-  .kpi.ok .v,.kpi.cy .v{color:var(--text)}
-  .globe-wrap{position:relative;background:radial-gradient(ellipse at center,#0b1626 0%,#060910 70%);border:1px solid var(--border);border-radius:10px;overflow:hidden;min-height:520px}
+  .dash .panel h2:first-child{margin-top:0}
+  .row2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px;margin-top:14px;align-items:start}
+  .charts{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(280px,100%),1fr));gap:14px;margin-top:14px}
+  @media (min-width:1200px){.charts{grid-template-columns:repeat(3,minmax(0,1fr)) minmax(0,1.5fr)}}
+  @media (max-width:1100px){.row2{grid-template-columns:minmax(0,1fr)}}
+  .bars.src .row{grid-template-columns:minmax(0,150px) 1fr 52px}
+  .bars.src .row > span:first-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  /* the header line */
+  .dhead{display:flex;align-items:center;gap:10px 16px;flex-wrap:wrap;margin-bottom:12px}
+  .dhead h1{margin:0;font-family:Rajdhani;font-size:26px;letter-spacing:.04em}
+  .dhead .meta{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font:12px var(--mono);color:var(--muted)}
+  .dhead .meta .chip{display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border:1px solid var(--border);border-radius:999px;background:var(--panel2)}
+  .dhead .right{margin-left:auto;display:flex;gap:8px;align-items:center}
+  .dhead select{width:auto}
+  /* the attack map, full width, the numbers on it */
+  .geo{position:relative;margin:2px 0 0}
+  .map-kpis{position:absolute;left:12px;right:110px;top:12px;z-index:5;display:flex;flex-wrap:wrap;gap:8px;pointer-events:none}
+  .mk{pointer-events:auto;display:flex;flex-direction:column;min-width:96px;padding:8px 12px;border:1px solid rgba(53,199,242,.28);border-radius:12px;background:rgba(6,10,18,.72);backdrop-filter:blur(6px);color:var(--text);text-decoration:none;transition:border-color .2s}
+  a.mk:hover{border-color:var(--accent)}
+  .mk b{font:700 26px/1 Rajdhani,var(--mono);letter-spacing:.02em}
+  .mk span{font:600 10px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-top:4px;white-space:nowrap}
+  .mk.crit b{color:var(--crit)}.mk.hi b{color:var(--high)}.mk.ok b{color:var(--low)}.mk.cy b{color:var(--accent2)}
+  .mk.thin{min-width:0;background:rgba(6,10,18,.55)}.mk.thin b{font-size:20px}
+  .maptog{position:absolute;right:12px;top:12px;z-index:6}
+  .maptog button{padding:5px 10px;font-size:11.5px;background:rgba(6,10,18,.8)}
+  .nomap .geo #globe{display:none}
+  .nomap .map-kpis{position:static;margin:0 0 4px}.nomap .maptog{position:static;display:flex;justify-content:flex-end;margin-bottom:6px}
+  .globe-wrap{position:relative;background:radial-gradient(ellipse at center,#0b1626 0%,#060910 70%);border:1px solid var(--border);border-radius:14px;overflow:hidden;height:580px;min-height:0}
   .globe-wrap canvas{display:block}
-  .globe-hud,.globe-legend{z-index:2;pointer-events:none}
-  .globe-hud{position:absolute;left:14px;top:12px;font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent2)}
-  .globe-hud b{display:block;font-size:18px;letter-spacing:.06em;color:var(--text);font-family:Rajdhani}
+  .globe-legend{z-index:2;pointer-events:none}
   .globe-legend{position:absolute;right:14px;bottom:12px;font-family:var(--mono);font-size:11px;color:var(--muted);text-align:right}
   .globe-legend i{display:inline-block;width:8px;height:8px;border-radius:50%;margin-left:6px;vertical-align:middle}
   /* globe and flat map share the box; the switch picks one */
@@ -73,7 +52,7 @@
   .gzoom button{border:0;border-radius:0;background:transparent;width:34px;height:32px;padding:0;font:600 16px/1 var(--mono);color:var(--accent2);cursor:pointer;box-shadow:none}
   .gzoom button+button{border-top:1px solid rgba(53,199,242,.25)}
   .gzoom button:hover{background:rgba(53,199,242,.15);color:var(--text)}
-  /* hover card for one attack on the globe */
+  /* hover card for one attack on the map */
   .globe-wrap .gtip{position:absolute;z-index:4;pointer-events:none;width:max-content;min-width:220px;max-width:min(300px,calc(100% - 16px));padding:10px 12px;border-radius:10px;border:1px solid rgba(53,199,242,.45);background:rgba(8,12,22,.95);box-shadow:0 10px 30px rgba(0,0,0,.45);font-size:12.5px;color:var(--text);animation:fadeUp .18s both}
   .globe-wrap .gtip[hidden]{display:none}
   .gtip .gt-h{display:flex;align-items:center;gap:8px;font:600 13px var(--mono);overflow-wrap:anywhere}
@@ -91,256 +70,288 @@
   .globe-legend .hint.tap{display:none}
   @media (max-width:600px){.globe-legend .hint.mouse{display:none}}
   @media (hover:none){.globe-wrap .gtip{pointer-events:auto}.globe-legend .hint.mouse{display:none}.globe-legend .hint.tap{display:block}}
+  /* lists */
+  .lrow{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:6px 0;border-bottom:1px solid var(--border);font-size:12.5px}
+  .lrow:last-child{border-bottom:0}
+  .lrow .mono{word-break:break-all}
+  .lrow .r{margin-left:auto;color:var(--muted);font:11.5px var(--mono)}
+  .qstat{display:flex;gap:8px;margin:0 0 8px;flex-wrap:wrap}
+  .qstat a{display:flex;flex-direction:column;padding:6px 12px;border:1px solid var(--border);border-radius:10px;background:var(--panel2);color:var(--text);text-decoration:none}
+  .qstat a b{font:700 20px/1 Rajdhani}.qstat a span{font:600 9.5px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:3px}
+  .qstat a.bad b{color:var(--crit)}.qstat a.warn b{color:var(--high)}
+  .empty{color:var(--muted);font-size:12.5px;margin:4px 0}
+  /* brands at a glance */
+  .brows{display:grid;gap:6px}
+  .brow{display:grid;grid-template-columns:minmax(150px,1.3fr) 92px repeat(3,minmax(70px,.6fr)) minmax(150px,1fr) 150px;gap:10px;align-items:center;padding:8px 10px;border:1px solid var(--border);border-radius:10px;background:var(--panel2);color:var(--text);text-decoration:none;font-size:12.5px}
+  .brow:hover{border-color:var(--accent)}
+  .brow .nm{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .brow .n b{display:block;font:700 17px/1 Rajdhani}.brow .n span{font:600 10px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+  .brow .n.bad b{color:var(--crit)}
+  .brow .when{font:11.5px var(--mono);color:var(--muted)}
+  .brow svg.spark{height:30px}
+  .live-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--low);box-shadow:0 0 8px var(--low);animation:pulse 1.6s infinite}
+  /* charts */
+  .bars{display:grid;gap:8px}.bars .row{display:grid;grid-template-columns:90px 1fr 46px;align-items:center;gap:10px;font-size:12px}
+  .bars .bar{height:10px}.bars .bar>i{transition:width 1.2s ease}
+  .hist{display:flex;align-items:flex-end;gap:4px;height:110px;margin-bottom:22px}.hist i{flex:1;background:linear-gradient(180deg,var(--accent2),rgba(53,199,242,.25));border-radius:3px 3px 0 0;position:relative;min-height:2px;transition:height 1.2s ease}
+  .hist i span{position:absolute;bottom:-18px;left:0;right:0;text-align:center;font-size:10px;color:var(--muted);font-family:var(--mono)}
+  svg.spark{width:100%;height:110px}
+  .legend2{display:flex;gap:14px;font:11px var(--mono);color:var(--muted);margin-top:6px}.legend2 i{display:inline-block;width:10px;height:3px;border-radius:2px;margin-right:5px;vertical-align:middle}
+  /* caught in the act, small */
+  .cases{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(300px,100%),1fr));gap:10px}
+  .case{display:flex;flex-direction:column;border:1px solid var(--border);border-radius:10px;overflow:hidden;background:var(--panel2);color:var(--text);text-decoration:none;transition:border-color .2s}
+  .case:hover{border-color:var(--accent)}
+  .pair{position:relative;display:grid;grid-template-columns:1fr 1fr;gap:2px;background:#000}
+  .pair figure{margin:0;position:relative}
+  .pair img{display:block;width:100%;height:110px;object-fit:cover;object-position:top}
+  .pair figcaption{position:absolute;left:5px;bottom:5px;font:600 9.5px var(--mono);letter-spacing:.06em;padding:1px 6px;border-radius:5px;background:rgba(6,9,16,.82)}
+  .pair figure:first-child figcaption{color:var(--crit)}.pair figure:last-child figcaption{color:var(--low)}
+  .pair .sim{position:absolute;left:50%;top:6px;transform:translateX(-50%);font:700 10.5px var(--mono);padding:2px 8px;border-radius:999px;background:rgba(6,9,16,.85);border:1px solid var(--accent);color:var(--accent2)}
+  .case .cm{display:flex;gap:6px;align-items:center;padding:7px 10px;font-size:12px;min-width:0}
+  .case .cm .mono{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  /* the live feed */
   .pulse{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--crit);box-shadow:0 0 0 0 rgba(255,77,77,.7);animation:pulse 1.6s infinite}
   @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(255,77,77,.7)}70%{box-shadow:0 0 0 10px rgba(255,77,77,0)}100%{box-shadow:0 0 0 0 rgba(255,77,77,0)}}
-  .feed{font-family:var(--mono);font-size:11.5px;height:470px;overflow:hidden;position:relative;mask-image:linear-gradient(180deg,#000 85%,transparent)}
+  .feed{font-family:var(--mono);font-size:11.5px;height:300px;overflow:hidden;position:relative;mask-image:linear-gradient(180deg,#000 85%,transparent)}
   .feed div{padding:5px 0;border-bottom:1px solid rgba(30,42,61,.6);animation:slidein .4s ease}
   @keyframes slidein{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
   .feed .t{color:var(--muted)}.feed .s{color:var(--accent)}.feed .warn{color:var(--high)}.feed .error{color:var(--crit)}.feed .done,.feed .running{color:#c9d3df}
-  .bars{display:grid;gap:8px}.bars .row{display:grid;grid-template-columns:90px 1fr 46px;align-items:center;gap:10px;font-size:12px}
-  .bars .bar{height:10px}.bars .bar>i{transition:width 1.2s ease}
-  .hist{display:flex;align-items:flex-end;gap:4px;height:90px}.hist i{flex:1;background:linear-gradient(180deg,var(--accent2),rgba(53,199,242,.25));border-radius:3px 3px 0 0;position:relative;min-height:2px;transition:height 1.2s ease}
-  .hist i span{position:absolute;bottom:-18px;left:0;right:0;text-align:center;font-size:10px;color:var(--muted);font-family:var(--mono)}
-  .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px}
-  .step{background:var(--panel2);border:1px solid var(--border);border-radius:8px;padding:10px;position:relative}
-  .step .n{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent)}
-  .step .v{font-family:Rajdhani;font-size:22px;font-weight:700}
-  .step .d{font-size:11px;color:var(--muted)}
-  .meter{height:12px;background:#1E2A3D;border-radius:6px;overflow:hidden}.meter>i{display:block;height:100%;background:linear-gradient(90deg,var(--low),var(--med),var(--crit))}
-  svg.spark{width:100%;height:70px}
-  .status-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--low);margin-right:6px;box-shadow:0 0 8px var(--low)}
+  .runs{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 8px}
+  .runs a{display:inline-flex;gap:6px;align-items:center;padding:3px 10px;border:1px solid rgba(46,204,113,.45);border-radius:999px;font-size:12px;color:var(--text);text-decoration:none}
+  /* the status bar */
+  .statusbar{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;margin-top:16px;padding:9px 12px;border:1px solid var(--border);border-radius:10px;background:rgba(8,11,20,.6);font:11.5px var(--mono);color:var(--muted)}
+  .statusbar .sc{display:inline-flex;gap:6px;align-items:center;white-space:nowrap}
+  .statusbar .sc b{color:var(--text);font-weight:600}
+  .statusbar .sep{width:1px;height:14px;background:var(--border)}
+  .statusbar .meter{display:inline-block;width:60px;height:6px;border-radius:3px;background:#1E2A3D;overflow:hidden}.statusbar .meter>i{display:block;height:100%;background:linear-gradient(90deg,var(--low),var(--med),var(--crit))}
+  .status-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--low);box-shadow:0 0 8px var(--low)}
   .status-dot.off{background:var(--muted);box-shadow:none}
   @media (max-width:900px){
-    .hero2{grid-template-columns:minmax(0,1fr)}
-    .hero-text{padding:6px 0 0}
-    .flow{grid-template-columns:repeat(2,minmax(0,1fr))}
-    .fstep:not(:last-of-type)::after{display:none}
-    .flow .packet{display:none}
-    .fstep:last-of-type{grid-column:1/-1}
-    .hero2 .globe-wrap{height:400px}
-    .globe-hud{left:12px;top:10px;font-size:10px;letter-spacing:.1em;right:12px}.globe-hud b{font-size:16px}
-    .globe-legend{font-size:10px}
-    .feed{height:340px}
+    .globe-wrap{height:420px}
+    .map-kpis{position:static;margin:0 0 8px;right:auto}
+    .mk{min-width:0;flex:1 1 calc(33% - 8px);padding:6px 9px;background:var(--panel2)}.mk b{font-size:20px}.mk span{font-size:9.5px;white-space:normal}
+    .maptog{position:static;display:flex;justify-content:flex-end;margin:0 0 6px}
+    .brow{grid-template-columns:minmax(0,1fr) auto;gap:4px 10px}.brow .n,.brow .when,.brow svg{display:none}.brow .n.bad{display:block}
+    .feed{height:260px}
     .bars .row{grid-template-columns:70px 1fr 40px;gap:8px}
-    .kpi .v{font-size:28px}
+  }
+  @media (max-width:600px){
+    .globe-wrap{height:290px}
+    .dhead h1 .muted{display:block;margin-top:2px}.dhead h1 .d1{display:none}
+    .dhead h1{font-size:22px}.dhead .right{margin-left:0;width:100%}.dhead .right form{flex:1}.dhead .right select{width:100%}
+    .pair img{height:90px}
+    .qstat{flex-wrap:nowrap;gap:6px}.qstat a{flex:1 1 0;min-width:0;padding:6px 8px}.qstat a span{white-space:normal}
   }
 </style>
-<style>
-  .maptog{display:flex;justify-content:flex-end;margin:4px 0 -6px}
-  .nomap #globe{display:none}.nomap .hero2{grid-template-columns:minmax(0,1fr)}
-</style>
 <div class="dash">
-<div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:12px">
-  <h1 style="margin:0;font-family:Rajdhani;font-size:26px;letter-spacing:.04em">DASHBOARD <span class="muted small" style="font-family:var(--sans)">· BRAND MONITOR · {{ d.brand.name if d.brand else 'all brands' }} · updated <span id="updated">{{ d.generated_at[11:19] }}</span> UTC</span></h1>
-  <form method="get" action="/ui/dashboard" style="margin-left:auto;display:flex;gap:8px;align-items:center">
-    <select name="brand_id" onchange="this.form.submit()"><option value="">all brands</option>{% for b in brands %}<option value="{{ b.id }}" {{ 'selected' if selected_brand==b.id }}>{{ b.name }}</option>{% endfor %}</select>
-  </form>
-</div>
-
 {% set bq0 = '?brand_id=' ~ selected_brand if selected_brand else '' %}
 {% set bq = '&brand_id=' ~ selected_brand if selected_brand else '' %}
 {% set k = d.kpis %}
-{% set todo = (d.kpis.findings_open or 0) + (d.kpis.confirmed_no_takedown or 0) + (d.kpis.takedowns_draft or 0) + (d.kpis.confirmed_unmapped or 0) %}
+<div class="dhead">
+  <h1>DASHBOARD <span class="muted small" style="font-family:var(--sans)"><span class="d1">· </span>BRAND MONITOR · <bdi>{{ d.brand.name if d.brand else 'all brands' }}</bdi></span></h1>
+  <div class="meta">
+    <span class="chip" title="the numbers refresh every 20 seconds">updated <span id="updated">{{ d.generated_at[11:19] }}</span> UTC</span>
+    <span class="chip">last scan {% if d.last_scan_at %}<span data-rel="{{ d.last_scan_at }}">{{ d.last_scan_at|ts }}</span>{% else %}never{% endif %}</span>
+    <span class="chip"><span class="status-dot {{ '' if d.system.scheduler == 'running' else 'off' }}"></span>automatic scans {{ 'on' if d.system.scheduler == 'running' else 'off' }}</span>
+    {% if d.system.demo_mode %}<span class="chip" style="color:var(--accent2);border-color:var(--accent)">DEMO · $0</span>{% endif %}
+  </div>
+  <div class="right">
+    <form method="get" action="/ui/dashboard"><select name="brand_id" onchange="this.form.submit()" aria-label="brand"><option value="">all brands</option>{% for b in brands %}<option value="{{ b.id }}" {{ 'selected' if selected_brand==b.id }}>{{ b.name }}</option>{% endfor %}</select></form>
+    {% if can_write %}<a class="btn primary small" href="/ui/brands">▶ Start a scan</a>{% endif %}
+  </div>
+</div>
+
+{% set todo = (k.findings_open or 0) + (k.confirmed_no_takedown or 0) + (k.takedowns_draft or 0) + (k.confirmed_unmapped or 0) + (k.takedowns_stale or 0) %}
 {% if unscanned and can_write %}
 <div class="panel" id="first-scan" style="margin-bottom:12px;border-color:rgba(53,199,242,.55)">
-  <h2 style="margin-top:0">Not scanned yet <span class="muted">· {{ unscanned|length }} brand{{ 's' if unscanned|length != 1 }} with no scan — nothing below covers {{ 'it' if unscanned|length == 1 else 'them' }}</span></h2>
+  <h2 style="margin-top:0">Not scanned yet <span class="muted">· {{ unscanned|length }} brand{{ 's' if unscanned|length != 1 }} with no scan</span></h2>
   <div style="display:flex;flex-wrap:wrap;gap:8px">{% for b in unscanned[:6] %}<a class="btn primary" href="/ui/brands/{{ b.id }}#scan">▶ <bdi>{{ b.name }}</bdi> — set up &amp; start the first scan</a>{% endfor %}</div>
 </div>
 {% endif %}
 {% if todo %}
 <div class="panel" style="margin-bottom:12px;border-color:rgba(255,159,28,.55);box-shadow:0 0 24px rgba(255,159,28,.12)" id="action-required">
-  <h2 style="margin-top:0;color:var(--high)">Action required <span class="muted">· {{ todo }} item(s) waiting for an analyst</span></h2>
+  <h2 style="margin-top:0;color:var(--high)">Action required <span class="muted">· {{ todo }} item(s)</span></h2>
   <div class="actions" style="gap:10px">
-    {% if d.kpis.findings_open %}<a class="btn" href="/ui/findings?state=open{{ '&brand_id=' ~ selected_brand if selected_brand else '' }}"><b data-k="findings_open">{{ d.kpis.findings_open }}</b> finding(s) awaiting your verdict →</a>{% endif %}
-    {% if d.kpis.confirmed_no_takedown %}<a class="btn" href="/ui/takedowns?state=none{{ '&brand_id=' ~ selected_brand if selected_brand else '' }}" style="border-color:var(--crit);color:var(--crit)"><b data-k="confirmed_no_takedown">{{ d.kpis.confirmed_no_takedown }}</b> confirmed phishing site(s) with no takedown request →</a>{% endif %}
-    {% if d.kpis.takedowns_draft %}<a class="btn" href="/ui/takedowns?state=unsent{{ '&brand_id=' ~ selected_brand if selected_brand else '' }}"><b data-k="takedowns_draft">{{ d.kpis.takedowns_draft }}</b> takedown draft(s) not sent yet →</a>{% endif %}
-    {% if d.kpis.confirmed_unmapped %}<a class="btn" href="/ui/campaigns{{ '?brand_id=' ~ selected_brand if selected_brand else '' }}#confirmed"><b data-k="confirmed_unmapped">{{ d.kpis.confirmed_unmapped }}</b> confirmed site(s) whose infrastructure is not mapped →</a>{% endif %}
+    {% if k.findings_open %}<a class="btn" href="/ui/findings?state=open{{ bq }}"><b data-k="findings_open">{{ k.findings_open }}</b> finding(s) awaiting your verdict →</a>{% endif %}
+    {% if k.confirmed_no_takedown %}<a class="btn" href="/ui/takedowns?state=none{{ bq }}" style="border-color:var(--crit);color:var(--crit)"><b data-k="confirmed_no_takedown">{{ k.confirmed_no_takedown }}</b> confirmed phishing site(s) with no takedown request →</a>{% endif %}
+    {% if k.takedowns_draft %}<a class="btn" href="/ui/takedowns?state=unsent{{ bq }}"><b data-k="takedowns_draft">{{ k.takedowns_draft }}</b> takedown draft(s) not sent yet →</a>{% endif %}
+    {% if k.takedowns_stale %}<a class="btn" href="/ui/takedowns?state=stale{{ bq }}" style="border-color:var(--high);color:var(--high)"><b data-k="takedowns_stale">{{ k.takedowns_stale }}</b> sent, no answer for 7+ days →</a>{% endif %}
+    {% if k.confirmed_unmapped %}<a class="btn" href="/ui/campaigns{{ bq0 }}#confirmed"><b data-k="confirmed_unmapped">{{ k.confirmed_unmapped }}</b> confirmed site(s) whose infrastructure is not mapped →</a>{% endif %}
   </div>
 </div>
 {% endif %}
 
-{% if new_24h %}
-<div class="panel" id="new-24h" style="margin-bottom:12px">
-  <h2 style="margin-top:0">New in the last 24 hours <span class="muted">· open Critical and High findings, newest first</span> <a class="small" href="/ui/findings?state=open&since=24h{{ bq }}" style="text-transform:none;letter-spacing:0;font-family:var(--sans)">all of them →</a></h2>
-  {% for f in new_24h %}<div class="small" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:5px 0;border-bottom:1px solid var(--border)"><span class="badge sev-{{ f.severity }}">{{ f.severity }}</span><a class="mono" href="/ui/findings/{{ f.id }}" dir="ltr">{{ f.hostname }}</a><span class="muted">{{ f.score if f.score is not none else '' }} · {{ f.created_at|ts }}</span></div>{% endfor %}
-</div>
-{% endif %}
-{# ================================================================ today, in numbers #}
-<div class="kpis" id="kpis" style="margin-top:14px">
-  <a class="kpi lnk crit" href="/ui/findings?severity=critical{{ bq }}"><div class="v num" data-k="critical_open" data-count="{{ k.critical_open }}">0</div><div class="l"><span class="pulse"></span> critical open</div></a>
-  <a class="kpi lnk hi" href="/ui/findings?severity=high{{ bq }}"><div class="v num" data-k="high_open" data-count="{{ k.high_open }}">0</div><div class="l">high open</div></a>
-  <a class="kpi lnk" href="/ui/findings?state=open{{ bq }}"><div class="v num" data-k="findings_open" data-count="{{ k.findings_open }}">0</div><div class="l">awaiting verdict</div></a>
-  <a class="kpi lnk" href="/ui/candidates?state=watching{{ bq }}"><div class="v num" data-k="candidates_watching" data-count="{{ k.candidates_watching }}">0</div><div class="l">on the watchlist</div></a>
-  <div class="kpi"><div class="v num" data-k="scans_today" data-count="{{ k.scans_today }}">0</div><div class="l">scans today</div></div>
-  <div class="kpi"><div class="v num" data-k="candidates_scanned_today" data-count="{{ k.candidates_scanned_today }}">0</div><div class="l">domains checked today</div></div>
-</div>
-
+{# ================================================================ the attack map, full width, the numbers on it #}
 <script>try { if (localStorage.getItem('bw-dash-map') === 'off') document.documentElement.classList.add('nomap'); } catch (e) { /* private window */ }</script>
-<div class="maptog"><button type="button" class="small ghost" id="maptog" aria-controls="globe"></button></div>
-{# ================================================================ hero: what this is, in 5-10 seconds #}
-<section class="hero2" id="hero">
-  <div class="hero-text">
-    <div class="eyebrow">{% if d.system.demo_mode %}<span class="pill demo">DEMO · $0 · recorded scenarios</span>{% endif %}<span>Brand protection · phishing detection · takedown</span></div>
-    <h2 class="headline">Finds the fake {% if d.hero_brand %}<span class="hl">{{ d.hero_brand }}</span> sites{% else %}sites impersonating <span class="hl">your brands</span>{% endif %} — and gets them taken down.</h2>
-    <p class="sub">{{ PAGE_INTROS.dashboard }}</p>
-    <div class="flow" id="how-strip" aria-label="What BrandWatch has done so far">
-      <a class="fstep" href="/ui/candidates{{ bq0 }}"><span class="fn">1 · Find</span><b class="num" data-count="{{ k.candidates_total }}">0</b><span class="fl">look-alike domains found</span><span class="fd">typos · new certificates · new domains · Google · Facebook &amp; Instagram ads</span></a>
-      <a class="fstep" href="/ui/findings{{ bq0 }}"><span class="fn">2 · Prove</span><b class="num" data-count="{{ (k.findings_open or 0) + (k.findings_confirmed or 0) }}">0</b><span class="fl">scored as phishing risk</span><span class="fd">visited in a sandbox · {{ SIGNAL_COUNT }} signals · evidence kept</span></a>
-      <a class="fstep" href="/ui/findings?state=confirmed{{ bq }}"><span class="fn">3 · Decide</span><b class="num" data-count="{{ k.findings_confirmed }}">0</b><span class="fl">confirmed phishing</span><span class="fd">an analyst decides, with the evidence</span></a>
-      <a class="fstep" href="/ui/campaigns{{ bq0 }}"><span class="fn">4 · Map</span><b class="num" data-count="{{ k.campaigns }}">0</b><span class="fl">attacker network{{ 's' if k.campaigns != 1 }} mapped</span><span class="fd">{{ k.iocs }} indicators to block</span></a>
-      <a class="fstep" href="/ui/takedowns{{ bq0 }}"><span class="fn">5 · Take down</span><b class="num" data-count="{{ k.takedowns_sent }}">0</b><span class="fl">takedown{{ 's' if k.takedowns_sent != 1 }} sent</span><span class="fd">registrar · host · CDN + {{ REPORT_PORTAL_COUNT }} blocklists</span></a>
-      <i class="packet" aria-hidden="true"></i>
-    </div>
-    <div class="cta">
-      {% if k.findings_open %}<a class="btn primary big" href="/ui/findings?state=open{{ bq }}">Review {{ k.findings_open }} finding{{ 's' if k.findings_open != 1 }} awaiting your verdict →</a>{% endif %}
-      <a class="btn big" href="/ui/brands">▶ Start a scan</a>
-      <a class="btn big ghost" href="/ui/how-it-works">How it works · 2 min</a>
-    </div>
+<section class="geo" id="geo" aria-label="Attack map">
+  <div class="map-kpis">
+    <a class="mk crit" href="/ui/findings?state=open&severity=critical{{ bq }}"><b class="num" data-k="critical_open" data-count="{{ k.critical_open }}">0</b><span><span class="pulse"></span> critical open</span></a>
+    <a class="mk hi" href="/ui/findings?state=open&severity=high{{ bq }}"><b class="num" data-k="high_open" data-count="{{ k.high_open }}">0</b><span>high open</span></a>
+    <a class="mk cy" href="/ui/findings?state=open{{ bq }}"><b class="num" data-k="findings_open" data-count="{{ k.findings_open }}">0</b><span>awaiting verdict</span></a>
+    <a class="mk ok" href="/ui/findings?state=confirmed{{ bq }}"><b class="num" data-k="findings_confirmed" data-count="{{ k.findings_confirmed }}">0</b><span>confirmed</span></a>
+    <a class="mk" href="/ui/takedowns{{ bq0 }}"><b class="num" data-k="takedowns_sent" data-count="{{ k.takedowns_sent }}">0</b><span>takedowns sent</span></a>
+    <a class="mk" href="/ui/candidates?state=watching{{ bq }}"><b class="num" data-k="candidates_watching" data-count="{{ k.candidates_watching }}">0</b><span>on the watchlist</span></a>
+    <span class="mk thin" title="impersonating hosts placed on the map{{ ' · ' ~ d.geo.cdn_hidden ~ ' behind a CDN (location hidden)' if d.geo.cdn_hidden }}"><b class="num">{{ d.geo.points|length }}</b><span>hosts · {{ d.geo.countries|length }} countries{{ ' · ' ~ d.geo.cdn_hidden ~ ' CDN' if d.geo.cdn_hidden }}</span></span>
   </div>
+  <div class="maptog"><button type="button" class="small ghost" id="maptog" aria-controls="globe"></button></div>
   <div class="globe-wrap" id="globe">
-    <div class="globe-hud">{% if d.system.demo_mode %}<span class="pill" style="font-size:10px;color:var(--accent2);border-color:var(--accent);margin-right:6px">DEMO · $0</span>{% endif %}BrandWatch · live infrastructure map<b>{{ d.geo.points|length }} impersonating hosts · {{ d.geo.countries|length }} countries{% if d.geo.cdn_hidden %} · {{ d.geo.cdn_hidden }} behind a CDN{% endif %}</b>
-      <span class="muted">{% if d.geo.home %}arcs from {{ d.geo.home.label }} to where the kits are hosted{% else %}where the kits are hosted{% endif %}{% if d.geo.cdn_hidden %} · {{ d.geo.cdn_hidden }} site{{ 's' if d.geo.cdn_hidden != 1 }} sit{{ '' if d.geo.cdn_hidden != 1 else 's' }} behind a CDN (Cloudflare, CloudFront …): their real location is hidden, so they are not placed on the globe{% endif %}</span></div>
     <div class="globe-legend">critical<i style="background:var(--crit)"></i><br>high<i style="background:var(--high)"></i><br>medium<i style="background:var(--med)"></i><br>confirmed<i style="background:var(--accent2)"></i><span class="hint mouse">scroll to zoom · hover an attack · click to open it</span><span class="hint tap">tap an attack · + − to zoom</span></div>
   </div>
-
 </section>
 
-{# ================================================================ proof: the fakes next to the real site #}
+{# ================================================================ what waits #}
+<div class="row2">
+  <div class="panel" id="new-24h">
+    <h2>New in the last 24 hours <span class="muted">· open Critical and High</span> <a class="small" href="/ui/findings?state=open&since=24h{{ bq }}" style="text-transform:none;letter-spacing:0;font-family:var(--sans)">all →</a></h2>
+    {% for f in new_24h %}<div class="lrow"><span class="badge sev-{{ f.severity }}">{{ f.severity }}</span><a class="mono" href="/ui/findings/{{ f.id }}" dir="ltr">{{ f.hostname }}</a><span class="r">{{ f.score if f.score is not none else '' }} · {{ f.created_at|ts }}</span></div>{% endfor %}
+    {% if not new_24h %}<p class="empty">Nothing new at High or Critical in the last 24 hours.</p>{% endif %}
+  </div>
+  <div class="panel" id="takedown-queue">
+    <h2>Takedowns waiting <span class="muted">· {{ takedown_queue_total }} site{{ 's' if takedown_queue_total != 1 }}, oldest first</span> <a class="small" href="/ui/takedowns{{ bq0 }}" style="text-transform:none;letter-spacing:0;font-family:var(--sans)">all →</a></h2>
+    <div class="qstat">
+      <a class="bad" href="/ui/takedowns?state=none{{ bq }}"><b data-k="confirmed_no_takedown">{{ k.confirmed_no_takedown }}</b><span>no request</span></a>
+      <a href="/ui/takedowns?state=unsent{{ bq }}"><b data-k="takedowns_draft">{{ k.takedowns_draft }}</b><span>not sent</span></a>
+      <a class="warn" href="/ui/takedowns?state=stale{{ bq }}"><b data-k="takedowns_stale">{{ k.takedowns_stale }}</b><span>no answer 7d+</span></a>
+      <a href="/ui/takedowns?state=resolved{{ bq }}"><b>{{ k.takedowns_total - k.takedowns_open if k.takedowns_total is not none else 0 }}</b><span>closed</span></a>
+    </div>
+    {% for x in takedown_queue %}<div class="lrow"><span class="badge sev-{{ x.severity }}">{{ x.severity }}</span>
+      <a class="mono" href="{{ '/ui/takedowns/' ~ x.takedown.id if x.takedown else '/ui/findings/' ~ x.id }}" dir="ltr">{{ x.hostname }}</a><span class="r">{{ x.why }}</span></div>{% endfor %}
+    {% if not takedown_queue %}<p class="empty">Every confirmed site has a request on its way.</p>{% endif %}
+  </div>
+</div>
+
+{# ================================================================ brands at a glance #}
+{% if brand_rows %}
+<div class="panel" id="brands" style="margin-top:14px">
+  <h2>Brands <span class="muted">· {{ brand_rows|length }}</span></h2>
+  <div class="brows">
+    {% for b in brand_rows %}
+    <a class="brow" href="/ui/brands/{{ b.id }}">
+      <span class="nm" dir="auto">{{ b.name }}{% if b.parent_name %} <span class="muted small">· region</span>{% endif %}</span>
+      <span><span class="badge sev-{{ b.threat }}">{{ b.threat if b.open_findings else 'calm' }}</span></span>
+      <span class="n {{ 'bad' if b.sev.critical }}"><b>{{ b.sev.critical }}</b><span>critical</span></span>
+      <span class="n"><b>{{ b.open_findings }}</b><span>open</span></span>
+      <span class="n"><b>{{ b.watching }}</b><span>watching</span></span>
+      <span class="when">{% if b.running %}<span class="live-dot"></span> scanning now{% elif b.last_scan %}last scan <span data-rel="{{ b.last_scan }}"></span>{% else %}never scanned{% endif %}<br>{{ 'auto: ' ~ b.schedule if b.schedule else 'automatic scans off' }}</span>
+      <svg class="spark" data-spark='{{ {"series": [{"values": b.per_day, "color": "#FF4D4D" if b.threat == "critical" else "#35C7F2"}]}|tojson }}'></svg>
+    </a>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+
+{# ================================================================ the numbers in charts #}
+<div class="charts">
+  <div class="panel">
+    <h2>Threat level <span class="muted">· open findings</span></h2>
+    <div class="bars">
+      {% for sev in ['critical','high','medium','low'] %}{% set n = d.severity_distribution[sev] %}{% set total = k.findings_open or 1 %}
+      <a class="row" href="/ui/findings?state=open&severity={{ sev }}{{ bq }}" style="color:inherit"><span class="badge sev-{{ sev }}">{{ sev }}</span><div class="bar"><i style="width:{{ (n / total * 100)|round|int }}%;background:var(--{{ {'critical':'crit','high':'high','medium':'med','low':'low'}[sev] }})"></i></div><span class="mono right">{{ n }}</span></a>
+      {% endfor %}
+    </div>
+  </div>
+  <div class="panel">
+    <h2>Risk scores <span class="muted">· current</span></h2>
+    <div class="hist">
+      {% set mx = d.score_histogram|max or 1 %}
+      {% for n in d.score_histogram %}<i style="height:{{ (n / mx * 100)|round|int }}%" title="{{ loop.index0*10 }}–{{ loop.index0*10+9 }}: {{ n }}"><span>{{ loop.index0*10 }}</span></i>{% endfor %}
+    </div>
+  </div>
+  <div class="panel">
+    <h2>Activity · 14 days</h2>
+    <svg class="spark" viewBox="0 0 280 70" preserveAspectRatio="none" id="spark"></svg>
+    <div class="legend2"><span><i style="background:#35C7F2"></i>scans {{ k.scans_today }} today</span><span><i style="background:#FF4D4D"></i>new findings</span><span>{{ k.candidates_scanned_today }} domains checked today</span></div>
+  </div>
+  <div class="panel">
+    <h2>Discovery sources <span class="muted">· findings / domains</span></h2>
+    <div class="bars src">
+      {% set smx = (d.source_effectiveness|map(attribute='candidates')|max) or 1 %}
+      {% for s in d.source_effectiveness %}
+      <div class="row"><span class="small" title="{{ s.source }}">{{ s.source|stream_label }}</span><div class="bar"><i style="width:{{ (s.candidates / smx * 100)|round|int }}%"></i></div><span class="mono right small">{{ s.findings }}/{{ s.candidates }}</span></div>
+      {% endfor %}
+      {% if not d.source_effectiveness %}<span class="empty">no scans yet</span>{% endif %}
+    </div>
+  </div>
+</div>
+
+{# ================================================================ fake next to real, small #}
 {% if d.showcase %}
 <section class="panel" id="showcase" style="margin-top:14px">
-  <h2 style="margin-top:0">Caught in the act <span class="muted">· fakes BrandWatch found, next to the real site they copy</span></h2>
+  <h2>Caught in the act <span class="muted">· latest fakes next to the real site</span></h2>
   <div class="cases">
-    {% for c in d.showcase %}
+    {% for c in d.showcase[:3] %}
     <a class="case" href="/ui/findings/{{ c.id }}">
       <div class="pair">
-        <figure><img src="{{ c.suspect_url }}" alt="screenshot of {{ c.hostname }}" loading="lazy"><figcaption><b>FAKE</b> {{ c.host_display }}</figcaption></figure>
-        {% if c.baseline_url %}<figure><img src="{{ c.baseline_url }}" alt="screenshot of the real {{ c.brand }}" loading="lazy"><figcaption><b>REAL</b> {{ c.brand }}</figcaption></figure>{% endif %}
+        <figure><img src="{{ c.suspect_url }}" alt="screenshot of {{ c.hostname }}" loading="lazy"><figcaption>FAKE</figcaption></figure>
+        {% if c.baseline_url %}<figure><img src="{{ c.baseline_url }}" alt="screenshot of the real {{ c.brand }}" loading="lazy"><figcaption>REAL</figcaption></figure>{% endif %}
         {% if c.similarity %}<span class="sim">{{ c.similarity }}% alike</span>{% endif %}
       </div>
-      <div class="cmeta">
-        <div class="badges"><span class="badge sev-{{ c.severity }}">{{ c.severity }} · {{ c.score }}</span>{{ m.cloaked_badge(c.cloaked) }}<span class="badge state">{{ c.state|state_label }}</span></div>
-        <div class="host mono">{{ m.host(c.hostname, c.host_display, c.is_idn) }}</div>
-        <p>{{ c.summary }}</p>
-        <span class="open">Open the evidence →</span>
-      </div>
+      <div class="cm"><span class="badge sev-{{ c.severity }}">{{ c.score }}</span>{{ m.cloaked_badge(c.cloaked) }}<span class="mono" dir="ltr">{{ c.host_display or c.hostname }}</span></div>
     </a>
     {% endfor %}
   </div>
 </section>
 {% endif %}
 
-<div class="mid" style="margin-top:14px">
-  <div class="panel">
-    <h2 style="margin-top:0">Threat level</h2>
-    <div class="bars">
-      {% for sev in ['critical','high','medium','low'] %}
-      {% set n = d.severity_distribution[sev] %}
-      {% set total = d.kpis.findings_open or 1 %}
-      <div class="row"><span class="badge sev-{{ sev }}">{{ sev }}</span><div class="bar"><i style="width:{{ (n / total * 100)|round|int }}%;background:var(--{{ {'critical':'crit','high':'high','medium':'med','low':'low'}[sev] }})"></i></div><span class="mono right">{{ n }}</span></div>
-      {% endfor %}
-    </div>
-    <h2>Risk score distribution <span class="muted">· current scores</span></h2>
-    <div class="hist" style="margin-bottom:26px">
-      {% set mx = d.score_histogram|max or 1 %}
-      {% for n in d.score_histogram %}<i style="height:{{ (n / mx * 100)|round|int }}%" title="{{ loop.index0*10 }}–{{ loop.index0*10+9 }}: {{ n }}"><span>{{ loop.index0*10 }}</span></i>{% endfor %}
-    </div>
-    <h2>Activity · 14 days <span class="muted">· scans (cyan) and new findings (red)</span></h2>
-    <svg class="spark" viewBox="0 0 280 70" preserveAspectRatio="none" id="spark"></svg>
-    <h2>Discovery sources <span class="muted">· findings / domains found by each stream</span></h2>
-    <div class="bars">
-      {% for s in d.source_effectiveness %}
-      {% set mx = (d.source_effectiveness|map(attribute='candidates')|max) or 1 %}
-      <div class="row"><span class="small" title="{{ s.source }}">{{ s.source|stream_label }}</span><div class="bar"><i style="width:{{ (s.candidates / mx * 100)|round|int }}%"></i></div><span class="mono right small">{{ s.findings }}/{{ s.candidates }}</span></div>
-      {% endfor %}
-      {% if not d.source_effectiveness %}<span class="muted small">no scans yet</span>{% endif %}
-    </div>
-  </div>
-
-  <div class="panel">
-    <h2 style="margin-top:0"><span class="status-dot"></span>Live feed</h2>
+{# ================================================================ now #}
+<div class="row2">
+  <div class="panel" id="live">
+    <h2><span class="status-dot {{ '' if d.running_jobs else 'off' }}" style="margin-right:8px"></span>Live feed <span class="muted" id="running-n">· {{ d.running_jobs|length }} running</span></h2>
+    <div class="runs" id="runs">{% for j in d.running_jobs %}<a href="/ui/jobs/{{ j.id }}"><span class="live-dot"></span><bdi>{{ j.brand or '—' }}</bdi> · {{ j.kind|job_label }}</a>{% endfor %}</div>
     <div class="feed" id="feed"></div>
-    <h2>Recent criticals</h2>
-    {% for f in d.recent_criticals[:5] %}
-    <div class="small" style="padding:6px 0;border-bottom:1px solid var(--border)"><span class="badge sev-{{ f.severity }}">{{ f.severity }}</span> {{ m.cloaked_badge(f.cloaked) }} <a href="/ui/findings/{{ f.id }}">{{ m.host(f.hostname, f.host_display, f.is_idn) }}</a> <span class="muted">{{ f.score }} · {{ f.state|state_label }}</span>
-      {% if f.signal_items %}<div style="margin-top:3px">{{ m.pills(f.signal_items, 3) }}</div>{% endif %}</div>
-    {% endfor %}
-    {% if not d.recent_criticals %}<p class="muted small">No high/critical findings.</p>{% endif %}
   </div>
-</div>
-
-<div class="panel" style="margin-top:14px">
-  <h2 style="margin-top:0">What the system does <span class="muted">· each stage in the order it runs, with its run statistics</span></h2>
-  <div class="steps">
-    {% set names = {'baseline':'Brand baseline','discovery':'Discovery','normalize_dedup_prefilter':'Normalize · dedup · pre-filter','enrichment_analysis_scoring':'Evidence · signals · scoring','investigation':'Infrastructure pivoting','noop':'Health check'} %}
-    {% set descs = {'baseline':'fingerprint the official site: favicon, screenshot, login form, keywords','discovery':'dnstwist permutations, certificate transparency, NRD feed, search, urlscan','normalize_dedup_prefilter':'one candidate per URL, N sources; whitelist drops own domains','enrichment_analysis_scoring':'DNS · HTTP · WHOIS · favicon · screenshot · reputation → ' ~ SIGNAL_COUNT ~ ' signals → risk + confidence','investigation':'reverse IP, certs, favicon hash, tracking ids → campaign graph with triage','noop':'job model self-test'} %}
-    {% for p in d.pipeline %}
-    <div class="step"><div class="n">{{ names.get(p.stage, p.stage) }}</div><div class="d" style="color:var(--text);margin:4px 0 6px">{{ descs.get(p.stage, '') }}</div>
-      <div class="d mono">{{ p.runs }} runs · {{ p.hits }} hits · {{ p.api_calls }} API calls · avg {{ p.avg_ms }} ms</div></div>
-    {% endfor %}
-    <div class="step"><div class="n">Cloaking probes</div><div class="d" style="color:var(--text);margin:4px 0 6px">kits that hide from scanners are fetched as a bot, a victim link, a search visitor and a home IP (Tier 3/4)</div></div>
-    <div class="step"><div class="n">Advisory AI &amp; classifier</div><div class="d" style="color:var(--text);margin:4px 0 6px">a second opinion on Medium+ findings and on co-hosted sites — shown for context, never part of the score</div></div>
-    <div class="step"><div class="n">Response</div><div class="d" style="color:var(--text);margin:4px 0 6px">evidence package, takedown to registrar · host · CDN, {{ REPORT_PORTAL_COUNT }} report portals, IOC export as STIX 2.1</div></div>
-    {% if not d.pipeline %}<div class="step"><div class="n">pipeline</div><div class="d">Run a scan from <a href="/ui/brands">Brands &amp; Scans</a> to light this up.</div></div>{% endif %}
-  </div>
-</div>
-
-<div class="grid two" style="margin-top:14px">
-  <div class="panel">
-    <h2 style="margin-top:0">Analyst metrics</h2>
-    <p class="small muted" style="margin:0 0 6px">From the verdicts analysts recorded here. Separately, the regression suite scores 1.00 / 1.00 / 0.00 (precision / recall / FP rate) on the recorded golden scenarios — <a href="/ui/settings#quality">detection quality</a>.</p>
-    <table class="small">
-      <tr><th>Labelled findings</th><td class="right mono">{{ d.metrics.labels }}</td></tr>
-      <tr><th>Precision <span class="muted">(from {{ d.metrics.labels }} analyst verdict{{ 's' if d.metrics.labels != 1 }})</span></th><td class="right mono">{{ d.metrics.precision if d.metrics.precision is not none else '—' }}</td></tr>
-      <tr><th>False-positive rate</th><td class="right mono">{{ d.metrics.fp_rate if d.metrics.fp_rate is not none else '—' }}</td></tr>
-      <tr><th title="mean time to detect">Time to detect <span class="muted">(hours after the domain was registered)</span></th><td class="right mono">{{ d.metrics.mttd_hours if d.metrics.mttd_hours is not none else '—' }}</td></tr>
-      <tr><th title="mean time to confirm">Time to confirm <span class="muted">(hours from finding to verdict)</span></th><td class="right mono">{{ d.metrics.mttc_hours if d.metrics.mttc_hours is not none else '—' }}</td></tr>
-    </table>
-  </div>
-  <div class="panel">
-    <h2 style="margin-top:0">Watchlist {{ term('candidate') }} <span class="muted">· domains being observed, by state</span></h2>
-    {% set wl = d.watchlist.items()|rejectattr('0', 'equalto', 'analyzing')|list %}{% set wmax = (wl|map(attribute='1')|max) if wl else 1 %}
-    {% for k, v in wl %}
-    <a href="/ui/candidates?state={{ k }}{{ '&brand_id=' ~ selected_brand if selected_brand else '' }}" title="{{ STATE_HELP.get(k, '') }}" style="display:grid;grid-template-columns:130px 1fr 40px;gap:10px;align-items:center;margin:8px 0;color:var(--text);font-size:13px">
-      <span>{{ k|state_label }}</span><span class="bar" style="height:6px"><i data-w="{{ ((v / (wmax or 1)) * 100)|round|int }}" style="{{ 'background:var(--muted)' if k == 'dismissed' else '' }}"></i></span><b class="mono" style="font-weight:400;color:var(--muted);text-align:right">{{ v }}</b></a>
-    {% endfor %}
-    <p class="small muted" style="margin-bottom:0">Domains below the finding threshold are re-checked on a schedule; a parked domain that grows a login form jumps to the front.</p>
-  </div>
-</div>
-<details class="panel" style="margin-top:14px" id="under-the-hood">
-  <summary style="cursor:pointer"><b>Under the hood</b> <span class="muted small">· mode, providers, queue, budget — and what each one means</span></summary>
-  <div class="grid three" style="margin-top:12px">
-  <div class="panel">
-    <h2 style="margin-top:0">System status</h2>
-    <table class="small">
-      <tr><th>Mode</th><td>{{ 'DEMO (recorded scenarios, $0)' if d.system.demo_mode else 'LIVE' }}<div class="muted" style="font-size:11px">{{ 'recorded scenarios, deterministic, $0; in live mode the same code calls VirusTotal, crt.sh, Google and a sandboxed Chromium' if d.system.demo_mode else 'real providers, paced and budgeted' }}</div></td></tr>
-      <tr><th>Queue</th><td class="mono">{{ d.system.queue_backend }}</td></tr>
-      <tr><th>Scheduler</th><td><span class="status-dot {{ '' if d.system.scheduler=='running' else 'off' }}"></span>{{ d.system.scheduler }}<div class="muted" style="font-size:11px">{{ 'off in demo; in production it re-checks the watchlist on cadence' if d.system.scheduler != 'running' else 're-checks the watchlist on cadence' }}</div></td></tr>
-      <tr><th>Notifications</th><td class="mono">{{ d.system.notify_channels|join(', ') }}</td></tr>
-      <tr><th>Browser worker</th><td class="mono">{{ d.system.providers.browser|join(' → ') }}</td></tr>
-      <tr><th>Reputation</th><td class="mono small">{{ d.system.providers.reputation|join(' → ') }}<div class="muted" style="font-size:11px;font-family:var(--sans)">fallback chain: if one fails after retries the next answers; unknown is never clean</div></td></tr>
-    </table>
-  </div>
-  <div class="panel">
-    <h2 style="margin-top:0">Budget meter</h2>
-    <p class="small muted" style="margin:0 0 8px">Checked before every provider call over the trailing 24 h: a scan stops spending, never overspends.</p>
-    {% set b = d.system.budget %}
-    <div class="small muted">Spend today</div>
-    <div class="meter"><i style="width:{{ ((b.spent_today / b.max_daily_spend * 100) if b.max_daily_spend else 0)|round|int }}%"></i></div>
-    <div class="mono small" style="margin:4px 0 12px">${{ '%.4f'|format(b.spent_today) }} / {{ ('$%.2f'|format(b.max_daily_spend)) if b.max_daily_spend else 'no daily cap set (0 = unlimited)' }}</div>
-    <div class="small muted">API calls today</div>
-    <div class="meter"><i style="width:{{ ((b.api_calls_today / b.max_api_calls * 100) if b.max_api_calls else 0)|round|int }}%"></i></div>
-    <div class="mono small" style="margin-top:4px">{{ b.api_calls_today }} / {{ b.max_api_calls }}</div>
-  </div>
+  <div>
     <div class="panel">
-      <h2 style="margin-top:0">Evidence &amp; indicators</h2>
-      <div class="kpis" style="grid-template-columns:repeat(2,minmax(0,1fr))">
-        <div class="kpi"><div class="v num" data-count="{{ d.kpis.evidence_rows }}">0</div><div class="l">immutable evidence rows</div></div>
-        <div class="kpi"><div class="v num" data-count="{{ d.kpis.iocs }}">0</div><div class="l">IOCs extracted</div></div>
-      </div>
-      <p class="small muted">Evidence tables are append-only: the database rejects UPDATE and DELETE. IOCs export as CSV, JSON or STIX 2.1.</p>
+      <h2>Recent criticals <span class="muted">· open</span></h2>
+      {% for f in d.recent_criticals[:5] %}
+      <div class="lrow"><span class="badge sev-{{ f.severity }}">{{ f.severity }}</span>{{ m.cloaked_badge(f.cloaked) }}<a href="/ui/findings/{{ f.id }}">{{ m.host(f.hostname, f.host_display, f.is_idn) }}</a><span class="r">{{ f.score }}</span>
+        {% if f.signal_items %}<div style="width:100%">{{ m.pills(f.signal_items, 3) }}</div>{% endif %}</div>
+      {% endfor %}
+      {% if not d.recent_criticals %}<p class="empty">No open critical findings.</p>{% endif %}
+    </div>
+    <div class="panel" style="margin-top:14px">
+      <h2>Next re-checks <span class="muted">· watchlist, 48 h</span></h2>
+      {% for u in upcoming %}<div class="lrow"><a class="mono" href="/ui/candidates/{{ u.id }}" dir="ltr">{{ u.hostname }}</a><span class="r" data-rel="{{ u.at }}" data-due="1"></span></div>{% endfor %}
+      {% if not upcoming %}<p class="empty">Nothing due in the next 48 hours.</p>{% endif %}
     </div>
   </div>
-</details>
+</div>
+
+{# ================================================================ quality and the watchlist #}
+<div class="row2">
+  <div class="panel">
+    <h2>Analyst metrics</h2>
+    <table class="small">
+      <tr><th>Verdicts recorded</th><td class="right mono">{{ d.metrics.labels }}</td></tr>
+      <tr><th>Precision</th><td class="right mono">{{ d.metrics.precision if d.metrics.precision is not none else '—' }}</td></tr>
+      <tr><th>False-positive rate</th><td class="right mono">{{ d.metrics.fp_rate if d.metrics.fp_rate is not none else '—' }}</td></tr>
+      <tr><th title="hours from the domain's registration to its finding">Time to detect (h)</th><td class="right mono">{{ d.metrics.mttd_hours if d.metrics.mttd_hours is not none else '—' }}</td></tr>
+      <tr><th title="hours from the finding to the analyst's verdict">Time to confirm (h)</th><td class="right mono">{{ d.metrics.mttc_hours if d.metrics.mttc_hours is not none else '—' }}</td></tr>
+    </table>
+  </div>
+  <div class="panel">
+    <h2>Watchlist <span class="muted">· {{ k.candidates_total }} domains</span></h2>
+    {% set wl = d.watchlist.items()|rejectattr('0', 'equalto', 'analyzing')|list %}{% set wmax = (wl|map(attribute='1')|max) if wl else 1 %}
+    {% for st, v in wl %}
+    <a href="/ui/candidates?state={{ st }}{{ bq }}" title="{{ STATE_HELP.get(st, '') }}" style="display:grid;grid-template-columns:130px 1fr 50px;gap:10px;align-items:center;margin:8px 0;color:var(--text);font-size:13px">
+      <span>{{ st|state_label }}</span><span class="bar" style="height:6px"><i data-w="{{ ((v / (wmax or 1)) * 100)|round|int }}" style="{{ 'background:var(--muted)' if st == 'dismissed' else '' }}"></i></span><b class="mono" style="font-weight:400;color:var(--muted);text-align:right">{{ v }}</b></a>
+    {% endfor %}
+  </div>
+</div>
+
+{# ================================================================ the system, one line #}
+{% set b = d.system.budget %}
+<div class="statusbar" id="status-bar" aria-label="System status">
+  <span class="sc" title="{{ 'recorded scenarios replace every provider' if d.system.demo_mode else 'real providers, paced and budgeted' }}"><b>{{ 'DEMO' if d.system.demo_mode else 'LIVE' }}</b></span><span class="sep"></span>
+  <span class="sc" title="the scheduler runs automatic scans and watchlist re-checks"><span class="status-dot {{ '' if d.system.scheduler == 'running' else 'off' }}"></span>scheduler <b>{{ 'on' if d.system.scheduler == 'running' else 'off' }}</b>{% if d.system.scheduler == 'running' %} · every {{ scheduler_interval }}s{% endif %}</span><span class="sep"></span>
+  <span class="sc" title="the job queue">queue <b>{{ d.system.queue_backend|replace('JobQueue', '')|lower or 'thread' }}</b></span><span class="sep"></span>
+  <span class="sc" title="paid calls in the last 24 h, against the daily cap (0 = no cap)">spend <b data-k="cost_today_usd">${{ '%.2f'|format(b.spent_today) }}</b> / {{ ('$%.0f'|format(b.max_daily_spend)) if b.max_daily_spend else 'no cap' }}{% if b.max_daily_spend %}<span class="meter"><i style="width:{{ [((b.spent_today / b.max_daily_spend) * 100)|round|int, 100]|min }}%"></i></span>{% endif %}</span><span class="sep"></span>
+  <span class="sc" title="paid API calls in the last 24 h">API calls <b data-k="api_calls_today">{{ b.api_calls_today }}</b> / {{ '{:,}'.format(b.max_api_calls|int) if b.max_api_calls else '∞' }}</span><span class="sep"></span>
+  <span class="sc" title="home / mobile IP probe budget per day (0 = off)">residential <b>{{ b.max_residential_gb }} GB</b></span><span class="sep"></span>
+  <span class="sc" title="where alerts go">alerts <b>{{ d.system.notify_channels|join(', ') or '—' }}</b></span><span class="sep"></span>
+  <span class="sc" title="append-only evidence rows · indicators on the infrastructure maps">evidence <b>{{ '{:,}'.format(k.evidence_rows) }}</b> · IOCs <b>{{ k.iocs }}</b></span>
+  {% if is_admin %}<a class="sc" href="/ui/settings" style="margin-left:auto">settings →</a>{% endif %}
+</div>
 </div>
 
 <script src="https://unpkg.com/globe.gl@2.33.2/dist/globe.gl.min.js" onerror="window.__globeFailed=true"></script>
@@ -363,6 +374,7 @@
 
   // ---- live feed
   const feed = document.getElementById('feed'); let lastKey = '';
+  const lastScan = {{ (d.last_scan_at or '')|tojson }};
   const esc = s => String(s).replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
   async function pollFeed(){
     try {
@@ -372,12 +384,12 @@
         const key = rows.length ? rows[0].at + rows[0].message : '';
         if (key !== lastKey) {
           lastKey = key;
-          if (!rows.length) { feed.innerHTML = '<div class="t" style="white-space:normal">Nothing running. Press <b>START SCAN</b> on a brand to watch the pipeline think out loud.</div>'; }
+          if (!rows.length) { feed.innerHTML = `<div class="t" style="white-space:normal">No scan running${lastScan ? ' · last scan ' + lastScan.slice(0, 16).replace('T', ' ') + ' UTC' : ''}</div>`; }
           else feed.innerHTML = rows.map(e => `<div class="${e.level === 'error' ? 'error' : (e.level === 'warn' ? 'warn' : e.status)}"><span class="t">${e.at.slice(11,19)}</span> <span class="s">${esc(e.brand || '')}·${esc(e.stage)}</span> ${esc(e.message)}</div>`).join('');
         }
       }
     } catch (e) {}
-    setTimeout(pollFeed, 2500);
+    setTimeout(pollFeed, document.hidden ? 10000 : 2500);
   }
   pollFeed();
 
@@ -389,9 +401,9 @@
     tog.addEventListener('click', () => { try { localStorage.setItem('bw-dash-map', hidden ? 'on' : 'off'); } catch (e) { /* ignore */ } location.reload(); }); }
   if (hidden) return;
   const el = document.getElementById('globe');
-  // size from the real box (the hero grid stretches it to the tallest column), never from a breakpoint guess
+  // size from the real box (the CSS sets its height per screen size), never from a breakpoint guess
   const phone = window.matchMedia('(max-width: 900px)').matches;
-  const W = el.clientWidth || 700, H = phone ? 400 : Math.max(520, el.clientHeight || 520);
+  const W = el.clientWidth || 700, H = el.clientHeight || (phone ? 380 : 580);
   // camera altitude that makes the globe ~78% of the box's smaller side (globe.gl: 50° vertical fov)
   const fitAltitude = (w, h) => { const f = Math.min(0.92, 0.78 * Math.min(w, h) / h); return 1 / Math.sin(Math.atan(f * Math.tan(25 * Math.PI / 180))) - 1; };
   const points = data.points, home = data.home;
@@ -540,7 +552,7 @@
     if (window.ResizeObserver) {
       let last = W + 'x' + H;
       new ResizeObserver(() => {
-        const w = el.clientWidth, hh = window.matchMedia('(max-width: 900px)').matches ? 400 : Math.max(520, el.clientHeight);
+        const w = el.clientWidth, hh = el.clientHeight || H;
         if (!w || !hh || last === w + 'x' + hh) return; last = w + 'x' + hh;
         g.width(w).height(hh); g.pointOfView({altitude: fitAltitude(w, hh)}, 400);
       }).observe(el);
@@ -618,7 +630,8 @@
       c.width = base.width = Math.round(w * dpr); c.height = base.height = Math.round(hgt * dpr);
       c.style.width = w + 'px'; c.style.height = hgt + 'px';
       const yTop = miller(LAT_TOP), yBot = miller(LAT_BOT), mh = yTop - yBot, RAD = Math.PI / 180;
-      const padX = 16, padTop = phone ? 96 : 84, padBot = phone ? 92 : 64;
+      // the number chips sit above the map on phones and over its top edge on wider screens
+      const padX = phone ? 10 : 16, padTop = phone ? 22 : 84, padBot = phone ? 60 : 64;
       const aw = w - 2 * padX - 44, ah = hgt - padTop - padBot;  // 44 px on the right for the zoom buttons
       // the longitudes to show: everything the attacks touch (±25°), widened to fill the box's height
       const lons = [...points.map(p => p.lon), ...(home ? [home.lon] : [])];
@@ -847,7 +860,7 @@
   view3d.className = view2d.className = 'gview'; view3d.hidden = true;
   el.prepend(view2d); el.prepend(view3d);
   let globeCtl = {pause(){}, resume(){}}, globeNearest = () => null, globeRefresh = () => {}, globeHover = () => {}, mapView = null;
-  const overlays = [...el.querySelectorAll('.globe-hud,.globe-legend')];
+  const overlays = [...el.querySelectorAll('.globe-legend')];
   try { if (window.Globe && !window.__globeFailed) globeGl(); else canvasGlobe(); } catch (e) { console.warn('globe.gl failed, using canvas', e); view3d.innerHTML = ''; canvasGlobe(); }
   overlays.forEach(o => el.appendChild(o));
   el.appendChild(tip);
@@ -886,15 +899,25 @@
 </script>
 <script>
 (function(){
-  // ---- refresh the numbers every 20 s without reloading the map: the tiles and the "Action required" counts; paused in a hidden tab
+  // ---- refresh the numbers every 20 s without reloading the map: the map chips, the action counts, the status bar; paused in a hidden tab
   const brandId = {{ (selected_brand or '')|tojson }};
   setInterval(async () => {
     if (document.hidden) return;
     try {
       const r = await fetch(`/api/dashboard${brandId ? '?brand_id=' + brandId : ''}`, {credentials:'same-origin'});
       if (!r.ok) return; const d = await r.json();
-      document.querySelectorAll('#kpis .v[data-k], #action-required [data-k]').forEach(el => { const v = d.kpis[el.dataset.k]; if (v !== undefined && v !== null) el.textContent = Number(v).toLocaleString('en-US'); });
+      document.querySelectorAll('#geo [data-k], #action-required [data-k], #takedown-queue [data-k], #status-bar [data-k]').forEach(el => {
+        const v = d.kpis[el.dataset.k]; if (v === undefined || v === null) return;
+        el.textContent = el.dataset.k === 'cost_today_usd' ? '$' + Number(v).toFixed(2) : Number(v).toLocaleString('en-US'); });
       document.getElementById('updated').textContent = d.generated_at.slice(11, 19);
+      // the scans running right now
+      const runs = document.getElementById('runs'), n = document.getElementById('running-n');
+      if (runs && d.running_jobs) {
+        const e = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+        runs.innerHTML = d.running_jobs.map(j => `<a href="/ui/jobs/${e(j.id)}"><span class="live-dot"></span><bdi>${e(j.brand || '—')}</bdi> · ${e(String(j.kind).replace(/_/g, ' '))}</a>`).join('');
+        if (n) n.textContent = `· ${d.running_jobs.length} running`;
+        const dot = document.querySelector('#live h2 .status-dot'); if (dot) dot.classList.toggle('off', !d.running_jobs.length);
+      }
     } catch (e) {}
   }, 20000);
 })();

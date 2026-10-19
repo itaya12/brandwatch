@@ -16,7 +16,7 @@ from sqlalchemy.orm import Session
 from brandwatch import tenancy
 from brandwatch.api.auth import current_user
 from brandwatch.api.deps import get_session
-from brandwatch.db.enums import CandidateState, FindingState, Severity, TakedownState
+from brandwatch.db.enums import CandidateState, FindingState, JobState, Severity, TakedownState
 from brandwatch.db.models import (
     AnalystLabel,
     ApiUsage,
@@ -226,8 +226,17 @@ def dashboard(
         .where(Finding.brand_id.in_(brand_ids), TakedownDraft.state.in_(
             [TakedownState.SENT, TakedownState.ACKNOWLEDGED, TakedownState.IN_PROGRESS, TakedownState.RESOLVED])),
     )  # fmt: skip
+    # sent, and nobody answered for a week: the request to chase
+    takedowns_stale = _count(
+        session,
+        sa.select(TakedownDraft.id).join(Finding, Finding.id == TakedownDraft.finding_id)
+        .where(Finding.brand_id.in_(brand_ids), TakedownDraft.state.in_([TakedownState.SENT, TakedownState.ACKNOWLEDGED]),
+               TakedownDraft.sent_at.is_not(None), TakedownDraft.sent_at < now - timedelta(days=7)),
+    )  # fmt: skip
+    last_scan_at = session.scalar(sa.select(sa.func.max(jobs_q.subquery().c.created_at)))
     kpis = {
         "baselines": baselines,
+        "takedowns_stale": takedowns_stale,
         "takedowns_total": takedowns_total,
         "takedowns_sent": takedowns_sent,
         "confirmed_no_takedown": len([i for i in confirmed_ids if i not in with_takedown]),
@@ -257,6 +266,7 @@ def dashboard(
         "campaigns": campaigns,
         "iocs": iocs,
         "takedowns_open": takedowns_open,
+        "running": 0,  # set below, with running_jobs
     }
 
     # ---- distributions ---------------------------------------------------------------------
@@ -479,8 +489,22 @@ def dashboard(
         },
     }  # fmt: skip
 
+    # the scans running right now (any kind), for the "Scans now" panel
+    bnames = {b.id: b.name for b in brands}
+    running_jobs = [
+        {"id": str(j.id), "kind": j.kind, "state": j.state.value, "brand": bnames.get(j.brand_id), "created_at": j.created_at.isoformat()}
+        for j in session.scalars(
+            sa.select(ScanJob).where(ScanJob.workspace_id == ws, ScanJob.state.in_([JobState.QUEUED, JobState.RUNNING]),
+                                     *( [ScanJob.brand_id.in_(brand_ids)] if brand_id else []))
+            .order_by(ScanJob.created_at.desc()).limit(12)
+        ).all()
+    ]  # fmt: skip
+    kpis["running"] = len(running_jobs)
+
     return {
         "generated_at": now.isoformat(),
+        "last_scan_at": _aware(last_scan_at).isoformat() if last_scan_at else None,
+        "running_jobs": running_jobs,
         "brand": None
         if not brand_id or not brands
         else {"id": str(brands[0].id), "name": brands[0].name},

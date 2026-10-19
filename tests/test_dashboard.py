@@ -121,8 +121,8 @@ def test_dashboard_payload_and_geo_points(client, engine):
         "globe.gl",
         "canvasGlobe",
         "Live feed",
-        "What the system does",
-        "Budget meter",
+        'id="status-bar"',
+        'class="map-kpis"',
         "shopn0va.com",
     ):
         assert needle in page.text, needle

@@ -184,7 +184,7 @@ def test_a_brand_never_scanned_is_named_on_the_dashboard(engine, tmp_path):
         name = _name()
         b = c.post("/api/brands", json={"name": name, "domains": ["never-scanned.example"], "preset": "basic"}).json()
         page = ui.get("/ui/dashboard").text
-        panel = page.split('id="first-scan"')[1].split('id="action-required"')[0].split('id="hero"')[0][:4000]
+        panel = page.split('id="first-scan"')[1].split('id="action-required"')[0].split('id="geo"')[0][:4000]
         assert "Not scanned yet" in panel and (name in panel or "brands with no scan" in panel)
         assert f'href="/ui/brands/{b["id"]}#scan"' in page
 

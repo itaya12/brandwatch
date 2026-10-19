@@ -147,11 +147,10 @@ def test_how_it_works_settings_and_dashboard_tell_the_story(engine, tmp_path):
         dash = ui.get("/ui/dashboard").text
         for html in (dash, page, settings):
             assert _nested_links(html) == []
-        assert (
-            'id="how-strip"' in dash
-            and 'id="under-the-hood"' in dash
-            and "Nothing is sent automatically" in dash
-        )
+        # the dashboard carries scan data only; the explanations live in How it works
+        assert 'id="geo"' in dash and 'id="status-bar"' in dash
+        for prose in ("Nothing is sent automatically", "What the system does", "Finds the fake", 'id="how-strip"', 'id="under-the-hood"'):
+            assert prose not in dash, prose
         login = TestClient(app).get("/ui/login").text
         assert "DEMO · admin / admin" in login and "a human decides every step" in login
         h = c.get("/health").json()

@@ -688,7 +688,7 @@
           <div class="mod">providers/base.py · providers/registry.py{% if stops.scan %} · <a href="{{ stops.scan }}">see the alerts panel</a>{% endif %}</div></div>
         <div class="card" id="ledger"><h3>Cost ledger &amp; budgets</h3>
           <p>Every paid call is recorded with its cost; daily call and spend caps are checked over the trailing 24 h <em>before</em> the call, so a scan stops spending instead of overspending.</p>
-          <div class="mod">providers/ledger.py · <a href="/ui/dashboard#under-the-hood">budget meter</a></div></div>
+          <div class="mod">providers/ledger.py · <a href="/ui/dashboard#status-bar">budget meter</a></div></div>
         <div class="card" id="golden"><h3>Golden dataset gate</h3>
           <p>{{ facts.golden.total }} recorded scenarios ({{ facts.golden.get('phishing', 0) }} phishing incl. cloaked kits, {{ facts.golden.get('legit', 0) }} legitimate, {{ facts.golden.get('brand_related_legit', 0) }} brand-related legitimate, {{ facts.golden.get('suspicious_not_phishing', 0) }} suspicious-but-not-phishing) run through the real pipeline in CI.</p>
           <p>The build fails below precision {{ facts.golden_gate.precision }} / recall {{ facts.golden_gate.recall }} / FP rate {{ facts.golden_gate.fp_rate }}; last measured {{ '%.2f'|format(facts.golden_measured.precision) }} / {{ '%.2f'|format(facts.golden_measured.recall) }} / {{ '%.2f'|format(facts.golden_measured.fp_rate) }}. The same corpus drives the $0 demo.</p>
