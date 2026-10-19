@@ -24,19 +24,76 @@
   .dhead .meta .chip{display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border:1px solid var(--border);border-radius:999px;background:var(--panel2)}
   .dhead .right{margin-left:auto;display:flex;gap:8px;align-items:center}
   .dhead select{width:auto}
-  /* the key numbers, then the map of every confirmed site */
+  /* the attack map, full width, the numbers on it */
   .geo{position:relative;margin:2px 0 0}
-  .map-kpis{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 2px}
-  .mk{pointer-events:auto;display:flex;flex-direction:column;min-width:96px;padding:8px 12px;border:1px solid rgba(53,199,242,.28);border-radius:12px;background:var(--panel2);color:var(--text);text-decoration:none;transition:border-color .2s}
+  .map-kpis{position:absolute;left:12px;right:110px;top:12px;z-index:5;display:flex;flex-wrap:wrap;gap:8px;pointer-events:none}
+  .mk{pointer-events:auto;display:flex;flex-direction:column;min-width:96px;padding:8px 12px;border:1px solid rgba(53,199,242,.28);border-radius:12px;background:rgba(6,10,18,.72);backdrop-filter:blur(6px);color:var(--text);text-decoration:none;transition:border-color .2s}
   a.mk:hover{border-color:var(--accent)}
   .mk b{font:700 26px/1 var(--display);letter-spacing:.02em}
   .mk span{font:600 11px var(--mono);letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin-top:4px;white-space:nowrap}
   .mk.crit b{color:var(--crit)}.mk.hi b{color:var(--high)}.mk.ok b{color:var(--low)}.mk.cy b{color:var(--accent2)}
   .mk.thin{min-width:0;background:rgba(6,10,18,.55)}.mk.thin b{font-size:20px}
-  #mapviews{margin-top:12px!important}
+  .maptog{position:absolute;right:12px;top:12px;z-index:6}
+  .maptog button{padding:5px 10px;font-size:11.5px;background:rgba(6,10,18,.8)}
+  .nomap .geo #globe{display:none}
+  .nomap .map-kpis{position:static;margin:0 0 4px}.nomap .maptog{position:static;display:flex;justify-content:flex-end;margin-bottom:6px}
+  .globe-wrap{position:relative;background:radial-gradient(ellipse at center,#0b1626 0%,var(--console) 70%);border:1px solid var(--border);border-radius:14px;overflow:hidden;height:580px;min-height:0}
+  .globe-wrap canvas{display:block}
+  /* The wheel belongs to the page until the map is asked for it: a 580px box that swallows scroll
+     traps the reader halfway down the dashboard. Clicking arms it; the ring says who has the wheel. */
+  .globe-wrap{transition:box-shadow .2s,border-color .2s}
+  .globe-wrap.armed{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent),0 0 26px rgba(53,199,242,.22)}
+  .zoomhint{position:absolute;inset:0;z-index:7;display:grid;place-items:center;pointer-events:none;
+    opacity:0;transition:opacity .22s;background:rgba(6,10,18,.42)}
+  .zoomhint.show{opacity:1}
+  .zoomhint span{padding:9px 16px;border:1px solid var(--accent);border-radius:999px;
+    background:rgba(6,10,18,.92);font:600 12px var(--mono);letter-spacing:.07em;text-transform:uppercase;
+    color:var(--accent2);box-shadow:0 10px 30px rgba(0,0,0,.5)}
+  .globe-legend{z-index:2;pointer-events:none}
+  .globe-legend{position:absolute;right:14px;bottom:12px;font-family:var(--mono);font-size:11px;color:var(--muted);text-align:right}
+  .globe-legend i{display:inline-block;width:8px;height:8px;border-radius:50%;margin-left:6px;vertical-align:middle}
+  /* globe and flat map share the box; the switch picks one */
+  .globe-wrap .gview{position:absolute;inset:0}
+  .globe-wrap .gview[hidden]{display:none}
+  .gswitch{position:absolute;left:12px;bottom:12px;z-index:3;display:flex;border:1px solid rgba(53,199,242,.4);border-radius:999px;overflow:hidden;background:rgba(6,10,18,.85)}
+  .gswitch button{border:0;border-radius:0;background:transparent;padding:6px 14px;font:600 11px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);cursor:pointer;box-shadow:none}
+  .gswitch button:hover{color:var(--text)}
+  .gswitch button.on{background:rgba(53,199,242,.18);color:var(--accent2)}
+  .gzoom{position:absolute;right:12px;top:50%;transform:translateY(-50%);z-index:3;display:flex;flex-direction:column;border:1px solid rgba(53,199,242,.4);border-radius:10px;overflow:hidden;background:rgba(6,10,18,.85)}
+  .gzoom button{border:0;border-radius:0;background:transparent;width:34px;height:32px;padding:0;font:600 16px/1 var(--mono);color:var(--accent2);cursor:pointer;box-shadow:none}
+  .gzoom button+button{border-top:1px solid rgba(53,199,242,.25)}
+  .gzoom button:hover{background:rgba(53,199,242,.15);color:var(--text)}
+  /* hover card for one attack on the map */
+  .globe-wrap .gtip{position:absolute;z-index:4;pointer-events:none;width:max-content;min-width:220px;max-width:min(300px,calc(100% - 16px));padding:10px 12px;border-radius:10px;border:1px solid rgba(53,199,242,.45);background:rgba(8,12,22,.95);box-shadow:0 10px 30px rgba(0,0,0,.45);font-size:12.5px;color:var(--text);animation:fadeUp .18s both}
+  .globe-wrap .gtip[hidden]{display:none}
+  .gtip .gt-h{display:flex;align-items:center;gap:8px;font:600 13px var(--mono);overflow-wrap:anywhere}
+  .gtip .dot{width:9px;height:9px;border-radius:50%;flex:0 0 auto;box-shadow:0 0 8px currentColor}
+  .gtip .gt-r{margin-top:6px}
+  .gtip .sev{font:700 11px var(--mono);letter-spacing:.08em;padding:1px 6px;border-radius:999px;border:1px solid currentColor;margin-right:4px}
+  .gtip .sev.critical{color:var(--crit)}.gtip .sev.high{color:var(--high)}.gtip .sev.medium{color:var(--med)}.gtip .sev.low{color:var(--low)}
+  .gtip .gt-m{color:var(--muted);margin-top:3px;overflow-wrap:anywhere}
+  .gtip .gt-go{display:block;margin-top:8px;color:var(--accent2);font-weight:600}
+  .gtip .gt-list{list-style:none;margin:6px 0 0;padding:0;display:grid;gap:4px}
+  .gtip .gt-list li{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:6px;align-items:center;font-size:12px}
+  .gtip .gt-list .mono{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .gtip .gt-list .sc{color:var(--muted);font:11px var(--mono)}
+  .globe-legend .hint{display:block;margin-top:6px;color:var(--accent2)}
+  .globe-legend .hint.tap{display:none}
+  @media (max-width:600px){.globe-legend .hint.mouse{display:none}}
+  @media (hover:none){.globe-wrap .gtip{pointer-events:auto}.globe-legend .hint.mouse{display:none}.globe-legend .hint.tap{display:block}}
+  /* two maps, one tab bar: where the attacks are hosted (the default), and how the confirmed sites connect */
+  .geotabs{display:flex;gap:0;margin:2px 0 10px;border:1px solid var(--border);border-radius:10px;overflow:hidden;width:max-content;max-width:100%}
+  .geotabs button{border:0;border-radius:0;background:transparent;padding:8px 16px;font:600 12.5px var(--sans);color:var(--muted);cursor:pointer;box-shadow:none;white-space:nowrap;display:inline-flex;gap:7px;align-items:center}
+  .geotabs button+button{border-left:1px solid var(--border)}
+  .geotabs button:hover{color:var(--text)}
+  .geotabs button[aria-selected="true"]{background:rgba(53,199,242,.16);color:var(--accent2)}
+  .geotabs .n{font:500 11.5px var(--mono);color:var(--muted)}
+  .infra-on #geo .globe-wrap,.infra-on #geo .maptog{display:none}
+  .infra-on .map-kpis{position:static;margin:0 0 4px}
+  #infra #mapviews{margin-top:10px!important}
   .sm-skel{height:560px;border:1px solid var(--border);border-radius:8px;margin-top:10px;display:grid;place-items:center;color:var(--muted);font:12px var(--mono);letter-spacing:.06em;
     background:radial-gradient(circle at 50% 45%,color-mix(in srgb,var(--accent) 7%,var(--panel)),var(--console) 70%)}
-  @media (max-width:600px){.sm-skel{height:400px}}
+  @media (max-width:600px){.sm-skel{height:400px}.geotabs{width:100%}.geotabs button{flex:1 1 0;justify-content:center;padding:9px 8px;font-size:12px}.geotabs .n{display:none}}
   /* lists */
   .lrow{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:6px 0;border-bottom:1px solid var(--border);font-size:12.5px}
   .lrow:last-child{border-bottom:0}
@@ -93,12 +150,16 @@
   .status-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--low);box-shadow:0 0 8px var(--low)}
   .status-dot.off{background:var(--muted);box-shadow:none}
   @media (max-width:900px){
+    .globe-wrap{height:420px}
+    .map-kpis{position:static;margin:0 0 8px;right:auto}
+    .maptog{position:static;display:flex;justify-content:flex-end;margin:0 0 6px}
     .mk{min-width:0;flex:1 1 calc(33% - 8px);padding:6px 9px;background:var(--panel2)}.mk b{font-size:20px}.mk span{font-size:11px;white-space:normal}.mk .pulse{display:none}
     .brow{grid-template-columns:minmax(0,1fr) auto;gap:4px 10px}.brow .n,.brow .when,.brow svg{display:none}.brow .n.bad{display:block}
     .feed{height:260px}
     .bars .row{grid-template-columns:70px 1fr 40px;gap:8px}
   }
   @media (max-width:600px){
+    .globe-wrap{height:290px}
     .dhead h1 .muted{display:block;margin-top:2px}.dhead h1 .d1{display:none}
     .dhead h1{font-size:22px}.dhead .right{margin-left:0;width:100%}.dhead .right form{flex:1}.dhead .right select{width:100%}
     .pair img{height:90px}
@@ -157,8 +218,13 @@
 </div>
 {% endif %}
 
-{# ================================================================ the key numbers, then every confirmed site on one map #}
-<section class="geo" id="geo" aria-label="Key numbers and the map of confirmed sites">
+<div class="geotabs" role="tablist" aria-label="Which map">
+  <button type="button" role="tab" id="tab-geo" aria-selected="true" aria-controls="geo">Attack map</button>
+  <button type="button" role="tab" id="tab-infra" aria-selected="false" aria-controls="infra">Attacker infrastructure <span class="n" id="infra-n"></span></button>
+</div>
+{# ================================================================ the attack map, full width, the numbers on it #}
+<script>try { if (localStorage.getItem('bw-dash-map') === 'off') document.documentElement.classList.add('nomap'); } catch (e) { /* private window */ }</script>
+<section class="geo" id="geo" role="tabpanel" aria-labelledby="tab-geo">
   <div class="map-kpis">
     <a class="mk crit" href="/ui/findings?state=open&severity=critical{{ bq }}"><b class="num" data-k="critical_open" data-count="{{ k.critical_open }}">0</b><span><span class="pulse"></span> critical open</span></a>
     <a class="mk hi" href="/ui/findings?state=open&severity=high{{ bq }}"><b class="num" data-k="high_open" data-count="{{ k.high_open }}">0</b><span>high open</span></a>
@@ -166,8 +232,15 @@
     <a class="mk ok" href="/ui/findings?state=confirmed{{ bq }}"><b class="num" data-k="findings_confirmed" data-count="{{ k.findings_confirmed }}">0</b><span>confirmed</span></a>
     <a class="mk" href="/ui/takedowns{{ bq0 }}"><b class="num" data-k="takedowns_sent" data-count="{{ k.takedowns_sent }}">0</b><span>takedowns sent</span></a>
     <a class="mk" href="/ui/candidates?state=watching{{ bq }}"><b class="num" data-k="candidates_watching" data-count="{{ k.candidates_watching }}">0</b><span>on the watchlist</span></a>
-    <a class="mk thin" id="mk-groups" href="/ui/campaigns/all{{ bq0 }}"><b class="num">…</b><span>connected groups</span></a>
+    <span class="mk thin" title="impersonating hosts placed on the map{{ ' · ' ~ d.geo.cdn_hidden ~ ' behind a CDN (location hidden)' if d.geo.cdn_hidden }}"><b class="num">{{ d.geo.points|length }}</b><span>hosts · {{ d.geo.countries|length }} countries{{ ' · ' ~ d.geo.cdn_hidden ~ ' CDN' if d.geo.cdn_hidden }}</span></span>
   </div>
+  <div class="maptog"><button type="button" class="small ghost" id="maptog" aria-controls="globe"></button></div>
+  <div class="globe-wrap" id="globe">
+    <div class="zoomhint" aria-hidden="true"><span>Click the map to zoom</span></div>
+    <div class="globe-legend">critical<i style="background:var(--crit)"></i><br>high<i style="background:var(--high)"></i><br>medium<i style="background:var(--med)"></i><br>confirmed<i style="background:var(--accent2)"></i><span class="hint mouse">click the map to zoom · hover an attack · click it to open</span><span class="hint tap">tap an attack · + − to zoom</span></div>
+  </div>
+</section>
+<section id="infra" role="tabpanel" aria-labelledby="tab-infra" hidden>
   <div id="sites-map" data-src="/ui/dashboard/sites-map{{ bq0 }}">
     <div class="panel" id="mapviews"><h2 style="margin:0">All confirmed sites</h2><div class="sm-skel"><span><span class="radar"></span> drawing the map…</span></div></div>
   </div>
@@ -328,10 +401,15 @@
 </div>
 </div>
 
+<script src="https://unpkg.com/globe.gl@2.33.2/dist/globe.gl.min.js" onerror="window.__globeFailed=true"></script>
 <script>
 (function(){
+  const data = {{ d.geo|tojson }};
   const brandId = {{ (d.brand.id if d.brand else '')|tojson }};
   const ink = BW.ink;  // the palette comes from the stylesheet, never from a hex written here
+  const color = p => p.state === 'confirmed' ? ink('accent2') : BW.sev(p.severity);
+  // the brand's own side of every picture: its home, its traffic, the near end of every route
+  const HOME_GREEN = '#2EE6A6';
 
   // count-up KPIs are handled by the shared motion layer in base.html
 
@@ -387,6 +465,572 @@
     setTimeout(pollFeed, document.hidden ? 10000 : 2500);
   }
   pollFeed();
+
+  // ---- globe (globe.gl if the CDN loaded, else a hand-drawn canvas globe)
+  // the map can be hidden (remembered in this browser); hidden, it is not started at all
+  const tog = document.getElementById('maptog');
+  const hidden = document.documentElement.classList.contains('nomap');
+  if (tog) { tog.textContent = hidden ? 'show the attack map ▾' : 'hide the attack map ▴';
+    tog.addEventListener('click', () => { try { localStorage.setItem('bw-dash-map', hidden ? 'on' : 'off'); } catch (e) { /* ignore */ } location.reload(); }); }
+  if (hidden) return;
+  const el = document.getElementById('globe');
+  // size from the real box (the CSS sets its height per screen size), never from a breakpoint guess
+  const phone = window.matchMedia('(max-width: 900px)').matches;
+  const W = el.clientWidth || 700, H = el.clientHeight || (phone ? 380 : 580);
+  // camera altitude that makes the globe ~78% of the box's smaller side (globe.gl: 50° vertical fov)
+  const fitAltitude = (w, h) => { const f = Math.min(0.92, 0.78 * Math.min(w, h) / h); return 1 / Math.sin(Math.atan(f * Math.tan(25 * Math.PI / 180))) - 1; };
+  const points = data.points, home = data.home;
+
+  // Two views of the same attacks, one switch (the flat map by default):
+  //   map   — neon coastlines, routes from the brand's home with travelling packets, a hexagon where
+  //           each attack is hosted; nearby attacks merge into one marker with a count; wheel / buttons
+  //           zoom, drag moves the zoomed map.
+  //   globe — turns on its own; dragging turns it by hand; wheel / buttons zoom.
+  // Hover shows the attack (or the list behind a merged marker); a click opens it (or zooms in).
+  // Hostnames, cities and orgs come from attacker data: always escaped.
+  // ---- who owns the wheel ---------------------------------------------------------------------
+  // The map is 580px tall. While it zoomed on every wheel event the dashboard could not be
+  // scrolled past it. Now a click hands the wheel to the map, and clicking away, leaving the box
+  // or pressing Escape hands it back. The flag lives on the element so both views can read it.
+  const geoBox = document.querySelector('.globe-wrap');
+  const zoomHint = geoBox && geoBox.querySelector('.zoomhint');
+  let hintTimer = 0;
+  const zoomArmed = () => !!(geoBox && geoBox.classList.contains('armed'));
+  const armZoom = on => {
+    if (!geoBox || zoomArmed() === on) return;
+    geoBox.classList.toggle('armed', on);
+    if (window.__bwGlobeCtl) window.__bwGlobeCtl.enableZoom = on;
+  };
+  const flashHint = () => {
+    if (!zoomHint) return;
+    zoomHint.classList.add('show'); clearTimeout(hintTimer);
+    hintTimer = setTimeout(() => zoomHint.classList.remove('show'), 1400);
+  };
+  if (geoBox) {
+    geoBox.addEventListener('pointerdown', () => armZoom(true));
+    geoBox.addEventListener('pointerleave', () => armZoom(false));
+    document.addEventListener('pointerdown', e => { if (!geoBox.contains(e.target)) armZoom(false); }, true);
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') armZoom(false); });
+  }
+  const h = v => String(v ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const rgba = (hex, a) => { const n = parseInt(String(hex).slice(1), 16); return `rgba(${n >> 16},${(n >> 8) & 255},${n & 255},${a})`; };
+  const KIND = {shop: 'Suspicious shop', phishing: 'Phishing site'};
+  const SEV = {critical: 3, high: 2, medium: 1, low: 0};
+  const sevTag = s => `<span class="sev ${h(s)}">${h(String(s || '').toUpperCase())}</span>`;
+  const touch = window.matchMedia('(hover: none)').matches;
+  const tip = document.createElement('div'); tip.className = 'gtip'; tip.hidden = true;
+  let hovered = null, mouse = {x: 0, y: 0}, refresh = () => {}, onHoverChange = () => {}, mode = 'map';
+  function placeTip(){
+    if (tip.hidden) return;
+    const r = el.getBoundingClientRect(), tw = tip.offsetWidth, th = tip.offsetHeight;
+    let x = mouse.x + 16, y = mouse.y + 16;
+    if (x + tw > r.width - 8) x = mouse.x - tw - 16;
+    if (y + th > r.height - 8) y = mouse.y - th - 16;
+    tip.style.left = Math.max(8, Math.min(x, r.width - tw - 8)) + 'px'; tip.style.top = Math.max(8, y) + 'px';
+  }
+  function showTip(p){
+    if (p === hovered) return;
+    hovered = p || null;
+    if (!p) { tip.hidden = true; el.style.cursor = ''; refresh(); onHoverChange(); return; }
+    if (p.cluster) {  // a merged marker: the attacks behind it
+      const rows = p.members.slice(0, 6).map(m => `<li>${sevTag(m.severity)}<span class="mono">${h(m.hostname)}</span><span class="sc">${h(m.score ?? '–')}</span></li>`).join('');
+      tip.innerHTML = `<div class="gt-h"><span class="dot" style="background:${p.col}"></span><b>${p.members.length} attacks in this area</b></div>
+        <ul class="gt-list">${rows}</ul>${p.members.length > 6 ? `<div class="gt-m">+ ${p.members.length - 6} more</div>` : ''}
+        <div class="gt-go">${touch ? 'tap again to zoom in' : 'click to zoom in and see each one →'}</div>`;
+      el.style.cursor = 'zoom-in';
+    } else {
+      const where = [p.city, p.country].filter(Boolean).join(', ') || 'location unknown';
+      tip.innerHTML = `<div class="gt-h"><span class="dot" style="background:${color(p)}"></span><b>${h(p.hostname)}</b></div>
+        <div class="gt-r">${sevTag(p.severity)} ${h(KIND[p.kind] || KIND.phishing)} · score ${h(p.score ?? '–')}${p.state === 'confirmed' ? ' · <span style="color:var(--accent2)">confirmed</span>' : ''}</div>
+        <div class="gt-m">${h(where)} · <span class="mono">${h(p.ip)}</span></div>${p.org ? `<div class="gt-m">hosted by ${h(p.org)}</div>` : ''}
+        ${p.finding_id ? `<a class="gt-go" href="/ui/findings/${h(p.finding_id)}">${touch ? 'open the finding →' : 'click to open the finding →'}</a>` : ''}`;
+      el.style.cursor = p.finding_id ? 'pointer' : '';
+    }
+    tip.hidden = false; placeTip(); refresh(); onHoverChange();
+  }
+  let zoomInto = null;
+  const open = (p, ev) => {
+    if (!p) return;
+    if (touch && hovered !== p) { showTip(p); return; }  // phones: first tap shows it, the second acts
+    if (p.cluster) { if (zoomInto) zoomInto(p); return; }
+    if (!p.finding_id) return;
+    const url = '/ui/findings/' + p.finding_id;
+    if (ev && (ev.ctrlKey || ev.metaKey)) window.open(url, '_blank', 'noopener'); else window.location = url;
+  };
+  // hover = the attack nearest the pointer on screen, else the globe arc under it; a short grace
+  // period stops the card flickering while the pointer crosses a gap
+  let nearest = () => null, nearHover = null, arcHover = null, hideTimer = null;
+  function syncHover(){
+    const p = nearHover || arcHover;
+    clearTimeout(hideTimer);
+    if (p) showTip(p); else hideTimer = setTimeout(() => { if (!(nearHover || arcHover)) showTip(null); }, 160);
+  }
+  el.addEventListener('mousemove', ev => {
+    const r = el.getBoundingClientRect(); mouse = {x: ev.clientX - r.left, y: ev.clientY - r.top};
+    if (ev.buttons) return;  // dragging the map / globe, not pointing at something
+    nearHover = nearest(mouse.x, mouse.y); syncHover(); placeTip();
+  });
+  el.addEventListener('mouseleave', () => { nearHover = arcHover = null; clearTimeout(hideTimer); showTip(null); });
+  let down = null;
+  el.addEventListener('pointerdown', ev => { down = {x: ev.clientX, y: ev.clientY}; });
+  el.addEventListener('click', ev => {
+    if (ev.target.closest && ev.target.closest('.gtip a')) return;  // the card's own link
+    if (down && Math.hypot(ev.clientX - down.x, ev.clientY - down.y) > 6) return;  // the end of a drag, not a click
+    const r = el.getBoundingClientRect();
+    open(hovered || nearest(ev.clientX - r.left, ev.clientY - r.top), ev);
+  });
+  const dim = p => hovered !== null && hovered !== p;
+
+  // ---------------------------------------------------------------------------------------- globe
+  let globeZoom = null;
+  function globeGl(){
+    const arcs = home ? points.flatMap((p, i) => [
+      {startLat: home.lat, startLng: home.lon, endLat: p.lat, endLng: p.lon, p, trace: 'line'},
+      {startLat: home.lat, startLng: home.lon, endLat: p.lat, endLng: p.lon, p, trace: 'pulse', phase: (i * 0.53) % 1.6},
+    ]) : [];
+    const arcColor = d => d.trace === 'pulse'
+      ? [rgba(color(d.p), dim(d.p) ? 0.05 : 0.6), rgba(ink('text'), dim(d.p) ? 0.1 : 1)]
+      : [rgba(HOME_GREEN, dim(d.p) ? 0.05 : 0.6), rgba(color(d.p), dim(d.p) ? 0.09 : (hovered === d.p ? 1 : 0.92))];
+    // the standing line was 0.36 wide and vanished against the earth texture; the travelling
+    // pulse rides on top of it, so the two still read as one route rather than two
+    const arcStroke = d => d.trace === 'pulse' ? 0.95 : 0.7;
+    const pointColor = d => d.p && dim(d.p) ? rgba(d.color, 0.3) : (d.p && hovered === d.p ? ink('text') : d.color);
+    const labelColor = d => dim(d.p) ? rgba(d.color, 0.25) : d.color;
+    const g = Globe()(view3d).width(W).height(H)
+      .globeImageUrl('https://unpkg.com/three-globe/example/img/earth-night.jpg')
+      .bumpImageUrl('https://unpkg.com/three-globe/example/img/earth-topology.png')
+      .backgroundColor('rgba(0,0,0,0)').showAtmosphere(true).atmosphereColor(ink('accent')).atmosphereAltitude(0.2)
+      .arcsData(arcs).arcColor(arcColor).arcStroke(arcStroke).arcAltitudeAutoScale(0.42)
+      .arcDashLength(d => d.trace === 'pulse' ? 0.1 : 1).arcDashGap(d => d.trace === 'pulse' ? 1.5 : 0)
+      .arcDashInitialGap(d => d.trace === 'pulse' ? d.phase : 0).arcDashAnimateTime(d => d.trace === 'pulse' ? 2800 : 0)
+      .arcLabel(() => '').onArcHover(d => { arcHover = d ? d.p : null; syncHover(); })
+      .pointsData([...(home ? [{lat: home.lat, lng: home.lon, color: ink('accent2'), r: 0.55, p: null}] : []),
+                   ...points.map(p => ({lat: p.lat, lng: p.lon, color: color(p), r: p.severity === 'critical' ? 0.5 : 0.36, p}))])
+      .pointColor(pointColor).pointAltitude(0.012).pointRadius('r').pointLabel(() => '')
+      // where an attack lands: a ring in its severity colour (critical ones faster and wider)
+      .ringsData(points.map(p => ({lat: p.lat, lng: p.lon, p})))
+      .ringColor(d => t => rgba(color(d.p), (1 - t) * (dim(d.p) ? 0.15 : 0.85)))
+      .ringMaxRadius(d => d.p.severity === 'critical' ? 4.5 : 2.6).ringPropagationSpeed(d => d.p.severity === 'critical' ? 2.2 : 1.2)
+      .ringRepeatPeriod(d => d.p.severity === 'critical' ? 1100 : 2400)
+      .labelsData(points.slice(0, 12).map(p => ({lat: p.lat, lng: p.lon, text: p.hostname, color: color(p), p})))
+      .labelText('text').labelColor(labelColor).labelSize(0.9).labelDotRadius(0.25).labelAltitude(0.015).labelResolution(2)
+      .labelLabel(() => '');
+    refresh = () => { g.arcColor(d => arcColor(d)).pointColor(d => pointColor(d)).labelColor(d => labelColor(d)); };
+    nearest = (x, y) => {  // the closest attack on the side of the globe that faces the camera
+      const cam = g.camera().position, R2 = Math.pow(g.getGlobeRadius(), 2);
+      let best = null, bd = 16;
+      for (const p of points) {
+        const w = g.getCoords(p.lat, p.lon, 0.012);
+        if (w.x * cam.x + w.y * cam.y + w.z * cam.z <= R2) continue;
+        const sc = g.getScreenCoords(p.lat, p.lon, 0.012), d = Math.hypot(sc.x - x, sc.y - y);
+        if (d < bd) { bd = d; best = p; }
+      }
+      return best;
+    };
+    // it always turns on its own; it stops while you turn it by hand (and a moment after), and while
+    // the mouse is on an attack so the attack can be clicked
+    const ctl = g.controls(); ctl.autoRotateSpeed = 0.55; ctl.enableZoom = zoomArmed(); ctl.zoomSpeed = 0.8;
+    window.__bwGlobeCtl = ctl;  // the arming gate above toggles this
+    const fit = fitAltitude(W, H), R = g.getGlobeRadius();
+    ctl.minDistance = R * 1.35; ctl.maxDistance = R * (1 + fit * 1.9);
+    let handling = false, resume = null;
+    const still = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const setRot = () => { ctl.autoRotate = !still && !handling && !(hovered && !hovered.cluster); };
+    ctl.addEventListener('start', () => { handling = true; clearTimeout(resume); setRot(); });
+    ctl.addEventListener('end', () => { clearTimeout(resume); resume = setTimeout(() => { handling = false; setRot(); }, 1500); });
+    onHoverChange = setRot; setRot();
+    // look at the middle of the action: between the home point and where the kits are hosted
+    const kitLon = points.length ? points.reduce((a, p) => a + p.lon, 0) / points.length : 0;
+    const viewLon = home ? (home.lon + kitLon) / 2 : kitLon;
+    g.pointOfView({lat: 30, lng: viewLon, altitude: fit}, 0);
+    globeZoom = {
+      zoom(f){ const pov = g.pointOfView(), lo = ctl.minDistance / R - 1, hi = ctl.maxDistance / R - 1;
+               g.pointOfView({...pov, altitude: Math.max(lo, Math.min(hi, pov.altitude / f))}, 350); },
+      reset(){ g.pointOfView({lat: 30, lng: viewLon, altitude: fitAltitude(el.clientWidth || W, el.clientHeight || H)}, 600); },
+    };
+    // keep filling the box when the window or the grid around it changes size
+    if (window.ResizeObserver) {
+      let last = W + 'x' + H;
+      new ResizeObserver(() => {
+        const w = el.clientWidth, hh = el.clientHeight || H;
+        if (!w || !hh || last === w + 'x' + hh) return; last = w + 'x' + hh;
+        g.width(w).height(hh); g.pointOfView({altitude: fitAltitude(w, hh)}, 400);
+      }).observe(el);
+    }
+    el.__globe = g;
+    globeCtl = {pause: () => g.pauseAnimation(), resume: () => g.resumeAnimation()};
+  }
+
+  function canvasGlobe(){
+    const c = document.createElement('canvas'); c.width = W; c.height = H; view3d.appendChild(c);
+    const ctx = c.getContext('2d'), cx = W / 2, cy = H / 2; let rot = 0, z = 1;
+    const hits = [];
+    const R = () => Math.min(W, H) * 0.36 * z;
+    const proj = (lat, lon) => { const la = lat * Math.PI/180, lo = (lon + rot) * Math.PI/180; const x = Math.cos(la) * Math.sin(lo), y = Math.sin(la), zz = Math.cos(la) * Math.cos(lo); return {x: cx + R() * x, y: cy - R() * y, z: zz}; };
+    const at = (a, m, b, s) => ({x: (1-s)*(1-s)*a.x + 2*(1-s)*s*m.x + s*s*b.x, y: (1-s)*(1-s)*a.y + 2*(1-s)*s*m.y + s*s*b.y});
+    c.addEventListener('wheel', ev => {
+      if (!zoomArmed()) { flashHint(); return; }  // the page keeps the scroll
+      ev.preventDefault(); z = Math.max(0.7, Math.min(2.6, z * Math.exp(-ev.deltaY * 0.0015)));
+    }, {passive: false});
+    globeZoom = {zoom(f){ z = Math.max(0.7, Math.min(2.6, z * f)); }, reset(){ z = 1; }};
+    nearest = (x, y) => {
+      const r = c.getBoundingClientRect(), sx = x * (c.width / r.width), sy = y * (c.height / r.height);
+      let best = null, bd = 16;
+      for (const t of hits) { const d = Math.hypot(t.x - sx, t.y - sy); if (d < bd) { bd = d; best = t.p; } }
+      return best;
+    };
+    function frame(now){
+      if (view3d.hidden) { requestAnimationFrame(frame); return; }  // the map is shown instead
+      if (!(hovered && !hovered.cluster)) rot += 0.25;  // turns on its own, except while an attack is pointed at
+      const RR = R();
+      ctx.clearRect(0, 0, W, H); hits.length = 0;
+      const grd = ctx.createRadialGradient(cx - RR*0.3, cy - RR*0.3, RR*0.2, cx, cy, RR*1.15); grd.addColorStop(0, '#0f2238'); grd.addColorStop(1, ink('console'));
+      ctx.fillStyle = grd; ctx.beginPath(); ctx.arc(cx, cy, RR, 0, Math.PI*2); ctx.fill();
+      ctx.strokeStyle = 'rgba(53,199,242,.9)'; ctx.lineWidth = 1.2; ctx.shadowColor = ink('accent'); ctx.shadowBlur = 18; ctx.stroke(); ctx.shadowBlur = 0;
+      if (!still) {  // a radar ring leaves the centre every 3.2s and fades at the rim
+        const ph = ((now || 0) % 3200) / 3200;
+        ctx.strokeStyle = `rgba(53,199,242,${(1 - ph) * 0.33})`; ctx.lineWidth = 1;
+        ctx.beginPath(); ctx.arc(cx, cy, RR * (0.12 + ph * 0.92), 0, Math.PI * 2); ctx.stroke();
+      }
+      // the room's scanline, clipped to the sphere so the globe reads as a screen, not a ball
+      ctx.save(); ctx.beginPath(); ctx.arc(cx, cy, RR, 0, Math.PI * 2); ctx.clip();
+      ctx.strokeStyle = 'rgba(53,199,242,.055)'; ctx.lineWidth = 1;
+      for (let y = cy - RR; y <= cy + RR; y += 3) { ctx.beginPath(); ctx.moveTo(cx - RR, y); ctx.lineTo(cx + RR, y); ctx.stroke(); }
+      ctx.restore();
+      ctx.strokeStyle = 'rgba(53,199,242,.18)'; ctx.lineWidth = 1;
+      for (let lat = -60; lat <= 60; lat += 30) { ctx.beginPath(); for (let lon = -180; lon <= 180; lon += 4) { const p = proj(lat, lon); if (p.z < 0) { ctx.moveTo(p.x, p.y); continue; } ctx.lineTo(p.x, p.y); } ctx.stroke(); }
+      for (let lon = -180; lon < 180; lon += 30) { ctx.beginPath(); for (let lat = -90; lat <= 90; lat += 4) { const p = proj(lat, lon); if (p.z < 0) { ctx.moveTo(p.x, p.y); continue; } ctx.lineTo(p.x, p.y); } ctx.stroke(); }
+      const hp = home ? proj(home.lat, home.lon) : null;
+      points.forEach((p, i) => {
+        const t = proj(p.lat, p.lon), col = color(p), faded = dim(p);
+        ctx.globalAlpha = faded ? 0.18 : 1;
+        if (hp && !(hp.z < 0 && t.z < 0)) {
+          const m = {x: (hp.x + t.x) / 2 + (cy - (hp.y + t.y) / 2) * 0.35, y: (hp.y + t.y) / 2 - RR * 0.45};
+          const lg = ctx.createLinearGradient(hp.x, hp.y, t.x, t.y); lg.addColorStop(0, 'rgba(95,227,255,.25)'); lg.addColorStop(1, rgba(col, hovered === p ? 1 : 0.75));
+          ctx.strokeStyle = lg; ctx.lineWidth = hovered === p ? 2.4 : 1.3;
+          ctx.beginPath(); ctx.moveTo(hp.x, hp.y); ctx.quadraticCurveTo(m.x, m.y, t.x, t.y); ctx.stroke();
+          const s = ((now || 0) / 2800 + i * 0.53) % 1.6;
+          if (s <= 1) { const q = at(hp, m, t, s); ctx.fillStyle = ink('text'); ctx.shadowColor = col; ctx.shadowBlur = 12; ctx.beginPath(); ctx.arc(q.x, q.y, 2.4, 0, Math.PI*2); ctx.fill(); ctx.shadowBlur = 0; }
+        }
+        if (t.z >= 0) {
+          const ring = ((now || 0) / (p.severity === 'critical' ? 1100 : 2400) + i * 0.3) % 1;
+          ctx.strokeStyle = rgba(col, (1 - ring) * 0.8); ctx.lineWidth = 1.2; ctx.beginPath(); ctx.arc(t.x, t.y, 4 + ring * (p.severity === 'critical' ? 16 : 10), 0, Math.PI*2); ctx.stroke();
+          ctx.fillStyle = col; ctx.beginPath(); ctx.arc(t.x, t.y, (p.severity === 'critical' ? 4.5 : 3) * (hovered === p ? 1.6 : 1), 0, Math.PI*2); ctx.fill();
+          ctx.fillStyle = 'rgba(230,237,245,.85)'; ctx.font = '11px JetBrains Mono, monospace'; ctx.fillText(p.hostname, t.x + 7, t.y + 4);
+          hits.push({x: t.x, y: t.y, p});
+        }
+        ctx.globalAlpha = 1;
+      });
+      if (hp && hp.z >= 0) { ctx.fillStyle = ink('accent2'); ctx.beginPath(); ctx.arc(hp.x, hp.y, 5, 0, Math.PI*2); ctx.fill(); ctx.font = '11px JetBrains Mono, monospace'; ctx.fillText(home.label, hp.x + 8, hp.y - 6); }
+      requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
+  }
+
+  // ------------------------------------------------------------------------------------- flat map
+  function flatMap(box){
+    const c = document.createElement('canvas'); box.appendChild(c);
+    const ctx = c.getContext('2d'), base = document.createElement('canvas'), bctx = base.getContext('2d');
+    // the globe is drawn, not styled: these four are its own materials (land, coastline, the
+    // traffic arcs and their head) and carry no meaning the palette owns. Everything with a
+    // meaning — severity, confirmed, the brand's home — comes from BW.
+    const GREEN = HOME_GREEN, LAT_TOP = 78, LAT_BOT = -56, KMAX = 8, MERGE = 24;
+    // Green belongs to the brand: its home, and its own traffic. The sweep is an instrument, so it
+    // is the accent — the one colour this system lets mean "alive". CYAN is read from the
+    // stylesheet, so the map cannot drift from the palette.
+    const CYAN = BW.ink('accent'), CYAN2 = BW.ink('accent2');
+    const calm = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const pinged = new Map();  // cluster -> when the sweep last crossed it
+    const miller = lat => 1.25 * Math.log(Math.tan(Math.PI / 4 + 0.4 * lat * Math.PI / 180));
+    let w = 0, hgt = 0, dpr = 1, proj = null, rings = null, coast = null, nodes = [], hqB = null, area = null;
+    let raf = 0, running = false, k = 1, tx = 0, ty = 0, dirty = true, anim = null, clusters = [], labels = [];
+    fetch('/ui/assets/world-land.json').then(r => r.ok ? r.json() : null).then(j => { if (j) { rings = j.rings; coast = null; dirty = true; } }).catch(() => {});
+    const S = (x, y) => [x * k + tx, y * k + ty];
+
+    function layout(){
+      w = el.clientWidth || W; hgt = el.clientHeight || H; dpr = Math.min(2, window.devicePixelRatio || 1);
+      c.width = base.width = Math.round(w * dpr); c.height = base.height = Math.round(hgt * dpr);
+      c.style.width = w + 'px'; c.style.height = hgt + 'px';
+      const yTop = miller(LAT_TOP), yBot = miller(LAT_BOT), mh = yTop - yBot, RAD = Math.PI / 180;
+      // the number chips sit above the map on phones and over its top edge on wider screens
+      const padX = phone ? 10 : 16, padTop = phone ? 22 : 84, padBot = phone ? 60 : 64;
+      const aw = w - 2 * padX - 44, ah = hgt - padTop - padBot;  // 44 px on the right for the zoom buttons
+      // the longitudes to show: everything the attacks touch (±25°), widened to fill the box's height
+      const lons = [...points.map(p => p.lon), ...(home ? [home.lon] : [])];
+      const lo = lons.length ? Math.max(-180, Math.min(...lons) - 25) : -180, hi = lons.length ? Math.min(180, Math.max(...lons) + 25) : 180;
+      const fill = aw / (ah / mh) / RAD;
+      const span = Math.min(360, Math.max(hi - lo, fill));
+      const left = Math.max(-180, Math.min(180 - span, (lo + hi) / 2 - span / 2));
+      const s = Math.min(aw / (span * RAD), ah / mh);
+      const ox = padX + (aw - s * span * RAD) / 2, oy = padTop + (ah - s * mh) / 2;
+      area = {x: ox, y: oy, w: s * span * RAD, h: s * mh, left, span};
+      proj = (lat, lon) => [ox + (lon - left) * RAD * s, oy + (yTop - miller(Math.max(LAT_BOT - 6, Math.min(LAT_TOP + 6, lat)))) * s];
+      hqB = home ? proj(home.lat, home.lon) : null;
+      nodes = points.map((p, i) => { const [x, y] = proj(p.lat, p.lon); return {p, bx: x, by: y, col: color(p), ph: (i * 0.618) % 1}; });
+      coast = null; clampView(); dirty = true;
+    }
+    function clampView(){  // the map keeps covering the box it had before zooming
+      k = Math.max(1, Math.min(KMAX, k));
+      const minTx = (area.x + area.w) * (1 - k), maxTx = area.x * (1 - k), minTy = (area.y + area.h) * (1 - k), maxTy = area.y * (1 - k);
+      tx = Math.min(maxTx, Math.max(minTx, tx)); ty = Math.min(maxTy, Math.max(minTy, ty));
+    }
+    function zoomAt(sx, sy, f, animate){
+      const nk = Math.max(1, Math.min(KMAX, k * f));
+      if (Math.abs(nk - k) < 1e-3) return;
+      const to = {k: nk, tx: sx - (sx - tx) * (nk / k), ty: sy - (sy - ty) * (nk / k)};
+      if (animate) { anim = {from: {k, tx, ty}, to, t0: performance.now(), dur: 340}; return; }
+      k = to.k; tx = to.tx; ty = to.ty; clampView(); dirty = true;
+    }
+    // wheel zooms around the pointer; dragging moves the zoomed map; double-click zooms in
+    c.addEventListener('wheel', ev => {
+      if (!zoomArmed()) { flashHint(); return; }  // the page keeps the scroll until the map is clicked
+      ev.preventDefault(); const r = c.getBoundingClientRect();
+      zoomAt(ev.clientX - r.left, ev.clientY - r.top, Math.exp(-ev.deltaY * 0.0016), false);
+    }, {passive: false});
+    let drag = null;
+    c.addEventListener('pointerdown', ev => { if (k > 1.001) { drag = {x: ev.clientX, y: ev.clientY, tx, ty}; c.setPointerCapture(ev.pointerId); } });
+    c.addEventListener('pointermove', ev => {
+      if (!drag) { c.style.cursor = k > 1.001 && !hovered ? 'grab' : ''; return; }
+      tx = drag.tx + ev.clientX - drag.x; ty = drag.ty + ev.clientY - drag.y; clampView(); dirty = true; c.style.cursor = 'grabbing';
+    });
+    const endDrag = () => { drag = null; c.style.cursor = ''; };
+    c.addEventListener('pointerup', endDrag); c.addEventListener('pointercancel', endDrag);
+    c.addEventListener('dblclick', ev => { const r = c.getBoundingClientRect(); zoomAt(ev.clientX - r.left, ev.clientY - r.top, 2, true); });
+
+    function drawBase(){
+      bctx.setTransform(dpr, 0, 0, dpr, 0, 0); bctx.clearRect(0, 0, w, hgt);
+      bctx.save(); bctx.beginPath(); bctx.rect(area.x - 2, area.y - 6, area.w + 4, area.h + 12); bctx.clip();
+      bctx.setTransform(dpr * k, 0, 0, dpr * k, dpr * tx, dpr * ty);
+      // graticule every 20° and its crossing points
+      bctx.strokeStyle = 'rgba(53,199,242,.07)'; bctx.lineWidth = 1 / k;
+      const lonFrom = Math.ceil(area.left / 20) * 20, lonTo = area.left + area.span;
+      for (let lon = lonFrom; lon <= lonTo; lon += 20) { const [x] = proj(0, lon); bctx.beginPath(); bctx.moveTo(x, area.y); bctx.lineTo(x, area.y + area.h); bctx.stroke(); }
+      for (let lat = -40; lat <= 70; lat += 20) { const [, y] = proj(lat, 0); bctx.beginPath(); bctx.moveTo(area.x, y); bctx.lineTo(area.x + area.w, y); bctx.stroke(); }
+      bctx.fillStyle = 'rgba(95,227,255,.22)';
+      for (let lon = lonFrom; lon <= lonTo; lon += 20) for (let lat = -40; lat <= 70; lat += 20) { const [x, y] = proj(lat, lon); bctx.fillRect(x - 0.75 / k, y - 0.75 / k, 1.5 / k, 1.5 / k); }
+      if (rings && !coast) {
+        coast = new Path2D();
+        for (const r of rings) { let prev = null;
+          r.forEach(([lon, lat], i) => { const [x, y] = proj(lat, lon); if (i === 0 || (prev !== null && Math.abs(lon - prev) > 180)) coast.moveTo(x, y); else coast.lineTo(x, y); prev = lon; }); }
+      }
+      if (coast) {
+        bctx.fillStyle = 'rgba(18,42,84,.42)'; bctx.fill(coast, 'evenodd');
+        bctx.shadowColor = '#2F7BFF'; bctx.shadowBlur = 9; bctx.strokeStyle = 'rgba(72,142,255,.8)'; bctx.lineWidth = 1.05 / k; bctx.stroke(coast);
+        bctx.shadowBlur = 0; bctx.strokeStyle = 'rgba(178,214,255,.5)'; bctx.lineWidth = 0.5 / k; bctx.stroke(coast);
+      }
+      bctx.restore();
+      bctx.setTransform(dpr, 0, 0, dpr, 0, 0);  // HUD corner brackets, fixed to the frame
+      bctx.strokeStyle = 'rgba(95,227,255,.55)'; bctx.lineWidth = 1.2; const L = 14, a = area;
+      [[a.x, a.y, 1, 1], [a.x + a.w, a.y, -1, 1], [a.x, a.y + a.h, 1, -1], [a.x + a.w, a.y + a.h, -1, -1]].forEach(([x, y, sx, sy]) => {
+        bctx.beginPath(); bctx.moveTo(x, y + sy * L); bctx.lineTo(x, y); bctx.lineTo(x + sx * L, y); bctx.stroke(); });
+      if (k > 1.01) { bctx.font = '600 10px JetBrains Mono, monospace'; bctx.fillStyle = 'rgba(95,227,255,.75)'; bctx.textAlign = 'right'; bctx.fillText(`ZOOM ×${k.toFixed(1)} · drag to move`, a.x + a.w, a.y - 8); bctx.textAlign = 'start'; }
+    }
+
+    // attacks close together on screen merge into one marker (re-done on every zoom, so zooming splits them)
+    function cluster(){
+      let items = nodes.map(n => { const [x, y] = S(n.bx, n.by); return {n, x, y}; });
+      // kits in the same city sit on one spot, so zooming can never split them: once zoomed in, fan
+      // them out around their spot (far enough apart not to merge again) so each can be clicked
+      if (k >= 2.5) {
+        const spots = {};
+        items.forEach(it => { const key = Math.round(it.n.bx * 2) + ':' + Math.round(it.n.by * 2); (spots[key] = spots[key] || []).push(it); });
+        Object.values(spots).forEach(gr => {
+          if (gr.length < 2) return;
+          const cx = gr[0].x, cy = gr[0].y, R = Math.max(18, (MERGE / 2 + 3) / Math.sin(Math.PI / gr.length));
+          gr.forEach((it, i) => { const a = -Math.PI / 2 + i * 2 * Math.PI / gr.length; it.x = cx + R * Math.cos(a); it.y = cy + R * Math.sin(a); it.hub = [cx, cy]; });
+        });
+      }
+      items = items
+        .filter(it => it.x > area.x - 4 && it.x < area.x + area.w + 4 && it.y > area.y - 4 && it.y < area.y + area.h + 4)
+        .sort((a, b) => (SEV[b.n.p.severity] || 0) - (SEV[a.n.p.severity] || 0) || (b.n.p.score || 0) - (a.n.p.score || 0));
+      const out = [];
+      for (const it of items) {
+        const hit = out.find(g => Math.hypot(g.x - it.x, g.y - it.y) < MERGE);
+        if (hit) hit.items.push(it); else out.push({x: it.x, y: it.y, items: [it]});
+      }
+      out.forEach(g => {
+        g.members = g.items.map(it => it.n.p); g.col = g.items[0].n.col; g.ph = g.items[0].n.ph; g.hub = g.items.length === 1 ? g.items[0].hub : null;
+        g.cluster = g.members.length > 1; g.single = g.cluster ? null : g.members[0];
+        g.crit = g.members.some(m => m.severity === 'critical');
+        g.r = g.cluster ? Math.min(17, 10 + g.members.length) : (g.single.severity === 'critical' ? 7.5 : 6);
+        g.orgs = new Set(g.members.map(m => m.org).filter(Boolean));
+      });
+      // a hovered merged marker that no longer exists after a zoom: drop the card
+      if (hovered && hovered.cluster && !out.some(g => g.cluster && g.members.length === hovered.members.length && g.members[0] === hovered.members[0])) showTip(null);
+      else if (hovered && hovered.cluster) { const same = out.find(g => g.cluster && g.members[0] === hovered.members[0]); if (same) { hovered = same; } }
+      clusters = out;
+    }
+    const keyOf = g => g.cluster ? g : g.single;
+    const isOn = g => hovered !== null && (hovered === g || hovered === g.single);
+
+    function placeLabels(){
+      labels = [];
+      if (w < 520) return;  // small screens: the tap card is the label
+      const boxes = [{x: 0, y: 0, w: phone ? w : 380, h: phone ? 96 : 84}, {x: w - 170, y: hgt - 120, w: 170, h: 120},
+                     {x: 0, y: hgt - 50, w: 200, h: 50}, {x: w - 56, y: hgt / 2 - 64, w: 56, h: 128}];
+      clusters.forEach(g => boxes.push({x: g.x - g.r - 3, y: g.y - g.r - 3, w: 2 * g.r + 6, h: 2 * g.r + 6}));  // never cover a marker
+      if (hqB) { const [x, y] = S(hqB[0], hqB[1]); boxes.push({x: x - 10, y: y - 10, w: 150, h: 34}); }
+      const hit = b => boxes.some(o => b.x < o.x + o.w && b.x + b.w > o.x && b.y < o.y + o.h && b.y + b.h > o.y);
+      const top = [...clusters].sort((a, b) => (SEV[b.members[0].severity] || 0) - (SEV[a.members[0].severity] || 0) || b.members.length - a.members.length).slice(0, 6);
+      for (const g of top) {
+        const p = g.members[0];
+        const t1 = g.cluster ? `${g.members.length} attacks here` : (p.hostname.length > 24 ? p.hostname.slice(0, 23) + '…' : p.hostname);
+        const t2 = g.cluster ? `${String(p.severity).toUpperCase()} · ${[...new Set(g.members.map(m => m.country).filter(Boolean))].slice(0, 3).join(' · ')}`
+                             : `${String(p.severity || '').toUpperCase()} · ${p.score ?? '–'}${p.kind === 'shop' ? ' · SHOP' : ''}${p.country ? ' · ' + p.country : ''}`;
+        ctx.font = '600 10px JetBrains Mono, monospace'; const w1 = ctx.measureText(t1).width;
+        ctx.font = '600 9px JetBrains Mono, monospace'; const w2 = ctx.measureText(t2).width;
+        const bw = Math.max(w1, w2, 70) + 16, bh = 30, off = g.r + 10;
+        for (const [dx, dy] of [[off, -bh - 6], [off, 6], [-off - bw, -bh - 6], [-off - bw, 6], [-bw / 2, -off - bh - 4], [-bw / 2, off + 4]]) {
+          const b = {x: g.x + dx, y: g.y + dy, w: bw, h: bh};
+          if (b.x < area.x + 2 || b.y < area.y + 2 || b.x + bw > area.x + area.w - 2 || b.y + bh > area.y + area.h - 2 || hit(b)) continue;
+          boxes.push(b); labels.push({g, b, t1, t2}); break;
+        }
+      }
+    }
+    const ctrl = (a, b) => { const d = Math.hypot(b[0] - a[0], b[1] - a[1]); return [(a[0] + b[0]) / 2, Math.min(a[1], b[1]) - d * 0.28]; };
+    const qp = (a, m, b, t) => [(1 - t) * (1 - t) * a[0] + 2 * (1 - t) * t * m[0] + t * t * b[0], (1 - t) * (1 - t) * a[1] + 2 * (1 - t) * t * m[1] + t * t * b[1]];
+    function hex(x, y, r, rot){ ctx.beginPath(); for (let i = 0; i < 6; i++) { const a = rot + i * Math.PI / 3; ctx[i ? 'lineTo' : 'moveTo'](x + r * Math.cos(a), y + r * Math.sin(a)); } ctx.closePath(); }
+
+    function frame(t){
+      if (!running) return;
+      if (anim) {
+        const e = Math.min(1, (t - anim.t0) / anim.dur), q = 1 - Math.pow(1 - e, 3);
+        k = anim.from.k + (anim.to.k - anim.from.k) * q; tx = anim.from.tx + (anim.to.tx - anim.from.tx) * q; ty = anim.from.ty + (anim.to.ty - anim.from.ty) * q;
+        clampView(); dirty = true; if (e >= 1) anim = null;
+      }
+      if (dirty) { drawBase(); cluster(); placeLabels(); dirty = false; }
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, w, hgt);
+      ctx.drawImage(base, 0, 0, w, hgt);
+      ctx.save(); ctx.beginPath(); ctx.rect(area.x - 2, area.y - 2, area.w + 4, area.h + 4); ctx.clip();  // nothing spills over the title
+      // scan beam sweeping west → east, slightly slanted
+      const per = 7000, bx = area.x - 120 + ((calm ? 0.5 : (t % per) / per)) * (area.w + 240), sk = 40;
+      const bg = ctx.createLinearGradient(bx - 60, 0, bx + 60, 0);
+      bg.addColorStop(0, rgba(CYAN, 0)); bg.addColorStop(0.5, rgba(CYAN, .10)); bg.addColorStop(1, rgba(CYAN, 0));
+      ctx.fillStyle = bg; ctx.beginPath(); ctx.moveTo(bx - 60 + sk, area.y); ctx.lineTo(bx + 60 + sk, area.y); ctx.lineTo(bx + 60 - sk, area.y + area.h); ctx.lineTo(bx - 60 - sk, area.y + area.h); ctx.fill();
+      ctx.strokeStyle = rgba(CYAN, .3); ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(bx + sk, area.y); ctx.lineTo(bx - sk, area.y + area.h); ctx.stroke();
+      const beamAt = y => bx + sk - 2 * sk * ((y - area.y) / area.h);
+      const hq = hqB ? S(hqB[0], hqB[1]) : null;
+      // the hovered attack's hosting company: the other kits it runs, linked
+      const focus = hovered ? clusters.find(isOn) : null;
+      if (focus && focus.orgs.size) {
+        ctx.strokeStyle = 'rgba(170,140,255,.55)'; ctx.lineWidth = 1;
+        for (const g of clusters) if (g !== focus && [...g.orgs].some(o => focus.orgs.has(o))) { ctx.beginPath(); ctx.moveTo(focus.x, focus.y); ctx.lineTo(g.x, g.y); ctx.stroke(); }
+      }
+      // routes from the brand's home to each marker, one packet travelling along each
+      if (hq) for (const g of clusters) {
+        const b = [g.x, g.y], m = ctrl(hq, b), on = isOn(g), faded = hovered !== null && !on;
+        const lg = ctx.createLinearGradient(hq[0], hq[1], b[0], b[1]);
+        lg.addColorStop(0, rgba(GREEN, faded ? 0.04 : 0.5)); lg.addColorStop(1, rgba(g.col, faded ? 0.07 : (on ? 1 : 0.88)));
+        const route = () => { ctx.beginPath(); ctx.moveTo(hq[0], hq[1]); ctx.quadraticCurveTo(m[0], m[1], b[0], b[1]); ctx.stroke(); };
+        ctx.strokeStyle = lg;
+        ctx.globalAlpha = faded ? 0.1 : 0.22; ctx.lineWidth = on ? 5.5 : 3.6; route();  // lifts it off the map
+        ctx.globalAlpha = 1; ctx.lineWidth = on ? 2.4 : 1.5; route();
+        const s = calm ? 2 : ((t / 3400) + g.ph) % 1.5;
+        if (s <= 1 && !faded) {
+          for (let i = 8; i >= 1; i--) { const q = qp(hq, m, b, Math.max(0, s - i * 0.012)); ctx.fillStyle = rgba(GREEN, (1 - i / 9) * 0.45); ctx.beginPath(); ctx.arc(q[0], q[1], 2 - i * 0.15, 0, Math.PI * 2); ctx.fill(); }
+          const q = qp(hq, m, b, s); ctx.shadowColor = GREEN; ctx.shadowBlur = 10; ctx.fillStyle = '#EFFFF9'; ctx.beginPath(); ctx.arc(q[0], q[1], 2.1, 0, Math.PI * 2); ctx.fill(); ctx.shadowBlur = 0;
+        }
+      }
+      // fanned-out kits: a spoke back to the spot they share
+      for (const g of clusters) if (g.hub) {
+        ctx.strokeStyle = rgba(g.col, hovered !== null && !isOn(g) ? 0.08 : 0.4); ctx.lineWidth = 1;
+        ctx.beginPath(); ctx.moveTo(g.hub[0], g.hub[1]); ctx.lineTo(g.x, g.y); ctx.stroke();
+        ctx.fillStyle = rgba(g.col, 0.7); ctx.beginPath(); ctx.arc(g.hub[0], g.hub[1], 2, 0, Math.PI * 2); ctx.fill();
+      }
+      // markers: one hexagon per attack, or a numbered one for several close together
+      for (const g of clusters) {
+        const on = isOn(g), faded = hovered !== null && !on, lit = on || Math.abs(beamAt(g.y) - g.x) < 18;
+        ctx.globalAlpha = faded ? 0.22 : 1;
+        if (!calm) {  // the sweep passed over it: ping, then fade over 1.4s
+          if (Math.abs(beamAt(g.y) - g.x) < 10 && t - (pinged.get(g) || -1e9) > 2000) pinged.set(g, t);
+          const age = (t - (pinged.get(g) || -1e9)) / 1400;
+          if (age >= 0 && age < 1 && !faded) {
+            ctx.strokeStyle = rgba(CYAN2, (1 - age) * 0.5); ctx.lineWidth = 1;
+            ctx.beginPath(); ctx.arc(g.x, g.y, g.r + age * 26, 0, Math.PI * 2); ctx.stroke();
+          }
+        }
+        const gl = ctx.createRadialGradient(g.x, g.y, 0, g.x, g.y, g.r * 2.3);
+        gl.addColorStop(0, rgba(g.col, lit ? 0.42 : 0.22)); gl.addColorStop(1, rgba(g.col, 0));
+        ctx.fillStyle = gl; ctx.beginPath(); ctx.arc(g.x, g.y, g.r * 2.3, 0, Math.PI * 2); ctx.fill();
+        if (g.crit && !calm) { const q = ((t / 1800) + g.ph) % 1; ctx.strokeStyle = rgba(g.col, (1 - q) * 0.5); ctx.lineWidth = 1; hex(g.x, g.y, g.r * (1 + q * 1.1), Math.PI / 6); ctx.stroke(); }
+        ctx.shadowColor = g.col; ctx.shadowBlur = on ? 12 : 6;
+        ctx.fillStyle = g.cluster ? 'rgba(8,12,22,.88)' : rgba(g.col, 0.18); ctx.strokeStyle = on ? ink('text') : g.col; ctx.lineWidth = on ? 1.8 : 1.3;
+        hex(g.x, g.y, g.r * (on ? 1.15 : 1), g.cluster ? Math.PI / 6 : (calm ? 0 : t / 6000) + g.ph * 6); ctx.fill(); ctx.stroke(); ctx.shadowBlur = 0;
+        if (g.cluster) { ctx.font = '700 11px JetBrains Mono, monospace'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillStyle = ink('text'); ctx.fillText(String(g.members.length), g.x, g.y + 0.5); ctx.textAlign = 'start'; ctx.textBaseline = 'alphabetic'; }
+        else { ctx.fillStyle = on ? ink('text') : g.col; ctx.beginPath(); ctx.arc(g.x, g.y, 2.1, 0, Math.PI * 2); ctx.fill(); }
+        ctx.globalAlpha = 1;
+      }
+      if (hq) {  // the brand's home
+        const q = calm ? 1 : (t / 2200) % 1;
+        ctx.strokeStyle = rgba(GREEN, (1 - q) * 0.7); ctx.lineWidth = 1; ctx.beginPath(); ctx.arc(hq[0], hq[1], 6 + q * 14, 0, Math.PI * 2); ctx.stroke();
+        ctx.shadowColor = GREEN; ctx.shadowBlur = 10; ctx.strokeStyle = GREEN; ctx.lineWidth = 1.6; ctx.beginPath(); ctx.arc(hq[0], hq[1], 6, 0, Math.PI * 2); ctx.stroke(); ctx.shadowBlur = 0;
+        ctx.fillStyle = GREEN; ctx.beginPath(); ctx.arc(hq[0], hq[1], 2.4, 0, Math.PI * 2); ctx.fill();
+        ctx.font = '600 10px JetBrains Mono, monospace'; ctx.fillStyle = rgba(GREEN, 0.9); ctx.fillText(home.label.toUpperCase(), hq[0] + 11, hq[1] + 18);
+      }
+      for (const {g, b, t1, t2} of labels) {  // tags on the worst attacks
+        const faded = hovered !== null && !isOn(g); ctx.globalAlpha = faded ? 0.18 : 1;
+        const ax = b.x + b.w < g.x ? b.x + b.w : (b.x > g.x ? b.x : g.x), ay = b.y + b.h < g.y ? b.y + b.h : (b.y > g.y ? b.y : g.y);
+        ctx.strokeStyle = rgba(g.col, 0.55); ctx.lineWidth = 0.8; ctx.beginPath(); ctx.moveTo(g.x, g.y); ctx.lineTo(ax, ay); ctx.stroke();
+        ctx.fillStyle = 'rgba(6,10,18,.9)'; ctx.fillRect(b.x, b.y, b.w, b.h); ctx.strokeRect(b.x + 0.5, b.y + 0.5, b.w - 1, b.h - 1);
+        ctx.fillStyle = rgba(g.col, 0.9); ctx.fillRect(b.x, b.y, 2, b.h);
+        ctx.font = '600 10px JetBrains Mono, monospace'; ctx.fillStyle = ink('text'); ctx.fillText(t1, b.x + 8, b.y + 13);
+        ctx.font = '600 9px JetBrains Mono, monospace'; ctx.fillStyle = g.col; ctx.fillText(t2, b.x + 8, b.y + 24);
+        ctx.globalAlpha = 1;
+      }
+      ctx.restore();
+      raf = requestAnimationFrame(frame);
+    }
+    if (window.ResizeObserver) new ResizeObserver(() => { if (running && (el.clientWidth !== w || el.clientHeight !== hgt)) layout(); }).observe(el);
+    return {
+      start(){ if (running) return; running = true; layout(); raf = requestAnimationFrame(frame); },
+      stop(){ running = false; cancelAnimationFrame(raf); },
+      nearest(x, y){ let best = null, bd = Infinity; for (const g of clusters) { const d = Math.hypot(g.x - x, g.y - y); if (d < g.r + 7 && d < bd) { bd = d; best = keyOf(g); } } return best; },
+      zoom(f){ zoomAt(area.x + area.w / 2, area.y + area.h / 2, f, true); },
+      reset(){ anim = {from: {k, tx, ty}, to: {k: 1, tx: 0, ty: 0}, t0: performance.now(), dur: 420}; },
+      zoomInto(g){ showTip(null); zoomAt(g.x, g.y, Math.min(KMAX / k, 3), true); },
+      state(){ return {k, tx, ty, clusters: clusters.map(g => ({x: g.x, y: g.y, n: g.members.length, r: g.r}))}; },  // read-only, for tests
+    };
+  }
+
+  // ------------------------------------------------------------------- views, switch and zoom
+  const view3d = document.createElement('div'), view2d = document.createElement('div');
+  view3d.className = view2d.className = 'gview'; view3d.hidden = true;
+  el.prepend(view2d); el.prepend(view3d);
+  let globeCtl = {pause(){}, resume(){}}, globeNearest = () => null, globeRefresh = () => {}, globeHover = () => {}, mapView = null;
+  const overlays = [...el.querySelectorAll('.globe-legend')];
+  try { if (window.Globe && !window.__globeFailed) globeGl(); else canvasGlobe(); } catch (e) { console.warn('globe.gl failed, using canvas', e); view3d.innerHTML = ''; canvasGlobe(); }
+  overlays.forEach(o => el.appendChild(o));
+  el.appendChild(tip);
+  globeNearest = nearest; globeRefresh = refresh; globeHover = onHoverChange;
+  const sw = document.createElement('div'); sw.className = 'gswitch'; sw.setAttribute('role', 'group'); sw.setAttribute('aria-label', 'Map style');
+  sw.innerHTML = '<button type="button" data-v="map">▭ Map</button><button type="button" data-v="globe">◍ Globe</button>';
+  const zc = document.createElement('div'); zc.className = 'gzoom'; zc.setAttribute('role', 'group'); zc.setAttribute('aria-label', 'Zoom');
+  zc.innerHTML = '<button type="button" data-z="in" title="zoom in (or scroll)" aria-label="Zoom in">+</button><button type="button" data-z="out" title="zoom out" aria-label="Zoom out">−</button><button type="button" data-z="reset" title="back to the whole view" aria-label="Reset the view">⟲</button>';
+  function setView(v){
+    mode = v;
+    sw.querySelectorAll('button').forEach(b => { b.classList.toggle('on', b.dataset.v === v); b.setAttribute('aria-pressed', String(b.dataset.v === v)); });
+    nearHover = arcHover = null; showTip(null);
+    if (v === 'map') {
+      view3d.hidden = true; globeCtl.pause(); view2d.hidden = false;
+      mapView = mapView || flatMap(view2d); mapView.start();
+      el.__map = mapView;
+      nearest = mapView.nearest; refresh = () => {}; onHoverChange = () => {}; zoomInto = mapView.zoomInto;
+    } else {
+      if (mapView) mapView.stop(); view2d.hidden = true; view3d.hidden = false; globeCtl.resume();
+      nearest = globeNearest; refresh = globeRefresh; onHoverChange = globeHover; zoomInto = null; onHoverChange();
+    }
+    try { localStorage.setItem('bw.geoView2', v); } catch (e) {}
+  }
+  sw.addEventListener('click', ev => { const b = ev.target.closest('button'); if (b) { ev.stopPropagation(); setView(b.dataset.v); } });
+  zc.addEventListener('click', ev => {
+    const b = ev.target.closest('button'); if (!b) return; ev.stopPropagation();
+    const v = mode === 'map' ? mapView : globeZoom; if (!v) return;
+    if (b.dataset.z === 'in') v.zoom(1.6); else if (b.dataset.z === 'out') v.zoom(1 / 1.6); else v.reset();
+  });
+  [sw, zc].forEach(x => { x.addEventListener('pointerdown', ev => ev.stopPropagation()); x.addEventListener('dblclick', ev => ev.stopPropagation()); el.appendChild(x); });
+  let savedView = new URLSearchParams(location.search).get('view');
+  if (!savedView) { try { savedView = localStorage.getItem('bw.geoView2'); } catch (e) {} }
+  setView(savedView === 'globe' ? 'globe' : 'map');  // the flat map unless you chose the globe
 
 })();
 </script>
@@ -468,18 +1112,37 @@
 </script>
 <script>
 (function(){
-  // ---- every confirmed site on one map: fetched after the page is shown, so the numbers above never wait for the analysis
+  // ---- the second tab: every confirmed site on one map, how they connect. Its data is fetched quietly after the page
+  // (the analysis takes about half a second, the numbers above never wait for it); it is drawn when the tab opens,
+  // because the graph sizes itself from a box that must be on screen.
   const box = document.getElementById('sites-map'); if (!box) return;
-  const chip = document.querySelector('#mk-groups b');
-  fetch(box.dataset.src, {credentials: 'same-origin'})
+  const tabs = {geo: document.getElementById('tab-geo'), infra: document.getElementById('tab-infra')};
+  const panel = document.getElementById('infra'), count = document.getElementById('infra-n');
+  let pending = null, drawn = false;
+  const load = () => pending || (pending = fetch(box.dataset.src, {credentials: 'same-origin'})
     .then(r => r.ok ? r.json() : Promise.reject(r.status))
-    .then(d => {
-      box.innerHTML = d.html;
-      // a script put in with innerHTML does not run: put each one back in, in order
-      box.querySelectorAll('script').forEach(old => { const sc = document.createElement('script'); sc.textContent = old.textContent; old.replaceWith(sc); });
-      if (chip) chip.textContent = Number(d.groups || 0).toLocaleString('en-US');
-    })
-    .catch(() => { const sk = box.querySelector('.sm-skel'); if (sk) sk.textContent = 'The map could not be loaded. Open Attack infrastructure for the full analysis.'; if (chip) chip.textContent = '—'; });
+    .then(d => { if (count) count.textContent = `· ${d.sites} sites · ${d.groups} group${d.groups === 1 ? '' : 's'}`; return d; }));
+  const draw = () => load().then(d => {
+    if (drawn) return; drawn = true;
+    box.innerHTML = d.html;
+    // a script put in with innerHTML does not run: put each one back in, in order
+    box.querySelectorAll('script').forEach(old => { const sc = document.createElement('script'); sc.textContent = old.textContent; old.replaceWith(sc); });
+  }).catch(() => { const sk = box.querySelector('.sm-skel'); if (sk) sk.textContent = 'The map could not be loaded. Open Attack infrastructure for the full analysis.'; });
+  const pick = v => {
+    const infra = v === 'infra';
+    tabs.geo.setAttribute('aria-selected', String(!infra)); tabs.infra.setAttribute('aria-selected', String(infra));
+    document.documentElement.classList.toggle('infra-on', infra);
+    panel.hidden = !infra;
+    if (infra) draw(); else window.dispatchEvent(new Event('resize'));  // the world map takes its size back
+    try { history.replaceState(null, '', infra ? '#infrastructure' : location.pathname + location.search); } catch (e) { /* ignore */ }
+  };
+  tabs.geo.addEventListener('click', () => pick('geo'));
+  tabs.infra.addEventListener('click', () => pick('infra'));
+  // the arrow keys move between the two tabs
+  [tabs.geo, tabs.infra].forEach(t => t.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') { const o = t === tabs.geo ? tabs.infra : tabs.geo; o.focus(); o.click(); } }));
+  if (location.hash === '#infrastructure') pick('infra');
+  setTimeout(load, 900);
 })();
 </script>
 <script>

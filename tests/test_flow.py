@@ -308,5 +308,5 @@ def test_whitelisting_a_flagged_host_closes_its_open_finding_and_activity_links_
         act = _ui(app).get("/ui/activity").text
         assert f'href="/ui/jobs/{job}"' in act
         dash = _ui(app).get("/ui/dashboard").text
-        chips = dash.split('class="map-kpis"')[1].split('<div id="sites-map"')[0]
+        chips = dash.split('class="map-kpis"')[1].split('<div class="maptog"')[0]
         assert chips.count('data-k="') == 6  # the 20 s refresh updates the map's numbers by key, not position

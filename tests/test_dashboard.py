@@ -118,6 +118,8 @@ def test_dashboard_payload_and_geo_points(client, engine):
     assert page.status_code == 200
     for needle in (
         "BRAND MONITOR",
+        "globe.gl",
+        "canvasGlobe",
         'id="sites-map"',
         "/ui/dashboard/sites-map",
         "Live feed",

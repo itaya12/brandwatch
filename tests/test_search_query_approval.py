@@ -139,14 +139,15 @@ async def test_scan_skips_google_until_the_queries_are_approved(session, tmp_pat
     assert queries == {"shopnova login", "shopnova support"}  # exactly the approved list, nothing else
 
 
-def test_dashboard_loads_the_map_of_confirmed_sites_instead_of_a_globe(engine, tmp_path):
+def test_dashboard_offers_globe_and_flat_map_and_a_tab_for_the_infrastructure_map(engine, tmp_path):
     app = _app(engine, tmp_path)
     with TestClient(app):
         ui = _ui(app)
         world = ui.get("/ui/assets/world-land.json")
         assert world.status_code == 200 and len(world.json()["rings"]) > 100  # coastlines still ship with the app
         page = ui.get("/ui/dashboard").text
-        assert 'data-src="/ui/dashboard/sites-map"' in page
-        assert "globe.gl" not in page and "function flatMap" not in page and "gswitch" not in page
+        assert "function flatMap" in page and "gswitch" in page and "/ui/assets/world-land.json" in page  # the default view
+        assert 'id="tab-geo" aria-selected="true"' in page and 'id="tab-infra" aria-selected="false"' in page
+        assert 'data-src="/ui/dashboard/sites-map"' in page and '<section id="infra" role="tabpanel" aria-labelledby="tab-infra" hidden>' in page
         r = ui.get("/ui/dashboard/sites-map")
         assert r.status_code == 200 and r.headers["content-type"].startswith("application/json") and "html" in r.json()

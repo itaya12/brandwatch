@@ -4,6 +4,7 @@ one-line status bar."""
 
 from __future__ import annotations
 
+import json
 import uuid
 from datetime import UTC, datetime, timedelta
 
@@ -107,6 +108,45 @@ def test_the_dashboard_map_is_the_all_confirmed_sites_view(engine, tmp_path):
         assert TestClient(app).get("/ui/dashboard/sites-map").status_code == 401
 
 
+def test_the_world_map_is_the_default_and_a_tab_opens_the_infrastructure_map(engine, tmp_path, chromium):  # noqa: F811
+    app = _app(engine, tmp_path)
+    with TestClient(app):
+        c, ui = _api(app), _ui(app)
+        brand, rows = _brand(c, app)
+        for h in ("shopn0va.com", "shopnova-login.com"):
+            c.post(f"/api/findings/{rows[h]['id']}/confirm", json={"reason": "cloned login"})
+        html = ui.get("/ui/dashboard", params={"brand_id": brand["id"]}).text
+        sites = ui.get("/ui/dashboard/sites-map", params={"brand_id": brand["id"]}).json()
+    ctx = chromium.new_context(viewport={"width": 1280, "height": 900})
+    page = ctx.new_page()
+    errors: list[str] = []
+    page.on("pageerror", lambda e: errors.append(str(e)))
+    # a stand-in host serves the page, and answers its fetch of the second map with what the server returned for it
+
+    def serve(route):
+        url = route.request.url
+        if "/ui/dashboard/sites-map" in url:
+            return route.fulfill(status=200, content_type="application/json", body=json.dumps(sites))
+        if url.rstrip("/").endswith("/ui/dashboard"):
+            return route.fulfill(status=200, content_type="text/html", body=html)
+        return route.fulfill(status=200, content_type="application/json", body="[]")
+
+    page.route("http://bw.test/**", serve)
+    page.goto("http://bw.test/ui/dashboard", wait_until="domcontentloaded")
+    page.wait_for_timeout(300)
+    assert page.evaluate("document.getElementById('infra').hidden") is True
+    assert page.evaluate("getComputedStyle(document.getElementById('globe')).display") != "none"
+    page.click("#tab-infra")
+    page.wait_for_function("document.querySelectorAll('#vsw button').length === 5", timeout=5000)
+    assert page.evaluate("getComputedStyle(document.getElementById('globe')).display") == "none"
+    assert page.evaluate("document.getElementById('tab-infra').getAttribute('aria-selected')") == "true"
+    page.click("#tab-geo")
+    assert page.evaluate("document.getElementById('infra').hidden") is True
+    assert page.evaluate("getComputedStyle(document.getElementById('globe')).display") != "none"
+    ctx.close()
+    assert [e for e in errors if BROKEN.search(e)] == []
+
+
 def test_the_map_fills_a_phone_without_sideways_scroll(engine, tmp_path, chromium):  # noqa: F811
     app = _app(engine, tmp_path)
     with TestClient(app):
@@ -120,8 +160,9 @@ def test_the_map_fills_a_phone_without_sideways_scroll(engine, tmp_path, chromiu
     page.set_content(html, wait_until="domcontentloaded")
     page.wait_for_timeout(300)
     assert page.evaluate("document.documentElement.scrollWidth - innerWidth") <= 1
-    h = page.evaluate("document.querySelector('#sites-map .sm-skel').getBoundingClientRect().height")
-    assert 360 <= h <= 440, h  # the room the map will take, held while it loads
+    h = page.evaluate("document.getElementById('globe').getBoundingClientRect().height")
+    assert 250 <= h <= 320, h  # the world map is the default view
+    assert page.evaluate("document.getElementById('infra').hidden") is True
     assert page.evaluate("getComputedStyle(document.querySelector('.map-kpis')).position") == "static"
     ctx.close()
     assert [e for e in errors if BROKEN.search(e)] == []
