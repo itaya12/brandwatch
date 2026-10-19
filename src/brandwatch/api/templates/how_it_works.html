@@ -285,13 +285,26 @@
     .sx-author .lk{margin-left:0;width:100%}
     .sx-rail{margin:0 -12px;padding:8px 12px;background:var(--bg);backdrop-filter:none;-webkit-backdrop-filter:none}
     .btn-play .tri{animation-iteration-count:3}
-    .sx-rail .segs{display:flex;overflow-x:auto;scrollbar-width:none;gap:10px}
-    .sx-rail .segs::-webkit-scrollbar{display:none}
-    .sx-rail .seg{flex:0 0 auto;overflow:visible}
+    /* the six steps always fit: a number each, and the name of the step you are on */
+    .sx-rail .segs{display:flex;gap:6px;overflow:visible}
+    .sx-rail .seg{flex:1 1 0;min-width:0;text-align:center;font-size:12px}
+    .sx-rail .seg .k{display:none}
+    .sx-rail .seg.on{flex:3 1 auto;text-align:left}
+    .sx-rail .seg.on .k{display:inline}
     .sx-rail .left{display:none}
   }
   @media (max-width:700px){
-    .stage{padding:40px 14px 14px;min-height:0}
+    .stage{padding:44px 14px 14px;min-height:0}
+    /* the long domain gets the whole first line, the button the second */
+    .decide .h{flex:1 1 60%;overflow-wrap:anywhere;word-break:break-all}
+    .decide .cbtn{flex:1 1 100%}
+    .graph text{font-size:13px}.graph .ty{font-size:11px}
+    /* Go deeper: the title on one line, what it holds under it */
+    details.fold > summary{display:grid;grid-template-columns:26px minmax(0,1fr);gap:4px 12px;align-items:start;padding:14px}
+    details.fold > summary::before{grid-row:1 / span 2;margin-top:1px}
+    details.fold > summary b{font-size:17px}
+    details.fold > summary span{grid-column:2;font-size:13px;line-height:1.45}
+    details.fold > .in{padding:0 14px 14px}
     .views,.chans,.fp{grid-template-columns:minmax(0,1fr)}
     .found .src{display:none}  /* the domain is what matters on a phone */
     .score{grid-template-columns:minmax(0,1fr);justify-items:center}
@@ -368,7 +381,7 @@
 
 {# ================================================================== sticky chapter rail #}
 <nav class="sx-rail" id="rail" aria-label="Chapters">
-  <div class="segs">{% for id, ic, k, rest in chapters %}<a class="seg" href="#ch-{{ id }}" data-jump="{{ loop.index0 }}">{{ loop.index }} · {{ k }}<i></i></a>{% endfor %}</div>
+  <div class="segs">{% for id, ic, k, rest in chapters %}<a class="seg" href="#ch-{{ id }}" data-jump="{{ loop.index0 }}" aria-label="Step {{ loop.index }}: {{ k }}">{{ loop.index }}<span class="k"> · {{ k }}</span><i></i></a>{% endfor %}</div>
   <div class="ctl"><span class="left" id="left"></span><button type="button" id="play2" aria-label="Play the story">▶ Play</button></div>
 </nav>
 

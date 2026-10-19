@@ -53,11 +53,14 @@
   /* the tall drawing: smaller type, the same classes */
   .sx-flow-h{max-width:1240px;margin-left:auto;margin-right:auto}  /* the picture and the headline fit one 1440×900 screen */
   .sx-flow-v{display:none;padding:10px 4px 4px;margin:4px 0 10px}
-  .sx-flow-v .lbl{font-size:10.5px;letter-spacing:.04em}
-  .sx-flow-v .sub{font-size:9.5px}
-  .sx-flow-v .cap{font-size:11px;letter-spacing:.1em}
-  .sx-flow-v .glyph{font-size:12px}
-  .sx-flow-v .badge text{font-size:10px}
+  /* the drawing is shown at about 80% on a 390px phone: these sizes land at 10-11px on screen */
+  .sx-flow-v .lbl{font-size:12.5px;letter-spacing:.03em}
+  .sx-flow-v .sub{font-size:11.5px}
+  .sx-flow-v .cap{font-size:12px;letter-spacing:.08em}
+  .sx-flow-v .glyph{font-size:13px}
+  .sx-flow-v .badge text{font-size:11px}
+  /* a line that passes under a name never cuts through it */
+  .sx-flow-v .lbl,.sx-flow-v .sub,.sx-flow-v .cap{paint-order:stroke;stroke:var(--console);stroke-width:3.5px;stroke-linejoin:round}
   @media (max-width:900px){ .sx-flow-h{display:none} .sx-flow-v{display:block} }
   @media (prefers-reduced-motion:reduce){ .sx-flow .core-ring{animation:none} }
 </style>
@@ -187,12 +190,12 @@
     {% set x = COLS[loop.index0 % 2] %}{% set y = ROWS[loop.index0 // 2] %}
     <path id="fv-s{{ loop.index }}" d="M{{ x }},{{ y }} L{{ vx }},{{ vy }}" stroke="{{ COL[kind] }}" stroke-opacity=".35" stroke-width="1.4" class="dash" fill="none"/>
   {% endfor %}
-  <path id="fv-o1" d="M{{ vx }},{{ vy + 54 }} C210,730 88,750 88,808" stroke="{{ INK.accent }}" stroke-opacity=".55" stroke-width="2" fill="none"/>
+  <path id="fv-o1" d="M{{ vx }},{{ vy + 54 }} C210,730 72,750 72,808" stroke="{{ INK.accent }}" stroke-opacity=".55" stroke-width="2" fill="none"/>
   <path id="fv-o2" d="M{{ vx }},{{ vy + 54 }} L210,808" stroke="{{ INK.low }}" stroke-opacity=".55" stroke-width="2" fill="none"/>
-  <path id="fv-o3" d="M{{ vx }},{{ vy + 54 }} C210,730 332,750 332,808" stroke="{{ INK.low }}" stroke-opacity=".55" stroke-width="2" fill="none"/>
-  <path id="fv-p1" d="M88,872 C88,960 190,970 198,996" stroke="{{ INK.low }}" stroke-opacity=".45" stroke-width="2" fill="none"/>
+  <path id="fv-o3" d="M{{ vx }},{{ vy + 54 }} C210,730 348,750 348,808" stroke="{{ INK.low }}" stroke-opacity=".55" stroke-width="2" fill="none"/>
+  <path id="fv-p1" d="M72,872 C72,960 190,970 198,996" stroke="{{ INK.low }}" stroke-opacity=".45" stroke-width="2" fill="none"/>
   <path id="fv-p2" d="M210,872 L210,996" stroke="{{ INK.low }}" stroke-opacity=".45" stroke-width="2" fill="none"/>
-  <path id="fv-p3" d="M332,872 C332,960 230,970 222,996" stroke="{{ INK.low }}" stroke-opacity=".45" stroke-width="2" fill="none"/>
+  <path id="fv-p3" d="M348,872 C348,960 230,970 222,996" stroke="{{ INK.low }}" stroke-opacity=".45" stroke-width="2" fill="none"/>
 
   <g class="packets">
     {% for label, sub, g, ang, ch, num, kind in sources %}<circle r="3.5" visibility="hidden" fill="{{ COL[kind] }}"><set attributeName="visibility" to="visible" begin="{{ (loop.index * 0.45)|round(2) }}s"/><animateMotion dur="2.6s" begin="{{ (loop.index * 0.45)|round(2) }}s" repeatCount="indefinite"><mpath href="#fv-s{{ loop.index }}"/></animateMotion></circle>{% endfor %}
@@ -206,9 +209,10 @@
     <circle cx="210" cy="70" r="62" fill="url(#fv-core)"/>
     <circle cx="210" cy="70" r="44" fill="#0E1A2B" stroke="{{ INK.accent }}" stroke-width="2.2" class="ring"/>
     <path d="M194,58 h32 v24 h-32 z M199,65 h22 M199,71 h16 M199,77 h19" stroke="{{ INK.accent }}" stroke-width="2.2" fill="none" stroke-linecap="round"/>
-    <text x="300" y="66" text-anchor="start" class="cap" style="fill:var(--text);font-size:12px">{{ (B.name or 'YOUR BRAND')|upper }}</text>
-    <text x="300" y="82" text-anchor="start" class="sub">fingerprint: logo · colours</text>
-    <text x="300" y="95" text-anchor="start" class="sub">login page · keywords</text>
+    <text x="268" y="52" text-anchor="start" class="cap" style="fill:var(--text);font-size:12px">{{ (B.name or 'YOUR BRAND')|upper|truncate(16, true, '…') }}</text>
+    <text x="268" y="70" text-anchor="start" class="sub">fingerprint:</text>
+    <text x="268" y="85" text-anchor="start" class="sub">logo · colours</text>
+    <text x="268" y="100" text-anchor="start" class="sub">login · keywords</text>
   </a>
 
   {# the sources, two columns #}
@@ -234,7 +238,7 @@
     <text x="{{ vx }}" y="{{ vy - 6 }}" text-anchor="middle" class="cap" style="fill:var(--accent2);font-size:12px">BRAND</text>
     <text x="{{ vx }}" y="{{ vy + 10 }}" text-anchor="middle" class="cap" style="fill:var(--accent2);font-size:12px">WATCH</text>
   </a>
-  <rect x="{{ vx - 104 }}" y="{{ vy + 60 }}" width="208" height="32" rx="8" fill="{{ INK.field }}" fill-opacity=".9"/>
+  <rect x="{{ vx - 136 }}" y="{{ vy + 60 }}" width="272" height="34" rx="8" fill="{{ INK.field }}" fill-opacity=".9"/>
   <a href="#ch-visit" data-jump="2"><text x="{{ vx }}" y="{{ vy + 73 }}" text-anchor="middle" class="lbl">visit like a victim</text></a>
   <a href="#ch-score" data-jump="3"><text x="{{ vx }}" y="{{ vy + 87 }}" text-anchor="middle" class="sub" style="fill:var(--text2)">score {{ nsig }} signals · explain every point</text></a>
   {% if n.findings %}{% set bw = 70 + 7 * (fmt(n.findings)|length) %}<g class="badge"><rect x="{{ vx - bw / 2 }}" y="{{ vy - 82 }}" width="{{ bw }}" height="18" rx="9" style="stroke:var(--accent)"/>
@@ -242,14 +246,17 @@
 
   {# what comes out, three in a row #}
   {% for y0, label, sub, vsub, col, ch, href, badge in outs %}
-  {% set x = [88, 210, 332][loop.index0] %}{% set y = 840 %}
+  {% set x = [72, 210, 348][loop.index0] %}{% set y = 840 %}
   <a href="{{ href }}" data-jump="{{ ch }}"><title>{{ label }}</title>
     <circle cx="{{ x }}" cy="{{ y }}" r="32" fill="#0E1A22" stroke="{{ col }}" stroke-width="2.2" class="ring"/>
     {% if loop.index == 1 %}<g stroke="{{ col }}" stroke-width="1.8" fill="none"><circle cx="{{ x - 10 }}" cy="{{ y - 7 }}" r="4.2"/><circle cx="{{ x + 12 }}" cy="{{ y - 5 }}" r="4.2"/><circle cx="{{ x }}" cy="{{ y + 10 }}" r="4.2"/><path d="M{{ x - 7 }},{{ y - 4 }} L{{ x - 2 }},{{ y + 6 }} M{{ x + 9 }},{{ y - 2 }} L{{ x + 3 }},{{ y + 7 }} M{{ x - 6 }},{{ y - 7 }} L{{ x + 8 }},{{ y - 5 }}"/></g>
     {% elif loop.index == 2 %}<path d="M{{ x - 13 }},{{ y - 8 }} h26 v18 h-26 z M{{ x - 13 }},{{ y - 8 }} l13,11 l13,-11" stroke="{{ col }}" stroke-width="2" fill="none" stroke-linejoin="round"/>
     {% else %}<path d="M{{ x - 10 }},{{ y - 12 }} v24 M{{ x - 10 }},{{ y - 12 }} h18 l-4,6 l4,6 h-18" stroke="{{ col }}" stroke-width="2" fill="none" stroke-linejoin="round"/>{% endif %}
-    <text x="{{ x }}" y="{{ y + 50 }}" text-anchor="middle" class="lbl">{{ label }}</text>
-    <text x="{{ x }}" y="{{ y + 64 }}" text-anchor="middle" class="sub">{{ vsub }}</text>
+    {# a long name takes two lines here: three of them share one row of a phone #}
+    {% set words = label.split(' ') %}{% set two = label|length > 11 and words|length > 1 %}
+    {% if two %}<text x="{{ x }}" y="{{ y + 50 }}" text-anchor="middle" class="lbl">{{ words[0] }}</text><text x="{{ x }}" y="{{ y + 64 }}" text-anchor="middle" class="lbl">{{ words[1:]|join(' ') }}</text>
+    {% else %}<text x="{{ x }}" y="{{ y + 50 }}" text-anchor="middle" class="lbl">{{ label }}</text>{% endif %}
+    <text x="{{ x }}" y="{{ y + (79 if two else 65) }}" text-anchor="middle" class="sub" style="font-size:10.5px">{{ vsub }}</text>
     {% if badge %}<g class="badge"><rect x="{{ x - 10 - 3.4 * (badge|length) }}" y="{{ y - 56 }}" width="{{ 20 + 6.8 * (badge|length) }}" height="18" rx="9" style="stroke:{{ col }}"/>
       <text x="{{ x }}" y="{{ y - 47 }}" style="fill:{{ col }}">{{ badge }}</text></g>{% endif %}
   </a>

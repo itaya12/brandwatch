@@ -1797,6 +1797,24 @@ def jobs_for_nav(
     ).all()
 
 
+@router.get("/dashboard/sites-map")
+def dashboard_sites_map(
+    request: Request, session: Annotated[Session, Depends(get_session, scope="function")], user: Annotated[User | None, Depends(ui_user)],
+    brand_id: str = "",
+):  # fmt: skip
+    """The map of every confirmed site for the dashboard, fetched after the page is shown (the analysis takes about half a
+    second). JSON, not HTML, so the static demo keeps a copy of it."""
+    if user is None:
+        return JSONResponse({"html": "", "error": "signed out"}, status_code=401)
+    bid = _uuid_or_none(brand_id)
+    data = campaigns_api.all_map(session, user, bid)
+    html = templates.get_template("_sites_map.html").render(
+        request=request, user=user, m=data, brand_id=str(bid) if bid else "", can_write=user.role is not UserRole.VIEWER, embed=True,
+    )  # fmt: skip
+    st = data.get("stats") or {}
+    return JSONResponse({"html": html, "sites": st.get("sites", 0), "groups": st.get("groups", 0), "alone": st.get("alone", 0)})
+
+
 @router.get("/dashboard", response_class=HTMLResponse)
 def dashboard_page(
     request: Request,

@@ -39,6 +39,20 @@
   const head = (txt, zoom = true) => `<div class="vhead"><div class="txt">${txt}</div>${zoom ? '<div class="vtools"><button type="button" data-z="in" title="zoom in">＋</button><button type="button" data-z="out" title="zoom out">－</button><button type="button" data-z="fit" title="everything back in view">fit</button></div>' : ''}</div>`;
   const openFinding = (svg, h) => { if (Date.now() - (svg.__dragged || 0) > 250 && info[h]) location.href = '/ui/findings/' + info[h].id; };
 
+  // on the dashboard (BW_GRAPH.armWheel) the wheel scrolls the page until the drawing is clicked
+  const armed = () => !!(window.BW_GRAPH || {}).armWheel;
+  const wheelOk = svg => !armed() || svg.classList.contains('armed');
+  function armWheel(svg){
+    if (!armed() || svg.dataset.arm) return; svg.dataset.arm = '1';
+    svg.addEventListener('pointerdown', () => svg.classList.add('armed'));
+    svg.addEventListener('pointerleave', () => svg.classList.remove('armed'));
+  }
+  // a drawing wider than its box (the matrix, the flow on a phone) keeps its real size and the box scrolls sideways,
+  // instead of shrinking the text until nobody can read it
+  function natural(el, w){
+    const svg = el.querySelector('.vbox svg'); if (!svg) return;
+    if (w > el.clientWidth + 2) { svg.style.width = w + 'px'; svg.style.maxWidth = 'none'; svg.parentElement.style.overflowX = 'auto'; }
+  }
   // zoom (wheel, buttons) and move (drag) any of these drawings, by changing its viewBox
   function panzoom(svg, bar){
     const b = svg.viewBox.baseVal, init = {x: b.x, y: b.y, w: b.width, h: b.height};
@@ -46,7 +60,8 @@
     const set = () => svg.setAttribute('viewBox', `${v.x} ${v.y} ${v.w} ${v.h}`);
     const at = ev => { const r = svg.getBoundingClientRect(); return [v.x + (ev.clientX - r.left) / r.width * v.w, v.y + (ev.clientY - r.top) / r.height * v.h]; };
     const zoom = (f, cx, cy) => { const w = Math.max(init.w / 12, Math.min(init.w, v.w / f)), k = w / v.w; v.x = cx - (cx - v.x) * k; v.y = cy - (cy - v.y) * k; v.w = w; v.h *= k; if (w === init.w) v = {...init}; set(); };
-    svg.addEventListener('wheel', ev => { ev.preventDefault(); const [x, y] = at(ev); zoom(ev.deltaY < 0 ? 1.2 : 1 / 1.2, x, y); }, {passive: false});
+    armWheel(svg);
+    svg.addEventListener('wheel', ev => { if (!wheelOk(svg)) return; ev.preventDefault(); const [x, y] = at(ev); zoom(ev.deltaY < 0 ? 1.2 : 1 / 1.2, x, y); }, {passive: false});
     let drag = null;
     svg.addEventListener('pointerdown', ev => { drag = {x: ev.clientX, y: ev.clientY, vx: v.x, vy: v.y, moved: false}; });
     svg.addEventListener('pointermove', ev => {
@@ -107,7 +122,7 @@
     const used = new Set(T.flatMap(t => t.sites));
     let S = hs.filter(h => used.has(h)); const lone = hs.filter(h => !used.has(h));
     [T, S] = arrange(T, S);
-    const W = wide(el), row = 30, kh = 22, wl = Math.min(380, W * 0.42), wr = Math.min(300, W * 0.34), xl = 10, xr = W - wr - 10;
+    const W = wide(el), narrow = W < 520, row = 30, kh = 22, wl = Math.min(380, W * (narrow ? 0.45 : 0.42)), wr = Math.min(300, W * (narrow ? 0.4 : 0.34)), xl = narrow ? 4 : 10, xr = W - wr - (narrow ? 4 : 10);
     const ty = new Map(), sy = new Map();
     let y = 10, lastK = null; const kindHeads = [];
     T.forEach(t => { if (t.kind !== lastK) { kindHeads.push({k: t, y: y}); y += kh; lastK = t.kind; } ty.set(t, y); y += row; });
@@ -119,12 +134,12 @@
     T.forEach((t, i) => t.sites.forEach(h => { if (!sy.has(h)) return;
       const x1 = xl + wl, y1 = ty.get(t) + dl + (row - 6) / 2, x2 = xr, y2 = sy.get(h) + dr + (row - 6) / 2, mx = (x1 + x2) / 2;
       s += `<path class="ln" data-t="${i}" data-s="${esc(h)}" d="M${x1},${y1} C${mx},${y1} ${mx},${y2} ${x2},${y2}" fill="none" stroke="${KC[t.kind] || ink('muted')}" stroke-width="${(1 + t.weight * 2.2).toFixed(1)}" stroke-opacity=".6"${t.level === 'solid' ? '' : ' stroke-dasharray="5 4"'}/>`; }));
-    kindHeads.forEach(k => { s += `<text x="${xl + 2}" y="${k.y + dl + 15}" font-size="10.5" letter-spacing=".1em" fill="${KC[k.k.kind] || ink('muted')}">${esc(k.k.label.replace(/^the same |^a |^an /, '').toUpperCase())}</text>`; });
-    opHeads.forEach(o => { s += `<text x="${xr + 2}" y="${o.y + dr + 15}" font-size="10.5" letter-spacing=".06em" fill="${col(o.op)}" font-weight="700">${esc(cut(opName(o.op), 40).toUpperCase())}</text>`; });
-    const chars = Math.floor((wl - 84) / 6.6);
+    kindHeads.forEach(k => { s += `<text x="${xl + 2}" y="${k.y + dl + 15}" font-size="10.5" letter-spacing=".1em" fill="${KC[k.k.kind] || ink('muted')}">${esc(cut(k.k.label.replace(/^the same |^a |^an /, '').toUpperCase(), Math.floor((xr - xl - 10) / 7.4)))}</text>`; });
+    opHeads.forEach(o => { s += `<text x="${xr + 2}" y="${o.y + dr + 15}" font-size="10.5" letter-spacing=".06em" fill="${col(o.op)}" font-weight="700">${esc(cut(opName(o.op), Math.floor((wr - 4) / 7.2)).toUpperCase())}</text>`; });
+    const chars = Math.floor((wl - (narrow ? 44 : 84)) / 6.6);
     T.forEach((t, i) => { const yy = ty.get(t) + dl, c = KC[t.kind] || ink('muted');
       s += `<g class="bx th" data-t="${i}"><rect x="${xl}" y="${yy}" width="${wl}" height="${row - 6}" rx="6" fill="rgba(14,22,34,.95)" stroke="${c}" stroke-opacity=".75"${t.level === 'solid' ? '' : ' stroke-dasharray="4 3"'}/><rect x="${xl}" y="${yy}" width="5" height="${row - 6}" rx="2" fill="${c}"/>`
-        + `<text x="${xl + 12}" y="${yy + 16}" font-size="11.5" fill="${ink('text')}">${esc(cut(tname(t), chars))}</text><text x="${xl + wl - 8}" y="${yy + 16}" font-size="11" text-anchor="end" fill="${ink('muted')}">${t.sites.length} sites</text><title>${esc(t.label)} · ${esc(t.values.join(', '))} · ${Math.round(t.weight * 100)}%</title></g>`; });
+        + `<text x="${xl + 12}" y="${yy + 16}" font-size="11.5" fill="${ink('text')}">${esc(cut(tname(t), chars))}</text><text x="${xl + wl - 8}" y="${yy + 16}" font-size="11" text-anchor="end" fill="${ink('muted')}">${t.sites.length}${narrow ? '' : ' sites'}</text><title>${esc(t.label)} · ${esc(t.values.join(', '))} · ${Math.round(t.weight * 100)}%</title></g>`; });
     S.forEach(h => { const yy = sy.get(h) + dr;
       s += `<g class="bx st" data-s="${esc(h)}"><rect x="${xr}" y="${yy}" width="${wr}" height="${row - 6}" rx="6" fill="rgba(14,22,34,.95)" stroke="${col(info[h].op)}" stroke-opacity=".6"/><circle cx="${xr + 12}" cy="${yy + 12}" r="4.5" fill="${SEV[info[h].severity] || ink('muted')}"/>`
         + `<text x="${xr + 24}" y="${yy + 16}" font-size="11.5" fill="${col(info[h].op)}">${esc(cut(h, Math.floor((wr - 34) / 6.6)))}</text><title>${esc(h)} · ${esc(opName(info[h].op))} · click to open the finding</title></g>`; });
@@ -171,6 +186,7 @@
     s += `<text x="${lw - 6}" y="${H - 14}" font-size="10.5" text-anchor="end" fill="${ink('muted')}">sites sharing it</text><text x="${lw + n * cell + 10}" y="${th - 10}" font-size="10.5" fill="${ink('muted')}">ties</text></svg>`;
     el.innerHTML = head('<b>A row per site, a column per shared thing</b>: a filled square = the site has it. A long column = many sites share that one thing; rows that look alike = sites built the same way. Point at a square for what it is, click a site to open its finding.')
       + legend(T) + `<div class="vbox">${s}</div><div class="vinfo" id="mx-info"></div>`;
+    natural(el, w);
     const svg = el.querySelector('svg'), box = el.querySelector('#mx-info'), rr = svg.querySelector('#mx-row'), rc = svg.querySelector('#mx-col');
     panzoom(svg, el.querySelector('.vtools'));
     svg.querySelectorAll('rect.mc').forEach(r => r.addEventListener('mouseenter', () => {
@@ -187,7 +203,7 @@
     const rows = V.flow.rows.filter(r => inScope(r.host)); if (!rows.length) return empty(el);
     const withSites = rows.length <= 60, cols = (withSites ? ['Site'] : []).concat(V.flow.columns);
     const vals = rows.map(r => (withSites ? [r.host] : []).concat(r.vals)), nc = cols.length, n = rows.length;
-    const W = wide(el), unit = Math.max(withSites ? 18 : 10, Math.min(26, Math.floor(560 / n))), gap = 10, top = 30;
+    const W = Math.max(wide(el), el.clientWidth < 600 ? 760 : 0), unit = Math.max(withSites ? 18 : 10, Math.min(26, Math.floor(560 / n))), gap = 10, top = 30;
     const lastW = Math.max(150, Math.min(300, W * 0.24)), step = (W - 20 - lastW) / (nc - 1), bw = Math.max(104, Math.min(210, step * 0.72));
     const xs = cols.map((_, i) => 10 + i * step), bwOf = c => c === nc - 1 ? lastW : bw;
     const order = new Map(V.order.map((h, i) => [h, i]));
@@ -227,6 +243,7 @@
     s += '</svg>';
     el.innerHTML = head('<b>How each site is built</b>, left to right: the site, who registered it, where it is hosted, which host forwards its visitors, and the operation it belongs to. The number in a box = how many sites go through it; a box that many sites go through is the one party a single report reaches. Point at a box to follow its sites.')
       + `<div class="vbox">${s}</div><div class="vinfo" id="fl-info"></div>`;
+    natural(el, W);
     const svg = el.querySelector('svg'), box = el.querySelector('#fl-info'), lines = [...svg.querySelectorAll('.ln')];
     panzoom(svg, el.querySelector('.vtools'));
     svg.querySelectorAll('g.fn').forEach(g => {
@@ -307,7 +324,8 @@
     }
     const zoomAt = (f, t) => { const span = Math.min(tl.hi - tl.lo, Math.max(3 * DAY, (tl.d1 - tl.d0) / f)), k = span / (tl.d1 - tl.d0); tl.d0 = t - (t - tl.d0) * k; tl.d1 = tl.d0 + span; if (span >= tl.hi - tl.lo) { tl.d0 = tl.lo; tl.d1 = tl.hi; } draw(); };
     const tAt = ev => { const r = svg.getBoundingClientRect(), x = (ev.clientX - r.left) / r.width * W; return tl.d0 + (Math.min(Math.max(x, left), left + px) - left) / px * (tl.d1 - tl.d0); };
-    svg.addEventListener('wheel', ev => { ev.preventDefault(); zoomAt(ev.deltaY < 0 ? 1.25 : 1 / 1.25, tAt(ev)); }, {passive: false});
+    armWheel(svg);
+    svg.addEventListener('wheel', ev => { if (!wheelOk(svg)) return; ev.preventDefault(); zoomAt(ev.deltaY < 0 ? 1.25 : 1 / 1.25, tAt(ev)); }, {passive: false});
     let drag = null;
     svg.addEventListener('pointerdown', ev => { drag = {x: ev.clientX, d0: tl.d0, d1: tl.d1, moved: false}; });
     svg.addEventListener('pointermove', ev => { if (!drag) return; const r = svg.getBoundingClientRect(), dx = (ev.clientX - drag.x) / r.width * W; if (Math.abs(dx) > 4) drag.moved = true; if (!drag.moved) return;
