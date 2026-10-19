@@ -310,6 +310,11 @@ def write_site(docs: dict, res: dict, out: Path, github: str, base: str = "", pu
 
 
 def main() -> None:
+    # the progress lines and the summary carry "·" and "→"; a Windows console is cp1252 by default,
+    # so a finished build used to end in UnicodeEncodeError on its own last print and exit non-zero
+    for stream in (sys.stdout, sys.stderr):
+        if hasattr(stream, "reconfigure"):
+            stream.reconfigure(encoding="utf-8", errors="replace")
     ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     ap.add_argument("--base", default="http://127.0.0.1:8765")
     ap.add_argument("--out", default="site")
