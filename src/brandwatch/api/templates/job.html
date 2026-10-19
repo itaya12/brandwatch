@@ -38,6 +38,7 @@
   .now .nav button{padding:3px 10px;font-size:13px;line-height:1}
   .now .nav .pos{font-family:var(--mono);font-size:11px;color:var(--muted);min-width:70px;text-align:center}
   .now .nav .live{border-color:var(--low);color:var(--low)}
+  @media (max-width:700px){ .now{padding:14px}.now .lbl{flex-wrap:wrap}.now .nav{margin-left:0;width:100%;justify-content:space-between}.now .ttl{font-size:22px}.now .body{grid-template-columns:1fr} }
   .now.paused{border-color:rgba(245,197,24,.55)}.now.paused::before{background:var(--med);box-shadow:0 0 18px var(--med);animation:none}
   .items .it .sw{width:12px;height:12px;border-radius:3px;border:1px solid rgba(255,255,255,.25);flex:none}
   .alert.info{border-left-color:var(--accent)}.alert.info .t .k{color:var(--accent2)}
