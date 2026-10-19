@@ -424,10 +424,10 @@ window.BW = (function () {
 <p class="intro">The append-only audit trail: who did what, when, old → new, and why. The database itself refuses to edit or delete it.</p>
 
 <div class="kpis">
-  <div class="kpi"><div class="v" data-count="282">0</div><div class="l">events (latest)</div></div>
-  <div class="kpi"><div class="v" data-count="100">0</div><div class="l">analyst actions</div></div>
-  <div class="kpi"><div class="v" data-count="182">0</div><div class="l">system actions</div></div>
-  <div class="kpi"><div class="v" data-count="33">0</div><div class="l">verdicts recorded</div></div>
+  <div class="kpi"><div class="v" data-count="284">0</div><div class="l">events (latest)</div></div>
+  <div class="kpi"><div class="v" data-count="98">0</div><div class="l">analyst actions</div></div>
+  <div class="kpi"><div class="v" data-count="186">0</div><div class="l">system actions</div></div>
+  <div class="kpi"><div class="v" data-count="34">0</div><div class="l">verdicts recorded</div></div>
   <div class="kpi"><div class="v" data-count="0">0</div><div class="l">logins (24h)</div></div>
 </div>
 
@@ -448,7 +448,7 @@ window.BW = (function () {
 
 <div class="grid actg" style="grid-template-columns:2.2fr 1fr;margin-top:14px">
   <div class="panel">
-    <div class="small muted" style="margin-bottom:6px">2848 events · page 2</div>
+    <div class="small muted" style="margin-bottom:6px">2853 events · page 2</div>
     <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px" id="chips">
       <button type="button" class="chip on" data-cat="notable" title="everything except sign-ins" aria-pressed="true">notable</button>
       <button type="button" class="chip" data-cat="*" aria-pressed="false">all</button>
@@ -459,6 +459,86 @@ window.BW = (function () {
       
       <div class="day" data-day="2026-10-14">2026-10-14</div>
       <div class="ev " data-cat="investigation" data-notable="1" style="--r:0">
+        <div class="av sys" title="admin">SYS</div>
+        <div>
+          <div class="what"><span class="muted">admin</span> <b>investigation</b> · started
+            
+            <span class="muted small">finding <a href="/ui/findings/0ffa1b59-424d-4892-a04e-bee9c93b7eb6/" class="mono">shoqnova.com ↗</a></span></div>
+          
+          
+          <div class="diff"><span class="new">auto: yes</span>
+            </div>
+          
+        </div>
+        <div class="when"><time datetime="2026-10-14T09:53:00.961797+00:00" data-local title="2026-10-14T09:53:00.961797+00:00 UTC">2026-10-14 09:53</time><div><a class="small" href="/ui/activity/_7f5a69d382/" title="every event about this finding">history</a></div></div>
+      </div>
+      
+      
+      <div class="ev t-crit" data-cat="finding" data-notable="1" style="--r:1">
+        <div class="av " title="admin">AD</div>
+        <div>
+          <div class="what"><span class="muted">admin</span> <b>finding</b> · confirmed
+            
+            <span class="muted small">finding <a href="/ui/findings/0ffa1b59-424d-4892-a04e-bee9c93b7eb6/" class="mono">shoqnova.com ↗</a></span></div>
+          
+          
+          <div class="diff"><span class="old">state: open</span> → <span class="new">state: confirmed · verdict: phishing</span>
+            </div>
+          
+        </div>
+        <div class="when"><time datetime="2026-10-14T09:53:00.961797+00:00" data-local title="2026-10-14T09:53:00.961797+00:00 UTC">2026-10-14 09:53</time><div><a class="small" href="/ui/activity/_7f5a69d382/" title="every event about this finding">history</a></div></div>
+      </div>
+      
+      
+      <div class="ev " data-cat="report" data-notable="1" style="--r:2">
+        <div class="av sys" title="system">SYS</div>
+        <div>
+          <div class="what"><span class="muted">system</span> <b>report</b> · generated
+            
+            <span class="muted small">finding <a href="/ui/findings/a93d4aa8-32cd-4819-a9eb-fd7a8ed9b320/" class="mono">shopnova-coupons.com ↗</a></span></div>
+          
+          
+          <div class="diff"><span class="new">{"reports": {"html": "9bcd979d-83e7-4e4d-998d-d6ca028bdc5f", "json": "eda0760a-6033-4176-8bf3-7e45f91954de"}}</span>
+            </div>
+          
+        </div>
+        <div class="when"><time datetime="2026-10-14T09:52:57.852022+00:00" data-local title="2026-10-14T09:52:57.852022+00:00 UTC">2026-10-14 09:52</time><div><a class="small" href="/ui/activity/_1399873f95/" title="every event about this finding">history</a></div></div>
+      </div>
+      
+      
+      <div class="ev " data-cat="campaign" data-notable="1" style="--r:3">
+        <div class="av sys" title="system">SYS</div>
+        <div>
+          <div class="what"><span class="muted">system</span> <b>campaign</b> · investigated
+            
+            <span class="muted small">campaign <a href="/ui/campaigns/a043077d-f1b2-419c-8d28-4a40760ab1de/" class="mono">ShopNova campaign A93D4AA8 ↗</a></span></div>
+          
+          
+          <div class="diff"><span class="new">{"api_calls": 3, "budget_exhausted": null, "edges": 1, "included": 2, "iocs": 5, "nodes": 2}</span>
+            </div>
+          
+        </div>
+        <div class="when"><time datetime="2026-10-14T09:52:57.572125+00:00" data-local title="2026-10-14T09:52:57.572125+00:00 UTC">2026-10-14 09:52</time><div><a class="small" href="/ui/activity/_0ff39d7c43/" title="every event about this campaign">history</a></div></div>
+      </div>
+      
+      
+      <div class="ev " data-cat="intel" data-notable="1" style="--r:4">
+        <div class="av sys" title="system">SYS</div>
+        <div>
+          <div class="what"><span class="muted">system</span> <b>intel</b> · started
+            
+            <span class="muted small">finding <a href="/ui/findings/a93d4aa8-32cd-4819-a9eb-fd7a8ed9b320/" class="mono">shopnova-coupons.com ↗</a></span></div>
+          
+          
+          <div class="diff"><span class="new">force: no · light: yes · package: yes · auto: yes</span>
+            </div>
+          
+        </div>
+        <div class="when"><time datetime="2026-10-14T09:52:57.341584+00:00" data-local title="2026-10-14T09:52:57.341584+00:00 UTC">2026-10-14 09:52</time><div><a class="small" href="/ui/activity/_1399873f95/" title="every event about this finding">history</a></div></div>
+      </div>
+      
+      
+      <div class="ev " data-cat="investigation" data-notable="1" style="--r:5">
         <div class="av sys" title="admin">SYS</div>
         <div>
           <div class="what"><span class="muted">admin</span> <b>investigation</b> · started
@@ -474,7 +554,7 @@ window.BW = (function () {
       </div>
       
       
-      <div class="ev t-crit" data-cat="finding" data-notable="1" style="--r:1">
+      <div class="ev t-crit" data-cat="finding" data-notable="1" style="--r:6">
         <div class="av " title="admin">AD</div>
         <div>
           <div class="what"><span class="muted">admin</span> <b>finding</b> · confirmed
@@ -490,7 +570,7 @@ window.BW = (function () {
       </div>
       
       
-      <div class="ev " data-cat="report" data-notable="1" style="--r:2">
+      <div class="ev " data-cat="report" data-notable="1" style="--r:7">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>report</b> · generated
@@ -506,7 +586,7 @@ window.BW = (function () {
       </div>
       
       
-      <div class="ev " data-cat="campaign" data-notable="1" style="--r:3">
+      <div class="ev " data-cat="campaign" data-notable="1" style="--r:8">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>campaign</b> · investigated
@@ -522,7 +602,7 @@ window.BW = (function () {
       </div>
       
       
-      <div class="ev " data-cat="intel" data-notable="1" style="--r:4">
+      <div class="ev " data-cat="intel" data-notable="1" style="--r:9">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>intel</b> · started
@@ -538,7 +618,7 @@ window.BW = (function () {
       </div>
       
       
-      <div class="ev " data-cat="investigation" data-notable="1" style="--r:5">
+      <div class="ev " data-cat="investigation" data-notable="1" style="--r:10">
         <div class="av sys" title="admin">SYS</div>
         <div>
           <div class="what"><span class="muted">admin</span> <b>investigation</b> · started
@@ -554,7 +634,7 @@ window.BW = (function () {
       </div>
       
       
-      <div class="ev t-crit" data-cat="finding" data-notable="1" style="--r:6">
+      <div class="ev t-crit" data-cat="finding" data-notable="1" style="--r:11">
         <div class="av " title="admin">AD</div>
         <div>
           <div class="what"><span class="muted">admin</span> <b>finding</b> · confirmed
@@ -570,7 +650,7 @@ window.BW = (function () {
       </div>
       
       
-      <div class="ev " data-cat="report" data-notable="1" style="--r:7">
+      <div class="ev " data-cat="report" data-notable="1" style="--r:12">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>report</b> · generated
@@ -586,7 +666,7 @@ window.BW = (function () {
       </div>
       
       
-      <div class="ev " data-cat="campaign" data-notable="1" style="--r:8">
+      <div class="ev " data-cat="campaign" data-notable="1" style="--r:13">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>campaign</b> · investigated
@@ -602,7 +682,7 @@ window.BW = (function () {
       </div>
       
       
-      <div class="ev " data-cat="intel" data-notable="1" style="--r:9">
+      <div class="ev " data-cat="intel" data-notable="1" style="--r:14">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>intel</b> · started
@@ -618,7 +698,7 @@ window.BW = (function () {
       </div>
       
       
-      <div class="ev " data-cat="investigation" data-notable="1" style="--r:10">
+      <div class="ev " data-cat="investigation" data-notable="1" style="--r:15">
         <div class="av sys" title="admin">SYS</div>
         <div>
           <div class="what"><span class="muted">admin</span> <b>investigation</b> · started
@@ -634,7 +714,7 @@ window.BW = (function () {
       </div>
       
       
-      <div class="ev t-crit" data-cat="finding" data-notable="1" style="--r:11">
+      <div class="ev t-crit" data-cat="finding" data-notable="1" style="--r:16">
         <div class="av " title="admin">AD</div>
         <div>
           <div class="what"><span class="muted">admin</span> <b>finding</b> · confirmed
@@ -650,7 +730,7 @@ window.BW = (function () {
       </div>
       
       
-      <div class="ev " data-cat="report" data-notable="1" style="--r:12">
+      <div class="ev " data-cat="report" data-notable="1" style="--r:17">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>report</b> · generated
@@ -666,7 +746,7 @@ window.BW = (function () {
       </div>
       
       
-      <div class="ev " data-cat="campaign" data-notable="1" style="--r:13">
+      <div class="ev " data-cat="campaign" data-notable="1" style="--r:18">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>campaign</b> · investigated
@@ -682,7 +762,7 @@ window.BW = (function () {
       </div>
       
       
-      <div class="ev " data-cat="intel" data-notable="1" style="--r:14">
+      <div class="ev " data-cat="intel" data-notable="1" style="--r:19">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>intel</b> · started
@@ -698,7 +778,7 @@ window.BW = (function () {
       </div>
       
       
-      <div class="ev " data-cat="investigation" data-notable="1" style="--r:15">
+      <div class="ev " data-cat="investigation" data-notable="1" style="--r:20">
         <div class="av sys" title="admin">SYS</div>
         <div>
           <div class="what"><span class="muted">admin</span> <b>investigation</b> · started
@@ -714,7 +794,7 @@ window.BW = (function () {
       </div>
       
       
-      <div class="ev t-crit" data-cat="finding" data-notable="1" style="--r:16">
+      <div class="ev t-crit" data-cat="finding" data-notable="1" style="--r:21">
         <div class="av " title="admin">AD</div>
         <div>
           <div class="what"><span class="muted">admin</span> <b>finding</b> · confirmed
@@ -730,7 +810,7 @@ window.BW = (function () {
       </div>
       
       
-      <div class="ev " data-cat="report" data-notable="1" style="--r:17">
+      <div class="ev " data-cat="report" data-notable="1" style="--r:22">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>report</b> · generated
@@ -746,7 +826,7 @@ window.BW = (function () {
       </div>
       
       
-      <div class="ev " data-cat="campaign" data-notable="1" style="--r:18">
+      <div class="ev " data-cat="campaign" data-notable="1" style="--r:23">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>campaign</b> · investigated
@@ -762,7 +842,7 @@ window.BW = (function () {
       </div>
       
       
-      <div class="ev " data-cat="intel" data-notable="1" style="--r:19">
+      <div class="ev " data-cat="intel" data-notable="1" style="--r:24">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>intel</b> · started
@@ -778,7 +858,7 @@ window.BW = (function () {
       </div>
       
       
-      <div class="ev " data-cat="investigation" data-notable="1" style="--r:20">
+      <div class="ev " data-cat="investigation" data-notable="1" style="--r:25">
         <div class="av sys" title="admin">SYS</div>
         <div>
           <div class="what"><span class="muted">admin</span> <b>investigation</b> · started
@@ -794,7 +874,7 @@ window.BW = (function () {
       </div>
       
       
-      <div class="ev t-crit" data-cat="finding" data-notable="1" style="--r:21">
+      <div class="ev t-crit" data-cat="finding" data-notable="1" style="--r:26">
         <div class="av " title="admin">AD</div>
         <div>
           <div class="what"><span class="muted">admin</span> <b>finding</b> · confirmed
@@ -810,7 +890,7 @@ window.BW = (function () {
       </div>
       
       
-      <div class="ev " data-cat="report" data-notable="1" style="--r:22">
+      <div class="ev " data-cat="report" data-notable="1" style="--r:27">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>report</b> · generated
@@ -826,7 +906,7 @@ window.BW = (function () {
       </div>
       
       
-      <div class="ev " data-cat="campaign" data-notable="1" style="--r:23">
+      <div class="ev " data-cat="campaign" data-notable="1" style="--r:28">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>campaign</b> · investigated
@@ -842,7 +922,7 @@ window.BW = (function () {
       </div>
       
       
-      <div class="ev " data-cat="intel" data-notable="1" style="--r:24">
+      <div class="ev " data-cat="intel" data-notable="1" style="--r:29">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>intel</b> · started
@@ -858,7 +938,7 @@ window.BW = (function () {
       </div>
       
       
-      <div class="ev " data-cat="investigation" data-notable="1" style="--r:25">
+      <div class="ev " data-cat="investigation" data-notable="1" style="--r:30">
         <div class="av sys" title="admin">SYS</div>
         <div>
           <div class="what"><span class="muted">admin</span> <b>investigation</b> · started
@@ -874,7 +954,7 @@ window.BW = (function () {
       </div>
       
       
-      <div class="ev t-crit" data-cat="finding" data-notable="1" style="--r:26">
+      <div class="ev t-crit" data-cat="finding" data-notable="1" style="--r:30">
         <div class="av " title="admin">AD</div>
         <div>
           <div class="what"><span class="muted">admin</span> <b>finding</b> · confirmed
@@ -890,7 +970,7 @@ window.BW = (function () {
       </div>
       
       
-      <div class="ev " data-cat="report" data-notable="1" style="--r:27">
+      <div class="ev " data-cat="report" data-notable="1" style="--r:30">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>report</b> · generated
@@ -906,7 +986,7 @@ window.BW = (function () {
       </div>
       
       
-      <div class="ev " data-cat="campaign" data-notable="1" style="--r:28">
+      <div class="ev " data-cat="campaign" data-notable="1" style="--r:30">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>campaign</b> · investigated
@@ -922,7 +1002,7 @@ window.BW = (function () {
       </div>
       
       
-      <div class="ev " data-cat="intel" data-notable="1" style="--r:29">
+      <div class="ev " data-cat="intel" data-notable="1" style="--r:30">
         <div class="av sys" title="system">SYS</div>
         <div>
           <div class="what"><span class="muted">system</span> <b>intel</b> · started
@@ -4878,50 +4958,6 @@ window.BW = (function () {
       </div>
       
       
-      <div class="ev " data-cat="brand" data-notable="1" style="--r:30">
-        <div class="av " title="admin">AD</div>
-        <div>
-          <div class="what"><span class="muted">admin</span> <b>brand</b> · created
-            
-            <span class="muted small">brand <span class="mono" title="this object no longer exists (e.g. its brand was deleted with Start over)">8c271d83 · deleted</span></span></div>
-          
-          
-          <div class="diff"><span class="new">{"custom": false, "domains": ["trailmark.com"], "kind": "service", "name": "Trailmark 6c1a", "preset": "standard"}</span>
-            </div>
-          
-        </div>
-        <div class="when"><time datetime="2026-10-12T07:59:54.794693+00:00" data-local title="2026-10-12T07:59:54.794693+00:00 UTC">2026-10-12 07:59</time><div><a class="small" href="/ui/activity?object_id=8c271d83-06a0-4ed7-a7c5-d8526c6b3857" title="every event about this brand">history</a></div></div>
-      </div>
-      
-      
-      <div class="ev " data-cat="user" data-notable="0" style="--r:30;display:none">
-        <div class="av " title="admin">AD</div>
-        <div>
-          <div class="what"><span class="muted">admin</span> <b>user</b> · login <span class="pill" title="3 consecutive events, first 2026-10-12 07:33">×3</span>
-            
-            <span class="muted small">user bc089017</span></div>
-          
-        </div>
-        <div class="when"><time datetime="2026-10-12T07:59:54.764659+00:00" data-local title="2026-10-12T07:59:54.764659+00:00 UTC">2026-10-12 07:59</time><div><a class="small" href="/ui/activity/_d2793a420a/" title="every event about this user">history</a></div></div>
-      </div>
-      
-      
-      <div class="ev " data-cat="scan" data-notable="1" style="--r:30">
-        <div class="av " title="admin">AD</div>
-        <div>
-          <div class="what"><span class="muted">admin</span> <b>scan</b> · started
-            
-            <span class="muted small">scan job <span class="mono" title="this object no longer exists (e.g. its brand was deleted with Start over)">868ea397 · deleted</span></span></div>
-          
-          
-          <div class="diff"><span class="new">kind: url_scan · brand: Ironvale 2ac6 · urls: 1</span>
-            </div>
-          
-        </div>
-        <div class="when"><time datetime="2026-10-12T07:33:47.143423+00:00" data-local title="2026-10-12T07:33:47.143423+00:00 UTC">2026-10-12 07:33</time><div><a class="small" href="/ui/activity?object_id=868ea397-c08a-42bb-beeb-d2c2c7dd66c6" title="every event about this scan job">history</a></div></div>
-      </div>
-      
-      
     </div>
     <div class="more"><button type="button" id="more" style="display:none">Show older events</button>
       <a class="btn small" href="/ui/activity?page=1">← newer</a>
@@ -4932,38 +4968,38 @@ window.BW = (function () {
       <h2>By category</h2>
       
       
-      <div class="hbar"><span>finding</span><div class="bar"><i data-w="100"></i></div><b>64</b></div>
+      <div class="hbar"><span>finding</span><div class="bar"><i data-w="100"></i></div><b>65</b></div>
       
-      <div class="hbar"><span>Brand use</span><div class="bar"><i data-w="67"></i></div><b>43</b></div>
+      <div class="hbar"><span>Brand use</span><div class="bar"><i data-w="65"></i></div><b>42</b></div>
       
-      <div class="hbar"><span>report</span><div class="bar"><i data-w="52"></i></div><b>33</b></div>
+      <div class="hbar"><span>report</span><div class="bar"><i data-w="52"></i></div><b>34</b></div>
       
-      <div class="hbar"><span>intel</span><div class="bar"><i data-w="52"></i></div><b>33</b></div>
+      <div class="hbar"><span>intel</span><div class="bar"><i data-w="52"></i></div><b>34</b></div>
       
-      <div class="hbar"><span>campaign</span><div class="bar"><i data-w="50"></i></div><b>32</b></div>
+      <div class="hbar"><span>campaign</span><div class="bar"><i data-w="51"></i></div><b>33</b></div>
       
       <div class="hbar"><span>notification</span><div class="bar"><i data-w="48"></i></div><b>31</b></div>
       
-      <div class="hbar"><span>user</span><div class="bar"><i data-w="47"></i></div><b>30</b></div>
+      <div class="hbar"><span>user</span><div class="bar"><i data-w="42"></i></div><b>27</b></div>
       
-      <div class="hbar"><span>investigation</span><div class="bar"><i data-w="39"></i></div><b>25</b></div>
+      <div class="hbar"><span>investigation</span><div class="bar"><i data-w="40"></i></div><b>26</b></div>
       
     </div>
     <div class="panel" style="margin-top:14px">
       <h2>Activity · 14 days</h2>
-      <svg class="spark" data-spark='{"series": [{"color": "#35C7F2", "values": [0, 0, 0, 0, 0, 0, 26, 30, 226, 0, 0, 0, 0, 0]}]}'></svg>
+      <svg class="spark" data-spark='{"series": [{"color": "#35C7F2", "values": [0, 0, 0, 0, 0, 0, 23, 30, 231, 0, 0, 0, 0, 0]}]}'></svg>
     </div>
     <div class="panel" style="margin-top:14px">
       <h2>Most active</h2>
       
       <div style="display:grid;grid-template-columns:1fr 40px;gap:8px;align-items:center;margin:8px 0">
         <div><div class="small mono">system</div><div class="bar" style="height:6px;margin-top:3px"><i data-w="100"></i></div></div>
-        <div class="mono small right">160</div>
+        <div class="mono small right">163</div>
       </div>
       
       <div style="display:grid;grid-template-columns:1fr 40px;gap:8px;align-items:center;margin:8px 0">
-        <div><div class="small mono">admin</div><div class="bar" style="height:6px;margin-top:3px"><i data-w="88"></i></div></div>
-        <div class="mono small right">140</div>
+        <div><div class="small mono">admin</div><div class="bar" style="height:6px;margin-top:3px"><i data-w="84"></i></div></div>
+        <div class="mono small right">137</div>
       </div>
       
     </div>

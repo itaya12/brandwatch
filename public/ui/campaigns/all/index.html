@@ -935,6 +935,47 @@ window.BW = (function () {
   svg.focus .bx{opacity:.28}
   svg.focus .bx.on{opacity:1}
   .bx{cursor:pointer}
+  /* ---- phones: the four views as cards and lists that read at 390 px, never a drawing shrunk to fit */
+  .mv{display:grid;gap:8px}
+  .mv .mkh{font:700 11px var(--mono);letter-spacing:.1em;text-transform:uppercase;margin:10px 2px 0;color:var(--k,var(--muted))}
+  .mv .mkh:first-child{margin-top:2px}
+  .mv .mc{border:1px solid var(--border);border-left:4px solid var(--k,var(--accent));border-radius:10px;padding:10px 12px;background:rgba(10,15,26,.6)}
+  .mv .mc.hint{border-style:dashed;border-left-style:solid}
+  .mv .mt{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+  .mv .mt b{font-size:14px;color:var(--text)}
+  .mv .mt .n{margin-left:auto;font:600 12px var(--mono);color:var(--k,var(--accent2))}
+  .mv .mt .w{font:12px var(--mono);color:var(--muted)}
+  .mv .mval{font:12.5px/1.45 var(--mono);color:var(--text2);overflow-wrap:anywhere;margin-top:4px}
+  .mv .chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}
+  .mv .sc{display:inline-flex;align-items:center;gap:6px;max-width:100%;padding:3px 9px;border:1px solid var(--border);border-radius:999px;font:12px var(--mono);color:var(--text);text-decoration:none;background:var(--panel2)}
+  .mv .sc i{width:8px;height:8px;border-radius:50%;flex:none;background:var(--c,var(--accent))}
+  .mv .sc span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .mv .sc.k i{border-radius:2px}
+  .mv details.more>summary{list-style:none;cursor:pointer;font-size:12px;color:var(--accent2);margin-top:6px}
+  .mv details.more>summary::-webkit-details-marker{display:none}
+  .mv .site{display:flex;align-items:center;gap:8px;font:600 13.5px var(--mono);color:var(--c,var(--accent2));text-decoration:none;overflow-wrap:anywhere}
+  .mv .site i{width:9px;height:9px;border-radius:50%;flex:none}
+  .mv .fr{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 10px;align-items:center;padding:8px 0;border-top:1px dashed var(--border)}
+  .mv .fr:first-of-type{border-top:0}
+  .mv .fr .nm{font-size:13.5px;color:var(--text);overflow-wrap:anywhere}
+  .mv .fr .ct{font:600 12.5px var(--mono);color:var(--accent2)}
+  .mv .fr .stack{grid-column:1 / -1;display:flex;height:8px;border-radius:4px;overflow:hidden;background:var(--border)}
+  .mv .fr .stack i{display:block;height:100%}
+  .mv .fr details{grid-column:1 / -1}
+  .mv .arrow{text-align:center;color:var(--muted);font-size:16px;line-height:1;margin:-2px 0}
+  .mv .mon{display:flex;align-items:baseline;gap:8px;margin:12px 2px 2px;font:700 12px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--text2)}
+  .mv .mon:first-child{margin-top:2px}
+  .mv .mon span{font-weight:500;letter-spacing:0;text-transform:none;color:var(--muted)}
+  .mv .td{display:grid;grid-template-columns:44px minmax(0,1fr);gap:10px;align-items:center;padding:7px 10px;border:1px solid var(--border);border-radius:10px;background:rgba(10,15,26,.6);text-decoration:none;color:var(--text)}
+  .mv .td.wave{border-color:var(--c);box-shadow:inset 3px 0 0 var(--c)}
+  .mv .td .day{font:700 15px/1.1 var(--display);color:var(--c);text-align:center}
+  .mv .td .day small{display:block;font:500 11px var(--mono);color:var(--muted)}
+  .mv .td .h{font:13px var(--mono);overflow-wrap:anywhere}
+  .mv .td .op{display:block;font:12px var(--sans);color:var(--muted);margin-top:2px}
+  .mv .td .op b{color:var(--c);font-weight:600}
+  .mv .lone{display:flex;flex-wrap:wrap;gap:5px;align-items:center;font-size:12.5px;color:var(--muted);margin-top:4px}
+  .mv .mvh{display:none!important}
+  .mv .mvmore{justify-self:stretch;margin-top:4px;padding:10px;border-radius:10px;font:600 13px var(--sans)}
 </style>
 <script>
 (function(){
@@ -1040,6 +1081,7 @@ window.BW = (function () {
     const used = new Set(T.flatMap(t => t.sites));
     let S = hs.filter(h => used.has(h)); const lone = hs.filter(h => !used.has(h));
     [T, S] = arrange(T, S);
+    if (onPhone(el)) return connectionsPhone(el, T, lone);
     const W = wide(el), narrow = W < 520, row = 30, kh = 22, wl = Math.min(380, W * (narrow ? 0.45 : 0.42)), wr = Math.min(300, W * (narrow ? 0.4 : 0.34)), xl = narrow ? 4 : 10, xr = W - wr - (narrow ? 4 : 10);
     const ty = new Map(), sy = new Map();
     let y = 10, lastK = null; const kindHeads = [];
@@ -1085,6 +1127,7 @@ window.BW = (function () {
     let T = things(), S = sitesNow();
     if (!T.length || S.length < 2) return empty(el, 'No two sites of this selection share anything' + (state.common ? '.' : '. Switch on “show common things” for registrars and name servers.'));
     [T, S] = arrange(T, S);
+    if (onPhone(el)) return matrixPhone(el, T, S);
     const W = wide(el), lw = 200, th = 160, n = T.length;
     const cell = Math.max(16, Math.min(34, Math.floor((W - lw - 70) / n)));
     let y = th; const rowY = new Map(), opHeads = []; let lastOp = null;
@@ -1119,6 +1162,7 @@ window.BW = (function () {
   // ------------------------------------------------------------------ Flow: site -> registrar -> hosting -> redirect host -> operation
   function flow(el){
     const rows = V.flow.rows.filter(r => inScope(r.host)); if (!rows.length) return empty(el);
+    if (onPhone(el)) return flowPhone(el, rows);
     const withSites = rows.length <= 60, cols = (withSites ? ['Site'] : []).concat(V.flow.columns);
     const vals = rows.map(r => (withSites ? [r.host] : []).concat(r.vals)), nc = cols.length, n = rows.length;
     const W = Math.max(wide(el), el.clientWidth < 600 ? 760 : 0), unit = Math.max(withSites ? 18 : 10, Math.min(26, Math.floor(560 / n))), gap = 10, top = 30;
@@ -1192,6 +1236,7 @@ window.BW = (function () {
     const sw = V.swimlane || {rows: []};
     const lanes = sw.rows.filter(r => state.g === 'all' || String(r.index) === String(state.g)).map(r => ({...r, dots: r.dots.map(d => ({...d, t: ts(d.date)})).sort((a, b) => a.t - b.t)}));
     const all = lanes.flatMap(r => r.dots); if (!all.length) return empty(el, 'No registration date is known for these sites yet.');
+    if (onPhone(el)) return timelinePhone(el, lanes);
     const lo = Math.min(...all.map(d => d.t)), hi = Math.max(...all.map(d => d.t)), pad = Math.max((hi - lo) * 0.05, 20 * DAY);
     if (tl.scope !== state.g || tl.d0 === null) { tl.d0 = lo - pad; tl.d1 = hi + pad; tl.scope = state.g; tl.lo = lo - pad; tl.hi = hi + pad; }
     el.innerHTML = head('<b>When each domain was registered</b>, one row per operation. Domains bought within 3 days of each other sit in a shaded band (a purchase wave). <b>Scroll</b> on the chart to zoom into a period (names appear as there is room), <b>drag</b> to move along the time axis, click a dot to open the finding.')
@@ -1252,6 +1297,86 @@ window.BW = (function () {
     svg.addEventListener('pointerup', end); svg.addEventListener('pointerleave', end);
     el.querySelector('.vtools').addEventListener('click', ev => { const z = ev.target.closest('[data-z]'); if (!z) return; if (z.dataset.z === 'fit') { tl.d0 = tl.lo; tl.d1 = tl.hi; draw(); } else zoomAt(z.dataset.z === 'in' ? 1.5 : 1 / 1.5, (tl.d0 + tl.d1) / 2); });
     draw();
+  }
+
+  // ------------------------------------------------------------------ phones: the same data as cards and lists
+  const onPhone = el => (el.clientWidth || window.innerWidth) < 600;
+  const siteChip = h => { const s = info[h]; return `<a class="sc" style="--c:${col(s.op)}" href="/ui/findings/${esc(s.id)}" title="${esc(h)} · ${esc(opName(s.op))}"><i></i><span>${esc(h)}</span></a>`; };
+  const chipsOf = (list, first = 6) => list.length <= first + 1 ? list.join('') : list.slice(0, first).join('')
+    + `<details class="more"><summary>+${list.length - first} more</summary><div class="chips">${list.slice(first).join('')}</div></details>`;
+  // a long list shows its first cards and a button for the rest, so a phone does not scroll through forty cards to reach the page below
+  function clip(el, sel, k, what){
+    const box = el.querySelector('.mv'); if (!box) return;
+    const kids = [...box.children], cards = kids.filter(x => x.matches(sel)); if (cards.length <= k + 2) return;
+    const cutAt = kids.indexOf(cards[k]);
+    kids.slice(cutAt).forEach(x => x.classList.add('mvh'));
+    const b = document.createElement('button'); b.type = 'button'; b.className = 'mvmore'; b.textContent = `Show all ${cards.length} ${what} ▾`;
+    b.addEventListener('click', () => { kids.forEach(x => x.classList.remove('mvh')); b.remove(); });
+    box.appendChild(b);
+  }
+  // Connections: one card per shared thing, grouped by kind; the sites that share it are chips in their group's colour
+  function connectionsPhone(el, T, lone){
+    let lastK = null, h = '';
+    T.forEach(t => {
+      const c = KC[t.kind] || ink('muted');
+      if (t.kind !== lastK) { h += `<div class="mkh" style="--k:${c}">${esc(t.label.replace(/^the same |^a |^an /, ''))}</div>`; lastK = t.kind; }
+      h += `<div class="mc${t.level === 'solid' ? '' : ' hint'}" style="--k:${c}"><div class="mt"><b>${esc(t.values.length > 1 ? t.short + ' ×' + t.values.length : t.short)}</b>`
+        + `<span class="w">${Math.round(t.weight * 100)}%${t.level === 'solid' ? '' : ' · ' + esc(LVL[t.level] || '')}</span><span class="n">${t.sites.length} sites</span></div>`
+        + `<div class="mval">${esc(t.values.slice(0, 3).join(', '))}${t.values.length > 3 ? ' …' : ''}</div><div class="chips">${chipsOf(t.sites.map(siteChip))}</div></div>`;
+    });
+    el.innerHTML = head('<b>What is shared</b>, one card per shared thing, and the sites that share it.', false) + legend(T)
+      + `<div class="mv">${h}</div>` + (lone.length ? `<div class="mv"><div class="lone">Share nothing with the others: ${lone.map(siteChip).join(' ')}</div></div>` : '');
+    clip(el, '.mc', 6, 'shared things');
+  }
+  // Matrix: one card per site, in the order of its operation, with every thing it shares
+  function matrixPhone(el, T, S){
+    let lastOp = null, h = '';
+    S.forEach(host => {
+      const s = info[host], c = col(s.op), mine = T.filter(t => t.sites.includes(host));
+      if (s.op !== lastOp) { h += `<div class="mkh" style="--k:${c}">${esc(opName(s.op))}</div>`; lastOp = s.op; }
+      h += `<div class="mc" style="--k:${c}"><div class="mt"><a class="site" style="--c:${c}" href="/ui/findings/${esc(s.id)}"><i style="background:${SEV[s.severity] || ink('muted')}"></i>${esc(host)}</a>`
+        + `<span class="n">${mine.length} tie${mine.length === 1 ? '' : 's'}</span></div><div class="chips">`
+        + mine.map(t => `<span class="sc k" style="--c:${KC[t.kind] || ink('muted')}" title="${esc(t.label)} · ${esc(t.values.join(', '))}"><i></i><span>${esc(cut(tname(t), 30))}</span></span>`).join('') + '</div></div>';
+    });
+    el.innerHTML = head('<b>Site by site</b>: what each one shares with the others.', false) + legend(T) + `<div class="mv">${h}</div>`;
+    clip(el, '.mc', 6, 'sites');
+  }
+  // Flow: the stages one under the other; each value is a bar coloured by the operations whose sites use it
+  function flowPhone(el, rows){
+    const cols = V.flow.columns, total = rows.length;
+    const ops = [...new Set(rows.map(r => r.op || 0))];
+    let h = '';
+    cols.forEach((name, c) => {
+      const m = {};
+      rows.forEach(r => { const v = r.vals[c] || '—'; const nd = m[v] = m[v] || {name: v, sites: [], by: {}}; nd.sites.push(r.host); nd.by[r.op || 0] = (nd.by[r.op || 0] || 0) + 1; });
+      const list = Object.values(m).sort((a, b) => b.sites.length - a.sites.length);
+      if (c) h += '<div class="arrow" aria-hidden="true">↓</div>';
+      h += `<div class="mc" style="--k:var(--accent)"><div class="mt"><b>${c + 1} · ${esc(name)}</b><span class="n">${list.length} value${list.length === 1 ? '' : 's'}</span></div>`;
+      list.slice(0, 8).forEach(nd => {
+        h += `<div class="fr"><span class="nm">${esc(nd.name)}</span><span class="ct">${nd.sites.length}</span><span class="stack">`
+          + ops.filter(o => nd.by[o]).map(o => `<i style="width:${(nd.by[o] / total * 100).toFixed(1)}%;background:${col(o)}" title="${esc(opName(o))}: ${nd.by[o]}"></i>`).join('')
+          + `</span><details class="more"><summary>the ${nd.sites.length} site${nd.sites.length === 1 ? '' : 's'}</summary><div class="chips">${nd.sites.map(siteChip).join('')}</div></details></div>`;
+      });
+      if (list.length > 8) h += `<div class="lone">+ ${list.length - 8} more with fewer sites</div>`;
+      h += '</div>';
+    });
+    el.innerHTML = head('<b>From the domain to the operation</b>: who sold it, who hosts it, where it sends people, and which attacker it belongs to.', false)
+      + '<div class="vlegend">' + ops.map(o => `<span><i style="background:${col(o)}"></i>${esc(opName(o))}</span>`).join('') + '</div>' + `<div class="mv">${h}</div>`;
+  }
+  // Timeline: month by month, newest first; a domain bought within days of another is marked as part of a wave
+  function timelinePhone(el, lanes){
+    const dots = lanes.flatMap(r => r.dots.map(d => ({...d, lane: r}))).sort((a, b) => b.t - a.t);
+    let lastM = null, h = '';
+    const byMonth = {}; dots.forEach(d => { const k = d.date.slice(0, 7); byMonth[k] = (byMonth[k] || 0) + 1; });
+    dots.forEach(d => {
+      const k = d.date.slice(0, 7), dt = new Date(d.t), c = col(d.lane.index);
+      if (k !== lastM) { h += `<div class="mon">${MONTHS[dt.getUTCMonth()]} ${dt.getUTCFullYear()} <span>· ${byMonth[k]} domain${byMonth[k] === 1 ? '' : 's'}</span></div>`; lastM = k; }
+      const s = info[d.host];
+      h += `<a class="td${d.wave ? ' wave' : ''}" style="--c:${c}" href="${s ? '/ui/findings/' + esc(s.id) : '#'}"><span class="day">${dt.getUTCDate()}<small>${MONTHS[dt.getUTCMonth()]}</small></span>`
+        + `<span><span class="h">${esc(d.host)}</span><span class="op"><b>${esc(d.lane.label)}</b>${d.wave ? ' · bought in a wave' : ''}</span></span></a>`;
+    });
+    el.innerHTML = head('<b>When each domain was registered</b>, newest first. A coloured edge marks domains bought within days of each other.', false) + `<div class="mv">${h}</div>`;
+    clip(el, '.td', 12, 'domains');
   }
 
   // ------------------------------------------------------------------ the switch
