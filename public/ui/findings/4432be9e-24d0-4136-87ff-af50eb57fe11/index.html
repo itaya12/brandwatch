@@ -336,6 +336,28 @@ button:not(.ghost):not(.fold):not(.menu):not(.chip):hover::after,.btn:not(.ghost
 .srcic.s-pivot{background:color-mix(in srgb,var(--accent) 16%,transparent);color:var(--accent2)}
 .srcic.s-redirect{background:color-mix(in srgb,var(--op5) 18%,transparent);color:var(--op5)}
 .srcs{display:inline-flex;gap:4px;align-items:center;vertical-align:middle}
+/* ---- the charts stay alive after they played (.lit is set by the motion layer when a chart is first seen) ----
+   A light runs along every bar and the end of the bar breathes; a scan crosses each histogram; a ring's score glows
+   in its colour; a donut's segments breathe; a pulse travels each line chart (.bw-run). The values never move. */
+[data-w]{position:relative}
+.bar>i[data-w],.scorebar>i,.stack>i,.meter>i,.prio{position:relative;overflow:hidden}
+.bar>i.lit::after,.scorebar>i.lit::after,.stack>i.lit::after,.meter>i.lit::after,.prio.lit::after{content:"";position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(90deg,transparent 10%,rgba(255,255,255,.55) 50%,transparent 90%);transform:translateX(-110%);
+  animation:bw-sweep 3.4s cubic-bezier(.4,0,.2,1) calc(1.2s + var(--r,0)*.2s) infinite}
+@keyframes bw-sweep{0%{transform:translateX(-110%)}38%,100%{transform:translateX(110%)}}
+.bar>i.lit:not([data-w="0"])::before{content:"";position:absolute;right:1px;top:50%;width:6px;height:6px;margin-top:-3px;border-radius:50%;background:#fff;z-index:1;
+  box-shadow:0 0 6px 2px rgba(255,255,255,.6);animation:bw-cap 2s ease-in-out calc(1s + var(--r,0)*.15s) infinite}
+@keyframes bw-cap{0%,100%{opacity:.3;transform:scale(.7)}50%{opacity:1;transform:scale(1.15)}}
+.hist.lit{position:relative}
+.hist.lit::before{content:"";position:absolute;top:-4px;bottom:18px;left:-12%;width:12%;pointer-events:none;z-index:1;
+  background:linear-gradient(90deg,transparent,rgba(95,227,255,.2),transparent);border-right:1px solid rgba(95,227,255,.35);animation:bw-scan 5s linear 1.6s infinite}
+@keyframes bw-scan{from{left:-12%}to{left:100%}}
+.ring.lit{animation:bw-ring 3.2s ease-in-out 1.4s infinite}
+@keyframes bw-ring{0%,100%{box-shadow:0 0 0 0 transparent}50%{box-shadow:0 0 14px 1px color-mix(in srgb,var(--c) 45%,transparent)}}
+svg.donut.lit circle[stroke-dasharray]{animation:bw-breathe 3.6s ease-in-out 1.4s infinite alternate}
+@keyframes bw-breathe{from{opacity:1}to{opacity:.72}}
+.bw-run{position:absolute;left:0;top:0;width:7px;height:7px;margin:-3.5px 0 0 -3.5px;border-radius:50%;pointer-events:none;z-index:3;
+  background:currentColor;box-shadow:0 0 8px 2px currentColor;opacity:0;will-change:transform}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
 </style>
 <script>
@@ -1891,6 +1913,19 @@ abuse-mailbox: abuse@mock.example
   document.querySelectorAll('main .panel').forEach((el, i) => el.style.setProperty('--i', Math.min(i, 12)));
   document.querySelectorAll('table').forEach(t => [...t.querySelectorAll('tr')].forEach((tr, i) => tr.style.setProperty('--r', Math.min(i, 30))));
   document.querySelectorAll('.timeline').forEach(t => [...t.children].forEach((li, i) => li.style.setProperty('--r', Math.min(i, 30))));
+  // A chart plays when it comes into view, not at load: most of a page's charts are below the fold, and an
+  // animation that finished before anyone scrolled to it is no animation at all. whenSeen(el, fn) runs fn once,
+  // the first time el is on screen (at once without IntersectionObserver or with reduced motion).
+  const seenIO = (!reduce && 'IntersectionObserver' in window) ? new IntersectionObserver(es => es.forEach(e => {
+    if (e.isIntersecting) { seenIO.unobserve(e.target); const fs = e.target.__seen || []; e.target.__seen = null; fs.forEach(f => f()); }
+  }), {rootMargin: '0px 0px -6% 0px', threshold: 0.12}) : null;
+  const whenSeen = (el, fn) => { if (!seenIO) { fn(); return; } (el.__seen = el.__seen || []).push(fn); seenIO.observe(el); };
+  window.BW_whenSeen = whenSeen;
+  // bars and rings drawn with a fixed size in the markup play too: their size becomes the target
+  document.querySelectorAll('main .bar > i[style*="width"]:not([data-w]):not([data-dw]), main .meter > i[style*="width"]:not([data-w]), main .stack > i[style*="width"]:not([data-w])').forEach(el => {
+    const w = parseFloat(el.style.width); if (isNaN(w)) return; el.dataset.w = w; el.style.width = '0%'; });
+  document.querySelectorAll('main .ring[style*="--p"]:not([data-p])').forEach(el => {
+    const v = parseFloat(el.style.getPropertyValue('--p')); if (isNaN(v)) return; el.dataset.p = v; el.style.setProperty('--p', 0); });
   // bars rise in sequence: each one's place among the bars of its own panel
   const barGroups = new Map();
   document.querySelectorAll('[data-w],[data-h]').forEach(el => {
@@ -1903,21 +1938,53 @@ abuse-mailbox: abuse@mock.example
   document.querySelectorAll('[data-count]').forEach(el => {
     const target = parseFloat(el.dataset.count) || 0, suffix = el.dataset.suffix || '';
     if (reduce) { el.textContent = fmt(target) + suffix; return; }
+    el.textContent = fmt(0) + suffix;
+    whenSeen(el, () => countFrom(el, target, suffix));
+  });
+  function countFrom(el, target, suffix){
     const t0 = performance.now(), dur = 1100 + Math.min(900, target * 4);
     const tick = t => { const k = Math.min(1, (t - t0) / dur), e = 1 - Math.pow(1 - k, 3);
       el.textContent = fmt(Number.isInteger(target) ? Math.round(target * e) : target * e) + suffix; if (k < 1) requestAnimationFrame(tick); };
     requestAnimationFrame(tick);
     setTimeout(() => { el.textContent = fmt(target) + suffix; }, dur + 400);  // final value even if rAF is paused
-  });
+  }
   // grow bars, histograms, rings after first paint
   const later = fn => { let ran = false; const go = () => { if (!ran) { ran = true; fn(); } };
     requestAnimationFrame(() => requestAnimationFrame(go)); setTimeout(go, 350); };
-  const grow = () => {
-    document.querySelectorAll('[data-w]').forEach(el => el.style.width = Math.max(0, Math.min(100, +el.dataset.w)) + '%');
-    document.querySelectorAll('[data-h]').forEach(el => el.style.height = Math.max(2, Math.min(100, +el.dataset.h)) + '%');
-    document.querySelectorAll('[data-p]').forEach(el => el.style.setProperty('--p', +el.dataset.p));
+  // each bar, histogram column and ring grows when it is seen, then is marked .lit (the CSS keeps it alive)
+  const lit = el => { el.classList.add('lit'); const h = el.closest('.hist'); if (h) h.classList.add('lit'); };
+  later(() => {  // rAF is paused in hidden tabs: later() also has a timer fallback
+    document.querySelectorAll('[data-w]').forEach(el => whenSeen(el, () => { el.style.width = Math.max(0, Math.min(100, +el.dataset.w)) + '%'; lit(el); }));
+    document.querySelectorAll('[data-h]').forEach(el => whenSeen(el, () => { el.style.height = Math.max(2, Math.min(100, +el.dataset.h)) + '%'; lit(el); }));
+    document.querySelectorAll('[data-p]').forEach(el => whenSeen(el, () => { el.style.setProperty('--p', +el.dataset.p); lit(el); }));
+  });
+  // a pulse that travels along a line chart, forever, but only while the chart is on screen and the tab is visible
+  const runners = [];
+  let runRaf = 0;
+  const runFrame = t => {
+    runRaf = 0; let any = false;
+    runners.forEach(o => {
+      if (!o.on || document.hidden) return;
+      const r = o.svg.getBoundingClientRect(); if (!r.width) { o.dot.style.opacity = 0; return; }
+      any = true; if (t < o.t0) return;
+      const k = ((t - o.t0) / o.dur) % 1, L = o.L || (o.L = o.line.getTotalLength()), pt = o.line.getPointAtLength(k * L);
+      const vb = o.svg.viewBox.baseVal, hr = o.host.getBoundingClientRect();
+      o.dot.style.transform = `translate(${(r.left - hr.left + pt.x / (vb.width || r.width) * r.width).toFixed(1)}px,${(r.top - hr.top + pt.y / (vb.height || r.height) * r.height).toFixed(1)}px)`;
+      o.dot.style.opacity = k < 0.05 ? k * 20 : k > 0.95 ? (1 - k) * 20 : 1;
+    });
+    if (any) runRaf = requestAnimationFrame(runFrame);
   };
-  later(grow);  // rAF is paused in hidden tabs: later() also has a timer fallback
+  const kickRun = () => { if (!runRaf && runners.some(o => o.on)) runRaf = requestAnimationFrame(runFrame); };
+  const runIO = ('IntersectionObserver' in window) ? new IntersectionObserver(es => es.forEach(e => { runners.forEach(o => { if (o.svg === e.target) o.on = e.isIntersecting; }); kickRun(); })) : null;
+  document.addEventListener('visibilitychange', kickRun);
+  function addRunner(svg, line, color, dur, delay){
+    if (reduce || !runIO || !line.getPointAtLength) return;
+    const host = svg.parentElement; if (!host) return;
+    if (getComputedStyle(host).position === 'static') host.style.position = 'relative';
+    const dot = document.createElement('i'); dot.className = 'bw-run'; dot.style.color = color; host.appendChild(dot);
+    runners.push({svg, line, dot, host, dur, t0: performance.now() + delay, on: false});
+    runIO.observe(svg);
+  }
   // donuts: <svg class="donut" data-donut='[{"label","value","color"}]' data-center="label">
   const NS = 'http://www.w3.org/2000/svg';
   document.querySelectorAll('svg.donut[data-donut]').forEach(svg => {
@@ -1934,7 +2001,7 @@ abuse-mailbox: abuse@mock.example
       c.style.transition = `stroke-dasharray 1.1s cubic-bezier(.2,.8,.2,1) ${i * 120}ms`; c.style.filter = `drop-shadow(0 0 4px ${s.color}66)`;
       const title = document.createElementNS(NS, 'title'); title.textContent = `${s.label}: ${s.value}`; c.appendChild(title);
       svg.appendChild(c); off += len;
-      later(() => c.setAttribute('stroke-dasharray', `${Math.max(0, len - 1.5)} ${C}`));
+      later(() => whenSeen(svg, () => { c.setAttribute('stroke-dasharray', `${Math.max(0, len - 1.5)} ${C}`); svg.classList.add('lit'); }));
     });
     const t1 = document.createElementNS(NS, 'text'); t1.setAttribute('x', 60); t1.setAttribute('y', 62); t1.setAttribute('text-anchor', 'middle');
     t1.setAttribute('fill', BW.ink('text')); t1.setAttribute('font-family', 'Rajdhani, monospace'); t1.setAttribute('font-size', 26); t1.setAttribute('font-weight', 700); t1.textContent = total;
@@ -1953,13 +2020,15 @@ abuse-mailbox: abuse@mock.example
       const id = 'g' + Math.random().toString(36).slice(2);
       const defs = document.createElementNS(NS, 'defs'); defs.innerHTML = `<linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${s.color}" stop-opacity=".35"/><stop offset="1" stop-color="${s.color}" stop-opacity="0"/></linearGradient>`;
       svg.appendChild(defs);
-      if (si === 0) { const area = document.createElementNS(NS, 'path'); area.setAttribute('d', d + ` L${W},${H} L0,${H} Z`); area.setAttribute('fill', `url(#${id})`); area.style.opacity = 0; area.style.transition = 'opacity 1.2s ease .6s'; svg.appendChild(area); later(() => area.style.opacity = 1); }
+      if (si === 0) { const area = document.createElementNS(NS, 'path'); area.setAttribute('d', d + ` L${W},${H} L0,${H} Z`); area.setAttribute('fill', `url(#${id})`); area.style.opacity = 0; area.style.transition = 'opacity 1.2s ease .6s'; svg.appendChild(area); later(() => whenSeen(svg, () => { area.style.opacity = 1; })); }
       const line = document.createElementNS(NS, 'path'); line.setAttribute('d', d); line.setAttribute('fill', 'none'); line.setAttribute('stroke', s.color);
       line.setAttribute('stroke-width', 2); line.setAttribute('vector-effect', 'non-scaling-stroke'); line.style.filter = `drop-shadow(0 0 3px ${s.color})`;
       svg.appendChild(line);
       const L = line.getTotalLength ? line.getTotalLength() : 600; line.style.strokeDasharray = L; line.style.strokeDashoffset = L;
       line.style.transition = `stroke-dashoffset 1.6s cubic-bezier(.2,.8,.2,1) ${si * 200}ms`;
-      later(() => line.style.strokeDashoffset = 0);
+      later(() => whenSeen(svg, () => { line.style.strokeDashoffset = 0; }));
+      // then a pulse keeps travelling along the line while it is on screen (the dashboard runs its own)
+      if (!svg.closest('.dash')) addRunner(svg, line, s.color, 5200 + si * 1400, 1900 + si * 700);
       const last = pts[pts.length - 1]; if (last) { const dot = document.createElementNS(NS, 'circle'); dot.setAttribute('cx', last[0]); dot.setAttribute('cy', last[1]); dot.setAttribute('r', 3); dot.setAttribute('fill', s.color); svg.appendChild(dot); }
       // every point is readable: an invisible target the pointer can actually hit, and a tip that
       // is positioned in the wrapper rather than in the svg, so a 300-wide viewBox cannot squash it
