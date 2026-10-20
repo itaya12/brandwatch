@@ -3,6 +3,9 @@
    `case` (story.one_case, or none). Motion follows the svg-animation / 60fps / accessible-animation rules: strokes draw on,
    dots ride the flows, only transform and opacity move, it pauses off screen and on request, and reduced motion keeps
    a short fade and the final picture. #}
+{# a server still running older code passes neither: the views then say there is nothing yet, the page still works #}
+{% if numbers is not defined %}{% set numbers = {"sources": [], "totals": {"examined": 0, "suspects": 0, "confirmed": 0, "networks": 0, "drafted": 0, "sent": 0, "resolved": 0}} %}{% endif %}
+{% if case is not defined %}{% set case = none %}{% endif %}
 <style>
   .hv-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0 12px}
   .hv-tabs button{display:inline-flex;align-items:center;gap:9px;padding:9px 16px 9px 11px;border:1px solid var(--border);border-radius:12px;
