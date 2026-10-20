@@ -1,0 +1,329 @@
+{# How it works, three ways to see the same product: the picture (the default), the numbers flowing from each source to a
+   takedown, and one real case from the domain's registration to the takedown. Needs `numbers` (story.by_numbers) and
+   `case` (story.one_case, or none). Motion follows the svg-animation / 60fps / accessible-animation rules: strokes draw on,
+   dots ride the flows, only transform and opacity move, it pauses off screen and on request, and reduced motion keeps
+   a short fade and the final picture. #}
+<style>
+  .hv-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0 12px}
+  .hv-tabs button{display:inline-flex;align-items:center;gap:9px;padding:9px 16px 9px 11px;border:1px solid var(--border);border-radius:12px;
+    background:linear-gradient(180deg,var(--panel2),var(--panel));color:var(--text2);font:600 13.5px var(--sans);cursor:pointer;transition:border-color .15s,color .15s,transform .15s}
+  .hv-tabs button:hover{border-color:var(--accent);color:var(--text);transform:translateY(-1px)}
+  .hv-tabs button .ic{display:grid;place-items:center;width:28px;height:28px;border-radius:8px;background:rgba(53,199,242,.10);color:var(--accent2)}
+  .hv-tabs button .ic svg{width:17px;height:17px}
+  .hv-tabs button[aria-selected="true"]{border-color:var(--accent);color:var(--text);background:linear-gradient(180deg,rgba(53,199,242,.24),rgba(53,199,242,.08));box-shadow:0 0 0 1px var(--accent)}
+  .hv-tabs button[aria-selected="true"] .ic{background:var(--accent);color:var(--on-lit)}
+  .hv-tabs .sp{flex:1}
+  .hv-tabs .hv-pause{padding:6px 12px;font-size:12.5px}
+  .hv-pane[hidden]{display:none}
+  .hv-box{position:relative;border:1px solid var(--border);border-radius:18px;padding:18px;background:radial-gradient(ellipse at 50% 0%,rgba(53,199,242,.07),transparent 60%),linear-gradient(180deg,rgba(14,20,32,.9),rgba(8,12,20,.9))}
+  .hv-head{display:flex;flex-wrap:wrap;gap:6px 16px;align-items:baseline;margin:0 0 12px}
+  .hv-head h3{margin:0;font:700 18px var(--display);letter-spacing:.02em}
+  .hv-head .muted{font-size:12.5px}
+  /* by the numbers */
+  .nb-wrap{position:relative}
+  .nb-wrap svg{display:block;width:100%;overflow:visible}
+  .nb-col{position:absolute;transform:translateX(-50%);text-align:center;pointer-events:none;white-space:nowrap}
+  .nb-col b{display:block;font:700 22px/1 var(--display);color:var(--text)}
+  .nb-col span{display:block;font:600 11px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:3px}
+  .nb-col i{display:block;font:500 11px var(--mono);font-style:normal;color:var(--accent2);margin-top:2px}
+  .nb-col.v{transform:none;text-align:left;display:flex;align-items:baseline;gap:6px;padding:1px 8px 1px 0;background:linear-gradient(90deg,rgba(8,12,20,.95) 70%,transparent)}
+  .nb-col.v b{display:inline;font-size:17px}.nb-col.v span,.nb-col.v i{display:inline;margin:0}
+  .nb-lead{position:absolute;height:1px;background:var(--border);transform-origin:left center;pointer-events:none}
+  .nb-lbl{position:absolute;display:flex;align-items:center;gap:8px;transform:translateY(-50%);font-size:12.5px;color:var(--text2);cursor:pointer;white-space:nowrap;padding:2px 6px 2px 2px;border-radius:8px;transition:background .15s,opacity .2s}
+  .nb-lbl b{font:600 12px var(--mono);color:var(--muted);margin-left:2px}
+  .nb-lbl:hover,.nb-lbl.on{background:rgba(53,199,242,.10);color:var(--text)}
+  .nb-wrap.focus .nb-lbl:not(.on){opacity:.35}
+  .nb-wrap .rib{transition:opacity .25s}
+  .nb-wrap.focus .rib:not(.on){opacity:.07}
+  .nb-wrap .node{transform-box:fill-box;transform-origin:center;transition:opacity .25s}
+  .nb-wrap.focus .node.src:not(.on){opacity:.25}
+  .nb-tip{min-height:42px;margin-top:10px;padding:9px 12px;border:1px dashed var(--border);border-radius:10px;font-size:13px;color:var(--text2)}
+  .nb-tip b{color:var(--text)}.nb-tip .pc{font-family:var(--mono);color:var(--accent2)}
+  .nb-chips{display:none;flex-wrap:wrap;gap:6px;margin:0 0 10px}
+  .nb-chips button{display:inline-flex;align-items:center;gap:6px;padding:4px 10px 4px 4px;border-radius:999px;font-size:12px}
+  .nb-chips button.on{border-color:var(--accent);background:rgba(53,199,242,.12)}
+  .nb-note{font-size:12.5px;line-height:1.5;color:var(--muted);margin-top:8px}
+  /* one real case */
+  .cs-sum{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 14px}
+  .cs-sum div{padding:8px 12px;border:1px solid var(--border);border-radius:10px;background:var(--panel2)}
+  .cs-sum b{display:block;font:700 18px/1.1 var(--display)}.cs-sum span{font:600 11px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+  .cs-line{position:relative;display:grid;grid-auto-flow:column;grid-auto-columns:minmax(150px,1fr);gap:0 12px;padding-top:34px;overflow-x:auto;scrollbar-width:thin}
+  .cs-track{position:absolute;left:24px;right:24px;top:21px;height:3px;border-radius:2px;background:var(--border);overflow:hidden}
+  .cs-track i{position:absolute;inset:0;background:linear-gradient(90deg,var(--accent),var(--low));transform-origin:left;transform:scaleX(0)}
+  .cs-st{position:relative;opacity:0;transform:translateY(10px);transition:opacity .45s ease,transform .45s cubic-bezier(.2,.8,.2,1)}
+  .cs-st.in{opacity:1;transform:none}
+  .cs-dot{position:absolute;left:12px;top:-27px;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;background:var(--panel);border:2px solid var(--c,var(--accent));color:var(--c,var(--accent))}
+  .cs-dot svg{width:14px;height:14px}
+  .cs-st.in .cs-dot{box-shadow:0 0 0 4px color-mix(in srgb,var(--c,var(--accent)) 20%,transparent)}
+  .cs-gap{position:absolute;left:44px;top:-29px;font:600 11px var(--mono);color:var(--muted);white-space:nowrap}
+  .cs-card{margin-top:8px;padding:10px 12px;border:1px solid var(--border);border-top:3px solid var(--c,var(--accent));border-radius:10px;background:rgba(10,15,26,.7);height:calc(100% - 8px)}
+  .cs-card .t{font-weight:700;font-size:13.5px}
+  .cs-card .w{font:500 11.5px var(--mono);color:var(--muted);margin:2px 0 6px}
+  .cs-card .x{font-size:12.5px;color:var(--text2);line-height:1.45;overflow-wrap:anywhere}
+  .cs-card .ic{display:flex;gap:4px;margin-top:6px}
+  .cs-card a{display:inline-block;margin-top:6px;font-size:12px}
+  .cs-replay{margin-left:auto}
+  @media (max-width:700px){
+    .hv-tabs button{flex:1 1 0;min-width:0;justify-content:center;padding:8px 6px;font-size:12px;gap:6px}.hv-tabs button .ic{width:22px;height:22px}
+    .hv-tabs .sp,.hv-tabs .hv-pause{display:none}
+    .hv-box{padding:12px;border-radius:14px}
+    .nb-chips{display:flex}
+    .cs-line{grid-auto-flow:row;grid-auto-columns:auto;grid-template-columns:minmax(0,1fr);gap:12px;padding:0 0 0 38px;overflow:visible}
+    .cs-track{left:14px;right:auto;top:6px;bottom:6px;width:3px;height:auto}
+    .cs-track i{transform-origin:top;transform:scaleY(0);background:linear-gradient(180deg,var(--accent),var(--low))}
+    .cs-dot{left:-37px;top:8px}.cs-gap{left:0;top:-10px;position:relative;display:block;margin-bottom:-2px}
+    .cs-card{margin-top:0}
+    .cs-sum{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}.cs-sum div{padding:7px 8px}.cs-sum b{font-size:15px}.cs-sum span{font-size:10.5px;letter-spacing:.02em;text-transform:none;font-family:var(--sans)}
+    .cs-gap{margin:2px 0 4px}
+  }
+  @media (prefers-reduced-motion:reduce){.cs-st{transform:none;transition:opacity .15s ease}}
+</style>
+
+<div class="hv-tabs" role="tablist" aria-label="Ways to see it">
+  <button type="button" role="tab" id="hvt-map" aria-controls="hv-map" aria-selected="true"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="5" cy="12" r="2.5"/><circle cx="19" cy="6" r="2.5"/><circle cx="19" cy="18" r="2.5"/><circle cx="12" cy="12" r="3.2"/><path d="M7.5 12h1.3M15 10.5l1.8-2.6M15 13.5l1.8 2.6"/></svg></span>How it works</button>
+  <button type="button" role="tab" id="hvt-nums" aria-controls="hv-nums" aria-selected="false"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M3 6c6 0 6 4 12 4h6M3 12c6 0 6 1 12 1h6M3 18c6 0 6-2 12-2h6"/></svg></span>By the numbers</button>
+  <button type="button" role="tab" id="hvt-case" aria-controls="hv-case" aria-selected="false"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M3 12h18"/><circle cx="6" cy="12" r="2.2"/><circle cx="12" cy="12" r="2.2"/><circle cx="18" cy="12" r="2.2"/><path d="M6 6v3M12 15v3M18 6v3"/></svg></span>One real case</button>
+  <span class="sp"></span>
+  <button type="button" class="hv-pause ghost" id="hv-pause" aria-pressed="false" title="stop and start the moving parts">❚❚ pause motion</button>
+</div>
+
+<div class="hv-pane" id="hv-map" role="tabpanel" aria-labelledby="hvt-map">{% include "_flow_diagram.html" %}</div>
+
+<div class="hv-pane" id="hv-nums" role="tabpanel" aria-labelledby="hvt-nums" hidden>
+  <div class="hv-box">
+    <div class="hv-head"><h3>From {{ '{:,}'.format(numbers.totals.examined) }} domains to a takedown</h3>
+      <span class="muted">each band is one discovery source: how many domains it brought, how many became suspects, how many an analyst confirmed</span></div>
+    <div class="nb-chips" id="nb-chips"></div>
+    <div class="nb-wrap" id="nb-wrap"><svg id="nb-svg" role="img" aria-label="Domains from each discovery source, narrowing to suspects, confirmed sites and takedowns"></svg></div>
+    <div class="nb-tip" id="nb-tip">Point at a source to follow it.</div>
+    <div class="nb-note">Column heights grow with the logarithm of the count, so 39 next to {{ '{:,}'.format(numbers.totals.examined) }} stays visible; within a column every band is in proportion. A domain found by two sources is in both bands.</div>
+  </div>
+</div>
+
+<div class="hv-pane" id="hv-case" role="tabpanel" aria-labelledby="hvt-case" hidden>
+  <div class="hv-box">
+    {% if case %}
+    <div class="hv-head"><h3><span class="mono">{{ case.host }}</span></h3><span class="muted">a real confirmed site of {{ case.brand }}, from the day the domain was bought to the takedown</span>
+      <button type="button" class="ghost small cs-replay" id="cs-replay">↻ replay</button></div>
+    <div class="cs-sum" id="cs-sum"></div>
+    <div class="cs-line" id="cs-line"><div class="cs-track"><i id="cs-fill"></i></div></div>
+    <div class="nb-note"><a href="/ui/findings/{{ case.finding_id }}">open this finding →</a></div>
+    {% else %}<p class="muted">No confirmed site yet. Confirm a finding and its story appears here.</p>{% endif %}
+  </div>
+</div>
+
+<script>
+(function(){
+  const N = {{ numbers|tojson }}, CASE = {{ case|tojson }};
+  const ink = BW.ink, NS = 'http://www.w3.org/2000/svg';
+  const mq = matchMedia('(prefers-reduced-motion: reduce)');
+  let calm = mq.matches, paused = false;
+  const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'}[c]));
+  const fmt = n => Number(n || 0).toLocaleString('en-US');
+  const COL = {google: '#4285F4', ai: '#10A37F', social: '#1877F2', meta_ads: '#7AA7FF', cert: ink('med'), lookalike: ink('high'), urlscan: ink('accent'),
+               analyst: ink('op5'), nrd: ink('low'), pivot: ink('accent2'), redirect: '#B07CFF'};
+  const icon = s => `<span class="srcic s-${esc(s.g)}" aria-hidden="true">${s.glyph}</span>`;
+
+  // ---------------------------------------------------------------- tabs (remembered; #by-the-numbers / #one-real-case open them)
+  const tabs = {map: 'hvt-map', nums: 'hvt-nums', case: 'hvt-case'}, drawn = {};
+  const HASH = {nums: '#by-the-numbers', case: '#one-real-case'};
+  function pick(v){
+    Object.entries(tabs).forEach(([k, id]) => { const b = document.getElementById(id), on = k === v; b.setAttribute('aria-selected', String(on)); document.getElementById('hv-' + k).hidden = !on; });
+    try { localStorage.setItem('bw-howview', v); } catch (e) { /* a private window */ }
+    if (v === 'nums') drawNumbers(); if (v === 'case') drawCase();
+  }
+  Object.entries(tabs).forEach(([k, id]) => {
+    const b = document.getElementById(id);
+    b.addEventListener('click', () => { pick(k); try { history.replaceState(null, '', HASH[k] || location.pathname); } catch (e) { /* ignore */ } });
+    b.addEventListener('keydown', e => { const ks = Object.keys(tabs), i = ks.indexOf(k); if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') { const n = ks[(i + (e.key === 'ArrowRight' ? 1 : ks.length - 1)) % ks.length]; document.getElementById(tabs[n]).focus(); pick(n); } });
+  });
+  const pauseBtn = document.getElementById('hv-pause');
+  pauseBtn.addEventListener('click', () => { paused = !paused; pauseBtn.setAttribute('aria-pressed', String(paused)); pauseBtn.textContent = paused ? '▶ play motion' : '❚❚ pause motion'; syncMotion(); });
+  mq.addEventListener && mq.addEventListener('change', e => { calm = e.matches; drawn.nums = drawn.case = false; const v = Object.keys(tabs).find(k => !document.getElementById('hv-' + k).hidden); if (v) pick(v); });
+  // a picture off screen, or a tab in the background, stops moving
+  let onScreen = true;
+  const syncMotion = () => document.querySelectorAll('#nb-svg, .sx-flow svg').forEach(s => { if (!s.pauseAnimations) return; if (paused || !onScreen || document.hidden) s.pauseAnimations(); else s.unpauseAnimations(); });
+  if ('IntersectionObserver' in window) new IntersectionObserver(es => es.forEach(e => { onScreen = e.isIntersecting; syncMotion(); })).observe(document.getElementById('hv-nums'));
+  document.addEventListener('visibilitychange', syncMotion);
+  const countUp = (el, to) => { if (calm) { el.textContent = fmt(to); return; } const t0 = performance.now(), dur = 900 + Math.min(700, Math.log10(to + 1) * 300);
+    const tick = t => { const k = Math.min(1, (t - t0) / dur); el.textContent = fmt(Math.round(to * (1 - Math.pow(1 - k, 3)))); if (k < 1) requestAnimationFrame(tick); }; requestAnimationFrame(tick);
+    setTimeout(() => { el.textContent = fmt(to); }, dur + 300); };  // the final number even if frames were skipped
+
+  // ---------------------------------------------------------------- by the numbers: a flow from each source to the takedown
+  function drawNumbers(){
+    if (drawn.nums) return; drawn.nums = true;
+    const wrap = document.getElementById('nb-wrap'), svg = document.getElementById('nb-svg'), tip = document.getElementById('nb-tip');
+    const S = N.sources, T = N.totals;
+    if (!S.length) { wrap.innerHTML = '<p class="muted">No scan has run yet: scan a brand and its numbers flow here.</p>'; return; }
+    const W = Math.max(300, wrap.clientWidth), vertical = W < 600;
+    // the stages: three per source, then the takedown path, one band
+    const ST = [{k: 'examined', l: 'examined'}, {k: 'suspects', l: 'suspects'}, {k: 'confirmed', l: 'confirmed'},
+                {k: 'drafted', l: 'takedown drafted'}, {k: 'sent', l: 'sent'}, {k: 'resolved', l: 'taken down'}];
+    const perSrc = 3, head = vertical ? 0 : 54, labelW = vertical ? 0 : Math.min(190, W * 0.24);
+    const cross = vertical ? W - 8 : 330, main = vertical ? 700 : W - labelW - 120;
+    const H = vertical ? main + 70 : cross + head + 20;
+    const nodeT = vertical ? 12 : 14;     // a column's thickness along the flow
+    const mx = Math.log10(T.examined + 1) || 1;
+    const size = v => v > 0 ? Math.max(6, cross * 0.92 * Math.log10(v + 1) / mx) : 0;
+    const pos = i => (vertical ? 46 : labelW + 24) + i * (main - nodeT) / (ST.length - 1);
+    const P = (m, c) => vertical ? [c, m] : [m, c + head];      // main axis, cross axis → x, y
+    // the stacked bands of the first three columns: proportional inside the column, the column sized by its total
+    const cols = ST.slice(0, perSrc).map((st, i) => {
+      const tot = T[st.k] || 0, len = size(tot), sum = S.reduce((a, s) => a + s[st.k], 0) || 1, gap = 3;
+      const usable = Math.max(0, len - gap * (S.filter(s => s[st.k] > 0).length - 1));
+      let c = (cross - len) / 2; const seg = {};
+      S.forEach(s => { const h = s[st.k] > 0 ? Math.max(2, usable * s[st.k] / sum) : 0; seg[s.g] = {a: c, b: c + h}; c += h + (h ? gap : 0); });
+      return {st, tot, len, seg, at: pos(i)};
+    });
+    const tail = ST.slice(perSrc).map((st, j) => { const v = T[st.k] || 0, len = size(v); return {st, tot: v, len, at: pos(perSrc + j), a: (cross - len) / 2, b: (cross + len) / 2}; });
+    const band = (m0, a0, b0, m1, a1, b1) => {  // a ribbon from one column's segment to the next one's
+      const mm = (m0 + m1) / 2, p = (m, c) => P(m, c).map(v => v.toFixed(1)).join(',');
+      return `M${p(m0, a0)} C${p(mm, a0)} ${p(mm, a1)} ${p(m1, a1)} L${p(m1, b1)} C${p(mm, b1)} ${p(mm, b0)} ${p(m0, b0)} Z`;
+    };
+    let s = `<defs><clipPath id="nb-clip"><rect id="nb-reveal" x="0" y="0" width="${vertical ? W : 0}" height="${vertical ? 0 : H}"/></clipPath>`
+      + `<linearGradient id="nb-tk" ${vertical ? 'x1="0" y1="0" x2="0" y2="1"' : ''}><stop offset="0" stop-color="${ink('low')}" stop-opacity=".55"/><stop offset="1" stop-color="${ink('low')}" stop-opacity=".9"/></linearGradient></defs><g clip-path="url(#nb-clip)">`;
+    const centers = {};
+    S.forEach(src => {
+      const c = COL[src.g] || ink('accent'); centers[src.g] = [];
+      for (let i = 0; i < perSrc - 1; i++) {
+        const A = cols[i].seg[src.g], B = cols[i + 1].seg[src.g];
+        if (A.b - A.a <= 0) break;
+        const mid = (B.b - B.a) > 0 ? null : (A.a + A.b) / 2;   // a band that ends here tapers to a point
+        s += `<path class="rib" data-g="${src.g}" d="${band(cols[i].at + nodeT, A.a, A.b, cols[i + 1].at, mid ?? B.a, mid ?? B.b)}" fill="${c}" fill-opacity=".34"/>`;
+        centers[src.g].push([cols[i].at + nodeT, (A.a + A.b) / 2, cols[i + 1].at, mid ?? (B.a + B.b) / 2, mid !== null]);
+        if (mid !== null) break;
+      }
+    });
+    // the confirmed column narrows into the takedown path, one green band
+    const cf = cols[perSrc - 1], ca = (cross - cf.len) / 2, cb = (cross + cf.len) / 2;
+    let prev = {at: cf.at, a: ca, b: cb};
+    tail.forEach(t => { if (!prev || prev.b - prev.a <= 0) { prev = null; return; } const mid = t.len > 0 ? null : (prev.a + prev.b) / 2; s += `<path class="rib tk" d="${band(prev.at + nodeT, prev.a, prev.b, t.at, mid ?? t.a, mid ?? t.b)}" fill="url(#nb-tk)" fill-opacity=".45"/>`; if (mid !== null) { prev = null; return; } prev = t; });
+    s += '</g>';
+    // the columns themselves: one block per source, then the takedown blocks
+    cols.forEach((cl, i) => S.forEach(src => { const g = cl.seg[src.g]; if (g.b - g.a <= 0) return; const [x, y] = P(cl.at, g.a), w = vertical ? g.b - g.a : nodeT, h = vertical ? nodeT : g.b - g.a;
+      s += `<rect class="node src" data-g="${src.g}" style="--d:${i * 140}ms" x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${w.toFixed(1)}" height="${h.toFixed(1)}" rx="2" fill="${COL[src.g] || ink('accent')}"/>`; }));
+    tail.forEach((t, j) => { if (!t.len) return; const [x, y] = P(t.at, t.a), w = vertical ? t.len : nodeT, h = vertical ? nodeT : t.len;
+      s += `<rect class="node" style="--d:${(perSrc + j) * 140}ms" x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${w.toFixed(1)}" height="${h.toFixed(1)}" rx="2" fill="${ink('low')}"/>`; });
+    // dots that ride each source's band, more for the bigger sources (motion along a path: removed under reduced motion)
+    if (!calm) {
+      S.forEach((src, si) => (centers[src.g] || []).forEach((seg, k) => {
+        const [m0, c0, m1, c1, ends] = seg, mm = (m0 + m1) / 2, p = (m, c) => P(m, c).map(v => v.toFixed(1)).join(',');
+        const id = `nbp-${src.g}-${k}`, n = Math.max(1, Math.min(4, Math.round(Math.log2(src.examined + 1) / 2)));
+        s += `<path id="${id}" d="M${p(m0, c0)} C${p(mm, c0)} ${p(mm, c1)} ${p(m1, c1)}" fill="none"/>`;
+        for (let q = 0; q < n; q++) {
+          const dur = 2.6 + (si % 3) * 0.4, b = ((q / n) * dur + k * 0.7 + si * 0.23).toFixed(2);
+          s += `<circle r="${ends ? 2.4 : 3}" fill="${COL[src.g] || ink('accent')}" opacity="0"><animateMotion dur="${dur}s" begin="${b}s" repeatCount="indefinite"><mpath href="#${id}"/></animateMotion>`
+            + `<animate attributeName="opacity" values="0;1;1;${ends ? 0 : 1}" keyTimes="0;.1;.8;1" dur="${dur}s" begin="${b}s" repeatCount="indefinite"/></circle>`;
+        }
+      }));
+      // and down the takedown path, a green dot now and then
+      if ((T.sent || T.drafted) && cf.len > 0) { const a = (cross) / 2, p = (m, c) => P(m, c).map(v => v.toFixed(1)).join(','), last = tail.filter(t => t.len).pop() || tail[0];
+        s += `<path id="nbp-tk" d="M${p(cf.at + nodeT, a)} L${p(last.at, a)}" fill="none"/><circle r="3.2" fill="${ink('low')}"><animateMotion dur="3.4s" begin="1.2s" repeatCount="indefinite"><mpath href="#nbp-tk"/></animateMotion></circle>`; }
+    }
+    const Hs = vertical ? H : Math.max(H, head + 14 + S.length * 26);
+    svg.setAttribute('viewBox', `0 0 ${W} ${Hs}`); svg.setAttribute('height', Hs); svg.innerHTML = s;
+    // the column titles and counts, and the source labels (HTML over the drawing, so they stay crisp and readable)
+    wrap.querySelectorAll('.nb-col, .nb-lbl, .nb-lead').forEach(e => e.remove());
+    const pct = (a, b) => b ? Math.round(a / b * 100) + '%' : '';
+    const all = cols.map(c => ({st: c.st, tot: c.tot, at: c.at})).concat(tail.map(t => ({st: t.st, tot: t.tot, at: t.at})));
+    all.forEach((c, i) => {
+      const d = document.createElement('div'); d.className = 'nb-col';
+      const rate = i > 0 && all[i - 1].tot ? `<i>${pct(c.tot, all[i - 1].tot)} of the step before</i>` : '';
+      d.innerHTML = `<b>0</b><span>${esc(c.st.l)}</span>${rate}`;
+      if (vertical) { d.classList.add('v'); d.style.left = '0px'; d.style.top = (c.at - 24) + 'px'; d.innerHTML = `<b>0</b> <span>${esc(c.st.l)}</span>${i > 0 && all[i - 1].tot ? `<i>${pct(c.tot, all[i - 1].tot)}</i>` : ''}`; }
+      else { d.style.left = (c.at + nodeT / 2) + 'px'; d.style.top = '0px'; }
+      wrap.appendChild(d); (window.BW_whenSeen || ((e, f) => f()))(d, () => countUp(d.querySelector('b'), c.tot));
+    });
+    if (vertical) {
+      // the vertical layout keeps its labels in a chip row above
+      const chips = document.getElementById('nb-chips');
+      chips.innerHTML = S.map(src => `<button type="button" data-g="${src.g}">${icon(src)}${esc(src.label)}</button>`).join('');
+      chips.querySelectorAll('button').forEach(b => b.addEventListener('click', () => focus(b.classList.contains('on') ? null : b.dataset.g)));
+    } else {
+      const want = S.filter(src => cols[0].seg[src.g].b - cols[0].seg[src.g].a > 0).map(src => ({src, y: head + (cols[0].seg[src.g].a + cols[0].seg[src.g].b) / 2}));
+      want.sort((a, b) => a.y - b.y);
+      const gapY = 26; want.forEach((w, i) => { w.ly = i ? Math.max(w.y, want[i - 1].ly + gapY) : Math.max(w.y, head + 10); });
+      for (let i = want.length - 1; i >= 0; i--) { const lim = i === want.length - 1 ? H - 12 : want[i + 1].ly - gapY; if (want[i].ly > lim) want[i].ly = lim; }
+      const ly = Object.fromEntries(want.map(w => [w.src.g, w]));
+      want.forEach(w => { if (Math.abs(w.ly - w.y) < 3) return; const x0 = labelW + 2, x1 = cols[0].at, dy = w.y - w.ly, len = Math.hypot(x1 - x0, dy);
+        const ln = document.createElement('i'); ln.className = 'nb-lead'; ln.style.left = x0 + 'px'; ln.style.top = w.ly + 'px'; ln.style.width = len + 'px'; ln.style.transform = `rotate(${Math.atan2(dy, x1 - x0)}rad)`; wrap.appendChild(ln); });
+      S.forEach(src => { const g = cols[0].seg[src.g]; if (g.b - g.a <= 0) return;
+        const l = document.createElement('div'); l.className = 'nb-lbl'; l.dataset.g = src.g; l.style.left = '0px'; l.style.top = ly[src.g].ly + 'px'; l.style.maxWidth = (labelW + 10) + 'px';
+        l.innerHTML = `${icon(src)}<span>${esc(src.label)}</span><b>${fmt(src.examined)}</b>`; wrap.appendChild(l);
+        l.addEventListener('mouseenter', () => focus(src.g)); l.addEventListener('mouseleave', () => focus(null)); l.addEventListener('click', () => focus(src.g)); });
+    }
+    function focus(g){
+      wrap.classList.toggle('focus', !!g);
+      wrap.querySelectorAll('[data-g]').forEach(e => e.classList.toggle('on', e.dataset.g === g));
+      document.querySelectorAll('#nb-chips button').forEach(b => b.classList.toggle('on', b.dataset.g === g));
+      const src = S.find(x => x.g === g);
+      tip.innerHTML = src ? `${icon(src)} <b>${esc(src.label)}</b>: ${fmt(src.examined)} domains examined → <b>${fmt(src.suspects)}</b> suspects <span class="pc">${pct(src.suspects, src.examined)}</span> → <b>${fmt(src.confirmed)}</b> confirmed <span class="pc">${pct(src.confirmed, src.suspects)} of its suspects</span>`
+        : `<b>${fmt(T.examined)}</b> domains examined → <b>${fmt(T.suspects)}</b> suspects → <b>${fmt(T.confirmed)}</b> confirmed → <b>${fmt(T.drafted)}</b> takedown${T.drafted === 1 ? '' : 's'} drafted, <b>${fmt(T.sent)}</b> sent${T.resolved ? `, <b>${fmt(T.resolved)}</b> taken down` : ''}. Point at a source to follow it.`;
+    }
+    svg.querySelectorAll('.rib[data-g], .node.src').forEach(e => { e.addEventListener('mouseenter', () => focus(e.dataset.g)); e.addEventListener('mouseleave', () => focus(null)); });
+    focus(null);
+    // the entrance: the columns rise, then the bands draw from the sources to the takedown
+    const reveal = svg.querySelector('#nb-reveal'), nodes = svg.querySelectorAll('.node');
+    const play = () => {
+      if (calm) { reveal.setAttribute(vertical ? 'height' : 'width', vertical ? H : W); nodes.forEach(n => { n.style.opacity = 1; }); return; }
+      nodes.forEach(n => { n.style.transform = vertical ? 'scaleX(0)' : 'scaleY(0)'; n.style.transition = 'none'; });
+      requestAnimationFrame(() => nodes.forEach(n => { n.style.transition = `transform .7s cubic-bezier(.2,.8,.2,1) ${n.style.getPropertyValue('--d')}`; n.style.transform = 'none'; }));
+      const t0 = performance.now(), dur = 1800, full = vertical ? H : W;
+      const step = t => { const k = Math.min(1, (t - t0) / dur), e = 1 - Math.pow(1 - k, 3); reveal.setAttribute(vertical ? 'height' : 'width', (full * e).toFixed(1)); if (k < 1) requestAnimationFrame(step); };
+      requestAnimationFrame(step);
+    };
+    (window.BW_whenSeen || ((e, f) => f()))(svg, play);
+    syncMotion();
+  }
+
+  // ---------------------------------------------------------------- one real case: the steps on a line, with the time between them
+  const ICON = {
+    registered: '<path d="M4 7h16l-1.5 9h-13z"/><circle cx="9" cy="19" r="1.3"/><circle cx="16" cy="19" r="1.3"/>',
+    found: '<circle cx="11" cy="11" r="6"/><path d="M20 20l-4.3-4.3"/>',
+    scored: '<path d="M4 16a8 8 0 0116 0"/><path d="M12 16l4-5"/>',
+    confirmed: '<path d="M12 3l8 4v5c0 4.5-3.2 8.3-8 9-4.8-.7-8-4.5-8-9V7z"/><path d="M8.5 12.5l2.4 2.4 4.6-5"/>',
+    mapped: '<circle cx="6" cy="6" r="2.3"/><circle cx="18" cy="6" r="2.3"/><circle cx="12" cy="18" r="2.3"/><path d="M8 7.5l3 8.5M16 7.5l-3 8.5M8.3 6h7.4"/>',
+    drafted: '<rect x="3.5" y="6" width="17" height="12" rx="2"/><path d="M4 7l8 6 8-6"/>',
+    sent: '<path d="M21 3L10 14"/><path d="M21 3l-7 18-4-7-7-4z"/>',
+    resolved: '<path d="M5 21V4M5 4h12l-2 4 2 4H5"/>'};
+  const KC = {registered: ink('muted'), found: ink('accent'), scored: ink('high'), confirmed: ink('crit'), mapped: ink('op5'), drafted: ink('accent2'), sent: ink('low'), resolved: ink('low')};
+  const gapText = ms => { const s = ms / 1000; if (s < 90) return 'moments later'; const m = s / 60; if (m < 90) return `+${Math.round(m)} min`; const h = m / 60; if (h < 36) return `+${Math.round(h)} h`; const d = h / 24; return d < 60 ? `+${Math.round(d)} days` : `+${Math.round(d / 30)} months`; };
+  const span = ms => { const h = ms / 3.6e6; return h < 1 ? `${Math.max(1, Math.round(h * 60))} min` : h < 48 ? `${Math.round(h)} h` : `${Math.round(h / 24)} days`; };
+  const when = (iso, dayOnly) => { const d = new Date(iso); if (isNaN(d)) return ''; return dayOnly ? d.toLocaleDateString(undefined, {day: 'numeric', month: 'short', year: 'numeric'}) : d.toLocaleString(undefined, {day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit'}); };
+  function drawCase(replay){
+    if (!CASE) return;
+    if (drawn.case && !replay) return; drawn.case = true;
+    const line = document.getElementById('cs-line'), fill = document.getElementById('cs-fill'), sum = document.getElementById('cs-sum'), st = CASE.steps;
+    const t = k => { const x = st.find(s => s.k === k); return x ? Date.parse(x.at) : null; };
+    const items = [];
+    if (t('registered') && t('found')) items.push([span(t('found') - t('registered')), 'from purchase to detection']);
+    if (t('found') && t('confirmed')) items.push([span(Math.max(60000, t('confirmed') - t('found'))), 'from detection to verdict']);
+    const endT = t('sent') || t('drafted'); if (t('confirmed') && endT) items.push([span(Math.max(60000, endT - t('confirmed'))), t('sent') ? 'from verdict to takedown sent' : 'from verdict to takedown drafted']);
+    sum.innerHTML = items.map(([v, l]) => `<div><b>${esc(v)}</b><span>${esc(l)}</span></div>`).join('');
+    line.querySelectorAll('.cs-st').forEach(e => e.remove());
+    st.forEach((s, i) => {
+      const el = document.createElement('div'); el.className = 'cs-st'; el.style.setProperty('--c', KC[s.k] || ink('accent'));
+      const gap = i ? `<span class="cs-gap">${gapText(Date.parse(s.at) - Date.parse(st[i - 1].at))}</span>` : '';
+      const ic = (s.icons || []).map(b => `<span class="srcic s-${esc(b.g)}" title="${esc(b.label)}">${b.glyph}</span>`).join('');
+      el.innerHTML = `<span class="cs-dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICON[s.k] || ''}</svg></span>${gap}`
+        + `<div class="cs-card"><div class="t">${esc(s.title)}</div><div class="w">${esc(when(s.at, s.day_only))}</div><div class="x">${esc(s.text)}</div>${ic ? `<div class="ic">${ic}</div>` : ''}${s.href ? `<a href="${esc(s.href)}">open →</a>` : ''}</div>`;
+      line.appendChild(el);
+    });
+    const els = [...line.querySelectorAll('.cs-st')], vertical = matchMedia('(max-width: 700px)').matches, axis = vertical ? 'scaleY' : 'scaleX';
+    if (calm) { els.forEach(e => e.classList.add('in')); fill.style.transform = 'none'; return; }
+    fill.style.transition = 'none'; fill.style.transform = `${axis}(0)`; els.forEach(e => e.classList.remove('in'));
+    const go = () => els.forEach((e, i) => setTimeout(() => { if (paused) { els.forEach(x => x.classList.add('in')); fill.style.transform = 'none'; return; }
+      e.classList.add('in'); fill.style.transition = 'transform .55s cubic-bezier(.4,0,.2,1)'; fill.style.transform = `${axis}(${(i + 1) / els.length})`; }, 250 + i * 520));
+    (window.BW_whenSeen || ((e, f) => f()))(line, go);
+  }
+  const rp = document.getElementById('cs-replay'); if (rp) rp.addEventListener('click', () => drawCase(true));
+
+  // the view to open: the link's, then the last one chosen, then the picture
+  let start = 'map';
+  if (location.hash === HASH.nums) start = 'nums'; else if (location.hash === HASH.case) start = 'case';
+  else { try { const v = localStorage.getItem('bw-howview'); if (v && tabs[v]) start = v; } catch (e) { /* ignore */ } }
+  pick(start);
+  addEventListener('hashchange', () => { if (location.hash === HASH.nums) pick('nums'); else if (location.hash === HASH.case) pick('case'); });
+  let rt = 0; addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => { if (!document.getElementById('hv-nums').hidden) { drawn.nums = false; drawNumbers(); } }, 250); });
+})();
+</script>

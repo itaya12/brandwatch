@@ -444,3 +444,124 @@ def flow(session: Session, user: User) -> dict[str, int]:
         "drafted": count(sa.select(sa.func.count()).select_from(TakedownDraft).join(Finding, Finding.id == TakedownDraft.finding_id)
                          .where(Finding.brand_id.in_(brands))),
     }  # fmt: skip
+
+
+def by_numbers(session: Session, user: User) -> dict[str, Any]:
+    """"By the numbers" on How it works: per discovery source, how many domains it brought, how many became suspects
+    (a finding) and how many an analyst confirmed; then the takedowns. A domain found by two sources counts in both."""
+    from brandwatch.api.labels import source_badges
+    from brandwatch.db.enums import TakedownState
+    from brandwatch.db.models import CandidateSource, TakedownDraft
+
+    brands = sa.select(Brand.id).where(Brand.workspace_id == user.workspace_id)
+    per: dict[str, dict[str, Any]] = {}
+
+    def add(rows: Any, key: str) -> None:
+        for src, n in rows:
+            b = source_badges([src])[0]
+            row = per.setdefault(b["g"], {"g": b["g"], "label": b["label"], "glyph": str(b["glyph"]), "examined": 0, "suspects": 0, "confirmed": 0})
+            row[key] += int(n)
+
+    base = sa.select(CandidateSource.source, sa.func.count(sa.distinct(Candidate.id))).join(Candidate, Candidate.id == CandidateSource.candidate_id)
+    add(session.execute(base.where(Candidate.brand_id.in_(brands)).group_by(CandidateSource.source)).all(), "examined")
+    fbase = (
+        sa.select(CandidateSource.source, sa.func.count(sa.distinct(Finding.id)))
+        .join(Candidate, Candidate.id == CandidateSource.candidate_id)
+        .join(Finding, Finding.candidate_id == Candidate.id)
+        .where(Candidate.brand_id.in_(brands))
+    )
+    add(session.execute(fbase.group_by(CandidateSource.source)).all(), "suspects")
+    add(session.execute(fbase.where(Finding.state == FindingState.CONFIRMED).group_by(CandidateSource.source)).all(), "confirmed")
+    sources = sorted((r for r in per.values() if r["examined"]), key=lambda r: (-r["confirmed"], -r["suspects"], -r["examined"]))
+    f = flow(session, user)
+    resolved = int(
+        session.scalar(
+            sa.select(sa.func.count()).select_from(TakedownDraft).join(Finding, Finding.id == TakedownDraft.finding_id)
+            .where(Finding.brand_id.in_(brands), TakedownDraft.state == TakedownState.RESOLVED)
+        ) or 0
+    )  # fmt: skip
+    return {
+        "sources": sources,
+        "totals": {"examined": f["lookalikes"], "suspects": f["findings"], "confirmed": f["confirmed"], "networks": f["networks"],
+                   "drafted": f["drafted"], "sent": f["takedowns"], "resolved": resolved},
+    }  # fmt: skip
+
+
+def one_case(session: Session, user: User) -> dict[str, Any] | None:
+    """"One real case": the life of one confirmed site, from its registration to the takedown, with the real times.
+    The case that went furthest is chosen (a takedown sent, a map of the attacker, a draft, the highest score)."""
+    from brandwatch.api.labels import source_badges
+    from brandwatch.db.models import (
+        AuditEvent,
+        Campaign,
+        CandidateSource,
+        Evidence,
+        Observation,
+        TakedownDraft,
+        WhoisObservation,
+    )
+
+    brands = sa.select(Brand.id).where(Brand.workspace_id == user.workspace_id)
+    rows = session.execute(
+        sa.select(Finding, Candidate).join(Candidate, Candidate.id == Finding.candidate_id)
+        .where(Finding.brand_id.in_(brands), Finding.state == FindingState.CONFIRMED, Finding.kind != "ai_answer")
+    ).all()  # fmt: skip
+    if not rows:
+        return None
+    ids = [f.id for f, _ in rows]
+    drafts = {d.finding_id: d for d in session.scalars(sa.select(TakedownDraft).where(TakedownDraft.finding_id.in_(ids)).order_by(TakedownDraft.created_at)).all()}
+
+    def rank(fc: Any) -> tuple:
+        fi = fc[0]
+        d = drafts.get(fi.id)
+        sc = fi.current_score
+        return (1 if d and d.sent_at else 0, 1 if fi.campaign_id else 0, 1 if d else 0, float(sc.score) if sc else 0.0)
+
+    f, c = max(rows, key=rank)
+    brand = session.get(Brand, f.brand_id)
+    bname = brand.name if brand else "the brand"
+    steps: list[dict[str, Any]] = []
+    reg = session.scalar(
+        sa.select(WhoisObservation.registered_at).join(Evidence, Evidence.id == WhoisObservation.evidence_id)
+        .where(Evidence.candidate_id == c.id, WhoisObservation.registered_at.is_not(None)).order_by(Evidence.observed_at).limit(1)
+    )  # fmt: skip
+    if reg:
+        steps.append({"k": "registered", "at": f"{reg.isoformat()}T00:00:00+00:00", "day_only": True, "title": "The domain is bought",
+                      "text": f"{c.hostname} is registered, a name that carries {bname}."})  # fmt: skip
+    srcs = session.scalars(sa.select(CandidateSource.source).where(CandidateSource.candidate_id == c.id)).all()
+    badges = source_badges(list(srcs), limit=4)
+    steps.append({"k": "found", "at": c.first_seen.isoformat(), "title": "BrandWatch finds it",
+                  "text": "Found by " + (", ".join(b["label"] for b in badges) or "a scan") + ".",
+                  "icons": [{"g": b["g"], "glyph": str(b["glyph"]), "label": b["label"]} for b in badges]})  # fmt: skip
+    visits = int(session.scalar(sa.select(sa.func.count()).select_from(Observation).where(Observation.candidate_id == c.id)) or 0)
+    sc = f.current_score
+    parts = [f"Risk {int(sc.score)}/100" if sc else "Scored", f.severity.value]
+    if sc and sc.signals:
+        parts.append(f"{len(sc.signals)} signals")
+    if visits:
+        parts.append(f"{visits} visit{'s' if visits != 1 else ''}")
+    steps.append({"k": "scored", "at": f.created_at.isoformat(), "title": "Visited like a victim, scored", "text": " · ".join(parts),
+                  "score": int(sc.score) if sc else None, "severity": f.severity.value})  # fmt: skip
+    conf = session.scalar(sa.select(AuditEvent.at).where(AuditEvent.action == "finding.confirmed", AuditEvent.object_id == f.id).order_by(AuditEvent.at).limit(1))
+    steps.append({"k": "confirmed", "at": (conf or f.updated_at).isoformat(), "title": "An analyst confirms it",
+                  "text": "Confirmed as phishing: a person decided, with the evidence in front of them."})  # fmt: skip
+    if f.campaign_id:
+        camp = session.get(Campaign, f.campaign_id)
+        sisters = int(session.scalar(sa.select(sa.func.count()).select_from(Finding).where(Finding.campaign_id == f.campaign_id)) or 0)
+        if camp:
+            steps.append({"k": "mapped", "at": camp.created_at.isoformat(), "title": "The attacker is mapped", "href": f"/ui/campaigns/{camp.id}",
+                          "text": f"Its servers, certificates and owners are followed: {sisters} confirmed site{'s' if sisters != 1 else ''} on the same map."})  # fmt: skip
+    d = drafts.get(f.id)
+    if d:
+        steps.append({"k": "drafted", "at": d.created_at.isoformat(), "title": "The takedown is drafted", "href": f"/ui/takedowns/{d.id}",
+                      "text": f"Request {d.reference or ''} to {d.registrar or 'the registrar'}, with the evidence attached."})  # fmt: skip
+        if d.sent_at:
+            steps.append({"k": "sent", "at": d.sent_at.isoformat(), "title": "Sent to the people who can pull it", "href": f"/ui/takedowns/{d.id}",
+                          "text": f"Sent to {d.abuse_contact or 'the abuse contact'}."})  # fmt: skip
+        if d.resolved_at:
+            steps.append({"k": "resolved", "at": d.resolved_at.isoformat(), "title": "Taken down", "text": "The site is gone."})
+    for s in steps:  # SQLite returns naive datetimes: they are UTC
+        if "+" not in s["at"][10:] and not s["at"].endswith("Z"):
+            s["at"] += "+00:00"
+    steps.sort(key=lambda s: s["at"])
+    return {"host": c.hostname, "brand": bname, "finding_id": str(f.id), "steps": steps}

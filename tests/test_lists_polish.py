@@ -144,3 +144,44 @@ def test_the_infrastructure_settings_and_add_brand_sections_are_short_and_clear(
         brands = ui.get("/ui/brands").text
         add = brands.split('id="add"')[1]
         assert add.count('class="stp"') == 3 and 'id="as-name"' in add and 'id="nb-go"' in add
+
+
+def test_how_it_works_offers_the_numbers_and_one_real_case(engine, tmp_path, chromium):  # noqa: F811
+    from brandwatch.demo import story
+
+    app = _app(engine, tmp_path)
+    with TestClient(app):
+        c, ui = _api(app), _ui(app)
+        brand, rows = _brand(c, app)
+        fid = rows["shopn0va.com"]["id"]
+        c.post(f"/api/findings/{fid}/confirm", json={"reason": "cloned login"})
+        c.post(f"/api/findings/{fid}/takedown")
+        html = ui.get("/ui/how-it-works").text
+        import sqlalchemy as sa
+        from sqlalchemy.orm import Session
+
+        from brandwatch.db.models import User
+        with Session(engine) as s:
+            u = s.scalars(sa.select(User)).first()
+            nums, case = story.by_numbers(s, u), story.one_case(s, u)
+    assert nums["totals"]["examined"] >= 1 and nums["sources"] and all({"g", "label", "examined", "suspects", "confirmed"} <= set(r) for r in nums["sources"])
+    ks = [st["k"] for st in case["steps"]] if case else []
+    assert {"found", "scored", "confirmed"} <= set(ks) and [st["at"] for st in case["steps"]] == sorted(st["at"] for st in case["steps"])
+    assert 'id="hvt-map" aria-controls="hv-map" aria-selected="true"' in html and 'id="hv-nums"' in html and 'id="hv-case"' in html
+    errors: list[str] = []
+    for width in (1280, 390):
+        ctx = chromium.new_context(viewport={"width": width, "height": 900}, is_mobile=width < 500)
+        page = ctx.new_page()
+        page.on("pageerror", lambda e: errors.append(str(e)))
+        page.set_content(html, wait_until="domcontentloaded")
+        page.wait_for_timeout(200)
+        assert page.evaluate("!document.getElementById('hv-map').hidden")  # the picture is the default
+        page.click("#hvt-nums")
+        page.wait_for_timeout(400)
+        assert page.evaluate("document.querySelectorAll('#nb-svg .rib').length") > 0 and page.evaluate("document.querySelectorAll('.nb-col').length") == 6
+        page.click("#hvt-case")
+        page.wait_for_timeout(300)
+        assert page.evaluate("document.querySelectorAll('#cs-line .cs-st').length") >= 3
+        assert page.evaluate("document.documentElement.scrollWidth - innerWidth") <= 1
+        ctx.close()
+    assert [e for e in errors if BROKEN.search(e)] == []

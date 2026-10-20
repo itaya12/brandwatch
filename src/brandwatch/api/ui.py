@@ -1660,12 +1660,13 @@ def how_it_works_page(
         return _login_redirect(request)
     from brandwatch.about import project_facts
     from brandwatch.api.deep_info import DEEP
-    from brandwatch.demo.story import flow, story
+    from brandwatch.demo.story import by_numbers, flow, one_case, story
     from brandwatch.demo.tour import tour_stops
 
     s = request.app.state.settings
     return _render(request, "how_it_works.html", user, facts=project_facts(request.app), deep=DEEP,
                    stops=tour_stops(session, user), story=story(session, user), flow=flow(session, user),
+                   numbers=by_numbers(session, user), case=one_case(session, user),
                    links={"case_study": s.case_study_url}, active="how")  # fmt: skip
 
 
