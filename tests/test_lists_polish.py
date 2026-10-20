@@ -178,10 +178,26 @@ def test_how_it_works_offers_the_numbers_and_one_real_case(engine, tmp_path, chr
         assert page.evaluate("!document.getElementById('hv-map').hidden")  # the picture is the default
         page.click("#hvt-nums")
         page.wait_for_timeout(400)
-        assert page.evaluate("document.querySelectorAll('#nb-svg .rib').length") > 0 and page.evaluate("document.querySelectorAll('.nb-col').length") == 6
+        if width < 600:  # a phone: a funnel of bars and the list of sources
+            assert page.evaluate("document.querySelectorAll('.nbp-row').length") == 6 and page.evaluate("document.querySelectorAll('.nbp-src').length") > 0
+        else:
+            assert page.evaluate("document.querySelectorAll('#nb-svg .rib').length") > 0 and page.evaluate("document.querySelectorAll('.nb-col').length") == 6
         page.click("#hvt-case")
         page.wait_for_timeout(300)
         assert page.evaluate("document.querySelectorAll('#cs-line .cs-st').length") >= 3
         assert page.evaluate("document.documentElement.scrollWidth - innerWidth") <= 1
         ctx.close()
     assert [e for e in errors if BROKEN.search(e)] == []
+
+
+def test_the_site_has_its_icon(engine, tmp_path):
+    app = _app(engine, tmp_path)
+    with TestClient(app) as raw:
+        ui = _ui(app)
+        page = ui.get("/ui/brands").text
+        assert 'rel="icon" href="/ui/assets/favicon.svg"' in page and 'rel="apple-touch-icon"' in page
+        for name, ctype in (("favicon.svg", "image/svg+xml"), ("favicon-32.png", "image/png"), ("apple-touch-icon.png", "image/png"), ("og-how-it-works.png", "image/png")):
+            r = raw.get(f"/ui/assets/{name}")
+            assert r.status_code == 200 and r.headers["content-type"].startswith(ctype), name
+        assert raw.get("/ui/assets/../main.py").status_code == 404 and raw.get("/ui/assets/other.svg").status_code == 404
+        assert raw.get("/favicon.ico", follow_redirects=False).status_code == 301

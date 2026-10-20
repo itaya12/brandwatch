@@ -137,8 +137,8 @@ def crawl(base: str, user: str, password: str, max_pages: int) -> tuple[dict, di
                     except Exception:  # noqa: BLE001 - a stream or a body the browser already dropped
                         pass
             # pictures the page shows only on demand (the screenshots view, the lightbox) were never loaded: fetch them
-            wanted = page.evaluate("""() => [...document.querySelectorAll('[src], [data-src]')]
-                .flatMap(e => [e.getAttribute('src'), e.getAttribute('data-src')])
+            wanted = page.evaluate("""() => [...document.querySelectorAll('[src], [data-src], link[rel~="icon"][href], link[rel="apple-touch-icon"][href]')]
+                .flatMap(e => [e.getAttribute('src'), e.getAttribute('data-src'), e.tagName === 'LINK' ? e.getAttribute('href') : null])
                 .filter(u => u && u.startsWith('/') && !u.startsWith('//'))""")
             for u in wanted:
                 uk = key(u)

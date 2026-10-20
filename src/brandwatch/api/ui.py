@@ -1683,6 +1683,18 @@ def og_image() -> Response:
                     headers={"Cache-Control": "public, max-age=86400"})  # fmt: skip
 
 
+_ICONS = {"favicon.svg": "image/svg+xml", "favicon-32.png": "image/png", "apple-touch-icon.png": "image/png"}
+
+
+@router.get("/assets/{name}")
+def icon_asset(name: str) -> Response:
+    """The site's icon: the shield with an eye, as SVG for browsers that take it, a 32 px PNG, and 180 px for a phone's home screen."""
+    if name not in _ICONS:
+        raise HTTPException(status_code=404)
+    path = Path(__file__).parent / "assets" / name
+    return Response(path.read_bytes(), media_type=_ICONS[name], headers={"Cache-Control": "public, max-age=604800"})
+
+
 @router.get("/takedowns", response_class=HTMLResponse)
 def takedowns_page(
     request: Request, session: Annotated[Session, Depends(get_session, scope="function")],

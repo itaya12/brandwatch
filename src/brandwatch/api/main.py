@@ -156,6 +156,12 @@ def create_app(settings: Settings | None = None, engine: Engine | None = None) -
     app.include_router(intel.router)
     app.include_router(ui.router)
 
+    @app.get("/favicon.ico", include_in_schema=False)
+    def _favicon():  # noqa: ANN202 - a browser asks the root for it before reading any page
+        from fastapi.responses import RedirectResponse as _R
+
+        return _R("/ui/assets/favicon-32.png", status_code=301)
+
     from fastapi import HTTPException as _HTTPException
     from fastapi.exception_handlers import (
         http_exception_handler,

@@ -46,6 +46,33 @@
   .nb-chips button{display:inline-flex;align-items:center;gap:6px;padding:4px 10px 4px 4px;border-radius:999px;font-size:12px}
   .nb-chips button.on{border-color:var(--accent);background:rgba(53,199,242,.12)}
   .nb-note{font-size:12.5px;line-height:1.5;color:var(--muted);margin-top:8px}
+  /* by the numbers on a phone: one bar per step, centred like a funnel, the sources underneath */
+  .nbp{display:grid;gap:0}
+  .nbp-row{display:grid;gap:5px;justify-items:center}
+  .nbp-top{display:flex;align-items:baseline;gap:7px}.nbp-top b{font:700 20px/1 var(--display);color:var(--text)}.nbp-top span{font:600 11px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+  .nbp-bar{position:relative;display:flex;gap:2px;height:16px;border-radius:5px;overflow:hidden;transform:scaleX(0);transform-origin:center;transition:transform .7s cubic-bezier(.2,.8,.2,1) var(--d)}
+  .nbp-bar.zero{height:2px;background:repeating-linear-gradient(90deg,var(--border) 0 6px,transparent 6px 11px)}
+  .nbp-bar i{display:block;height:100%;min-width:3px;transition:opacity .25s}
+  .nbp-bar::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent 10%,rgba(255,255,255,.45) 50%,transparent 90%);transform:translateX(-110%)}
+  .nb-wrap.in .nbp-bar{transform:none}
+  .nb-wrap.in .nbp-bar:not(.zero)::after{animation:nbsweep 3.2s cubic-bezier(.4,0,.2,1) calc(1.2s + var(--d)) infinite}
+  @keyframes nbsweep{0%{transform:translateX(-110%)}40%,100%{transform:translateX(110%)}}
+  .nbp-step{display:flex;justify-content:center;height:26px;align-items:center;position:relative}
+  .nbp-step::before{content:"";position:absolute;top:2px;bottom:2px;left:50%;width:2px;margin-left:-1px;background:linear-gradient(180deg,var(--border),transparent)}
+  .nbp-step span{position:relative;font:600 11px var(--mono);color:var(--accent2);padding:1px 8px;border:1px solid var(--border);border-radius:999px;background:var(--panel)}
+  .nb-wrap.focus .nbp-bar i[data-g]:not(.on){opacity:.18}
+  .nbp-srcs{display:grid;gap:4px;margin-top:16px}
+  .nbp-sh,.nbp-src{display:grid;grid-template-columns:minmax(0,1fr) 54px 54px 54px;gap:6px;align-items:center}
+  .nbp-sh{font:600 10.5px var(--mono);letter-spacing:.04em;text-transform:uppercase;color:var(--muted);padding:0 8px}.nbp-sh span:not(:first-child){text-align:right}
+  .nbp-src{position:relative;padding:8px;border:1px solid var(--border);border-left:3px solid var(--c);border-radius:10px;background:var(--panel2);color:var(--text2);font-size:12.5px;text-align:left;min-height:44px}
+  .nbp-src .nm{display:block;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text)}
+  .nbp-src{grid-template-columns:22px minmax(0,1fr) 50px 52px 60px}
+  .nbp-sh{grid-template-columns:22px minmax(0,1fr) 50px 52px 60px;font:600 11px var(--sans);letter-spacing:0;text-transform:none}.nbp-sh span:first-child{grid-column:1 / 3}
+  .nbp-src>span:not(.nm):not(.srcic),.nbp-src>b{text-align:right;font-family:var(--mono)}.nbp-src>b{color:var(--low)}
+  .nbp-src .bar{position:absolute;left:8px;right:8px;bottom:3px;height:2px;background:transparent}.nbp-src .bar>i{display:block;height:100%;background:var(--c);opacity:.7}
+  .nbp-src.on{border-color:var(--c);background:color-mix(in srgb,var(--c) 12%,var(--panel2))}
+  .nb-wrap.focus .nbp-src:not(.on){opacity:.5}
+  @media (prefers-reduced-motion:reduce){.nbp-bar{transform:none;transition:none}}
   /* one real case */
   .cs-sum{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 14px}
   .cs-sum div{padding:8px 12px;border:1px solid var(--border);border-radius:10px;background:var(--panel2)}
@@ -99,7 +126,7 @@
     <div class="nb-chips" id="nb-chips"></div>
     <div class="nb-wrap" id="nb-wrap"><svg id="nb-svg" role="img" aria-label="Domains from each discovery source, narrowing to suspects, confirmed sites and takedowns"></svg></div>
     <div class="nb-tip" id="nb-tip">Point at a source to follow it.</div>
-    <div class="nb-note">Column heights grow with the logarithm of the count, so 39 next to {{ '{:,}'.format(numbers.totals.examined) }} stays visible; within a column every band is in proportion. A domain found by two sources is in both bands.</div>
+    <div class="nb-note">Sizes grow with the logarithm of the count, so {{ '{:,}'.format(numbers.totals.confirmed) }} next to {{ '{:,}'.format(numbers.totals.examined) }} stays visible; inside a step every source is in proportion. A domain found by two sources is in both bands.</div>
   </div>
 </div>
 
@@ -159,6 +186,7 @@
     const S = N.sources, T = N.totals;
     if (!S.length) { wrap.innerHTML = '<p class="muted">No scan has run yet: scan a brand and its numbers flow here.</p>'; return; }
     const W = Math.max(300, wrap.clientWidth), vertical = W < 600;
+    if (vertical) { drawPhone(wrap, tip, S, T); return; }
     // the stages: three per source, then the takedown path, one band
     const ST = [{k: 'examined', l: 'examined'}, {k: 'suspects', l: 'suspects'}, {k: 'confirmed', l: 'confirmed'},
                 {k: 'drafted', l: 'takedown drafted'}, {k: 'sent', l: 'sent'}, {k: 'resolved', l: 'taken down'}];
@@ -279,6 +307,42 @@
     syncMotion();
   }
 
+  // ---------------------------------------------------------------- by the numbers on a phone: a funnel of bars, then the sources
+  function drawPhone(wrap, tip, S, T){
+    document.getElementById('nb-chips').style.display = 'none';
+    const ST = [['examined', 'examined'], ['suspects', 'suspects'], ['confirmed', 'confirmed'], ['drafted', 'takedown drafted'], ['sent', 'sent'], ['resolved', 'taken down']];
+    const mx = Math.log10(T.examined + 1) || 1, wid = v => v > 0 ? 14 + 86 * Math.log10(v + 1) / mx : 0;
+    const pct = (a, b) => b ? Math.round(a / b * 100) + '%' : '—';
+    let h = '<div class="nbp">';
+    ST.forEach(([k, l], i) => {
+      const v = T[k] || 0, perSrc = i < 3, sum = perSrc ? S.reduce((a, s) => a + s[k], 0) || 1 : 1;
+      if (i) h += `<div class="nbp-step" aria-hidden="true"><span>${pct(v, T[ST[i - 1][0]] || 0)}</span></div>`;
+      const segs = perSrc ? S.filter(s => s[k] > 0).map(s => `<i data-g="${s.g}" style="flex:${s[k] / sum};background:${COL[s.g] || ink('accent')}"></i>`).join('') : (v ? `<i style="flex:1;background:${ink('low')}"></i>` : '');
+      h += `<div class="nbp-row" style="--d:${i * 110}ms"><div class="nbp-top"><b data-to="${v}">0</b><span>${esc(l)}</span></div>`
+        + `<div class="nbp-bar${v ? '' : ' zero'}" style="width:${v ? wid(v).toFixed(1) : 100}%">${segs}</div></div>`;
+    });
+    h += '</div><div class="nbp-srcs"><div class="nbp-sh"><span>source</span><span>examined</span><span>suspects</span><span>confirmed</span></div>';
+    S.forEach(s => { h += `<button type="button" class="nbp-src" data-g="${s.g}" style="--c:${COL[s.g] || ink('accent')}">${icon(s)}<span class="nm">${esc(s.label)}</span>`
+      + `<span>${fmt(s.examined)}</span><span>${fmt(s.suspects)}</span><b>${fmt(s.confirmed)}</b><i class="bar"><i style="width:${s.examined ? Math.max(3, s.confirmed / s.examined * 100) : 0}%"></i></i></button>`; });
+    h += '</div>';
+    wrap.innerHTML = h;
+    const focus = g => {
+      wrap.classList.toggle('focus', !!g);
+      wrap.querySelectorAll('[data-g]').forEach(e => e.classList.toggle('on', e.dataset.g === g));
+      const src = S.find(x => x.g === g);
+      tip.innerHTML = src ? `${icon(src)} <b>${esc(src.label)}</b>: ${fmt(src.examined)} examined → <b>${fmt(src.suspects)}</b> suspects <span class="pc">${pct(src.suspects, src.examined)}</span> → <b>${fmt(src.confirmed)}</b> confirmed <span class="pc">${pct(src.confirmed, src.suspects)}</span>`
+        : `<b>${fmt(T.examined)}</b> examined → <b>${fmt(T.suspects)}</b> suspects → <b>${fmt(T.confirmed)}</b> confirmed → <b>${fmt(T.sent)}</b> sent. Tap a source to follow it.`;
+    };
+    wrap.querySelectorAll('.nbp-src').forEach(b => b.addEventListener('click', () => focus(b.classList.contains('on') ? null : b.dataset.g)));
+    focus(null);
+    const rows = wrap.querySelectorAll('.nbp-row'), go = () => {
+      rows.forEach(r => { const b = r.querySelector('b'); countUp(b, +b.dataset.to); });
+      if (calm) { wrap.classList.add('in'); return; }
+      requestAnimationFrame(() => wrap.classList.add('in'));
+    };
+    (window.BW_whenSeen || ((e, f) => f()))(wrap, go);
+  }
+
   // ---------------------------------------------------------------- one real case: the steps on a line, with the time between them
   const ICON = {
     registered: '<path d="M4 7h16l-1.5 9h-13z"/><circle cx="9" cy="19" r="1.3"/><circle cx="16" cy="19" r="1.3"/>',
@@ -327,6 +391,7 @@
   else { try { const v = localStorage.getItem('bw-howview'); if (v && tabs[v]) start = v; } catch (e) { /* ignore */ } }
   pick(start);
   addEventListener('hashchange', () => { if (location.hash === HASH.nums) pick('nums'); else if (location.hash === HASH.case) pick('case'); });
-  let rt = 0; addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => { if (!document.getElementById('hv-nums').hidden) { drawn.nums = false; drawNumbers(); } }, 250); });
+  // a phone's address bar changes the height while scrolling: only a new width redraws the flow
+  let rt = 0, lastW = innerWidth; addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => { if (innerWidth === lastW) return; lastW = innerWidth; if (!document.getElementById('hv-nums').hidden) { drawn.nums = false; drawNumbers(); } }, 250); });
 })();
 </script>
