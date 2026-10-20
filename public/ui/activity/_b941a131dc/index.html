@@ -485,9 +485,9 @@ window.BW = (function () {
 <p class="intro">The append-only audit trail: who did what, when, old → new, and why. The database itself refuses to edit or delete it.</p>
 
 <div class="kpis">
-  <div class="kpi"><div class="v" data-count="286">0</div><div class="l">events (latest)</div></div>
-  <div class="kpi"><div class="v" data-count="91">0</div><div class="l">analyst actions</div></div>
-  <div class="kpi"><div class="v" data-count="195">0</div><div class="l">system actions</div></div>
+  <div class="kpi"><div class="v" data-count="283">0</div><div class="l">events (latest)</div></div>
+  <div class="kpi"><div class="v" data-count="89">0</div><div class="l">analyst actions</div></div>
+  <div class="kpi"><div class="v" data-count="194">0</div><div class="l">system actions</div></div>
   <div class="kpi"><div class="v" data-count="36">0</div><div class="l">verdicts recorded</div></div>
   <div class="kpi"><div class="v" data-count="0">0</div><div class="l">logins (24h)</div></div>
 </div>
@@ -509,7 +509,7 @@ window.BW = (function () {
 
 <div class="grid actg" style="grid-template-columns:2.2fr 1fr;margin-top:14px">
   <div class="panel">
-    <div class="small muted" style="margin-bottom:6px">2877 events · page 2</div>
+    <div class="small muted" style="margin-bottom:6px">2880 events · page 2</div>
     <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px" id="chips">
       <button type="button" class="chip on" data-cat="notable" title="everything except sign-ins" aria-pressed="true">notable</button>
       <button type="button" class="chip" data-cat="*" aria-pressed="false">all</button>
@@ -522,12 +522,12 @@ window.BW = (function () {
       <div class="ev " data-cat="user" data-notable="0" style="--r:0;display:none">
         <div class="av " title="admin">AD</div>
         <div>
-          <div class="what"><span class="muted">admin</span> <b>user</b> · login <span class="pill" title="11 consecutive events, first 2026-10-14 10:24">×11</span>
+          <div class="what"><span class="muted">admin</span> <b>user</b> · login <span class="pill" title="14 consecutive events, first 2026-10-14 10:24">×14</span>
             
             <span class="muted small">user bc089017</span></div>
           
         </div>
-        <div class="when"><time datetime="2026-10-14T14:11:17.768611+00:00" data-local title="2026-10-14T14:11:17.768611+00:00 UTC">2026-10-14 14:11</time><div><a class="small" href="/ui/activity/_d2793a420a/" title="every event about this user">history</a></div></div>
+        <div class="when"><time datetime="2026-10-14T14:19:54.929909+00:00" data-local title="2026-10-14T14:19:54.929909+00:00 UTC">2026-10-14 14:19</time><div><a class="small" href="/ui/activity/_d2793a420a/" title="every event about this user">history</a></div></div>
       </div>
       
       
@@ -5019,54 +5019,6 @@ window.BW = (function () {
       </div>
       
       
-      <div class="ev " data-cat="finding" data-notable="1" style="--r:30">
-        <div class="av sys" title="system">SYS</div>
-        <div>
-          <div class="what"><span class="muted">system</span> <b>finding</b> · created
-            
-            <span class="muted small">finding <span class="mono" title="this object no longer exists (e.g. its brand was deleted with Start over)">79275cef · deleted</span></span></div>
-          
-          
-          <div class="diff"><span class="new">severity: high · score: 50 · confidence: 80.0 · scoring version: v3</span>
-            <div style="color:var(--text);opacity:.8;margin-top:2px">“5 signals fired; rules: [&#39;known_phishing_verdict&#39;, &#39;cloudflare_flagged_lookalike&#39;]”</div></div>
-          
-        </div>
-        <div class="when"><time datetime="2026-10-12T11:55:23.491856+00:00" data-local title="2026-10-12T11:55:23.491856+00:00 UTC">2026-10-12 11:55</time><div><a class="small" href="/ui/activity?object_id=79275cef-073a-413e-b5ba-5e7ef3312ab3" title="every event about this finding">history</a></div></div>
-      </div>
-      
-      
-      <div class="ev " data-cat="scan" data-notable="1" style="--r:30">
-        <div class="av " title="admin">AD</div>
-        <div>
-          <div class="what"><span class="muted">admin</span> <b>scan</b> · started
-            
-            <span class="muted small">scan job <span class="mono" title="this object no longer exists (e.g. its brand was deleted with Start over)">2faf3198 · deleted</span></span></div>
-          
-          
-          <div class="diff"><span class="new">kind: url_scan · brand: Known 5fa8 · urls: 3</span>
-            </div>
-          
-        </div>
-        <div class="when"><time datetime="2026-10-12T11:55:23.164688+00:00" data-local title="2026-10-12T11:55:23.164688+00:00 UTC">2026-10-12 11:55</time><div><a class="small" href="/ui/activity?object_id=2faf3198-c43d-4f4c-84c5-5573bb31da4a" title="every event about this scan job">history</a></div></div>
-      </div>
-      
-      
-      <div class="ev " data-cat="brand" data-notable="1" style="--r:30">
-        <div class="av " title="admin">AD</div>
-        <div>
-          <div class="what"><span class="muted">admin</span> <b>brand</b> · created
-            
-            <span class="muted small">brand <span class="mono" title="this object no longer exists (e.g. its brand was deleted with Start over)">f34f7402 · deleted</span></span></div>
-          
-          
-          <div class="diff"><span class="new">{"custom": false, "domains": ["shopnova.com"], "kind": "service", "name": "Known 5fa8", "official_apps": [], "preset": "standard"}</span>
-            </div>
-          
-        </div>
-        <div class="when"><time datetime="2026-10-12T11:55:23.080175+00:00" data-local title="2026-10-12T11:55:23.080175+00:00 UTC">2026-10-12 11:55</time><div><a class="small" href="/ui/activity?object_id=f34f7402-5275-468f-81f2-5889ff47f77e" title="every event about this brand">history</a></div></div>
-      </div>
-      
-      
     </div>
     <div class="more"><button type="button" id="more" style="display:none">Show older events</button>
       <a class="btn small" href="/ui/activity?page=1">← newer</a>
@@ -5077,38 +5029,38 @@ window.BW = (function () {
       <h2>By category</h2>
       
       
-      <div class="hbar"><span>finding</span><div class="bar"><i data-w="100"></i></div><b>66</b></div>
+      <div class="hbar"><span>finding</span><div class="bar"><i data-w="100"></i></div><b>65</b></div>
       
-      <div class="hbar"><span>Brand use</span><div class="bar"><i data-w="58"></i></div><b>38</b></div>
+      <div class="hbar"><span>report</span><div class="bar"><i data-w="57"></i></div><b>37</b></div>
       
-      <div class="hbar"><span>report</span><div class="bar"><i data-w="56"></i></div><b>37</b></div>
+      <div class="hbar"><span>intel</span><div class="bar"><i data-w="57"></i></div><b>37</b></div>
       
-      <div class="hbar"><span>intel</span><div class="bar"><i data-w="56"></i></div><b>37</b></div>
+      <div class="hbar"><span>Brand use</span><div class="bar"><i data-w="57"></i></div><b>37</b></div>
       
       <div class="hbar"><span>campaign</span><div class="bar"><i data-w="55"></i></div><b>36</b></div>
       
-      <div class="hbar"><span>notification</span><div class="bar"><i data-w="45"></i></div><b>30</b></div>
+      <div class="hbar"><span>notification</span><div class="bar"><i data-w="46"></i></div><b>30</b></div>
       
-      <div class="hbar"><span>investigation</span><div class="bar"><i data-w="42"></i></div><b>28</b></div>
+      <div class="hbar"><span>investigation</span><div class="bar"><i data-w="43"></i></div><b>28</b></div>
       
-      <div class="hbar"><span>user</span><div class="bar"><i data-w="32"></i></div><b>21</b></div>
+      <div class="hbar"><span>user</span><div class="bar"><i data-w="37"></i></div><b>24</b></div>
       
     </div>
     <div class="panel" style="margin-top:14px">
       <h2>Activity · 14 days</h2>
-      <svg class="spark" data-spark='{"series": [{"color": "#35C7F2", "values": [0, 0, 0, 0, 0, 11, 30, 245, 0, 0, 0, 0, 0, 0]}]}'></svg>
+      <svg class="spark" data-spark='{"series": [{"color": "#35C7F2", "values": [0, 0, 0, 0, 0, 8, 30, 245, 0, 0, 0, 0, 0, 0]}]}'></svg>
     </div>
     <div class="panel" style="margin-top:14px">
       <h2>Most active</h2>
       
       <div style="display:grid;grid-template-columns:1fr 40px;gap:8px;align-items:center;margin:8px 0">
         <div><div class="small mono">system</div><div class="bar" style="height:6px;margin-top:3px"><i data-w="100"></i></div></div>
-        <div class="mono small right">170</div>
+        <div class="mono small right">169</div>
       </div>
       
       <div style="display:grid;grid-template-columns:1fr 40px;gap:8px;align-items:center;margin:8px 0">
-        <div><div class="small mono">admin</div><div class="bar" style="height:6px;margin-top:3px"><i data-w="76"></i></div></div>
-        <div class="mono small right">130</div>
+        <div><div class="small mono">admin</div><div class="bar" style="height:6px;margin-top:3px"><i data-w="78"></i></div></div>
+        <div class="mono small right">131</div>
       </div>
       
     </div>
