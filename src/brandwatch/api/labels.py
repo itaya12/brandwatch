@@ -421,7 +421,7 @@ STREAM_GROUP: dict[str, str] = {
 }  # fmt: skip
 SOURCE_SHORT: dict[str, str] = {
     "lookalike": "Look-alike name", "cert": "Certificate logs", "nrd": "New domains", "google": "Google", "urlscan": "urlscan",
-    "analyst": "Analyst scan", "pivot": "Infrastructure map", "meta_ads": "Facebook / Instagram ad", "social": "Facebook / Instagram",
+    "analyst": "Analyst scan", "pivot": "Infrastructure map", "meta_ads": "FB / IG ads", "social": "FB / IG pages",
     "redirect": "Redirect", "ai": "ChatGPT / Gemini",
 }  # fmt: skip
 _SVG = '<svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'

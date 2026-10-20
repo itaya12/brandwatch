@@ -15,8 +15,9 @@
   .charts{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(280px,100%),1fr));gap:14px;margin-top:14px}
   @media (min-width:1200px){.charts{grid-template-columns:repeat(3,minmax(0,1fr)) minmax(0,1.5fr)}}
   @media (max-width:1100px){.row2{grid-template-columns:minmax(0,1fr)}}
-  .bars.src .row{grid-template-columns:minmax(0,150px) 1fr 52px}
-  .bars.src .row > span:first-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .bars.src .row{grid-template-columns:minmax(0,170px) 1fr 58px}
+  .bars.src .sname{display:flex;align-items:center;gap:9px;min-width:0;font-size:12.5px}
+  .bars.src .sname>span:last-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   /* the header line */
   .dhead{display:flex;align-items:center;gap:10px 16px;flex-wrap:wrap;margin-bottom:12px}
   .dhead h1{margin:0;font-family:var(--display);font-size:26px;letter-spacing:.04em}
@@ -171,7 +172,7 @@
     .globe-wrap{height:290px}
     .bars .row{grid-template-columns:76px minmax(0,1fr) 34px;gap:8px}
     .bars .row .badge{font-size:11px;padding:2px 7px;justify-self:start}
-    .bars.src .row{grid-template-columns:minmax(0,118px) minmax(0,1fr) 50px}
+    .bars.src .row{grid-template-columns:minmax(0,140px) minmax(0,1fr) 54px}
     .hist{height:100px;margin-bottom:14px}
     svg#spark{height:86px}
     .legend2{flex-wrap:wrap;gap:4px 12px}
@@ -341,7 +342,7 @@
     <div class="bars src">
       {% set smx = (d.source_effectiveness|map(attribute='candidates')|max) or 1 %}
       {% for s in d.source_effectiveness %}
-      <div class="row"><span class="small" title="{{ s.source }}">{{ s.source|stream_label }}</span><div class="bar"><i data-dw="{{ (s.candidates / smx * 100)|round|int }}"></i></div><span class="mono right small">{{ s.findings }}/{{ s.candidates }}</span></div>
+      {% set sb = ([s.source]|source_badges)[0] %}<div class="row"><span class="sname" title="{{ s.source|stream_label }}">{{ m.src_icon(sb) }}<span>{{ sb.label }}</span></span><div class="bar"><i data-dw="{{ (s.candidates / smx * 100)|round|int }}"></i></div><span class="mono right small">{{ s.findings }}/{{ s.candidates }}</span></div>
       {% endfor %}
       {% if not d.source_effectiveness %}<span class="empty">no scans yet</span>{% endif %}
     </div>
