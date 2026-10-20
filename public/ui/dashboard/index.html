@@ -477,8 +477,9 @@ window.BW = (function () {
   .charts{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(280px,100%),1fr));gap:14px;margin-top:14px}
   @media (min-width:1200px){.charts{grid-template-columns:repeat(3,minmax(0,1fr)) minmax(0,1.5fr)}}
   @media (max-width:1100px){.row2{grid-template-columns:minmax(0,1fr)}}
-  .bars.src .row{grid-template-columns:minmax(0,150px) 1fr 52px}
-  .bars.src .row > span:first-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .bars.src .row{grid-template-columns:minmax(0,170px) 1fr 58px}
+  .bars.src .sname{display:flex;align-items:center;gap:9px;min-width:0;font-size:12.5px}
+  .bars.src .sname>span:last-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   /* the header line */
   .dhead{display:flex;align-items:center;gap:10px 16px;flex-wrap:wrap;margin-bottom:12px}
   .dhead h1{margin:0;font-family:var(--display);font-size:26px;letter-spacing:.04em}
@@ -633,7 +634,7 @@ window.BW = (function () {
     .globe-wrap{height:290px}
     .bars .row{grid-template-columns:76px minmax(0,1fr) 34px;gap:8px}
     .bars .row .badge{font-size:11px;padding:2px 7px;justify-self:start}
-    .bars.src .row{grid-template-columns:minmax(0,118px) minmax(0,1fr) 50px}
+    .bars.src .row{grid-template-columns:minmax(0,140px) minmax(0,1fr) 54px}
     .hist{height:100px;margin-bottom:14px}
     svg#spark{height:86px}
     .legend2{flex-wrap:wrap;gap:4px 12px}
@@ -674,7 +675,7 @@ window.BW = (function () {
 <div class="dhead">
   <h1>DASHBOARD <span class="muted small" style="font-family:var(--sans)"><span class="d1">· </span>BRAND MONITOR · <bdi>all brands</bdi></span></h1>
   <div class="meta">
-    <span class="chip" title="the numbers refresh every 20 seconds">updated <span id="updated">20:36:42</span> UTC</span>
+    <span class="chip" title="the numbers refresh every 20 seconds">updated <span id="updated">10:23:19</span> UTC</span>
     <span class="chip">last scan <span data-rel="2026-10-18T17:10:04.662299+00:00"><time datetime="2026-10-18T17:10:04.662299+00:00" data-local title="2026-10-18T17:10:04.662299+00:00 UTC">2026-10-18 17:10</time></span></span>
     <span class="chip"><span class="status-dot off"></span>automatic scans off</span>
     <span class="chip" style="color:var(--accent2);border-color:var(--accent)">DEMO · $0</span>
@@ -746,7 +747,7 @@ window.BW = (function () {
       <a href="/ui/takedowns/_7f47578d91/"><b>0</b><span>closed</span></a>
     </div>
     <div class="lrow"><span class="badge sev-critical">critical</span>
-      <a class="mono" href="/ui/takedowns/71c2d1cb-03bb-40bb-9283-04feaa1f3a15/" dir="ltr">shopn0va.com</a><span class="r">no answer for 7 days</span></div><div class="lrow"><span class="badge sev-critical">critical</span>
+      <a class="mono" href="/ui/takedowns/71c2d1cb-03bb-40bb-9283-04feaa1f3a15/" dir="ltr">shopn0va.com</a><span class="r">no answer for 8 days</span></div><div class="lrow"><span class="badge sev-critical">critical</span>
       <a class="mono" href="/ui/findings/5d2ee722-749b-41e5-8f7d-d89bccda56f9/" dir="ltr">shopnova-login.com</a><span class="r">no request yet</span></div><div class="lrow"><span class="badge sev-critical">critical</span>
       <a class="mono" href="/ui/findings/2cb73388-b4b7-4b89-bb02-e10192947e09/" dir="ltr">shopnova-refund.net</a><span class="r">no request yet</span></div><div class="lrow"><span class="badge sev-critical">critical</span>
       <a class="mono" href="/ui/findings/63381bcd-78de-4d7a-b9e2-cd7b4a59a00d/" dir="ltr">coinpilot-bot.io</a><span class="r">no request yet</span></div><div class="lrow"><span class="badge sev-critical">critical</span>
@@ -769,7 +770,7 @@ window.BW = (function () {
       <span class="n"><b>6</b><span>open</span></span>
       <span class="n"><b>22</b><span>watching</span></span>
       <span class="when">last scan <span data-rel="2026-10-18T07:32:12.545567+00:00"></span><br>automatic scans off</span>
-      <svg class="spark" data-spark='{"series": [{"color": "#FF4D4D", "values": [0, 0, 0, 0, 0, 0, 30, 0, 0, 0, 0, 0, 4, 0]}]}'></svg>
+      <svg class="spark" data-spark='{"series": [{"color": "#FF4D4D", "values": [0, 0, 0, 0, 0, 30, 0, 0, 0, 0, 0, 4, 0, 0]}]}'></svg>
     </a>
     
     <a class="brow" href="/ui/brands/1909c3e0-295d-4d38-bb7e-a2b05c9287d4/">
@@ -779,7 +780,7 @@ window.BW = (function () {
       <span class="n"><b>2</b><span>open</span></span>
       <span class="n"><b>18</b><span>watching</span></span>
       <span class="when">last scan <span data-rel="2026-10-18T20:00:24.466450+00:00"></span><br>automatic scans off</span>
-      <svg class="spark" data-spark='{"series": [{"color": "#FF4D4D", "values": [0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0]}]}'></svg>
+      <svg class="spark" data-spark='{"series": [{"color": "#FF4D4D", "values": [0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0]}]}'></svg>
     </a>
     
     <a class="brow" href="/ui/brands/f46bffed-4795-4cdd-ad8f-abd3d26fcc60/">
@@ -789,7 +790,7 @@ window.BW = (function () {
       <span class="n"><b>0</b><span>open</span></span>
       <span class="n"><b>0</b><span>watching</span></span>
       <span class="when">last scan <span data-rel="2026-10-14T09:48:48.189522+00:00"></span><br>automatic scans off</span>
-      <svg class="spark" data-spark='{"series": [{"color": "#35C7F2", "values": [0, 0, 0, 0, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0]}]}'></svg>
+      <svg class="spark" data-spark='{"series": [{"color": "#35C7F2", "values": [0, 0, 0, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 0]}]}'></svg>
     </a>
     
     <a class="brow" href="/ui/brands/a7b5cb5c-e4a0-495d-b6c9-3ac5209ac3b2/">
@@ -799,7 +800,7 @@ window.BW = (function () {
       <span class="n"><b>1</b><span>open</span></span>
       <span class="n"><b>0</b><span>watching</span></span>
       <span class="when">last scan <span data-rel="2026-10-18T20:00:20.335586+00:00"></span><br>automatic scans off</span>
-      <svg class="spark" data-spark='{"series": [{"color": "#FF4D4D", "values": [0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 1, 0]}]}'></svg>
+      <svg class="spark" data-spark='{"series": [{"color": "#FF4D4D", "values": [0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 1, 0, 0]}]}'></svg>
     </a>
     
   </div>
@@ -839,19 +840,19 @@ window.BW = (function () {
     <div class="bars src">
       
       
-      <div class="row"><span class="small" title="manual">Analyst URL scan</span><div class="bar"><i data-dw="6"></i></div><span class="mono right small">29/66</span></div>
+      <div class="row"><span class="sname" title="Analyst URL scan"><span class="srcic s-analyst" title="found by Analyst URL scan" role="img" aria-label="Analyst scan"><svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 2.5l9 4.8-4 1.3-1.6 3.9z" fill="currentColor"/></svg></span><span>Analyst scan</span></span><div class="bar"><i data-dw="6"></i></div><span class="mono right small">29/66</span></div>
       
-      <div class="row"><span class="small" title="ct">Certificate logs</span><div class="bar"><i data-dw="10"></i></div><span class="mono right small">18/107</span></div>
+      <div class="row"><span class="sname" title="Certificate logs"><span class="srcic s-cert" title="found by Certificate logs" role="img" aria-label="Certificate logs"><svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3.2" y="7.2" width="9.6" height="6.6" rx="1.5"/><path d="M5.5 7.2V5.3a2.5 2.5 0 015 0v1.9"/></svg></span><span>Certificate logs</span></span><div class="bar"><i data-dw="10"></i></div><span class="mono right small">18/107</span></div>
       
-      <div class="row"><span class="small" title="dnstwist">Look-alike names</span><div class="bar"><i data-dw="100"></i></div><span class="mono right small">8/1043</span></div>
+      <div class="row"><span class="sname" title="Look-alike names"><span class="srcic s-lookalike" title="found by Look-alike names" role="img" aria-label="Look-alike name">Aa</span><span>Look-alike name</span></span><div class="bar"><i data-dw="100"></i></div><span class="mono right small">8/1043</span></div>
       
-      <div class="row"><span class="small" title="meta_ads">Facebook / Instagram ads</span><div class="bar"><i data-dw="2"></i></div><span class="mono right small">7/16</span></div>
+      <div class="row"><span class="sname" title="Facebook / Instagram ads"><span class="srcic s-meta_ads" title="found by Facebook / Instagram ads" role="img" aria-label="FB / IG ads">f</span><span>FB / IG ads</span></span><div class="bar"><i data-dw="2"></i></div><span class="mono right small">7/16</span></div>
       
-      <div class="row"><span class="small" title="social">Facebook pages / Instagram profiles</span><div class="bar"><i data-dw="1"></i></div><span class="mono right small">6/8</span></div>
+      <div class="row"><span class="sname" title="Facebook pages / Instagram profiles"><span class="srcic s-social" title="found by Facebook pages / Instagram profiles" role="img" aria-label="FB / IG pages">f</span><span>FB / IG pages</span></span><div class="bar"><i data-dw="1"></i></div><span class="mono right small">6/8</span></div>
       
-      <div class="row"><span class="small" title="ai_answer">AI answer (ChatGPT / Gemini / Google AI Mode)</span><div class="bar"><i data-dw="0"></i></div><span class="mono right small">5/5</span></div>
+      <div class="row"><span class="sname" title="AI answer (ChatGPT / Gemini / Google AI Mode)"><span class="srcic s-ai" title="found by AI answer (ChatGPT / Gemini / Google AI Mode)" role="img" aria-label="ChatGPT / Gemini"><svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 1.8l1.5 4.2 4.3 1.5-4.3 1.5L8 13.2 6.5 9 2.2 7.5 6.5 6z" fill="currentColor" stroke="none"/></svg></span><span>ChatGPT / Gemini</span></span><div class="bar"><i data-dw="0"></i></div><span class="mono right small">5/5</span></div>
       
-      <div class="row"><span class="small" title="serpapi">Google search</span><div class="bar"><i data-dw="0"></i></div><span class="mono right small">3/3</span></div>
+      <div class="row"><span class="sname" title="Google search"><span class="srcic s-google" title="found by Google search" role="img" aria-label="Google">G</span><span>Google</span></span><div class="bar"><i data-dw="0"></i></div><span class="mono right small">3/3</span></div>
       
       
     </div>
@@ -993,7 +994,7 @@ window.BW = (function () {
   // count-up KPIs are handled by the shared motion layer in base.html
 
   // ---- sparkline (scans + findings per day)
-  const days = [{"date": "2026-10-06", "findings": 0, "jobs": 0}, {"date": "2026-10-07", "findings": 0, "jobs": 0}, {"date": "2026-10-08", "findings": 0, "jobs": 0}, {"date": "2026-10-09", "findings": 0, "jobs": 0}, {"date": "2026-10-10", "findings": 0, "jobs": 0}, {"date": "2026-10-11", "findings": 0, "jobs": 0}, {"date": "2026-10-12", "findings": 30, "jobs": 4}, {"date": "2026-10-13", "findings": 0, "jobs": 0}, {"date": "2026-10-14", "findings": 15, "jobs": 6}, {"date": "2026-10-15", "findings": 0, "jobs": 0}, {"date": "2026-10-16", "findings": 0, "jobs": 0}, {"date": "2026-10-17", "findings": 0, "jobs": 0}, {"date": "2026-10-18", "findings": 5, "jobs": 6}, {"date": "2026-10-19", "findings": 0, "jobs": 0}];
+  const days = [{"date": "2026-10-07", "findings": 0, "jobs": 0}, {"date": "2026-10-08", "findings": 0, "jobs": 0}, {"date": "2026-10-09", "findings": 0, "jobs": 0}, {"date": "2026-10-10", "findings": 0, "jobs": 0}, {"date": "2026-10-11", "findings": 0, "jobs": 0}, {"date": "2026-10-12", "findings": 30, "jobs": 4}, {"date": "2026-10-13", "findings": 0, "jobs": 0}, {"date": "2026-10-14", "findings": 15, "jobs": 6}, {"date": "2026-10-15", "findings": 0, "jobs": 0}, {"date": "2026-10-16", "findings": 0, "jobs": 0}, {"date": "2026-10-17", "findings": 0, "jobs": 0}, {"date": "2026-10-18", "findings": 5, "jobs": 6}, {"date": "2026-10-19", "findings": 0, "jobs": 0}, {"date": "2026-10-20", "findings": 0, "jobs": 0}];
   const svg = document.getElementById('spark');
   const mx = Math.max(1, ...days.map(x => Math.max(x.jobs, x.findings)));
   const X = i => (i / Math.max(1, days.length - 1)) * 280;
